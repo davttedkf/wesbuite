@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LITHOS | Curated Geologic Companions</title>
-  <link rel="icon" href="favicon.ico?v=22">
+  <link rel="icon" href="favicon.ico?v=23">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -15,68 +15,85 @@
     #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: 0.3s; z-index: 1500; }
     #overlay.active { opacity: 1; visibility: visible; }
 
-    /* Navigation */
     nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 2000; }
     .logo { font-weight: 800; letter-spacing: 6px; text-transform: uppercase; cursor: pointer; font-size: 1.1rem; }
     .nav-icons { display: flex; gap: 25px; align-items: center; font-size: 1.1rem; position: relative; }
 
-    /* Account Dropdown */
-    .account-menu { position: absolute; top: 40px; right: 0; width: 220px; background: #fff; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; flex-direction: column; overflow: hidden; z-index: 2100; animation: slideIn 0.2s ease; }
-    .account-menu.active { display: flex; }
-    @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* REAL DROPDOWN MENU */
+    .dropdown-container { position: relative; display: inline-block; }
+    .dropdown-content { 
+      display: none; position: absolute; right: 0; top: 35px; background: #fff; min-width: 200px; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--border); 
+      z-index: 2100; overflow: hidden; animation: dropDown 0.2s ease;
+    }
+    .dropdown-content.show { display: block; }
+    @keyframes dropDown { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
-    .menu-item { padding: 15px 20px; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid #f9f9f9; transition: 0.2s; color: #666; }
-    .menu-item:hover { background: var(--light-bg); color: var(--primary); }
-    .menu-logout { color: var(--error); border-top: 1px solid var(--border); }
+    .drop-item { padding: 15px 20px; font-size: 0.85rem; color: #666; cursor: pointer; border-bottom: 1px solid #f9f9f9; }
+    .drop-item:hover { background: var(--light-bg); color: var(--primary); }
+    .drop-logout { color: var(--error); border-top: 1px solid var(--border); }
 
     .screen { display: none; width: 100%; min-height: 100vh; background: var(--bg); }
     .screen.active { display: block; }
 
-    /* Order UI */
-    .order-card { border: 1px solid var(--border); border-radius: 15px; padding: 25px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-    .order-status { font-size: 0.7rem; text-transform: uppercase; font-weight: 800; color: var(--accent); letter-spacing: 1px; }
+    /* Grid Restored */
+    .shop-container { display: flex; max-width: 1400px; margin: 0 auto; padding: 60px 5%; gap: 60px; }
+    .sidebar { width: 220px; flex-shrink: 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; flex: 1; }
+    .product-card { border: 2px solid var(--border); border-radius: 20px; padding: 20px; cursor: pointer; transition: 0.4s; position: relative; background: #fff; }
+    .product-card:hover { border-color: var(--accent); transform: translateY(-8px); }
+    .img-box { width: 100%; aspect-ratio: 1; background: #fafafa; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .img-box img { width: 75%; height: 75%; object-fit: contain; }
 
-    /* Inputs & Buttons */
-    input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; margin-bottom: 15px; }
+    /* Checkout Restored */
+    .checkout-layout { display: grid; grid-template-columns: 1fr 1fr; }
+    .checkout-left { background: var(--light-bg); padding: 60px 10%; border-right: 1px solid var(--border); }
+    .checkout-right { padding: 60px 10%; background: #fff; }
+    .pay-container { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 20px; }
+    .pay-input { border: none; padding: 16px; width: 100%; font-size: 1rem; outline: none; }
+    .pay-row { display: flex; border-top: 1px solid var(--border); background: #fff; }
+    .sub-input { border: none; width: 65px; text-align: center; border-right: 1px solid var(--border); padding: 16px; outline: none; }
+    .cvc-input { border: none; flex: 1; text-align: right; padding: 16px 20px; outline: none; }
+
+    input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; margin-bottom: 12px; }
     .btn { width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; }
-    .btn:hover { background: #333; }
-
-    /* Common Layouts */
-    .container { max-width: 1200px; margin: 0 auto; padding: 60px 5%; }
-    .shop-container { display: flex; gap: 60px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
-    .product-card { border: 2px solid var(--border); border-radius: 20px; padding: 20px; cursor: pointer; position: relative; background: #fff; }
+    .adopt-btn { width: 100%; padding: 20px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; margin-top: 30px; }
 
     .drawer { position: fixed; top: 0; right: -450px; width: 450px; height: 100%; background: #fff; z-index: 3000; transition: 0.5s; display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(0,0,0,0.1); }
     .drawer.active { right: 0; }
 
-    @media (max-width: 900px) { .shop-container { flex-direction: column; } .drawer { width: 100%; right: -100%; } }
+    @media (max-width: 900px) { .checkout-layout, .shop-container { grid-template-columns: 1fr; } .drawer { width: 100%; right: -100%; } }
   </style>
 </head>
 <body>
+
+<div id="loader" style="position: fixed; inset: 0; background: #fff; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center;">
+    <div style="width: 40px; height: 40px; border: 3px solid #eee; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700; margin-top:20px;">Processing Transfer...</p>
+</div>
 
 <div id="overlay" onclick="closeAll()"></div>
 
 <nav>
   <div class="logo" onclick="showScreen('shop-screen')">LITHOS</div>
   <div class="nav-icons">
-    <div style="position: relative;">
-        <i class="fa-regular fa-circle-user" style="cursor: pointer;" onclick="toggleAccountMenu()"></i>
-        <div id="account-menu" class="account-menu">
-            <div id="menu-guest">
-                <div class="menu-item" onclick="showScreen('auth-screen')">Sign In</div>
-                <div class="menu-item" onclick="showScreen('auth-screen')">Create Account</div>
+    <div class="dropdown-container">
+        <i class="fa-regular fa-circle-user" style="cursor: pointer;" onclick="toggleDropdown()"></i>
+        <div id="account-dropdown" class="dropdown-content">
+            <div id="guest-links">
+                <div class="drop-item" onclick="showScreen('auth-screen')">Sign In</div>
+                <div class="drop-item" onclick="showScreen('auth-screen')">Create Account</div>
             </div>
-            <div id="menu-user" style="display: none;">
-                <div style="padding: 15px 20px; font-size: 0.7rem; color: #aaa; text-transform: uppercase;">Member</div>
-                <div class="menu-item" onclick="showScreen('orders-screen')">My Orders</div>
-                <div class="menu-item" onclick="showScreen('shop-screen')">Gallery</div>
-                <div class="menu-item menu-logout" onclick="logout()">Logout</div>
+            <div id="user-links" style="display: none;">
+                <div style="padding: 10px 20px; font-size: 0.65rem; color: #bbb; text-transform: uppercase; font-weight: 800;">Member</div>
+                <div class="drop-item" onclick="showScreen('orders-screen')">My Orders</div>
+                <div class="drop-item" onclick="showScreen('shop-screen')">Browse Gallery</div>
+                <div class="drop-item drop-logout" onclick="logout()">Logout</div>
             </div>
         </div>
     </div>
     
-    <div id="bag-icon" style="position: relative; cursor: pointer;" onclick="toggleCart()">
+    <div style="position: relative; cursor: pointer;" onclick="toggleCart()">
       <i class="fa-solid fa-bag-shopping"></i>
       <span id="badge-count" style="position: absolute; top: -10px; right: -12px; background: var(--primary); color: #fff; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800;">0</span>
     </div>
@@ -84,9 +101,9 @@
 </nav>
 
 <section id="shop-screen" class="screen active">
-  <div class="container shop-container">
-    <aside style="width: 200px; flex-shrink: 0;">
-      <h4 style="font-size: 0.7rem; text-transform: uppercase; margin-bottom: 20px; color: #aaa;">Collection</h4>
+  <div class="shop-container">
+    <aside class="sidebar">
+      <h4 style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; color: #aaa;">Collection</h4>
       <ul style="list-style: none; color: #666; font-size: 0.9rem; line-height: 2.5; cursor: pointer;">
         <li style="color: #000; font-weight: 700;">All Friends</li>
         <li>Volcanic</li>
@@ -94,40 +111,35 @@
         <li>Smooth Stones</li>
       </ul>
     </aside>
-    <div class="main-content" style="flex: 1;">
-      <div class="grid" id="product-grid"></div>
-    </div>
+    <div class="grid" id="product-grid"></div>
   </div>
 </section>
 
-<section id="auth-screen" class="screen">
-    <div class="container" style="max-width: 450px; text-align: center;">
-        <h1 style="font-weight: 800; margin-bottom: 10px;">LITHOS MEMBER</h1>
-        <p style="color: #888; margin-bottom: 40px;">Join the geologic collective.</p>
-        <input type="email" placeholder="Email Address">
-        <input type="password" placeholder="Password">
-        <button class="btn" onclick="login()">Access Account</button>
-        <p style="margin-top: 20px; font-size: 0.8rem; color: #aaa;">Don't have an account? <span style="text-decoration: underline; cursor: pointer;">Join us.</span></p>
-    </div>
-</section>
-
 <section id="orders-screen" class="screen">
-    <div class="container" style="max-width: 800px;">
-        <h1 style="font-weight: 800; margin-bottom: 10px;">YOUR ORDERS</h1>
-        <p style="color: #888; margin-bottom: 50px;">Monitor your companions in transit.</p>
+    <div class="container" style="max-width: 900px; margin: 0 auto; padding: 60px 5%;">
+        <h1 style="font-weight: 800; margin-bottom: 40px; letter-spacing: -1px;">YOUR ADOPTIONS</h1>
         <div id="orders-list">
-            <div style="text-align: center; padding: 100px 0; color: #ccc;">No adoptions recorded.</div>
+            <div style="text-align: center; padding: 100px 0; color: #ccc;">No geologic companions recorded.</div>
         </div>
     </div>
 </section>
 
+<section id="auth-screen" class="screen">
+    <div class="container" style="max-width: 400px; margin: 100px auto; text-align: center;">
+        <h2 style="font-weight: 800; margin-bottom: 30px;">MEMBER ACCESS</h2>
+        <input type="text" placeholder="Email Address">
+        <input type="password" placeholder="Password">
+        <button class="btn" onclick="login()">Enter Collective</button>
+    </div>
+</section>
+
 <section id="detail-screen" class="screen">
-  <div class="container">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 60px 5%;">
     <div style="cursor: pointer; margin-bottom: 40px; font-weight: 700; font-size: 0.7rem; color: #aaa;" onclick="showScreen('shop-screen')">BACK</div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px;">
-      <div style="background: #fcfcfc; border-radius: 30px; padding: 60px; text-align: center;"><img id="detail-img" src="" style="width: 100%; max-height: 400px; object-fit: contain;"></div>
+    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px;">
+      <div style="background: #fcfcfc; border-radius: 30px; padding: 60px; text-align: center;"><img id="detail-img" src="" style="width: 100%; max-height: 500px; object-fit: contain;"></div>
       <div>
-        <h1 id="detail-title" style="font-size: 3rem; font-weight: 800; margin-bottom: 10px;"></h1>
+        <h1 id="detail-title" style="font-size: 3.5rem; font-weight: 800; margin-bottom: 10px;"></h1>
         <p id="detail-price" style="font-size: 2rem; margin-bottom: 30px; font-weight: 300;"></p>
         <p id="detail-desc" style="line-height: 1.8; color: #666; margin-bottom: 40px;"></p>
         <button class="btn" onclick="addCurrentToCart()">Add to Bag</button>
@@ -137,34 +149,48 @@
 </section>
 
 <section id="checkout-screen" class="screen">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh;">
-      <div style="background: var(--light-bg); padding: 60px 10%;">
-        <h2 id="ch-total-display" style="font-size: 3rem; font-weight: 800; margin-bottom: 30px;"></h2>
-        <div id="ch-items" style="color: #666;"></div>
-      </div>
-      <div style="padding: 60px 10%;">
-        <h4 style="margin-bottom: 30px;">PAYMENT</h4>
-        <input type="text" id="ship-addr" placeholder="Shipping Address">
-        <input type="text" placeholder="Card Number">
-        <button class="btn" onclick="processAdoption()">Confirm Adoption</button>
+  <div class="checkout-layout">
+    <div class="checkout-left">
+      <h2 id="ch-total-hero" style="font-size: 3.5rem; font-weight: 800; margin-bottom: 40px;"></h2>
+      <div id="ch-summary-list" style="flex:1;"></div>
+      <div style="border-top: 1px solid #ddd; padding-top: 25px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">Subtotal <span id="ch-sub"></span></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">Shipping <span>$5.00</span></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px; color:#888; font-size:0.9rem;">Estimated Tax (6%) <span id="ch-tax"></span></div>
+        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.6rem;">Total Due <span id="ch-final"></span></div>
       </div>
     </div>
+    <div class="checkout-right">
+        <button class="btn" style="background: #000; margin-bottom: 40px;" onclick="processAdoption()"> Pay</button>
+        <input type="text" id="ship-name" placeholder="Full Name">
+        <input type="text" id="ship-addr" placeholder="Street Address">
+        <div class="pay-container">
+            <input type="text" id="card-num" class="pay-input" placeholder="Card Number" maxlength="19">
+            <div class="pay-row">
+                <input type="text" id="exp-mm" class="sub-input" placeholder="MM" maxlength="2">
+                <input type="text" id="exp-yy" class="sub-input" placeholder="YY" maxlength="2">
+                <input type="text" id="cvc" class="cvc-input" placeholder="CVC" maxlength="3">
+            </div>
+        </div>
+        <button class="adopt-btn" onclick="processAdoption()">Complete Adoption</button>
+    </div>
+  </div>
 </section>
 
 <section id="tracking-screen" class="screen">
-    <div class="container" style="text-align: center; padding-top: 100px;">
-        <i class="fa-solid fa-circle-check fa-5x" style="color: var(--success); margin-bottom: 30px;"></i>
-        <h1 style="font-weight: 800;">PET SECURED.</h1>
-        <div id="track-id-display" style="margin: 30px 0; font-family: monospace; background: #f8f8f8; padding: 20px;"></div>
-        <button class="btn" style="width: 250px;" onclick="showScreen('orders-screen')">View My Orders</button>
+    <div class="container" style="text-align: center; padding-top: 150px;">
+      <i class="fa-solid fa-circle-check fa-5x" style="color: var(--success); margin-bottom: 30px;"></i>
+      <h1 style="font-weight: 800;">ADOPTION CONFIRMED.</h1>
+      <div id="track-id-box" style="margin: 40px 0; font-family: monospace; font-size: 1.4rem; background: #f8f8f8; padding: 25px; border: 1px dashed #ccc;"></div>
+      <button class="btn" style="width: 250px;" onclick="showScreen('orders-screen')">View My Orders</button>
     </div>
 </section>
 
 <div id="drawer" class="drawer">
-  <div style="padding: 30px; border-bottom: 1px solid var(--border); font-weight: 800;">YOUR BAG</div>
+  <div style="padding: 30px; border-bottom: 1px solid var(--border); font-weight: 800; letter-spacing: 2px;">YOUR BAG</div>
   <div id="cart-content" style="flex:1; padding:30px; overflow-y:auto;"></div>
   <div style="padding:30px; border-top:1px solid var(--border); background:#fafafa;">
-    <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:20px; font-size: 1.2rem;">
         <span>SUBTOTAL</span>
         <span id="subtotal"></span>
     </div>
@@ -179,20 +205,41 @@
   let activeProduct = null;
 
   const products = [
-    { id: 1, name: 'Volcanic Basalt', price: 49, img: 'basalt.png', desc: 'Durable and stoic.' },
-    { id: 2, name: 'Highland Slate', price: 34, img: 'slate.png', desc: 'Elegant layers.' },
-    { id: 6, name: 'Smooth Stone', price: 42, img: 'adopt.png', desc: 'Charismatic friend.' }
+    { id: 1, name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', desc: 'Dense igneous masterpiece. Stoic and loyal.' },
+    { id: 2, name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', desc: 'Layered metamorphic history. Ideal for contemplation.' },
+    { id: 3, name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', desc: 'Centuries of Alpine water. Silk finish.' },
+    { id: 4, name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', desc: 'Shiny volcanic glass. Handle with care.' },
+    { id: 5, name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', desc: 'A full household of companions.' },
+    { id: 6, name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', desc: 'Features knit sweater and biologic eyes.' },
+    { id: 7, name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', desc: 'Distinct veining and polished finish.' }
   ];
 
   function renderGrid() {
     document.getElementById('product-grid').innerHTML = products.map(p => `
       <div class="product-card" onclick="openProduct(${p.id})">
-        <div style="width:100%; aspect-ratio:1; background:#f9f9f9; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:15px;">
-            <img src="${p.img}" style="width:70%;">
-        </div>
-        <h3 style="font-size: 0.9rem; text-transform:uppercase;">${p.name}</h3>
-        <p style="color:#aaa;">$${p.price}.00</p>
+        ${p.badge ? `<span style="position:absolute; top:15px; left:15px; padding:5px 12px; border-radius:50px; font-size:0.6rem; font-weight:800; background:#121212; color:#fff;">${p.badge}</span>` : ''}
+        <div class="img-box"><img src="${p.img}" onerror="this.src='https://via.placeholder.com/300?text=Specimen'"></div>
+        <h3 style="font-size: 0.9rem; letter-spacing: 2px; text-transform:uppercase; font-weight: 700;">${p.name}</h3>
+        <p style="color:#aaa; font-weight:400;">$${p.price}.00</p>
       </div>`).join('');
+  }
+
+  function toggleDropdown() {
+    document.getElementById('account-dropdown').classList.toggle('show');
+  }
+
+  function login() {
+    isLoggedIn = true;
+    document.getElementById('guest-links').style.display = 'none';
+    document.getElementById('user-links').style.display = 'block';
+    showScreen('shop-screen');
+  }
+
+  function logout() {
+    isLoggedIn = false;
+    document.getElementById('guest-links').style.display = 'block';
+    document.getElementById('user-links').style.display = 'none';
+    showScreen('shop-screen');
   }
 
   function openProduct(id) {
@@ -204,99 +251,85 @@
     showScreen('detail-screen');
   }
 
-  function toggleAccountMenu() {
-    document.getElementById('account-menu').classList.toggle('active');
-  }
-
   function toggleCart() {
     document.getElementById('drawer').classList.toggle('active');
     document.getElementById('overlay').classList.toggle('active');
   }
 
-  function login() {
-    isLoggedIn = true;
-    document.getElementById('menu-guest').style.display = 'none';
-    document.getElementById('menu-user').style.display = 'flex';
-    document.getElementById('account-menu').classList.remove('active');
-    showScreen('shop-screen');
-  }
-
-  function logout() {
-    isLoggedIn = false;
-    document.getElementById('menu-guest').style.display = 'flex';
-    document.getElementById('menu-user').style.display = 'none';
-    document.getElementById('account-menu').classList.remove('active');
-    showScreen('shop-screen');
-  }
-
   function addCurrentToCart() {
     cart.push({...activeProduct});
-    renderCart();
-    toggleCart();
+    renderCart(); toggleCart();
   }
 
   function renderCart() {
     let sub = cart.reduce((a, b) => a + b.price, 0);
     document.getElementById('badge-count').innerText = cart.length;
-    document.getElementById('subtotal').innerText = `$${sub}.00`;
+    document.getElementById('subtotal').innerText = `$${sub.toFixed(2)}`;
     document.getElementById('cart-content').innerHTML = cart.map(item => `
-        <div style="display:flex; gap:15px; margin-bottom:15px;">
-            <div style="width:50px; height:50px; background:#f4f4f4; border-radius:8px; display:flex; align-items:center; justify-content:center;"><img src="${item.img}" style="width:80%;"></div>
-            <div><div style="font-weight:700; font-size:0.8rem;">${item.name}</div><div>$${item.price}.00</div></div>
-        </div>`).join('');
+      <div style="display:flex; gap:15px; margin-bottom:20px; align-items:center;">
+          <div style="width:65px; height:65px; background:#f4f4f4; border-radius:10px; display:flex; align-items:center; justify-content:center;"><img src="${item.img}" style="width:80%; height:80%; object-fit:contain;"></div>
+          <div style="flex:1;"><div style="font-weight:700; font-size:0.85rem; text-transform:uppercase;">${item.name}</div><div style="color:var(--accent); font-size:0.8rem;">$${item.price}.00</div></div>
+      </div>`).join('');
   }
 
   function goToCheckout() {
     let sub = cart.reduce((a, b) => a + b.price, 0);
-    document.getElementById('ch-total-display').innerText = `$${sub + 5}.00`;
-    document.getElementById('ch-items').innerText = cart.map(i => i.name).join(', ');
-    toggleCart();
-    showScreen('checkout-screen');
+    let tax = sub * 0.06;
+    let total = sub + 5 + tax;
+    document.getElementById('ch-total-hero').innerText = `$${total.toFixed(2)}`;
+    document.getElementById('ch-sub').innerText = `$${sub.toFixed(2)}`;
+    document.getElementById('ch-tax').innerText = `$${tax.toFixed(2)}`;
+    document.getElementById('ch-final').innerText = `$${total.toFixed(2)}`;
+    document.getElementById('ch-summary-list').innerHTML = cart.map(item => `
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:0.95rem;">
+            <span>${item.name}</span>
+            <span style="font-weight:700;">$${item.price}.00</span>
+        </div>`).join('');
+    toggleCart(); showScreen('checkout-screen');
   }
 
   function processAdoption() {
-    const trackID = "LITH-" + Math.floor(Math.random()*900000);
-    const order = {
-        id: trackID,
-        date: new Date().toLocaleDateString(),
-        items: [...cart],
-        total: cart.reduce((a, b) => a + b.price, 0) + 5
-    };
-    orders.push(order);
-    document.getElementById('track-id-display').innerText = trackID;
-    renderOrders();
-    cart = [];
-    renderCart();
-    showScreen('tracking-screen');
+    document.getElementById('loader').style.display = 'flex';
+    setTimeout(() => {
+        document.getElementById('loader').style.display = 'none';
+        const trackID = "LITH-" + Math.floor(Math.random()*90000000);
+        const order = { id: trackID, date: new Date().toLocaleDateString(), items: [...cart], total: cart.reduce((a, b) => a + b.price, 0) + 5 };
+        orders.unshift(order);
+        renderOrders();
+        document.getElementById('track-id-box').innerText = trackID;
+        cart = []; renderCart();
+        showScreen('tracking-screen');
+    }, 2500);
   }
 
   function renderOrders() {
     const list = document.getElementById('orders-list');
-    if(orders.length === 0) return;
     list.innerHTML = orders.map(o => `
-        <div class="order-card">
+        <div style="border: 1px solid var(--border); border-radius: 15px; padding: 30px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <div style="font-weight:800;">${o.id}</div>
-                <div style="color:#aaa; font-size:0.8rem;">Placed on ${o.date} — $${o.total}.00</div>
-                <div style="margin-top:5px; font-size:0.85rem;">${o.items.map(i => i.name).join(', ')}</div>
+                <div style="font-weight: 800; font-size: 1.1rem; letter-spacing: 1px;">${o.id}</div>
+                <div style="color: #aaa; font-size: 0.8rem; margin: 5px 0;">Adoption Manifested ${o.date}</div>
+                <div style="font-size: 0.9rem;">${o.items.map(i => i.name).join(', ')}</div>
             </div>
-            <div class="order-status"><i class="fa-solid fa-truck-fast"></i> Tectonic Shift</div>
-        </div>
-    `).join('');
+            <div style="font-weight: 800; color: var(--accent); font-size: 0.7rem; text-transform: uppercase;">Tectonic Shift</div>
+        </div>`).join('');
   }
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    document.getElementById('account-menu').classList.remove('active');
+    document.getElementById('account-dropdown').classList.remove('show');
     window.scrollTo(0,0);
   }
 
   function closeAll() {
     document.getElementById('drawer').classList.remove('active');
     document.getElementById('overlay').classList.remove('active');
-    document.getElementById('account-menu').classList.remove('active');
+    document.getElementById('account-dropdown').classList.remove('show');
   }
+
+  // MM/YY Jump
+  document.getElementById('exp-mm').addEventListener('input', function() { if(this.value.length === 2) document.getElementById('exp-yy').focus(); });
 
   renderGrid();
 </script>
