@@ -40,16 +40,21 @@
     .sidebar h4 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; color: #aaa; }
     .sidebar-list { list-style: none; margin-bottom: 40px; }
     .sidebar-list li { padding: 10px 0; font-size: 0.9rem; color: #666; cursor: pointer; transition: 0.2s; }
+    .sidebar-list li:hover { color: var(--primary); }
     .sidebar-list li.active { color: var(--primary); font-weight: 700; border-left: 2px solid var(--primary); padding-left: 15px; margin-left: -17px; }
 
-    /* Grid */
+    /* Grid - Side by Side */
+    .main-content { flex: 1; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+    
     .product-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: 0.3s; position: relative; }
     .product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.06); }
     .img-box { width: 100%; aspect-ratio: 1; background: #f9f9f9; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .img-box img { width: 85%; }
 
-    .badge { position: absolute; top: 15px; left: 15px; padding: 5px 12px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; }
+    .card-rating { font-size: 0.8rem; color: var(--accent); margin-bottom: 10px; }
+
+    .badge { position: absolute; top: 15px; left: 15px; padding: 5px 12px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; z-index: 10; }
     .badge-best { background: #121212; color: #fff; }
 
     /* Product Page */
@@ -57,7 +62,9 @@
     .detail-img-wrap { background: #f9f9f9; padding: 60px; border-radius: 20px; text-align: center; }
     .detail-img-wrap img { width: 100%; max-width: 400px; }
 
-    /* Split Checkout (image_6.png style) */
+    .review-item { padding: 20px 0; border-bottom: 1px solid #f0f0f0; }
+
+    /* Split Checkout */
     .checkout-layout { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--border); }
     .checkout-left { background: var(--light-bg); padding: 80px 5%; height: calc(100vh - 80px); display: flex; flex-direction: column; }
     .checkout-right { padding: 80px 5%; background: white; }
@@ -75,11 +82,11 @@
     .cart-item { display: flex; gap: 20px; margin-bottom: 30px; align-items: center; }
     .cart-item-img { width: 70px; height: 70px; background: #f4f4f4; border-radius: 8px; overflow: hidden; }
     .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
-    .qty-btn { cursor: pointer; padding: 5px; color: var(--accent); font-weight: bold; }
 
     @media (max-width: 900px) {
       .shop-layout, .detail-grid, .checkout-layout { grid-template-columns: 1fr; flex-direction: column; }
       .checkout-left, .checkout-right { height: auto; padding: 40px 5%; }
+      .drawer { width: 100%; right: -100%; }
     }
   </style>
 </head>
@@ -125,11 +132,15 @@
       <div class="detail-img-wrap"><img id="detail-img" src=""></div>
       <div>
         <h1 id="detail-title" style="font-size: 3rem; margin-bottom: 10px; font-weight: 800;"></h1>
-        <div style="color: var(--accent); margin-bottom: 20px;"><i class="fa-solid fa-star"></i> 4.9 Collector Rating</div>
+        <div id="detail-rating-header" style="color: var(--accent); margin-bottom: 20px;"></div>
         <p id="detail-price" style="font-size: 2rem; font-weight: 600; margin-bottom: 25px;"></p>
         <p id="detail-desc" style="line-height: 1.8; color: #555; margin-bottom: 40px;"></p>
         <button class="btn" onclick="addCurrentToCart()">Add to bag</button>
       </div>
+    </div>
+    <div style="margin-top: 80px; border-top: 1px solid var(--border); padding-top: 40px;">
+        <h3>Collector Reviews</h3>
+        <div id="reviews-container"></div>
     </div>
   </div>
 </section>
@@ -187,9 +198,23 @@
   let activeProduct = null;
 
   const products = [
-    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'Best Seller', desc: 'A dense igneous masterpiece. Patient, quiet, and eternally loyal.' },
-    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'New', desc: 'Layered metamorphic rock. Excellent for deep conversation and focus.' },
-    { id: 3, type: 'river', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', desc: 'Smoothed by centuries of river water. The perfect pocket-sized companion.' }
+    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'Best Seller', rating: 4.9, count: 128, desc: 'A dense igneous masterpiece. Patient, quiet, and eternally loyal.', 
+      reviews: [
+          { user: "Sarah L.", stars: 5, comment: "It hasn't moved once. The perfect listener." },
+          { user: "Tom H.", stars: 5, comment: "High quality volcanic texture. Very grounded pet." }
+      ]
+    },
+    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'New', rating: 4.7, count: 42, desc: 'Layered metamorphic rock. Excellent for deep conversation and focus.',
+      reviews: [
+          { user: "Jamie V.", stars: 5, comment: "Beautiful layers. Looks great on my shelf." },
+          { user: "Mark D.", stars: 4, comment: "A bit quiet, but very reliable." }
+      ]
+    },
+    { id: 3, type: 'river', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', rating: 4.8, count: 85, desc: 'Smoothed by centuries of river water. The perfect pocket-sized companion.',
+      reviews: [
+          { user: "Elena P.", stars: 5, comment: "So smooth! Helps me focus during Zoom calls." }
+      ]
+    }
   ];
 
   function renderGrid(items) {
@@ -198,6 +223,7 @@
       <div class="product-card" onclick="openProduct(${p.id})">
         ${p.badge ? `<span class="badge badge-best">${p.badge}</span>` : ''}
         <div class="img-box"><img src="${p.img}"></div>
+        <div class="card-rating"><i class="fa-solid fa-star"></i> ${p.rating} (${p.count})</div>
         <h3 style="font-size: 1rem;">${p.name}</h3>
         <p style="font-weight: 700; color: var(--accent);">$${p.price}.00</p>
       </div>
@@ -217,6 +243,16 @@
     document.getElementById('detail-price').innerText = `$${p.price}.00`;
     document.getElementById('detail-desc').innerText = p.desc;
     document.getElementById('detail-img').src = p.img;
+    document.getElementById('detail-rating-header').innerHTML = `<i class="fa-solid fa-star"></i> ${p.rating} (${p.count} reviews)`;
+    
+    document.getElementById('reviews-container').innerHTML = p.reviews.map(r => `
+        <div class="review-item">
+            <div style="color: var(--accent); font-size: 0.8rem;">${'<i class="fa-solid fa-star"></i>'.repeat(r.stars)}</div>
+            <p style="font-weight: 600; margin: 5px 0;">"${r.comment}"</p>
+            <p style="font-size: 0.75rem; color: #888;">— ${r.user}</p>
+        </div>
+    `).join('');
+
     showScreen('detail-screen');
   }
 
@@ -249,19 +285,18 @@
           <div style="flex:1;">
             <div style="font-weight: 700;">${item.name}</div>
             <div>$${item.price}.00</div>
-            <div style="margin-top:5px;">
-              <span class="qty-btn" onclick="updateQty(${idx}, -1)">-</span>
-              <span style="margin:0 10px;">${item.qty}</span>
-              <span class="qty-btn" onclick="updateQty(${idx}, 1)">+</span>
+            <div style="margin-top:5px; display: flex; align-items: center; gap: 10px;">
+              <span class="qty-btn" style="cursor:pointer" onclick="updateQty(${idx}, -1)">-</span>
+              <span>${item.qty}</span>
+              <span class="qty-btn" style="cursor:pointer" onclick="updateQty(${idx}, 1)">+</span>
             </div>
           </div>
         </div>
       `;
     }).join('');
-    document.getElementById('badge-count').innerText = cart.length;
+    document.getElementById('badge-count').innerText = cart.reduce((a, b) => a + b.qty, 0);
     document.getElementById('subtotal').innerText = `$${sub}.00`;
     
-    // Summary logic
     document.getElementById('checkout-items-summary').innerHTML = cart.map(item => `
       <div class="ch-item">
         <div style="display:flex; align-items:center; gap:10px;">
@@ -284,7 +319,7 @@
 
   function processOrder() {
     if (!document.getElementById('ship-addr').value) return alert("Enter address");
-    document.getElementById('track-id').innerText = "TRACK-LITH-" + Math.floor(Math.random()*900000);
+    document.getElementById('track-id').innerText = "TRACK-LITH-" + Math.floor(Math.random()*90000000);
     showScreen('tracking-screen');
     cart = [];
     renderCart();
