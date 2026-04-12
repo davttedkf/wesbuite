@@ -52,7 +52,8 @@
     .img-box { width: 100%; aspect-ratio: 1; background: #f9f9f9; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .img-box img { width: 85%; }
 
-    .card-rating { font-size: 0.8rem; color: var(--accent); margin-bottom: 10px; }
+    .card-rating { font-size: 0.75rem; color: var(--accent); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+    .card-rating i { font-size: 0.7rem; }
 
     .badge { position: absolute; top: 15px; left: 15px; padding: 5px 12px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; z-index: 10; }
     .badge-best { background: #121212; color: #fff; }
@@ -64,9 +65,9 @@
 
     .review-item { padding: 20px 0; border-bottom: 1px solid #f0f0f0; }
 
-    /* Split Checkout */
+    /* Split Checkout Logic */
     .checkout-layout { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--border); }
-    .checkout-left { background: var(--light-bg); padding: 80px 5%; height: calc(100vh - 80px); display: flex; flex-direction: column; }
+    .checkout-left { background: var(--light-bg); padding: 80px 5%; min-height: calc(100vh - 80px); display: flex; flex-direction: column; }
     .checkout-right { padding: 80px 5%; background: white; }
     .ch-item { display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; }
     .ch-item-img { width: 50px; height: 50px; background: #eee; border-radius: 4px; overflow: hidden; }
@@ -107,9 +108,9 @@
 <section id="shop-screen" class="screen active">
   <div class="container shop-layout">
     <aside class="sidebar">
-      <h4>Friend Category</h4>
+      <h4>Pet Category</h4>
       <ul class="sidebar-list">
-        <li class="active" onclick="filterItems('all', this)">All Pets</li>
+        <li class="active" onclick="filterItems('all', this)">All Friends</li>
         <li onclick="filterItems('volcanic', this)">Volcanic</li>
         <li onclick="filterItems('metamorphic', this)">Metamorphic</li>
         <li onclick="filterItems('river', this)">River Wash</li>
@@ -117,7 +118,7 @@
     </aside>
 
     <div class="main-content">
-      <h2 style="font-weight: 400; margin-bottom: 30px;">The Companion Collection</h2>
+      <h2 style="font-weight: 400; margin-bottom: 30px;">Adopt a Companion</h2>
       <div class="grid" id="product-grid"></div>
     </div>
   </div>
@@ -139,7 +140,7 @@
       </div>
     </div>
     <div style="margin-top: 80px; border-top: 1px solid var(--border); padding-top: 40px;">
-        <h3>Collector Reviews</h3>
+        <h3>Verified Collector Experiences</h3>
         <div id="reviews-container"></div>
     </div>
   </div>
@@ -148,22 +149,29 @@
 <section id="checkout-screen" class="screen">
   <div class="checkout-layout">
     <div class="checkout-left">
+      <div style="margin-bottom: 30px; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px; color: #888;">ORDER SUMMARY</div>
       <h1 id="checkout-total-top" style="font-size: 2.5rem; margin-bottom: 30px;">$0.00</h1>
       <div id="checkout-items-summary" style="flex-grow: 1; overflow-y: auto;"></div>
       <div style="border-top: 1px solid #ddd; padding-top: 20px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">Subtotal <span id="ch-sub">$0.00</span></div>
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">Shipping <span>$5.00</span></div>
-        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.4rem;">Total <span id="ch-total">$0.00</span></div>
+        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.4rem;">Total Due <span id="ch-total">$0.00</span></div>
+        <p style="font-size: 0.7rem; color: #aaa; margin-top: 20px; text-transform: uppercase;">Powered by Stripe</p>
       </div>
     </div>
     <div class="checkout-right">
       <div style="background: #000; color: #fff; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px; font-weight: bold; cursor: pointer;"> Pay</div>
-      <h4 style="margin-bottom: 20px; font-size: 0.8rem; text-transform: uppercase;">Shipping Information</h4>
+      <div style="text-align: center; color: #ccc; margin-bottom: 20px; font-size: 0.8rem;">OR PAY WITH CARD</div>
+      <h4 style="margin-bottom: 20px; font-size: 0.8rem; text-transform: uppercase; color: #888;">Shipping information</h4>
       <input type="text" id="ship-name" placeholder="Full Name">
       <input type="text" id="ship-addr" placeholder="Street Address">
-      <h4 style="margin-top: 30px; margin-bottom: 20px; font-size: 0.8rem; text-transform: uppercase;">Payment Details</h4>
-      <input type="text" value="•••• •••• •••• 4492" disabled style="background: #f0f0f0;">
-      <button class="btn" style="margin-top: 40px;" onclick="processOrder()">Pay and Adopt</button>
+      <div style="display: flex; gap: 10px;">
+          <input type="text" placeholder="City">
+          <input type="text" placeholder="Zip">
+      </div>
+      <h4 style="margin-top: 30px; margin-bottom: 20px; font-size: 0.8rem; text-transform: uppercase; color: #888;">Payment details</h4>
+      <input type="text" value="•••• •••• •••• 4492" disabled style="background: #f8f8f8; cursor: not-allowed;">
+      <button class="btn" style="margin-top: 40px;" onclick="processOrder()">Complete Purchase — <span id="btn-pay-amt"></span></button>
     </div>
   </div>
 </section>
@@ -171,10 +179,10 @@
 <section id="tracking-screen" class="screen">
   <div class="container" style="text-align: center; max-width: 600px;">
     <i class="fa-solid fa-circle-check fa-4x" style="color: var(--success); margin-bottom: 20px;"></i>
-    <h1 style="font-weight: 800;">Specimen Secured</h1>
-    <p>Your geologic friend is being crated for shipment.</p>
-    <div style="background: #eee; padding: 20px; margin: 30px 0; font-family: monospace;" id="track-id"></div>
-    <button class="btn" onclick="location.reload()">Back to Home</button>
+    <h1 style="font-weight: 800;">Adoption Confirmed</h1>
+    <p>Your geologic friend has been assigned a manifest and is being crated.</p>
+    <div style="background: #f4f4f4; padding: 25px; margin: 30px 0; font-family: monospace; border-radius: 8px;" id="track-id"></div>
+    <button class="btn" onclick="location.reload()">Return to Gallery</button>
   </div>
 </section>
 
@@ -189,7 +197,7 @@
       <span>Subtotal</span>
       <span id="subtotal">$0.00</span>
     </div>
-    <button class="btn" onclick="goToCheckout()">Proceed to Checkout</button>
+    <button class="btn" onclick="goToCheckout()">Secure Checkout</button>
   </div>
 </div>
 
@@ -223,7 +231,10 @@
       <div class="product-card" onclick="openProduct(${p.id})">
         ${p.badge ? `<span class="badge badge-best">${p.badge}</span>` : ''}
         <div class="img-box"><img src="${p.img}"></div>
-        <div class="card-rating"><i class="fa-solid fa-star"></i> ${p.rating} (${p.count})</div>
+        <div class="card-rating">
+            <i class="fa-solid fa-star"></i> ${p.rating} 
+            <span style="color:#aaa; margin-left:5px;">(${p.count} reviews)</span>
+        </div>
         <h3 style="font-size: 1rem;">${p.name}</h3>
         <p style="font-weight: 700; color: var(--accent);">$${p.price}.00</p>
       </div>
@@ -243,13 +254,13 @@
     document.getElementById('detail-price').innerText = `$${p.price}.00`;
     document.getElementById('detail-desc').innerText = p.desc;
     document.getElementById('detail-img').src = p.img;
-    document.getElementById('detail-rating-header').innerHTML = `<i class="fa-solid fa-star"></i> ${p.rating} (${p.count} reviews)`;
+    document.getElementById('detail-rating-header').innerHTML = `<i class="fa-solid fa-star"></i> ${p.rating} (${p.count} collector reviews)`;
     
     document.getElementById('reviews-container').innerHTML = p.reviews.map(r => `
         <div class="review-item">
             <div style="color: var(--accent); font-size: 0.8rem;">${'<i class="fa-solid fa-star"></i>'.repeat(r.stars)}</div>
             <p style="font-weight: 600; margin: 5px 0;">"${r.comment}"</p>
-            <p style="font-size: 0.75rem; color: #888;">— ${r.user}</p>
+            <p style="font-size: 0.75rem; color: #888;">— ${r.user} (Verified Collector)</p>
         </div>
     `).join('');
 
@@ -303,12 +314,13 @@
           <div class="ch-item-img"><img src="${item.img}"></div>
           <div>${item.name} (x${item.qty})</div>
         </div>
-        <div>$${(item.price * item.qty).toFixed(2)}</div>
+        <div style="font-weight:700;">$${(item.price * item.qty).toFixed(2)}</div>
       </div>
     `).join('');
     document.getElementById('ch-sub').innerText = `$${sub.toFixed(2)}`;
     document.getElementById('ch-total').innerText = `$${(sub + 5).toFixed(2)}`;
     document.getElementById('checkout-total-top').innerText = `$${(sub + 5).toFixed(2)}`;
+    document.getElementById('btn-pay-amt').innerText = `$${(sub + 5).toFixed(2)}`;
   }
 
   function goToCheckout() {
@@ -318,8 +330,8 @@
   }
 
   function processOrder() {
-    if (!document.getElementById('ship-addr').value) return alert("Enter address");
-    document.getElementById('track-id').innerText = "TRACK-LITH-" + Math.floor(Math.random()*90000000);
+    if (!document.getElementById('ship-addr').value) return alert("Please enter a shipping address.");
+    document.getElementById('track-id').innerText = "TRACK-LITH-" + Math.floor(Math.random()*900000000 + 100000000);
     showScreen('tracking-screen');
     cart = [];
     renderCart();
@@ -328,6 +340,7 @@
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
   }
 
   document.getElementById('overlay').addEventListener('click', toggleCart);
