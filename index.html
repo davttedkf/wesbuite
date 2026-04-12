@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LITHOS | Curated Geologic Companions</title>
-  <link rel="icon" href="favicon.ico?v=17">
+  <link rel="icon" href="favicon.ico?v=18">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -25,43 +25,40 @@
     .screen { display: none; width: 100%; min-height: 100vh; background: var(--bg); }
     .screen.active { display: block; }
 
+    /* Shop Grid */
     .shop-container { display: flex; max-width: 1400px; margin: 0 auto; padding: 60px 5%; gap: 60px; }
     .sidebar { width: 220px; flex-shrink: 0; position: sticky; top: 120px; height: fit-content; }
     .sidebar h4 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; color: #aaa; }
     .sidebar-list { list-style: none; margin-bottom: 40px; }
     .sidebar-list li { padding: 10px 0; font-size: 0.9rem; color: #666; cursor: pointer; transition: 0.2s; }
+    .sidebar-list li:hover { color: var(--primary); }
     .sidebar-list li.active { color: var(--primary); font-weight: 700; border-left: 2px solid var(--primary); padding-left: 15px; margin-left: -17px; }
 
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
     .product-card { border: 2px solid var(--border); border-radius: 20px; padding: 20px; cursor: pointer; transition: 0.4s; position: relative; background: #fff; }
-    .product-card:hover { border-color: var(--accent); transform: translateY(-8px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-    
+    .product-card:hover { border-color: var(--accent); transform: translateY(-8px); }
     .img-box { width: 100%; aspect-ratio: 1/1; background: #fafafa; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .img-box img { width: 75%; height: 75%; object-fit: contain; }
 
-    /* DETAIL PAGE */
+    /* Detail Page */
     .detail-container { max-width: 1200px; margin: 0 auto; padding: 60px 5%; }
     .detail-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px; align-items: start; }
     .detail-img-wrap { background: #fcfcfc; padding: 60px; border-radius: 30px; text-align: center; border: 1px solid #f0f0f0; }
     .detail-img-wrap img { width: 100%; max-height: 500px; object-fit: contain; }
 
-    /* CHECKOUT GUI (Per image_7.png) */
+    /* Checkout Container */
     .checkout-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
     .checkout-left { background: var(--light-bg); padding: 60px 10%; border-right: 1px solid var(--border); }
     .checkout-right { padding: 60px 10%; background: #fff; }
 
-    .section-label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #999; margin-bottom: 12px; letter-spacing: 1px; }
-    input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 1rem; color: var(--primary); transition: border-color 0.2s; }
-    input:focus { outline: none; border-color: var(--accent); }
-
-    /* The Image-matched Card Details Container */
-    .payment-container { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    .card-num-input { border: none; border-bottom: 1px solid var(--border); border-radius: 0; }
+    .payment-container { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 10px; }
+    .card-num-input { border: none; border-bottom: 1px solid var(--border); border-radius: 0; width: 100%; padding: 16px; font-size: 1rem; }
     .expiry-cvc-row { display: flex; align-items: center; background: #fff; }
-    .sub-input { border: none; border-radius: 0; padding: 16px; width: 65px; text-align: center; }
-    .cvc-input { border: none; border-radius: 0; flex: 1; text-align: right; padding-right: 20px; }
+    .sub-input { border: none; border-radius: 0; padding: 16px; width: 65px; text-align: center; font-size: 1rem; }
+    .cvc-input { border: none; border-radius: 0; flex: 1; text-align: right; padding: 16px 20px; font-size: 1rem; }
     .divider { width: 1px; height: 30px; background: var(--border); }
 
+    input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; }
     .btn { width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; }
     .btn:hover { background: #333; }
 
@@ -69,8 +66,7 @@
     .drawer.active { right: 0; }
 
     @media (max-width: 900px) {
-      .checkout-layout { grid-template-columns: 1fr; }
-      .shop-container { flex-direction: column; }
+      .checkout-layout, .detail-grid, .shop-container { grid-template-columns: 1fr; flex-direction: column; }
       .drawer { width: 100%; right: -100%; }
     }
   </style>
@@ -112,6 +108,29 @@
   </div>
 </section>
 
+<section id="detail-screen" class="screen">
+  <div class="detail-container">
+    <div style="cursor: pointer; margin-bottom: 40px; font-weight: 700; font-size: 0.7rem; color: #aaa;" onclick="showScreen('shop-screen')">BACK</div>
+    <div class="detail-grid">
+      <div class="detail-img-wrap"><img id="detail-img" src=""></div>
+      <div>
+        <h1 id="detail-title" style="font-size: 3.5rem; font-weight: 800; margin-bottom: 10px;"></h1>
+        <div style="margin-bottom: 30px; display: flex; align-items: center;">
+            <span id="detail-rating-header" style="color: var(--accent); font-weight: 600;"></span>
+            <span id="view-reviews-btn" onclick="toggleReviews()" style="font-size:0.8rem; color:#aaa; margin-left:10px; cursor:pointer; text-decoration:underline;">View Reviews</span>
+        </div>
+        <p id="detail-price" style="font-size: 2rem; margin-bottom: 30px;"></p>
+        <p id="detail-desc" style="line-height: 1.8; color: #666; margin-bottom: 40px;"></p>
+        <button class="btn" onclick="addCurrentToCart()">Add to Bag</button>
+      </div>
+    </div>
+    <div id="reviews-section" style="display:none; margin-top:60px; border-top:1px solid var(--border); padding-top:40px;">
+        <h3 id="review-title-count"></h3>
+        <div id="reviews-container" style="max-height: 400px; overflow-y: auto; display: grid; gap: 20px; margin-top:20px;"></div>
+    </div>
+  </div>
+</section>
+
 <section id="checkout-screen" class="screen">
   <div class="checkout-layout">
     <div class="checkout-left">
@@ -120,47 +139,35 @@
       <div id="checkout-items-summary" style="margin-bottom: 30px;"></div>
       <div style="border-top: 1px solid #ddd; padding-top: 20px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">Subtotal <span id="ch-sub"></span></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">Shipping <span id="ch-ship">$5.00</span></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">Shipping <span>$5.00</span></div>
         <div style="display:flex; justify-content:space-between; margin-bottom:20px; color:#888; font-size:0.9rem;">Estimated Tax (6%) <span id="ch-tax"></span></div>
         <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.5rem;">Total <span id="ch-total"></span></div>
       </div>
     </div>
-
     <div class="checkout-right">
         <h4 style="margin-bottom:40px; letter-spacing:1px;">SECURE CHECKOUT</h4>
-        
-        <div style="margin-bottom: 30px;">
-            <span class="section-label">Shipping Address</span>
-            <input type="text" id="ship-name" placeholder="Full Name" style="margin-bottom: 10px;">
-            <input type="text" id="ship-addr" placeholder="Street Address">
-        </div>
-
-        <div style="margin-bottom: 30px;">
-            <span class="section-label">Card Details</span>
-            <div class="payment-container">
-                <input type="text" id="card-num" class="card-num-input" placeholder="Card Number" maxlength="19">
-                
-                <div class="expiry-cvc-row">
-                    <input type="text" id="exp-mm" class="sub-input" placeholder="MM" maxlength="2">
-                    <span style="color: #ddd;">/</span>
-                    <input type="text" id="exp-yy" class="sub-input" placeholder="YY" maxlength="2">
-                    <div class="divider"></div>
-                    <input type="text" id="cvc" class="cvc-input" placeholder="CVC" maxlength="3">
-                </div>
+        <input type="text" id="ship-name" placeholder="Full Name">
+        <input type="text" id="ship-addr" placeholder="Street Address" style="margin-top:10px;">
+        <div class="payment-container" style="margin-top:20px;">
+            <input type="text" id="card-num" class="card-num-input" placeholder="Card Number" maxlength="19">
+            <div class="expiry-cvc-row">
+                <input type="text" id="exp-mm" class="sub-input" placeholder="MM" maxlength="2">
+                <span style="color: #ddd;">/</span>
+                <input type="text" id="exp-yy" class="sub-input" placeholder="YY" maxlength="2">
+                <div class="divider"></div>
+                <input type="text" id="cvc" class="cvc-input" placeholder="CVC" maxlength="3">
             </div>
         </div>
-
-        <button class="btn" onclick="validateAndProcess()">Pay and Adopt</button>
+        <button class="btn" style="margin-top:30px;" onclick="validateAndProcess()">Complete Adoption</button>
     </div>
   </div>
 </section>
 
 <section id="tracking-screen" class="screen">
-    <div class="container" style="text-align: center; padding-top: 150px; max-width:600px; margin:0 auto;">
-      <i class="fa-solid fa-circle-check fa-5x" style="color: var(--success); margin-bottom: 30px;"></i>
-      <h1 style="font-weight: 800;">ADOPTION CONFIRMED.</h1>
-      <div id="track-id" style="margin: 40px 0; font-family: monospace; font-size: 1.4rem; background: #f8f8f8; padding: 25px; border: 1px dashed #ccc;"></div>
-      <button class="btn" style="width: 250px;" onclick="location.reload()">HOME</button>
+    <div class="container" style="text-align: center; padding-top: 150px;">
+      <h1>ADOPTION CONFIRMED.</h1>
+      <div id="track-id" style="margin: 40px 0; font-family: monospace; font-size: 1.2rem; background: #f8f8f8; padding: 20px;"></div>
+      <button class="btn" style="width: 200px;" onclick="location.reload()">HOME</button>
     </div>
 </section>
 
@@ -181,24 +188,59 @@
   let activeProduct = null;
 
   const products = [
-    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', rating: 4.9, count: 128 },
-    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', rating: 4.7, count: 42 },
-    { id: 3, type: 'river', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', rating: 4.8, count: 85 },
-    { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', rating: 4.6, count: 31 },
-    { id: 5, type: 'special', name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', rating: 5.0, count: 18 },
-    { id: 6, type: 'fun', name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', rating: 4.9, count: 212 },
-    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', rating: 4.8, count: 56 }
+    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', rating: 4.9, count: 128, desc: 'A dense igneous masterpiece forged in fire. Patient and loyal.' },
+    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', rating: 4.7, count: 42, desc: 'Layered metamorphic rock. Excellent for deep contemplation.' },
+    { id: 3, type: 'river', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', rating: 4.8, count: 85, desc: 'Centuries of Alpine water have smoothed this friend to a silk finish.' },
+    { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', rating: 4.6, count: 31, desc: 'Volcanic glass. Shiny, elegant, and sophisticated.' },
+    { id: 5, type: 'special', name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', rating: 5.0, count: 18, desc: 'A set of four specimens of varying sizes. A full household.' },
+    { id: 6, type: 'fun', name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', rating: 4.9, count: 212, desc: 'Charismatic specimen featuring a knit sweater and googly eyes.' },
+    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', rating: 4.8, count: 56, desc: 'Refined limestone with distinct veining. Pure class.' }
   ];
 
   function renderGrid(items = products) {
     document.getElementById('product-grid').innerHTML = items.map(p => `
       <div class="product-card" onclick="openProduct(${p.id})">
         ${p.badge ? `<span class="badge" style="position:absolute; top:15px; left:15px; padding:5px 12px; border-radius:50px; font-size:0.6rem; font-weight:800; background:#121212; color:#fff;">${p.badge}</span>` : ''}
-        <div class="img-box"><img src="${p.img}"></div>
+        <div class="img-box"><img src="${p.img}" onerror="this.src='https://via.placeholder.com/300?text=Specimen'"></div>
         <div style="font-size:0.75rem; color:var(--accent); margin-bottom:5px;"><i class="fa-solid fa-star"></i> ${p.rating} (${p.count})</div>
         <h3 style="font-size: 0.9rem; letter-spacing: 2px; text-transform:uppercase;">${p.name}</h3>
         <p style="color:#aaa;">$${p.price}.00</p>
       </div>`).join('');
+  }
+
+  function openProduct(id) {
+    const p = products.find(item => item.id === id);
+    activeProduct = p;
+
+    // Fill in Detail Screen Elements
+    document.getElementById('detail-title').innerText = p.name;
+    document.getElementById('detail-price').innerText = `$${p.price}.00`;
+    document.getElementById('detail-desc').innerText = p.desc;
+    document.getElementById('detail-img').src = p.img;
+    document.getElementById('detail-rating-header').innerText = `★ ${p.rating} / 5.0`;
+    document.getElementById('view-reviews-btn').innerText = `View ${p.count} Reviews`;
+    document.getElementById('review-title-count').innerText = `${p.count} Collector Reviews`;
+    document.getElementById('reviews-section').style.display = 'none';
+
+    // Build Random Reviews
+    let revs = "";
+    for(let i=0; i<p.count; i++) {
+        revs += `<div style="border-bottom:1px solid #f0f0f0; padding-bottom:15px;"><p style="font-weight:600;">"Arrived safely. Perfectly stoic."</p><p style="font-size:0.7rem; color:#aaa; margin-top:5px;">Verified Collector</p></div>`;
+    }
+    document.getElementById('reviews-container').innerHTML = revs;
+
+    showScreen('detail-screen');
+  }
+
+  function toggleReviews() {
+    const s = document.getElementById('reviews-section');
+    s.style.display = s.style.display === 'block' ? 'none' : 'block';
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
   }
 
   function toggleCart() {
@@ -214,76 +256,30 @@
   function renderCart() {
     let sub = cart.reduce((a, b) => a + b.price, 0);
     let tax = sub * 0.06;
-    let total = sub + 5 + tax;
-
     document.getElementById('cart-content').innerHTML = cart.map(item => `
-      <div style="display:flex; gap:15px; margin-bottom:20px; align-items:center;">
-          <div style="width:60px; height:60px; background:#f4f4f4; border-radius:8px; display:flex; align-items:center; justify-content:center;"><img src="${item.img}" style="width:80%; height:80%; object-fit:contain;"></div>
-          <div style="flex:1;"><div style="font-weight:700; font-size:0.8rem;">${item.name}</div><div style="color:var(--accent); font-size:0.8rem;">$${item.price}.00</div></div>
+      <div style="display:flex; gap:15px; margin-bottom:20px;">
+          <div style="width:60px; height:60px; background:#f4f4f4; border-radius:8px;"><img src="${item.img}" style="width:100%; height:100%; object-fit:contain;"></div>
+          <div><div style="font-weight:700;">${item.name}</div><div style="color:var(--accent);">$${item.price}.00</div></div>
       </div>`).join('');
-    
     document.getElementById('badge-count').innerText = cart.length;
     document.getElementById('subtotal').innerText = `$${sub.toFixed(2)}`;
     document.getElementById('ch-sub').innerText = `$${sub.toFixed(2)}`;
     document.getElementById('ch-tax').innerText = `$${tax.toFixed(2)}`;
-    document.getElementById('ch-total').innerText = `$${total.toFixed(2)}`;
-    
-    document.getElementById('checkout-items-summary').innerHTML = cart.map(item => `<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>${item.name}</span><span style="font-weight:700;">$${item.price}.00</span></div>`).join('');
-  }
-
-  function validateAndProcess() {
-    if(!document.getElementById('ship-addr').value) return alert("Enter address");
-    
-    const mm = parseInt(document.getElementById('exp-mm').value);
-    const yy = parseInt("20" + document.getElementById('exp-yy').value);
-    const now = new Date();
-    const expiry = new Date(yy, mm - 1, 1);
-
-    if (expiry < now) {
-        document.getElementById('loader').style.display = 'flex';
-        document.getElementById('loader-text').innerText = "Transaction Failed: Date in past";
-        document.getElementById('loader-text').style.color = "var(--error)";
-        setTimeout(() => document.getElementById('loader').style.display = 'none', 3000);
-        return;
-    }
-
-    document.getElementById('loader').style.display = 'flex';
-    document.getElementById('loader-text').innerText = "Processing Geologic Transfer...";
-    document.getElementById('loader-text').style.color = "var(--primary)";
-    
-    setTimeout(() => {
-        document.getElementById('loader').style.display = 'none';
-        document.getElementById('track-id').innerText = "LITH-" + Math.floor(Math.random()*90000000);
-        showScreen('tracking-screen');
-    }, 3000);
-  }
-
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo(0,0);
+    document.getElementById('ch-total').innerText = `$${(sub + 5 + tax).toFixed(2)}`;
+    document.getElementById('checkout-items-summary').innerHTML = cart.map(item => `<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>${item.name}</span><span>$${item.price}.00</span></div>`).join('');
   }
 
   function goToCheckout() { toggleCart(); showScreen('checkout-screen'); }
 
-  // --- AUTO JUMP & CARD MASKING REMOVAL ---
-  document.getElementById('exp-mm').addEventListener('input', function() {
-      if(this.value.length === 2) document.getElementById('exp-yy').focus();
-  });
-
-  document.getElementById('card-num').addEventListener('input', function() {
-    let val = this.value.replace(/\D/g, '').substring(0, 16);
-    let out = "";
-    for(let i=0; i < val.length; i++) {
-        if(i > 0 && i % 4 === 0) out += " ";
-        out += val[i]; // SHOW ALL DIGITS
-    }
-    this.value = out;
-  });
-
-  function openProduct(id) {
-    activeProduct = products.find(p => p.id === id);
-    showScreen('detail-screen');
+  function validateAndProcess() {
+    if(!document.getElementById('ship-addr').value) return alert("Enter address");
+    document.getElementById('loader').style.display = 'flex';
+    setTimeout(() => {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('track-id').innerText = "LITH-" + Math.floor(Math.random()*90000000);
+        showScreen('tracking-screen');
+        cart = []; renderCart();
+    }, 2500);
   }
 
   function filterItems(type, el) {
@@ -291,6 +287,17 @@
     el.classList.add('active');
     renderGrid(type === 'all' ? products : products.filter(p => p.type === type));
   }
+
+  document.getElementById('exp-mm').addEventListener('input', function() { if(this.value.length === 2) document.getElementById('exp-yy').focus(); });
+  document.getElementById('card-num').addEventListener('input', function() {
+    let val = this.value.replace(/\D/g, '').substring(0, 16);
+    let out = "";
+    for(let i=0; i < val.length; i++) {
+        if(i > 0 && i % 4 === 0) out += " ";
+        out += val[i];
+    }
+    this.value = out;
+  });
 
   renderGrid();
 </script>
