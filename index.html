@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LITHOS | Curated Geologic Companions</title>
-  <link rel="icon" href="favicon.ico?v=7">
+  <link rel="icon" href="favicon.ico?v=8">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -37,6 +37,7 @@
     .sidebar h4 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; color: #aaa; }
     .sidebar-list { list-style: none; margin-bottom: 40px; }
     .sidebar-list li { padding: 10px 0; font-size: 0.9rem; color: #666; cursor: pointer; transition: 0.2s; }
+    .sidebar-list li:hover { color: var(--primary); }
     .sidebar-list li.active { color: var(--primary); font-weight: 700; border-left: 2px solid var(--primary); padding-left: 15px; margin-left: -17px; }
 
     .main-content { flex: 1; }
@@ -49,7 +50,7 @@
     .card-rating { font-size: 0.75rem; color: var(--accent); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
     .badge { position: absolute; top: 15px; left: 15px; padding: 5px 12px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; z-index: 10; }
     .badge-best { background: #121212; color: #fff; }
-    .badge-fun { background: #ffeb3b; color: #000; }
+    .badge-bundle { background: #e2d1c3; color: #5a4a3a; }
 
     .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
     .detail-img-wrap { background: #f9f9f9; padding: 60px; border-radius: 20px; text-align: center; }
@@ -81,7 +82,7 @@
 </head>
 <body>
 
-<div id="overlay"></div>
+<div id="overlay" onclick="toggleCart()"></div>
 
 <nav>
   <div class="logo" onclick="showScreen('shop-screen')">LITHOS</div>
@@ -100,6 +101,7 @@
       <ul class="sidebar-list">
         <li class="active" onclick="filterItems('all', this)">All Friends</li>
         <li onclick="filterItems('volcanic', this)">Volcanic</li>
+        <li onclick="filterItems('metamorphic', this)">Metamorphic</li>
         <li onclick="filterItems('special', this)">Special Packs</li>
         <li onclick="filterItems('fun', this)">Fun & Games</li>
       </ul>
@@ -191,7 +193,8 @@
     { id: 3, type: 'river', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', rating: 4.8, count: 85, desc: 'Smoothed by centuries of river water. The perfect pocket-sized companion.' },
     { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'Sharp', rating: 4.6, count: 31, desc: 'Volcanic glass. Shiny, elegant, and sophisticated. Handle with care.' },
     { id: 5, type: 'special', name: 'Family Rock Pack', price: 95, img: 'family.png', badge: 'Bundle', rating: 5.0, count: 18, desc: 'A collection of 4 rocks of varying sizes. Perfect for building a rocky household.' },
-    { id: 6, type: 'fun', name: 'Adopt-a-Rock', price: 42, img: 'adopt.png', badge: 'Fan Favorite', rating: 4.9, count: 212, desc: 'A hand-selected pet rock wearing a custom knit outfit and googly eyes. Ready for love.' }
+    { id: 6, type: 'fun', name: 'Adopt-a-Rock', price: 42, img: 'adopt.png', badge: 'Fan Favorite', rating: 4.9, count: 212, desc: 'A hand-selected pet rock wearing a custom knit outfit and googly eyes. Ready for love.' },
+    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'Premium', rating: 4.8, count: 56, desc: 'Polished metamorphic limestone with stunning natural veins. A truly luxurious companion.' }
   ];
 
   const firstNames = ["James", "Sarah", "Michael", "Emma", "David", "Olivia", "Robert", "Sophia", "Will", "Luna"];
@@ -201,7 +204,8 @@
     'volcanic': ["So dense!", "You can feel the heat of the earth.", "Stunning dark color."],
     'special': ["Perfect for the kids.", "The value is incredible.", "A whole family of friends!"],
     'fun': ["The sweater is so cute!", "Googly eyes make it so much better.", "I named mine Rocky."],
-    'river': ["So smooth to the touch.", "Great for stress relief.", "Perfect skipping stone shape."]
+    'river': ["So smooth to the touch.", "Great for stress relief.", "Perfect skipping stone shape."],
+    'metamorphic': ["The veins are beautiful.", "Looks so elegant on my desk.", "Very refined presence."]
   };
 
   function generateReviews(count, type) {
