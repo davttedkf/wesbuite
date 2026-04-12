@@ -15,15 +15,18 @@
     #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: 0.3s; z-index: 1500; }
     #overlay.active { opacity: 1; visibility: visible; }
 
+    /* Navigation */
     nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
     .logo { font-weight: 800; letter-spacing: 4px; text-transform: uppercase; cursor: pointer; font-size: 1.2rem; }
     .nav-icons { display: flex; gap: 20px; align-items: center; font-size: 1.1rem; }
 
+    /* Screen Transitions */
     .container { max-width: 1400px; margin: 0 auto; padding: 40px 5%; }
     .screen { display: none; animation: fadeIn 0.4s ease forwards; }
     .screen.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* Buttons */
     .btn { 
       width: 100%; padding: 20px; background: var(--primary); color: #fff; border: none; border-radius: 8px; 
       font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; font-size: 0.8rem; 
@@ -32,6 +35,7 @@
     .btn:hover { transform: scale(1.02); background: #000; }
     .btn:active { transform: scale(0.98); }
 
+    /* Shop Layout */
     .shop-layout { display: flex; gap: 50px; }
     .sidebar { width: 200px; flex-shrink: 0; position: sticky; top: 100px; height: fit-content; }
     .sidebar h4 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; color: #aaa; }
@@ -40,38 +44,39 @@
     .sidebar-list li:hover { color: var(--primary); }
     .sidebar-list li.active { color: var(--primary); font-weight: 700; border-left: 2px solid var(--primary); padding-left: 15px; margin-left: -17px; }
 
+    /* Grid */
     .main-content { flex: 1; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
     .product-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: 0.3s; position: relative; }
     .product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.06); }
     .img-box { width: 100%; aspect-ratio: 1; background: #f9f9f9; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    .img-box img { width: 85%; }
+    .img-box img { width: 85%; height: 85%; object-fit: contain; }
 
-    .card-rating { font-size: 0.75rem; color: var(--accent); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
-    .badge { position: absolute; top: 15px; left: 15px; padding: 5px 12px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; z-index: 10; }
-    .badge-best { background: #121212; color: #fff; }
-    .badge-bundle { background: #e2d1c3; color: #5a4a3a; }
-
+    /* Detail Page */
     .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
     .detail-img-wrap { background: #f9f9f9; padding: 60px; border-radius: 20px; text-align: center; }
-    .detail-img-wrap img { width: 100%; max-width: 400px; }
+    .detail-img-wrap img { width: 100%; max-width: 400px; height: auto; object-fit: contain; }
 
-    .review-item { padding: 20px 0; border-bottom: 1px solid #f0f0f0; }
+    /* Reviews */
     .review-scroll { max-height: 500px; overflow-y: auto; padding-right: 15px; border-top: 1px solid var(--border); }
+    .review-item { padding: 20px 0; border-bottom: 1px solid #f0f0f0; }
 
+    /* Split Checkout */
     .checkout-layout { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--border); }
     .checkout-left { background: var(--light-bg); padding: 80px 5%; min-height: calc(100vh - 80px); display: flex; flex-direction: column; }
     .checkout-right { padding: 80px 5%; background: white; }
-    .ch-item { display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; }
-    .ch-item-img { width: 50px; height: 50px; background: #eee; border-radius: 4px; overflow: hidden; }
-    .ch-item-img img { width: 100%; height: 100%; object-fit: cover; }
     
-    input { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; font-family: inherit; }
-
+    /* FIX: Cart Drawer UI */
     .drawer { position: fixed; top: 0; right: -450px; width: 450px; height: 100%; background: #fff; z-index: 2000; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; box-shadow: -20px 0 50px rgba(0,0,0,0.1); }
     .drawer.active { right: 0; }
     .drawer-header { padding: 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-weight: 800; }
     .drawer-content { flex: 1; padding: 30px; overflow-y: auto; }
+
+    .cart-item { display: flex; gap: 20px; margin-bottom: 30px; align-items: center; padding-bottom: 20px; border-bottom: 1px solid #f9f9f9; }
+    .cart-item-img { width: 70px; height: 70px; min-width: 70px; background: #f4f4f4; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .cart-item-img img { width: 100%; height: 100%; object-fit: contain; padding: 5px; } /* Locked size */
+
+    input { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; font-family: inherit; }
 
     @media (max-width: 900px) {
       .shop-layout, .detail-grid, .checkout-layout { grid-template-columns: 1fr; flex-direction: column; }
@@ -151,10 +156,8 @@
       <div style="background: #000; color: #fff; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px; font-weight: bold; cursor: pointer;"> Pay</div>
       <input type="text" id="ship-name" placeholder="Full Name">
       <input type="text" id="ship-addr" placeholder="Street Address">
-      <div style="position: relative;">
-        <input type="text" id="card-display" placeholder="Card Number (•••• •••• •••• 1234)" maxlength="19">
-      </div>
-      <button class="btn" style="margin-top: 40px;" onclick="processOrder()">Complete Purchase — <span id="btn-pay-amt"></span></button>
+      <input type="text" id="card-display" placeholder="Card Number (•••• •••• •••• 1234)" maxlength="19">
+      <button class="btn" style="margin-top: 40px;" onclick="processOrder()">Complete Adoption — <span id="btn-pay-amt"></span></button>
     </div>
   </div>
 </section>
@@ -197,30 +200,14 @@
     { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'Premium', rating: 4.8, count: 56, desc: 'Polished metamorphic limestone with stunning natural veins. A truly luxurious companion.' }
   ];
 
-  const firstNames = ["James", "Sarah", "Michael", "Emma", "David", "Olivia", "Robert", "Sophia", "Will", "Luna"];
-  const generalComments = ["Arrived quickly.", "My favorite purchase this year.", "Very happy with this friend."];
-  
-  const traitComments = {
-    'volcanic': ["So dense!", "You can feel the heat of the earth.", "Stunning dark color."],
-    'special': ["Perfect for the kids.", "The value is incredible.", "A whole family of friends!"],
-    'fun': ["The sweater is so cute!", "Googly eyes make it so much better.", "I named mine Rocky."],
-    'river': ["So smooth to the touch.", "Great for stress relief.", "Perfect skipping stone shape."],
-    'metamorphic': ["The veins are beautiful.", "Looks so elegant on my desk.", "Very refined presence."]
-  };
-
   function generateReviews(count, type) {
     let html = "";
-    const specificTraits = traitComments[type] || ["Very solid choice."];
+    const names = ["James", "Sarah", "Michael", "Emma", "David", "Olivia"];
+    const quotes = ["Arrived quickly.", "My favorite friend.", "So solid.", "Perfect for my desk."];
     for(let i=0; i<count; i++) {
-        const name = firstNames[Math.floor(Math.random() * firstNames.length)];
-        const trait = specificTraits[Math.floor(Math.random() * specificTraits.length)];
-        const gen = generalComments[Math.floor(Math.random() * generalComments.length)];
-        const stars = Math.random() > 0.1 ? 5 : 4;
-        html += `<div class="review-item">
-                <div style="color: var(--accent); font-size: 0.8rem;">${'<i class="fa-solid fa-star"></i>'.repeat(stars)}</div>
-                <p style="font-weight: 600; margin: 5px 0;">"${trait} ${gen}"</p>
-                <p style="font-size: 0.75rem; color: #888;">— ${name} ${String.fromCharCode(65 + i % 26)}.</p>
-            </div>`;
+        const name = names[Math.floor(Math.random() * names.length)];
+        const quote = quotes[Math.floor(Math.random() * quotes.length)];
+        html += `<div class="review-item"><p style="font-weight: 600;">"${quote}"</p><p style="font-size: 0.75rem; color: #888;">— ${name} ${String.fromCharCode(65 + i % 26)}.</p></div>`;
     }
     return html;
   }
@@ -230,12 +217,11 @@
     grid.innerHTML = items.map(p => `
       <div class="product-card" onclick="openProduct(${p.id})">
         ${p.badge ? `<span class="badge ${p.badge === 'Bundle' ? 'badge-bundle' : 'badge-best'}">${p.badge}</span>` : ''}
-        <div class="img-box"><img src="${p.img}"></div>
-        <div class="card-rating"><i class="fa-solid fa-star"></i> ${p.rating} <span style="color:#aaa; margin-left:5px;">(${p.count})</span></div>
+        <div class="img-box"><img src="${p.img}" onerror="this.src='https://via.placeholder.com/300?text=Rock'"></div>
+        <div class="card-rating"><i class="fa-solid fa-star"></i> ${p.rating} <span>(${p.count})</span></div>
         <h3 style="font-size: 1rem;">${p.name}</h3>
         <p style="font-weight: 700; color: var(--accent);">$${p.price}.00</p>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
   function openProduct(id) {
@@ -249,12 +235,6 @@
     document.getElementById('review-count-title').innerText = `${p.count} Verified Experiences`;
     document.getElementById('reviews-container').innerHTML = generateReviews(p.count, p.type);
     showScreen('detail-screen');
-  }
-
-  function filterItems(type, el) {
-    document.querySelectorAll('.sidebar-list li').forEach(li => li.classList.remove('active'));
-    el.classList.add('active');
-    renderGrid(type === 'all' ? products : products.filter(p => p.type === type));
   }
 
   function toggleCart() {
@@ -280,11 +260,11 @@
     content.innerHTML = cart.map((item, idx) => {
       sub += item.price * item.qty;
       return `<div class="cart-item">
-          <div class="cart-item-img"><img src="${item.img}"></div>
+          <div class="cart-item-img"><img src="${item.img}" onerror="this.src='https://via.placeholder.com/100?text=Rock'"></div>
           <div style="flex:1;">
-            <div style="font-weight: 700;">${item.name}</div>
-            <div>$${item.price}.00</div>
-            <div style="margin-top:5px; display: flex; align-items: center; gap: 10px;">
+            <div style="font-weight: 700; font-size: 0.9rem;">${item.name}</div>
+            <div style="font-size: 0.8rem; color: var(--accent);">$${item.price}.00</div>
+            <div style="margin-top:5px; display: flex; align-items: center; gap: 10px; font-size: 0.8rem;">
               <span style="cursor:pointer" onclick="updateQty(${idx}, -1)">-</span>
               <span>${item.qty}</span>
               <span style="cursor:pointer" onclick="updateQty(${idx}, 1)">+</span>
@@ -294,30 +274,21 @@
     }).join('');
     document.getElementById('badge-count').innerText = cart.reduce((a, b) => a + b.qty, 0);
     document.getElementById('subtotal').innerText = `$${sub}.00`;
-    
     document.getElementById('ch-sub').innerText = `$${sub.toFixed(2)}`;
     document.getElementById('ch-total').innerText = `$${(sub + 5).toFixed(2)}`;
     document.getElementById('checkout-total-top').innerText = `$${(sub + 5).toFixed(2)}`;
     document.getElementById('btn-pay-amt').innerText = `$${(sub + 5).toFixed(2)}`;
-
-    document.getElementById('checkout-items-summary').innerHTML = cart.map(item => `
-      <div class="ch-item">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <div class="ch-item-img"><img src="${item.img}"></div>
-          <div>${item.name} (x${item.qty})</div>
-        </div>
-        <div style="font-weight:700;">$${(item.price * item.qty).toFixed(2)}</div>
-      </div>`).join('');
+    document.getElementById('checkout-items-summary').innerHTML = cart.map(item => `<div class="ch-item"><div>${item.name} (x${item.qty})</div><div>$${(item.price * item.qty).toFixed(2)}</div></div>`).join('');
   }
 
   function goToCheckout() {
-    if (cart.length === 0) return alert("Bag is empty");
+    if (cart.length === 0) return;
     toggleCart(); showScreen('checkout-screen');
   }
 
   function processOrder() {
     if (!document.getElementById('ship-addr').value) return alert("Enter address");
-    document.getElementById('track-id').innerText = "TRACK-LITH-" + Math.floor(Math.random()*900000000 + 100000000);
+    document.getElementById('track-id').innerText = "TRACK-LITH-" + Math.floor(Math.random()*90000000);
     showScreen('tracking-screen');
     cart = []; renderCart();
   }
@@ -326,6 +297,12 @@
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo(0,0);
+  }
+
+  function filterItems(type, el) {
+    document.querySelectorAll('.sidebar-list li').forEach(li => li.classList.remove('active'));
+    el.classList.add('active');
+    renderGrid(type === 'all' ? products : products.filter(p => p.type === type));
   }
 
   document.getElementById('card-display').addEventListener('input', (e) => {
@@ -338,9 +315,7 @@
     e.target.value = masked;
   });
 
-  document.getElementById('overlay').addEventListener('click', toggleCart);
   renderGrid(products);
 </script>
-
 </body>
 </html>
