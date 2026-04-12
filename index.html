@@ -3,275 +3,305 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LITHOS | Curated Geologic Specimens</title>
+  <title>LITHOS | Professional Geologic Goods</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #121212;
-      --accent: #8b7d6b;
-      --bg: #fdfdfb;
-      --border: #e8e8e1;
+      --accent: #a38a6d;
+      --bg: #f8f8f6;
       --white: #ffffff;
+      --border: #e2e2df;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background: var(--bg);
-      color: var(--primary);
-      overflow-x: hidden;
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    /* Shift body when cart is open (Desktop effect) */
-    body.cart-open { transform: translateX(-350px); }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--primary); transition: transform 0.4s ease; overflow-x: hidden; }
+    
+    /* Content Shift on Cart Open (Desktop) */
+    body.cart-active { transform: translateX(-400px); }
+    @media (max-width: 768px) { body.cart-active { transform: none; } }
 
     /* --- Navigation --- */
     nav {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 1rem 5%; background: var(--white);
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 100;
+      padding: 1.2rem 5%; background: var(--white); border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 1000;
     }
-
-    .logo { font-weight: 700; letter-spacing: 6px; text-transform: uppercase; font-size: 1.2rem; cursor: pointer; }
-
-    .nav-tools { display: flex; gap: 20px; align-items: center; position: relative; cursor: pointer; }
-    
-    .cart-badge {
-      position: absolute; top: -8px; right: -10px;
+    .logo { font-weight: 800; letter-spacing: 5px; text-transform: uppercase; cursor: pointer; }
+    .cart-trigger { position: relative; cursor: pointer; font-size: 1.2rem; }
+    .badge {
+      position: absolute; top: -10px; right: -12px;
       background: var(--primary); color: white;
       font-size: 10px; width: 18px; height: 18px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 50%;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
     }
 
     /* --- Product Grid --- */
-    .hero { text-align: center; padding: 60px 20px; }
-    .hero h1 { font-weight: 300; font-size: 2.5rem; letter-spacing: -1px; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+    
+    .product-card { background: white; border: 1px solid var(--border); padding: 20px; transition: 0.3s; }
+    .product-card:hover { border-color: var(--accent); }
+    .img-box { 
+      background: #f0f0ee; aspect-ratio: 1; display: flex; 
+      align-items: center; justify-content: center; font-size: 4rem; color: #ccc; margin-bottom: 20px; 
+    }
+    .product-card h3 { font-size: 1rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .price { font-weight: 600; color: var(--accent); margin-bottom: 20px; }
 
-    .catalog {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px; padding: 0 5% 60px;
-      max-width: 1400px; margin: 0 auto;
+    /* --- Buttons --- */
+    .btn {
+      width: 100%; padding: 15px; background: var(--primary); color: white;
+      border: none; cursor: pointer; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1px; transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.9; }
+
+    /* --- Slide-out Cart Drawer --- */
+    #drawer {
+      position: fixed; top: 0; right: -400px; width: 400px; height: 100%;
+      background: white; z-index: 2000; transition: right 0.4s ease;
+      display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.05);
+    }
+    #drawer.active { right: 0; }
+    @media (max-width: 400px) { #drawer { width: 100%; right: -100%; } }
+
+    .drawer-header { padding: 25px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .drawer-content { flex: 1; padding: 25px; overflow-y: auto; }
+    
+    /* Cart Item UI */
+    .cart-item { display: flex; gap: 15px; margin-bottom: 25px; align-items: flex-start; }
+    .item-img { width: 70px; height: 70px; background: #eee; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .item-info { flex: 1; }
+    .qty-controls { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
+    .qty-btn { cursor: pointer; padding: 5px; color: var(--accent); }
+    .remove-btn { font-size: 0.7rem; color: #999; cursor: pointer; text-decoration: underline; margin-top: 5px; display: inline-block; }
+
+    .drawer-footer { padding: 25px; border-top: 1px solid var(--border); }
+
+    /* --- Screens --- */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* --- Payment UI --- */
+    .payment-option {
+      border: 1px solid var(--border); padding: 15px; border-radius: 8px;
+      margin-bottom: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer;
+    }
+    .payment-option.selected { border-color: var(--primary); background: #f9f9f9; }
+
+    .card-mask {
+      background: #222; color: white; padding: 20px; border-radius: 12px;
+      margin: 20px 0; font-family: monospace; position: relative;
     }
 
-    .product-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      padding: 15px; border-radius: 2px;
-      display: flex; flex-direction: column;
-    }
-
-    .img-placeholder {
-      width: 100%; aspect-ratio: 1/1;
-      background: #f1f1ee;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 3rem; color: var(--accent);
-      margin-bottom: 15px;
-    }
-
-    .product-info h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
-    .price { font-weight: 700; margin: 10px 0; font-size: 1.1rem; }
-
-    .btn-add {
-      width: 100%; padding: 12px;
-      background: var(--primary); color: white;
-      border: none; cursor: pointer; font-size: 0.8rem;
-      font-weight: 700; text-transform: uppercase;
-      transition: background 0.3s;
-    }
-
-    /* --- Sliding Cart Drawer --- */
-    #cart-drawer {
-      position: fixed; top: 0; right: -400px;
-      width: 100%; max-width: 400px; height: 100%;
-      background: var(--white); box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-      z-index: 1000; transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex; flex-direction: column;
-    }
-
-    #cart-drawer.active { right: 0; }
-
-    .cart-header { padding: 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .cart-items { flex-grow: 1; padding: 30px; overflow-y: auto; }
-    .cart-item { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; }
-    .cart-footer { padding: 30px; border-top: 1px solid var(--border); }
-
-    /* --- Checkout View --- */
-    .view-container { max-width: 500px; margin: 80px auto; padding: 20px; }
-    .card-ui {
-      background: linear-gradient(135deg, #222, #444);
-      color: white; padding: 25px; border-radius: 15px;
-      margin: 20px 0; font-family: monospace;
-    }
-
-    .hidden { display: none; }
-
-    /* Mobile Tweaks */
-    @media (max-width: 600px) {
-      body.cart-open { transform: none; } /* Don't shift body on mobile, just cover it */
-      .catalog { grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 10px; }
-      .product-info h3 { font-size: 0.7rem; }
-      .hero h1 { font-size: 1.8rem; }
-    }
+    /* --- Tracking --- */
+    .tracking-box { text-align: center; background: white; padding: 40px; border: 1px solid var(--border); margin-top: 40px; }
+    .track-num { background: var(--bg); padding: 10px; display: block; margin: 20px 0; font-weight: bold; }
   </style>
 </head>
 <body>
 
 <nav>
-  <div class="logo">LITHOS</div>
-  <div class="nav-tools" onclick="toggleCart()">
-    <i class="fa-solid fa-cart-shopping"></i>
-    <span class="cart-badge" id="cart-count">0</span>
+  <div class="logo" onclick="location.reload()">LITHOS</div>
+  <div class="cart-trigger" onclick="toggleCart()">
+    <i class="fa-solid fa-bag-shopping"></i>
+    <span class="badge" id="badge-count">0</span>
   </div>
 </nav>
 
-<div id="shop-page">
-  <div class="hero">
-    <h1>The Foundation of Home.</h1>
-    <p>Quiet, stoic, and forever.</p>
-  </div>
-
-  <div class="catalog">
-    <div class="product-card">
-      <div class="img-placeholder"><i class="fa-solid fa-mountain-sun"></i></div>
-      <div class="product-info">
-        <h3>Mountain Basalt</h3>
-        <p class="price">$45.00</p>
-        <button class="btn-add" onclick="addToCart('Mountain Basalt', 45)">Add to cart</button>
-      </div>
+<section id="shop-screen" class="screen active">
+  <div class="container">
+    <div style="margin-bottom: 40px;">
+      <h1 style="font-weight: 300;">Select your companion.</h1>
     </div>
-    <div class="product-card">
-      <div class="img-placeholder"><i class="fa-solid fa-water"></i></div>
-      <div class="product-info">
-        <h3>River Silt Stone</h3>
-        <p class="price">$32.00</p>
-        <button class="btn-add" onclick="addToCart('River Silt Stone', 32)">Add to cart</button>
+    <div class="grid">
+      <div class="product-card">
+        <div class="img-box"><i class="fa-solid fa-mountain"></i></div>
+        <h3>Highland Slate</h3>
+        <p class="price">$34.00</p>
+        <button class="btn" onclick="addToCart('Highland Slate', 34, 'fa-mountain')">Add to Bag</button>
       </div>
-    </div>
-    <div class="product-card">
-      <div class="img-placeholder"><i class="fa-solid fa-layer-group"></i></div>
-      <div class="product-info">
-        <h3>Layered Slate</h3>
-        <p class="price">$58.00</p>
-        <button class="btn-add" onclick="addToCart('Layered Slate', 58)">Add to cart</button>
+      <div class="product-card">
+        <div class="img-box"><i class="fa-solid fa-water"></i></div>
+        <h3>River Bed Stone</h3>
+        <p class="price">$28.00</p>
+        <button class="btn" onclick="addToCart('River Bed Stone', 28, 'fa-water')">Add to Bag</button>
+      </div>
+      <div class="product-card">
+        <div class="img-box"><i class="fa-solid fa-volcano"></i></div>
+        <h3>Volcanic Basalt</h3>
+        <p class="price">$49.00</p>
+        <button class="btn" onclick="addToCart('Volcanic Basalt', 49, 'fa-volcano')">Add to Bag</button>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<div id="cart-drawer">
-  <div class="cart-header">
-    <span style="font-weight: 700;">YOUR BAG</span>
+<section id="payment-screen" class="screen">
+  <div class="container" style="max-width: 600px;">
+    <h2>Payment Method</h2>
+    <p style="margin-bottom: 30px; color: #666;">Choose how you'd like to pay for your geologic goods.</p>
+    
+    <div class="payment-option selected">
+      <i class="fa-brands fa-cc-visa fa-xl"></i>
+      <div style="flex: 1;">
+        <div style="font-weight: 600;">Stored Visa Card</div>
+        <div style="font-size: 0.8rem; opacity: 0.6;">Ending in 4492</div>
+      </div>
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+
+    <div class="card-mask">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+        <span style="font-size: 0.7rem; letter-spacing: 2px;">SECURE CHECKOUT</span>
+        <i class="fa-solid fa-microchip"></i>
+      </div>
+      <div style="font-size: 1.2rem; letter-spacing: 4px; margin-bottom: 15px;">
+        •••• •••• •••• 4492
+      </div>
+      <div style="display: flex; gap: 20px; font-size: 0.8rem;">
+        <span>EXP: ••/••</span>
+        <span>CVV: •••</span>
+      </div>
+    </div>
+
+    <button class="btn" onclick="processOrder()">Complete Purchase</button>
+  </div>
+</section>
+
+<section id="tracking-screen" class="screen">
+  <div class="container" style="max-width: 600px;">
+    <div class="tracking-box">
+      <i class="fa-solid fa-truck-fast fa-3x" style="margin-bottom: 20px; color: var(--accent);"></i>
+      <h2>Order Dispatched</h2>
+      <p style="margin-top: 10px; color: #666;">Your rock is being carefully crated.</p>
+      
+      <span class="track-num" id="track-id">LITH-00000000</span>
+      
+      <div style="text-align: left; border-top: 1px solid var(--border); padding-top: 20px;">
+        <div style="margin-bottom: 15px;">
+          <strong>Shipping Estimate:</strong><br>
+          <span style="color: var(--accent);">1 Week — 1 Month</span>
+        </div>
+        <div style="font-size: 0.9rem; color: #888;">
+          *Rocks are heavy and move at their own pace. We appreciate your patience.
+        </div>
+      </div>
+      
+      <button class="btn" style="margin-top: 40px; background: none; color: #333; border: 1px solid #ccc;" onclick="location.reload()">Back to Shop</button>
+    </div>
+  </div>
+</section>
+
+<div id="drawer">
+  <div class="drawer-header">
+    <span style="font-weight: 800; letter-spacing: 2px;">YOUR BAG</span>
     <i class="fa-solid fa-xmark" style="cursor: pointer;" onclick="toggleCart()"></i>
   </div>
-  <div class="cart-items" id="cart-list">
-    <p style="color: #888; text-align: center; margin-top: 50px;">Your bag is currently empty.</p>
-  </div>
-  <div class="cart-footer" id="cart-footer">
-    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+  <div class="drawer-content" id="cart-items-container">
+    </div>
+  <div class="drawer-footer">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 600;">
       <span>Subtotal</span>
-      <span id="subtotal">$0.00</span>
+      <span id="cart-total">$0.00</span>
     </div>
-    <button class="btn-add" onclick="goToCheckout()">Secure Checkout</button>
+    <button class="btn" id="checkout-btn" onclick="startCheckout()">Proceed to Checkout</button>
   </div>
-</div>
-
-<div id="checkout-page" class="view-container hidden">
-  <h2>Payment</h2>
-  <p style="font-size: 0.8rem; margin-bottom: 20px; color: #666;">Transaction is encrypted and secure.</p>
-  
-  <div class="card-ui">
-    <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
-      <i class="fa-brands fa-cc-mastercard fa-2x"></i>
-      <span style="font-size: 0.7rem;">PREMIUM MEMBER</span>
-    </div>
-    <div style="font-size: 1.2rem; letter-spacing: 4px; margin-bottom: 20px;">
-      •••• •••• •••• 9921
-    </div>
-    <div style="display: flex; gap: 30px; font-size: 0.8rem;">
-      <div>EXP: ••/••</div>
-      <div>CVV: •••</div>
-    </div>
-  </div>
-
-  <button class="btn-add" style="padding: 20px;" onclick="finishOrder()">Confirm & Pay</button>
-  <p style="text-align: center; margin-top: 20px; font-size: 0.8rem; cursor: pointer;" onclick="location.reload()">Return to Shop</p>
-</div>
-
-<div id="tracking-page" class="view-container hidden" style="text-align: center;">
-  <i class="fa-solid fa-box-open fa-3x" style="color: var(--accent); margin-bottom: 20px;"></i>
-  <h2>Order Placed.</h2>
-  <p style="margin: 15px 0;">Your specimen is being prepared for shipping.</p>
-  <div style="background: #eee; padding: 15px; font-family: monospace; margin: 20px 0;">
-    TRACKING: <span id="track-num"></span>
-  </div>
-  <p style="font-size: 0.8rem; color: #888;">Expected Arrival: Dec 12, 2026</p>
-  <button class="btn-add" style="margin-top: 30px;" onclick="location.reload()">Back to Start</button>
 </div>
 
 <script>
   let cart = [];
-  let total = 0;
 
   function toggleCart() {
-    const drawer = document.getElementById('cart-drawer');
-    drawer.classList.toggle('active');
+    const drawer = document.getElementById('drawer');
+    const isActive = drawer.classList.toggle('active');
     
-    // Only shift body on desktop
-    if(window.innerWidth > 600) {
-      document.body.classList.toggle('cart-open');
+    if (window.innerWidth > 768) {
+      document.body.classList.toggle('cart-active', isActive);
     }
   }
 
-  function addToCart(name, price) {
-    cart.push({name, price});
-    total += price;
+  function addToCart(name, price, icon) {
+    const existing = cart.find(item => item.name === name);
+    if (existing) {
+      existing.qty++;
+    } else {
+      cart.push({ name, price, icon, qty: 1 });
+    }
     renderCart();
-    if(!document.getElementById('cart-drawer').classList.contains('active')) {
+    // Only open the drawer if it's not already open
+    if(!document.getElementById('drawer').classList.contains('active')) {
       toggleCart();
     }
   }
 
-  function renderCart() {
-    const list = document.getElementById('cart-list');
-    document.getElementById('cart-count').innerText = cart.length;
-    document.getElementById('subtotal').innerText = `$${total}.00`;
+  function changeQty(index, delta) {
+    cart[index].qty += delta;
+    if (cart[index].qty < 1) cart.splice(index, 1);
+    renderCart();
+  }
 
-    if(cart.length === 0) {
-      list.innerHTML = `<p style="color: #888; text-align: center; margin-top: 50px;">Your bag is empty.</p>`;
-      return;
+  function removeItem(index) {
+    cart.splice(index, 1);
+    renderCart();
+  }
+
+  function renderCart() {
+    const container = document.getElementById('cart-items-container');
+    const badge = document.getElementById('badge-count');
+    const totalEl = document.getElementById('cart-total');
+    
+    let total = 0;
+    let count = 0;
+
+    if (cart.length === 0) {
+      container.innerHTML = `<p style="text-align:center; color:#999; margin-top:50px;">Your bag is empty.</p>`;
+      document.getElementById('checkout-btn').style.display = 'none';
+    } else {
+      document.getElementById('checkout-btn').style.display = 'block';
+      container.innerHTML = cart.map((item, index) => {
+        total += (item.price * item.qty);
+        count += item.qty;
+        return `
+          <div class="cart-item">
+            <div class="item-img"><i class="fa-solid ${item.icon}"></i></div>
+            <div class="item-info">
+              <div style="font-weight:600; font-size:0.9rem;">${item.name}</div>
+              <div style="color:var(--accent); font-size:0.85rem;">$${item.price}.00</div>
+              <div class="qty-controls">
+                <i class="fa-solid fa-minus qty-btn" onclick="changeQty(${index}, -1)"></i>
+                <span>${item.qty}</span>
+                <i class="fa-solid fa-plus qty-btn" onclick="changeQty(${index}, 1)"></i>
+              </div>
+              <span class="remove-btn" onclick="removeItem(${index})">Remove</span>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
-    list.innerHTML = cart.map(item => `
-      <div class="cart-item">
-        <div style="width: 50px; height: 50px; background: #f0f0f0; border-radius: 4px;"></div>
-        <div style="flex-grow: 1;">
-          <div style="font-size: 0.8rem; font-weight: 700;">${item.name}</div>
-          <div style="font-size: 0.8rem; color: #666;">$${item.price}.00</div>
-        </div>
-      </div>
-    `).join('');
+    badge.innerText = count;
+    totalEl.innerText = `$${total}.00`;
   }
 
-  function goToCheckout() {
+  function startCheckout() {
     toggleCart();
-    document.getElementById('shop-page').classList.add('hidden');
-    document.getElementById('checkout-page').classList.remove('hidden');
-    window.scrollTo(0,0);
+    switchScreen('payment-screen');
+    window.scrollTo({top: 0, behavior: 'smooth'});
   }
 
-  function finishOrder() {
-    const track = "LITH-" + Math.random().toString(36).toUpperCase().substring(2, 12);
-    document.getElementById('track-num').innerText = track;
-    
-    document.getElementById('checkout-page').classList.add('hidden');
-    document.getElementById('tracking-page').classList.remove('hidden');
-    window.scrollTo(0,0);
+  function processOrder() {
+    const trackId = "LITH-" + Math.floor(10000000 + Math.random() * 90000000);
+    document.getElementById('track-id').innerText = trackId;
+    switchScreen('tracking-screen');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  function switchScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
   }
 </script>
 
