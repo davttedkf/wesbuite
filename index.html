@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LITHOS | Curated Geologic Companions</title>
-  <link rel="icon" href="favicon.ico?v=16">
+  <link rel="icon" href="favicon.ico?v=17">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -35,29 +35,32 @@
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
     .product-card { border: 2px solid var(--border); border-radius: 20px; padding: 20px; cursor: pointer; transition: 0.4s; position: relative; background: #fff; }
     .product-card:hover { border-color: var(--accent); transform: translateY(-8px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    
     .img-box { width: 100%; aspect-ratio: 1/1; background: #fafafa; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .img-box img { width: 75%; height: 75%; object-fit: contain; }
 
-    .badge { position: absolute; top: 15px; left: 15px; padding: 5px 12px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; z-index: 10; }
-    .badge-best { background: #121212; color: #fff; }
-
-    /* Detail Page */
+    /* DETAIL PAGE */
     .detail-container { max-width: 1200px; margin: 0 auto; padding: 60px 5%; }
     .detail-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px; align-items: start; }
     .detail-img-wrap { background: #fcfcfc; padding: 60px; border-radius: 30px; text-align: center; border: 1px solid #f0f0f0; }
     .detail-img-wrap img { width: 100%; max-height: 500px; object-fit: contain; }
 
-    /* Checkout Refinement */
+    /* CHECKOUT GUI (Per image_7.png) */
     .checkout-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
     .checkout-left { background: var(--light-bg); padding: 60px 10%; border-right: 1px solid var(--border); }
     .checkout-right { padding: 60px 10%; background: #fff; }
 
-    .input-group { margin-bottom: 20px; }
-    .input-group label { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #aaa; margin-bottom: 8px; letter-spacing: 1px; }
-    input { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 0.95rem; }
-    
-    .card-row { display: flex; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-    .card-row input { border: none; border-radius: 0; }
+    .section-label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #999; margin-bottom: 12px; letter-spacing: 1px; }
+    input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; font-size: 1rem; color: var(--primary); transition: border-color 0.2s; }
+    input:focus { outline: none; border-color: var(--accent); }
+
+    /* The Image-matched Card Details Container */
+    .payment-container { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .card-num-input { border: none; border-bottom: 1px solid var(--border); border-radius: 0; }
+    .expiry-cvc-row { display: flex; align-items: center; background: #fff; }
+    .sub-input { border: none; border-radius: 0; padding: 16px; width: 65px; text-align: center; }
+    .cvc-input { border: none; border-radius: 0; flex: 1; text-align: right; padding-right: 20px; }
+    .divider { width: 1px; height: 30px; background: var(--border); }
 
     .btn { width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; }
     .btn:hover { background: #333; }
@@ -76,7 +79,7 @@
 
 <div id="loader">
     <div class="spinner"></div>
-    <p id="loader-text" style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700;">Secure Processing...</p>
+    <p id="loader-text" style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700;">Processing Transfer...</p>
 </div>
 
 <div id="overlay" onclick="toggleCart()"></div>
@@ -107,40 +110,14 @@
       <div class="grid" id="product-grid"></div>
     </div>
   </div>
-  <footer style="padding: 60px 5%; background: var(--light-bg); border-top: 1px solid var(--border); text-align: center; font-size: 0.8rem; color: #aaa;">
-      <p>&copy; 2026 LITHOS GEOLOGIC. ALL RIGHTS RESERVED. REGISTERED TECTONIC DEALER.</p>
-  </footer>
-</section>
-
-<section id="detail-screen" class="screen">
-  <div class="detail-container">
-    <div style="cursor: pointer; margin-bottom: 40px; font-weight: 700; font-size: 0.7rem; color: #aaa;" onclick="showScreen('shop-screen')">BACK</div>
-    <div class="detail-grid">
-      <div class="detail-img-wrap"><img id="detail-img" src=""></div>
-      <div>
-        <h1 id="detail-title" style="font-size: 3.5rem; font-weight: 800; margin-bottom: 10px;"></h1>
-        <div style="margin-bottom: 30px; display: flex; align-items: center;">
-            <span id="detail-rating-header" style="color: var(--accent); font-weight: 600;"></span>
-            <span class="view-reviews-link" id="view-reviews-btn" onclick="toggleReviews()" style="font-size:0.8rem; color:#aaa; margin-left:10px; cursor:pointer; text-decoration:underline;">View Reviews</span>
-        </div>
-        <p id="detail-price" style="font-size: 2rem; margin-bottom: 30px;"></p>
-        <p id="detail-desc" style="line-height: 1.8; color: #666; margin-bottom: 40px;"></p>
-        <button class="btn" onclick="addCurrentToCart()">Add to Bag</button>
-      </div>
-    </div>
-    <div id="reviews-section" style="display:none; margin-top:60px; border-top:1px solid var(--border); padding-top:40px;">
-        <h3 id="review-title-count"></h3>
-        <div id="reviews-container" style="max-height: 400px; overflow-y: auto; display: grid; gap: 20px; margin-top:20px;"></div>
-    </div>
-  </div>
 </section>
 
 <section id="checkout-screen" class="screen">
   <div class="checkout-layout">
     <div class="checkout-left">
+      <div style="cursor: pointer; font-weight: 700; font-size: 0.7rem; color: #aaa; margin-bottom: 40px;" onclick="showScreen('shop-screen')">RETURN</div>
       <h2 style="font-size: 2.5rem; margin-bottom: 40px;">Order Review</h2>
       <div id="checkout-items-summary" style="margin-bottom: 30px;"></div>
-      
       <div style="border-top: 1px solid #ddd; padding-top: 20px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">Subtotal <span id="ch-sub"></span></div>
         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">Shipping <span id="ch-ship">$5.00</span></div>
@@ -150,27 +127,30 @@
     </div>
 
     <div class="checkout-right">
-        <h4 style="margin-bottom:30px; letter-spacing:1px;">SECURE PAYMENT</h4>
+        <h4 style="margin-bottom:40px; letter-spacing:1px;">SECURE CHECKOUT</h4>
         
-        <div class="input-group">
-            <label>Shipping Information</label>
-            <input type="text" id="ship-name" placeholder="Full Name">
-            <input type="text" id="ship-addr" placeholder="Address" style="margin-top:10px;">
+        <div style="margin-bottom: 30px;">
+            <span class="section-label">Shipping Address</span>
+            <input type="text" id="ship-name" placeholder="Full Name" style="margin-bottom: 10px;">
+            <input type="text" id="ship-addr" placeholder="Street Address">
         </div>
 
-        <div class="input-group">
-            <label>Card Details</label>
-            <input type="text" id="card-num" placeholder="Card Number (16 Digits)" maxlength="19">
-            <div class="card-row" style="margin-top:10px;">
-                <input type="text" id="exp-mm" placeholder="MM" maxlength="2" style="width:60px; text-align:center;">
-                <span style="background:#fff; line-height:50px; color:#ddd;">/</span>
-                <input type="text" id="exp-yy" placeholder="YY" maxlength="2" style="width:60px; text-align:center;">
-                <input type="text" id="cvc" placeholder="CVC" maxlength="3" style="flex:1; text-align:right; padding-right:20px;">
+        <div style="margin-bottom: 30px;">
+            <span class="section-label">Card Details</span>
+            <div class="payment-container">
+                <input type="text" id="card-num" class="card-num-input" placeholder="Card Number" maxlength="19">
+                
+                <div class="expiry-cvc-row">
+                    <input type="text" id="exp-mm" class="sub-input" placeholder="MM" maxlength="2">
+                    <span style="color: #ddd;">/</span>
+                    <input type="text" id="exp-yy" class="sub-input" placeholder="YY" maxlength="2">
+                    <div class="divider"></div>
+                    <input type="text" id="cvc" class="cvc-input" placeholder="CVC" maxlength="3">
+                </div>
             </div>
         </div>
 
-        <button class="btn" style="margin-top:20px;" onclick="validateAndProcess()">Complete Adoption</button>
-        <p style="text-align:center; color:#ccc; font-size:0.7rem; margin-top:20px;">Your data is encrypted via Lithos Secure-Gate.</p>
+        <button class="btn" onclick="validateAndProcess()">Pay and Adopt</button>
     </div>
   </div>
 </section>
@@ -179,7 +159,7 @@
     <div class="container" style="text-align: center; padding-top: 150px; max-width:600px; margin:0 auto;">
       <i class="fa-solid fa-circle-check fa-5x" style="color: var(--success); margin-bottom: 30px;"></i>
       <h1 style="font-weight: 800;">ADOPTION CONFIRMED.</h1>
-      <div id="track-id" style="margin: 40px 0; font-family: monospace; font-size: 1.2rem; background: #f8f8f8; padding: 25px; border: 1px dashed #ccc;"></div>
+      <div id="track-id" style="margin: 40px 0; font-family: monospace; font-size: 1.4rem; background: #f8f8f8; padding: 25px; border: 1px dashed #ccc;"></div>
       <button class="btn" style="width: 250px;" onclick="location.reload()">HOME</button>
     </div>
 </section>
@@ -201,48 +181,24 @@
   let activeProduct = null;
 
   const products = [
-    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', rating: 4.9, count: 128, desc: 'A dense igneous masterpiece. Patient, quiet, and eternally loyal.' },
-    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', rating: 4.7, count: 42, desc: 'Layered metamorphic rock. Excellent for deep conversation and focus.' },
-    { id: 3, type: 'river', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', rating: 4.8, count: 85, desc: 'Centuries of river water have smoothed this friend to a silk finish.' },
-    { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', rating: 4.6, count: 31, desc: 'Refined volcanic glass. Shiny and sophisticated.' },
-    { id: 5, type: 'special', name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', rating: 5.0, count: 18, desc: 'Four specimens of varying sizes. A full household.' },
-    { id: 6, type: 'fun', name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', rating: 4.9, count: 212, desc: 'Charismatic specimen with a knit sweater and biologic eyes.' },
-    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', rating: 4.8, count: 56, desc: 'Metamorphosed limestone with distinct veining.' }
+    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', rating: 4.9, count: 128 },
+    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', rating: 4.7, count: 42 },
+    { id: 3, type: 'river', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', rating: 4.8, count: 85 },
+    { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', rating: 4.6, count: 31 },
+    { id: 5, type: 'special', name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', rating: 5.0, count: 18 },
+    { id: 6, type: 'fun', name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', rating: 4.9, count: 212 },
+    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', rating: 4.8, count: 56 }
   ];
 
   function renderGrid(items = products) {
     document.getElementById('product-grid').innerHTML = items.map(p => `
       <div class="product-card" onclick="openProduct(${p.id})">
-        ${p.badge ? `<span class="badge ${p.badge==='NEW'?'badge-best':p.badge==='FAN FAVORITE'?'badge-fan':'badge-best'}">${p.badge}</span>` : ''}
+        ${p.badge ? `<span class="badge" style="position:absolute; top:15px; left:15px; padding:5px 12px; border-radius:50px; font-size:0.6rem; font-weight:800; background:#121212; color:#fff;">${p.badge}</span>` : ''}
         <div class="img-box"><img src="${p.img}"></div>
         <div style="font-size:0.75rem; color:var(--accent); margin-bottom:5px;"><i class="fa-solid fa-star"></i> ${p.rating} (${p.count})</div>
-        <h3 style="font-size: 0.9rem; letter-spacing: 2px;">${p.name}</h3>
+        <h3 style="font-size: 0.9rem; letter-spacing: 2px; text-transform:uppercase;">${p.name}</h3>
         <p style="color:#aaa;">$${p.price}.00</p>
       </div>`).join('');
-  }
-
-  function openProduct(id) {
-    const p = products.find(i => i.id === id);
-    activeProduct = p;
-    document.getElementById('detail-title').innerText = p.name;
-    document.getElementById('detail-price').innerText = `$${p.price}.00`;
-    document.getElementById('detail-desc').innerText = p.desc;
-    document.getElementById('detail-img').src = p.img;
-    document.getElementById('detail-rating-header').innerText = `★ ${p.rating} / 5.0`;
-    document.getElementById('view-reviews-btn').innerText = `View ${p.count} Reviews`;
-    document.getElementById('review-title-count').innerText = `${p.count} Collector Reviews`;
-    document.getElementById('reviews-section').style.display = 'none';
-
-    let revs = "";
-    for(let i=0; i<p.count; i++) revs += `<div style="border-bottom:1px solid #f0f0f0; padding-bottom:15px;"><p style="font-weight:600;">"Arrived safely. Perfectly stoic."</p><p style="font-size:0.7rem; color:#aaa; margin-top:5px;">Verified Collector</p></div>`;
-    document.getElementById('reviews-container').innerHTML = revs;
-    
-    showScreen('detail-screen');
-  }
-
-  function toggleReviews() {
-    const s = document.getElementById('reviews-section');
-    s.style.display = s.style.display === 'block' ? 'none' : 'block';
   }
 
   function toggleCart() {
@@ -262,7 +218,7 @@
 
     document.getElementById('cart-content').innerHTML = cart.map(item => `
       <div style="display:flex; gap:15px; margin-bottom:20px; align-items:center;">
-          <div style="width:60px; height:60px; background:#f4f4f4; border-radius:8px; overflow:hidden;"><img src="${item.img}" style="width:100%; height:100%; object-fit:contain;"></div>
+          <div style="width:60px; height:60px; background:#f4f4f4; border-radius:8px; display:flex; align-items:center; justify-content:center;"><img src="${item.img}" style="width:80%; height:80%; object-fit:contain;"></div>
           <div style="flex:1;"><div style="font-weight:700; font-size:0.8rem;">${item.name}</div><div style="color:var(--accent); font-size:0.8rem;">$${item.price}.00</div></div>
       </div>`).join('');
     
@@ -275,15 +231,13 @@
     document.getElementById('checkout-items-summary').innerHTML = cart.map(item => `<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>${item.name}</span><span style="font-weight:700;">$${item.price}.00</span></div>`).join('');
   }
 
-  function goToCheckout() { toggleCart(); showScreen('checkout-screen'); }
-
   function validateAndProcess() {
     if(!document.getElementById('ship-addr').value) return alert("Enter address");
     
     const mm = parseInt(document.getElementById('exp-mm').value);
     const yy = parseInt("20" + document.getElementById('exp-yy').value);
     const now = new Date();
-    const expiry = new Date(yy, mm, 1);
+    const expiry = new Date(yy, mm - 1, 1);
 
     if (expiry < now) {
         document.getElementById('loader').style.display = 'flex';
@@ -301,40 +255,36 @@
         document.getElementById('loader').style.display = 'none';
         document.getElementById('track-id').innerText = "LITH-" + Math.floor(Math.random()*90000000);
         showScreen('tracking-screen');
-        cart = []; renderCart();
     }, 3000);
   }
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
   }
 
-  // --- MONTH TO YEAR AUTO JUMP ---
+  function goToCheckout() { toggleCart(); showScreen('checkout-screen'); }
+
+  // --- AUTO JUMP & CARD MASKING REMOVAL ---
   document.getElementById('exp-mm').addEventListener('input', function() {
       if(this.value.length === 2) document.getElementById('exp-yy').focus();
   });
 
-  // --- "PEEK" MASKING LOGIC ---
-  let realCardValue = "";
-  document.getElementById('card-num').addEventListener('input', function(e) {
-    let input = e.target.value.replace(/\D/g, '').substring(0, 16);
-    realCardValue = input;
-    
-    let masked = "";
-    for(let i=0; i<input.length; i++) {
-        if(i > 0 && i % 4 === 0) masked += " ";
-        // If it's the last character typed, let it peek, unless it's part of the final last 4
-        if(i === input.length - 1 && i < 12) {
-            masked += input[i];
-        } else if (i >= 12) {
-            masked += input[i]; // Last 4 always visible
-        } else {
-            masked += "•";
-        }
+  document.getElementById('card-num').addEventListener('input', function() {
+    let val = this.value.replace(/\D/g, '').substring(0, 16);
+    let out = "";
+    for(let i=0; i < val.length; i++) {
+        if(i > 0 && i % 4 === 0) out += " ";
+        out += val[i]; // SHOW ALL DIGITS
     }
-    e.target.value = masked;
+    this.value = out;
   });
+
+  function openProduct(id) {
+    activeProduct = products.find(p => p.id === id);
+    showScreen('detail-screen');
+  }
 
   function filterItems(type, el) {
     document.querySelectorAll('.sidebar-list li').forEach(li => li.classList.remove('active'));
