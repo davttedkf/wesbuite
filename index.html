@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LITHOS | Curated Geologic Companions</title>
-  <link rel="icon" href="favicon.ico?v=34">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -12,11 +11,11 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--primary); overflow-x: hidden; position: relative; }
     
-    /* Background Tectonics */
+    /* RESTORED TECTONIC ANIMATIONS */
     .tectonic-bg { position: fixed; inset: 0; z-index: -1; opacity: 0.4; pointer-events: none; }
     .plate { position: absolute; background: radial-gradient(circle, #f0f0f0 0%, rgba(255,255,255,0) 70%); border-radius: 50%; filter: blur(60px); animation: shift 30s infinite alternate ease-in-out; }
     .plate-1 { width: 800px; height: 800px; top: -200px; left: -200px; }
-    .plate-2 { width: 600px; height: 600px; bottom: -100px; right: -100px; }
+    .plate-2 { width: 600px; height: 600px; bottom: -100px; right: -100px; animation-duration: 45s; }
     @keyframes shift { from { transform: translate(0, 0); } to { transform: translate(100px, 50px); } }
 
     #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: 0.3s; z-index: 1500; }
@@ -48,49 +47,39 @@
     .img-box { width: 100%; aspect-ratio: 1; background: #fafafa; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .img-box img { width: 75%; height: 75%; object-fit: contain; }
 
-    /* Flash Sale */
+    /* Detail Page */
+    .detail-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px; align-items: start; }
     .flash-sale-box { background: #fffcf0; border: 1px solid #f9e8a0; padding: 15px; border-radius: 12px; margin: 20px 0; font-size: 0.85rem; display: flex; align-items: center; gap: 10px; }
 
-    /* --- POLISHED CHECKOUT UI --- */
+    /* CHECKOUT UI */
     .checkout-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
-    .checkout-left { background: #1a1a1a; color: #fff; padding: 80px 8%; border-right: 1px solid #333; }
-    .checkout-right { padding: 80px 8%; background: #fff; }
-    
-    .checkout-summary-card { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 20px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.1); }
+    .checkout-left { background: #1a1a1a; color: #fff; padding: 60px 10%; border-right: 1px solid #333; }
+    .checkout-right { padding: 60px 10%; background: #fff; }
     .checkout-item-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
     
-    .pay-block { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 15px; }
-    .pay-row { display: flex; border-top: 1px solid var(--border); }
-    .sub-input { border: none; width: 70px; text-align: center; border-right: 1px solid var(--border); padding: 18px; outline: none; background: #fff; }
-    .cvc-input { border: none; flex: 1; text-align: right; padding: 18px 25px; outline: none; background: #fff; }
-
-    /* --- ADVANCED CART UI --- */
-    .drawer { position: fixed; top: 0; right: -500px; width: 500px; height: 100%; background: #fff; z-index: 3000; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(0,0,0,0.1); }
-    .drawer.active { right: 0; }
-    .cart-header { padding: 40px; border-bottom: 1px solid var(--border); }
-    .cart-scroll { flex: 1; padding: 40px; overflow-y: auto; }
-    
-    .cart-item { display: grid; grid-template-columns: 80px 1fr 80px; gap: 20px; align-items: center; margin-bottom: 30px; }
-    .cart-img { width: 80px; height: 80px; background: #f9f9f9; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
-    .cart-info h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-    
-    .qty-control { display: flex; align-items: center; gap: 12px; background: #f5f5f5; padding: 5px 10px; border-radius: 8px; margin-top: 8px; width: fit-content; }
-    .qty-btn { cursor: pointer; font-weight: 800; font-size: 0.9rem; color: #666; }
-    
-    /* Promo moved to Cart */
-    .cart-promo-box { padding: 25px; background: #fdfdfd; border-top: 1px solid var(--border); }
+    .promo-box { background: #fdfdfd; border: 1px dashed var(--accent); border-radius: 12px; padding: 20px; margin: 30px 0; }
     .promo-input-group { display: flex; gap: 10px; margin-top: 10px; }
-    .promo-input-group input { margin-bottom: 0; height: 45px; border-radius: 8px; font-size: 0.75rem; text-transform: uppercase; }
+    .promo-input-group input { margin-bottom: 0; flex: 1; border-radius: 8px; font-size: 0.8rem; }
+    
+    .pay-block { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 10px; }
+    .pay-row { display: flex; border-top: 1px solid var(--border); }
+    .sub-input { border: none; width: 65px; text-align: center; border-right: 1px solid var(--border); padding: 16px; outline: none; }
+    .cvc-input { border: none; flex: 1; text-align: right; padding: 16px 20px; outline: none; }
 
-    .drawer-footer { padding: 40px; border-top: 1px solid var(--border); }
+    /* CART UI */
+    .drawer { position: fixed; top: 0; right: -450px; width: 450px; height: 100%; background: #fff; z-index: 3000; transition: 0.5s; display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(0,0,0,0.1); }
+    .drawer.active { right: 0; }
+    .cart-item { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; }
+    .qty-control { display: flex; align-items: center; gap: 10px; background: #f5f5f5; padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; margin-top: 5px; width: fit-content; }
+    .qty-btn { cursor: pointer; font-weight: 800; color: var(--primary); width: 20px; text-align: center; }
 
-    /* Orders Page */
+    /* ORDERS PAGE */
     .orders-wrapper { max-width: 800px; margin: 0 auto; padding: 60px 5%; text-align: center; }
     .order-card { border: 1px solid var(--border); border-radius: 15px; padding: 30px; margin-bottom: 30px; background: #fff; text-align: left; }
 
-    input { width: 100%; padding: 18px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; margin-bottom: 12px; outline: none; }
-    .btn { width: 100%; padding: 20px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; }
-    .adopt-btn { width: 100%; padding: 25px; background: var(--accent); color: #fff; border: none; border-radius: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; cursor: pointer; margin-top: 30px; }
+    input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; margin-bottom: 12px; outline: none; }
+    .btn { width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
+    .adopt-btn { width: 100%; padding: 20px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; margin-top: 30px; }
 
     @media (max-width: 900px) { .checkout-layout { grid-template-columns: 1fr; } .drawer { width: 100%; } }
   </style>
@@ -101,8 +90,10 @@
 
 <div id="loader">
     <div class="spinner"></div>
-    <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700;">Validating Membership...</p>
+    <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700;">Processing Manifest...</p>
 </div>
+
+<div id="overlay" onclick="closeAll()"></div>
 
 <nav>
   <div class="logo" onclick="handleLogoClick()">LITHOS</div>
@@ -120,8 +111,6 @@
     </div>
   </div>
 </nav>
-
-<div id="overlay" onclick="closeAll()"></div>
 
 <section id="auth-screen" class="screen active">
     <div style="max-width: 400px; margin: 100px auto; padding: 40px; border: 1px solid var(--border); border-radius: 20px; text-align: center; background: #fff;">
@@ -177,7 +166,7 @@
 
 <section id="orders-screen" class="screen">
     <div class="orders-wrapper">
-        <h1 style="font-weight: 800; margin-bottom: 10px;">ORDER HISTORY</h1>
+        <h1 style="font-weight: 800; margin-bottom: 40px;">ORDER HISTORY</h1>
         <div id="orders-list"></div>
     </div>
 </section>
@@ -185,77 +174,59 @@
 <section id="checkout-screen" class="screen">
   <div class="checkout-layout">
     <div class="checkout-left">
-      <div style="cursor: pointer; font-weight: 700; font-size: 0.6rem; color: #666; margin-bottom: 60px; letter-spacing: 2px;" onclick="showScreen('shop-screen')">RETURN TO SHOP</div>
+      <div style="cursor: pointer; font-weight: 700; font-size: 0.6rem; color: #666; margin-bottom: 60px; letter-spacing: 2px;" onclick="showScreen('shop-screen')">RETURN</div>
+      <h2 id="ch-total-hero" style="font-size: 4rem; font-weight: 800; margin-bottom: 40px; line-height: 0.8;"></h2>
+      <div id="ch-list" style="margin-bottom:30px;"></div>
       
-      <p style="font-size: 0.75rem; letter-spacing: 1px; color: #888; margin-bottom: 5px;">MANIFEST TOTAL</p>
-      <h2 id="ch-total-hero" style="font-size: 5rem; font-weight: 800; margin-bottom: 60px; line-height: 0.8;"></h2>
-      
-      <div class="checkout-summary-card">
-          <div id="ch-list"></div>
-          <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-              <div style="display:flex; justify-content:space-between; margin-bottom:10px; color: #aaa;">Subtotal <span id="ch-sub" style="color:#fff;"></span></div>
-              <div id="promo-row" style="display:none; justify-content:space-between; margin-bottom:10px; color:var(--success);">Promotion Applied <span id="ch-disc"></span></div>
-              <div style="display:flex; justify-content:space-between; color: #aaa;">Shipping <span style="color:#fff;">$5.00</span></div>
+      <div class="promo-box">
+          <p style="font-size:0.6rem; font-weight:800; letter-spacing:1px; color:#aaa; text-transform:uppercase;">Apply Protocol Code</p>
+          <div class="promo-input-group">
+              <input type="text" id="promo-input" placeholder="CODE">
+              <button class="btn" style="width:auto; padding: 0 20px; font-size: 0.7rem;" onclick="applyPromo()">Apply</button>
           </div>
       </div>
-    </div>
-    
-    <div class="checkout-right">
-        <div style="margin-bottom: 60px;">
-            <p style="font-size: 0.75rem; font-weight: 800; margin-bottom: 20px; color: #aaa; letter-spacing: 2px;">STEP 01. IDENTITY</p>
-            <input type="text" id="ship-name" placeholder="Full Legal Name">
-            <input type="text" id="ship-addr" placeholder="Shipment Destination Address">
-        </div>
 
-        <div>
-            <p style="font-size: 0.75rem; font-weight: 800; margin-bottom: 20px; color: #aaa; letter-spacing: 2px;">STEP 02. SETTLEMENT</p>
-            <div class="pay-block">
-                <input type="text" id="card-num" style="border:none; border-bottom: 1px solid var(--border); width:100%; padding:22px; border-radius: 0;" placeholder="Card Number" maxlength="19">
-                <div class="pay-row">
-                    <input type="text" id="exp-mm" class="sub-input" placeholder="MM" maxlength="2">
-                    <input type="text" id="exp-yy" class="sub-input" placeholder="YY" maxlength="2">
-                    <input type="text" placeholder="CVC" class="cvc-input" maxlength="3">
-                </div>
+      <div style="border-top: 1px solid #333; padding-top: 25px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">Subtotal <span id="ch-sub"></span></div>
+          <div id="promo-row" style="display:none; justify-content:space-between; margin-bottom:10px; color:var(--success);">Discount <span id="ch-disc"></span></div>
+          <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.6rem;">Total <span id="ch-final"></span></div>
+      </div>
+    </div>
+    <div class="checkout-right">
+        <h4 style="margin-bottom:30px;">SECURE CHECKOUT</h4>
+        <input type="text" id="ship-name" placeholder="Full Legal Name">
+        <input type="text" id="ship-addr" placeholder="Street Address">
+        <div class="pay-block">
+            <input type="text" id="card-num" style="border:none; border-bottom: 1px solid var(--border); width:100%; padding:16px; border-radius:0;" placeholder="Card Number" maxlength="19">
+            <div class="pay-row">
+                <input type="text" id="exp-mm" class="sub-input" placeholder="MM" maxlength="2">
+                <input type="text" id="exp-yy" class="sub-input" placeholder="YY" maxlength="2">
+                <input type="text" placeholder="CVC" class="cvc-input" maxlength="3">
             </div>
         </div>
-        
         <button class="adopt-btn" onclick="processAdoption()">Complete Adoption</button>
     </div>
   </div>
 </section>
 
 <section id="tracking-screen" class="screen">
-    <div style="max-width: 500px; margin: 150px auto; text-align: center;">
-      <i class="fa-solid fa-circle-check fa-4x" style="color: var(--success); margin-bottom: 30px;"></i>
-      <h1 style="font-weight: 800; font-size: 2.5rem;">MANIFEST CONFIRMED</h1>
-      <div id="track-id-box" style="margin: 40px 0; font-family: monospace; font-size: 1.2rem; background: #f8f8f8; padding: 25px; border: 1px dashed #ccc;"></div>
-      <button class="btn" onclick="showScreen('orders-screen')">History</button>
+    <div class="container" style="text-align: center; padding-top: 150px;">
+      <i class="fa-solid fa-circle-check fa-5x" style="color: var(--success); margin-bottom: 30px;"></i>
+      <h1>ADOPTION CONFIRMED.</h1>
+      <div id="track-id-box" style="margin: 40px 0; font-family: monospace; font-size: 1.4rem; background: #f8f8f8; padding: 25px;"></div>
+      <button class="btn" style="width: 250px;" onclick="showScreen('orders-screen')">Track Manifest</button>
     </div>
 </section>
 
 <div id="drawer" class="drawer">
-  <div class="cart-header">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-          <h2 style="font-size: 0.7rem; letter-spacing: 4px; font-weight: 800;">YOUR BAG</h2>
-          <i class="fa-solid fa-xmark" style="cursor: pointer;" onclick="toggleCart()"></i>
-      </div>
-  </div>
-  <div id="cart-content" class="cart-scroll"></div>
-  
-  <div class="cart-promo-box">
-      <label style="font-size: 0.6rem; font-weight: 800; color: #888; text-transform: uppercase;">Apply Protocol Code</label>
-      <div class="promo-input-group">
-          <input type="text" id="promo-input" placeholder="Code Entry">
-          <button class="btn" style="width:auto; padding: 0 15px; font-size: 0.7rem;" onclick="applyPromo()">Redeem</button>
-      </div>
-  </div>
-
-  <div class="drawer-footer">
-    <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:25px; font-size:1.1rem;">
+  <div style="padding: 30px; border-bottom: 1px solid var(--border); font-weight: 800;">YOUR BAG</div>
+  <div id="cart-content" style="flex:1; padding:30px; overflow-y:auto;"></div>
+  <div style="padding:30px; border-top:1px solid var(--border); background:rgba(0,0,0,0.02);">
+    <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:20px;">
         <span>SUBTOTAL</span>
         <span id="subtotal"></span>
     </div>
-    <button class="btn" style="border-radius:0; padding:25px;" onclick="goToCheckout()">BEGIN ADOPTION</button>
+    <button class="btn" onclick="goToCheckout()">CHECKOUT</button>
   </div>
 </div>
 
@@ -267,13 +238,13 @@
   let appliedDiscount = 0;
 
   const products = [
-    { id: 1, name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', rating: 4.9 },
-    { id: 2, name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', rating: 4.7 },
-    { id: 3, name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', rating: 4.8 },
-    { id: 4, name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', rating: 4.6 },
-    { id: 5, name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', rating: 5.0 },
-    { id: 6, name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', rating: 4.9 },
-    { id: 7, name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', rating: 4.8 }
+    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', rating: 4.9 },
+    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', rating: 4.7 },
+    { id: 3, type: 'smooth', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', rating: 4.8 },
+    { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', rating: 4.6 },
+    { id: 5, type: 'all', name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', rating: 5.0 },
+    { id: 6, type: 'smooth', name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', rating: 4.9 },
+    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', rating: 4.8 }
   ];
 
   function initApp() {
@@ -284,11 +255,11 @@
   function login() { isLoggedIn = true; localStorage.setItem('lithos_logged_in', 'true'); document.getElementById('main-nav-icons').style.display = 'flex'; showScreen('shop-screen'); }
   function logout() { isLoggedIn = false; localStorage.removeItem('lithos_logged_in'); document.getElementById('main-nav-icons').style.display = 'none'; showScreen('auth-screen'); }
 
-  function renderGrid() {
-    document.getElementById('product-grid').innerHTML = products.map(p => `
+  function renderGrid(items = products) {
+    document.getElementById('product-grid').innerHTML = items.map(p => `
       <div class="product-card" onclick="openProduct(${p.id})">
         ${p.badge ? `<span style="position:absolute; top:15px; left:15px; padding:5px 12px; border-radius:50px; font-size:0.6rem; font-weight:800; background:#121212; color:#fff;">${p.badge}</span>` : ''}
-        <div class="img-box"><img src="${p.img}"></div>
+        <div class="img-box"><img src="${p.img}" onerror="this.src='https://via.placeholder.com/300?text=Specimen'"></div>
         <h3 style="font-size: 0.9rem; text-transform:uppercase; font-weight: 700;">${p.name}</h3>
         <p style="color:#aaa;">$${p.price}.00</p>
       </div>`).join('');
@@ -298,13 +269,12 @@
     activeProduct = products.find(p => p.id === id);
     document.getElementById('detail-title').innerText = activeProduct.name;
     document.getElementById('detail-price').innerText = `$${activeProduct.price}.00`;
-    document.getElementById('detail-desc').innerText = `A high-density geologic specimen. Displays absolute loyalty.`;
+    document.getElementById('detail-desc').innerText = `A high-density geologic specimen. Calm, low-maintenance, and perfectly grounded.`;
     document.getElementById('detail-img').src = activeProduct.img;
     document.getElementById('detail-rating').innerText = `★ ${activeProduct.rating} / 5.0`;
     showScreen('detail-screen');
   }
 
-  // --- CART QTY LOGIC ---
   function addCurrentToCart() {
     const existing = cart.find(i => i.id === activeProduct.id);
     if(existing) existing.qty++;
@@ -325,66 +295,31 @@
     let sub = cart.reduce((a, b) => a + (b.price * b.qty), 0);
     document.getElementById('badge-count').innerText = cart.reduce((a,b)=>a+b.qty, 0);
     document.getElementById('subtotal').innerText = `$${sub.toFixed(2)}`;
-    
     document.getElementById('cart-content').innerHTML = cart.map(item => `
         <div class="cart-item">
-            <div class="cart-img"><img src="${item.img}"></div>
-            <div>
-                <h4>${item.name}</h4>
+            <img src="${item.img}" style="width:50px;">
+            <div style="flex:1;">
+                <div style="font-weight:700; font-size:0.85rem;">${item.name}</div>
                 <div class="qty-control">
                     <span class="qty-btn" onclick="updateQty(${item.id}, -1)">-</span>
-                    <span style="font-size:0.8rem; font-weight:700;">${item.qty}</span>
+                    <span>${item.qty}</span>
                     <span class="qty-btn" onclick="updateQty(${item.id}, 1)">+</span>
                 </div>
             </div>
-            <div style="text-align:right; font-weight:800; font-size:0.85rem;">$${(item.price * item.qty)}.00</div>
+            <div style="font-weight:800;">$${(item.price * item.qty)}.00</div>
         </div>`).join('');
   }
 
   function goToCheckout() {
     if(!cart.length) return;
+    renderCart(); toggleCart();
     let sub = cart.reduce((a, b) => a + (b.price * b.qty), 0);
     let total = sub + 5 - appliedDiscount;
     document.getElementById('ch-total-hero').innerText = `$${total.toFixed(2)}`;
     document.getElementById('ch-sub').innerText = `$${sub.toFixed(2)}`;
     document.getElementById('ch-final').innerText = `$${total.toFixed(2)}`;
-    
-    document.getElementById('ch-list').innerHTML = cart.map(item => `
-        <div class="checkout-item-row">
-            <span>${item.name} (x${item.qty})</span>
-            <span style="font-weight:700;">$${item.price * item.qty}.00</span>
-        </div>`).join('');
-    toggleCart(); showScreen('checkout-screen');
-  }
-
-  function processAdoption() {
-    if(!document.getElementById('ship-addr').value || !document.getElementById('ship-name').value) return alert("Full Name and Address Required");
-    document.getElementById('loader').style.display = 'flex';
-    
-    setTimeout(() => {
-        document.getElementById('loader').style.display = 'none';
-        const tid = "LITH-" + Math.floor(Math.random()*90000000);
-        const sub = cart.reduce((a,b)=>a + (b.price * b.qty), 0);
-        
-        orders.unshift({ id: tid, date: new Date().toLocaleDateString(), timestamp: new Date().getTime(), total: sub + 5 - appliedDiscount });
-        localStorage.setItem('lithos_orders', JSON.stringify(orders));
-        renderOrders();
-        document.getElementById('track-id-box').innerText = tid;
-        cart = []; appliedDiscount = 0; renderCart(); 
-        showScreen('tracking-screen');
-    }, 2500);
-  }
-
-  function renderOrders() {
-    const list = document.getElementById('orders-list');
-    list.innerHTML = orders.map(o => `
-        <div class="order-card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div><div style="font-weight:800;">MANIFEST ${o.id.substring(6,12)}</div><div style="color:#aaa; font-size:0.7rem;">Recorded ${o.date}</div></div>
-                <div style="font-weight:800; color:var(--accent); font-size:0.7rem; text-transform:uppercase;">In Transit</div>
-            </div>
-            <div style="margin-top:20px; font-weight:800;">Settled: $${o.total.toFixed(2)}</div>
-        </div>`).join('');
+    document.getElementById('ch-list').innerHTML = cart.map(i => `<div class="checkout-item-row"><span>${i.name} (x${i.qty})</span><span>$${i.price * i.qty}.00</span></div>`).join('');
+    showScreen('checkout-screen');
   }
 
   function applyPromo() {
@@ -394,9 +329,30 @@
           appliedDiscount = sub * 0.10;
           document.getElementById('promo-row').style.display = 'flex';
           document.getElementById('ch-disc').innerText = `-$${appliedDiscount.toFixed(2)}`;
-          renderCart();
-          alert("Manifest Discount Validated: 10%");
-      } else { alert("Invalid Entry"); }
+          let total = sub + 5 - appliedDiscount;
+          document.getElementById('ch-total-hero').innerText = `$${total.toFixed(2)}`;
+          document.getElementById('ch-final').innerText = `$${total.toFixed(2)}`;
+      } else { alert("Invalid Code"); }
+  }
+
+  function processAdoption() {
+    if(!document.getElementById('ship-addr').value || !document.getElementById('ship-name').value) return alert("All fields required");
+    document.getElementById('loader').style.display = 'flex';
+    setTimeout(() => {
+        document.getElementById('loader').style.display = 'none';
+        const tid = "LITH-" + Math.floor(Math.random()*90000000);
+        const sub = cart.reduce((a,b)=>a+(b.price * b.qty), 0);
+        orders.unshift({ id: tid, date: new Date().toLocaleDateString(), total: sub + 5 - appliedDiscount });
+        localStorage.setItem('lithos_orders', JSON.stringify(orders));
+        renderOrders();
+        document.getElementById('track-id-box').innerText = tid;
+        cart = []; appliedDiscount = 0; renderCart(); showScreen('tracking-screen');
+    }, 2500);
+  }
+
+  function renderOrders() {
+    const list = document.getElementById('orders-list');
+    list.innerHTML = orders.map(o => `<div class="order-card"><div style="display:flex; justify-content:space-between;"><div><div style="font-weight:800;">${o.id}</div><div style="color:#aaa; font-size:0.7rem;">${o.date}</div></div><div style="font-weight:800; color:var(--accent); font-size:0.7rem; text-transform:uppercase;">In Transit</div></div><div style="margin-top:20px; font-weight:800;">Paid: $${o.total.toFixed(2)}</div></div>`).join('');
   }
 
   function startFlashTimer() {
@@ -410,6 +366,7 @@
       }, 1000);
   }
 
+  function filterItems(t, el) { document.querySelectorAll('.sidebar-list li').forEach(li => li.classList.remove('active')); el.classList.add('active'); renderGrid(t === 'all' ? products : products.filter(p => p.type === t)); }
   function toggleDropdown() { document.getElementById('account-dropdown').classList.toggle('show'); }
   function toggleCart() { document.getElementById('drawer').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
   function handleLogoClick() { isLoggedIn ? showScreen('shop-screen') : showScreen('auth-screen'); }
