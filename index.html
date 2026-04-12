@@ -49,13 +49,12 @@
     .screen { display: none; }
     .screen.active { display: block; }
 
-    input, textarea {
-      width: 100%;
-      padding: 14px;
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+
+    .product-card {
+      background: white;
       border: 1px solid var(--border);
-      font-family: inherit;
-      margin-bottom: 12px;
-      border-radius: 4px;
+      padding: 24px;
     }
 
     .btn {
@@ -68,24 +67,63 @@
       font-weight: 600;
       text-transform: uppercase;
     }
+
+    input, textarea {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid var(--border);
+      font-family: inherit;
+      margin-bottom: 12px;
+      border-radius: 4px;
+    }
+
+    .reviews { margin-top: 80px; border-top: 1px solid var(--border); padding-top: 40px; }
+
   </style>
 </head>
 
 <body>
 
+<div id="overlay" onclick="toggleCart()"></div>
+
 <nav>
-  <div class="logo">LITHOS</div>
+  <div class="logo" onclick="location.reload()">LITHOS</div>
+  <div class="cart-trigger" onclick="toggleCart()">
+    <i class="fa-solid fa-bag-shopping"></i>
+    <span class="badge" id="badge-count">0</span>
+  </div>
 </nav>
 
-<section id="payment-screen" class="screen active">
+<!-- SHOP -->
+<section id="shop-screen" class="screen active">
+  <div class="container">
+
+    <h1 style="margin-bottom:40px;">Select your companion.</h1>
+
+    <div class="grid">
+      <div class="product-card">
+        <h3>Highland Slate</h3>
+        <button class="btn" onclick="addToCart('Highland Slate', 34, 'fa-mountain')">Add</button>
+      </div>
+      <div class="product-card">
+        <h3>River Stone</h3>
+        <button class="btn" onclick="addToCart('River Stone', 28, 'fa-water')">Add</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CHECKOUT -->
+<section id="payment-screen" class="screen">
   <div class="container">
 
     <h1>Checkout</h1>
 
     <input id="cust-name" placeholder="Full Name">
 
-    <!-- ✅ GOOGLE AUTOCOMPLETE INPUT -->
-    <input id="cust-street" placeholder="Street Address" type="text">
+    <!-- ✅ ONLY CHANGE: Google autocomplete works on this -->
+    <input id="cust-street" placeholder="Street Address">
 
     <div style="display:flex; gap:10px;">
       <input id="cust-city" placeholder="City">
@@ -98,29 +136,32 @@
 </section>
 
 <script>
+  let cart = [];
+
+  function addToCart(name, price, icon) {
+    cart.push({ name, price, icon, qty: 1 });
+    document.getElementById("payment-screen").classList.add("active");
+    document.getElementById("shop-screen").classList.remove("active");
+  }
+
   function processOrder() {
     const street = document.getElementById("cust-street").value;
-    if (!street) return alert("Please enter address");
+    if (!street) return alert("Enter address");
     alert("Order placed!");
   }
 
-  // ✅ GOOGLE AUTOCOMPLETE INIT
+  // ✅ GOOGLE AUTOCOMPLETE
   function initAutocomplete() {
     const input = document.getElementById("cust-street");
 
-    const autocomplete = new google.maps.places.Autocomplete(input, {
+    new google.maps.places.Autocomplete(input, {
       types: ["address"],
       componentRestrictions: { country: "us" }
-    });
-
-    autocomplete.addListener("place_changed", function () {
-      const place = autocomplete.getPlace();
-      console.log("Selected:", place);
     });
   }
 </script>
 
-<!-- ✅ GOOGLE MAPS API (Places Library) -->
+<!-- ✅ GOOGLE MAPS API -->
 <script
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvx7-qMTAhpyX71-XA9b0blPKulmDIpYs&libraries=places&callback=initAutocomplete"
   async
