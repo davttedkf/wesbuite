@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LITHOS | Curated Geologic Companions</title>
-  <link rel="icon" href="favicon.ico?v=25">
+  <link rel="icon" href="favicon.ico?v=26">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -19,34 +19,28 @@
     .spinner { width: 40px; height: 40px; border: 3px solid #eee; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+    /* Social Proof Toast */
+    #social-toast { position: fixed; bottom: 30px; left: 30px; background: #fff; border: 1px solid var(--border); padding: 15px 20px; border-radius: 12px; display: none; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); z-index: 5000; animation: slideUp 0.5s ease; }
+    @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
     nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 2000; }
     .logo { font-weight: 800; letter-spacing: 6px; text-transform: uppercase; cursor: pointer; font-size: 1.1rem; }
     .nav-icons { display: flex; gap: 25px; align-items: center; font-size: 1.1rem; position: relative; }
 
     .dropdown-container { position: relative; display: inline-block; }
-    .dropdown-content { 
-      display: none; position: absolute; right: 0; top: 35px; background: #fff; min-width: 200px; 
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--border); 
-      z-index: 2100; overflow: hidden; animation: dropDown 0.2s ease;
-    }
+    .dropdown-content { display: none; position: absolute; right: 0; top: 35px; background: #fff; min-width: 200px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--border); z-index: 2100; overflow: hidden; animation: dropDown 0.2s ease; }
     .dropdown-content.show { display: block; }
-    @keyframes dropDown { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .drop-item { padding: 15px 20px; font-size: 0.85rem; color: #666; cursor: pointer; border-bottom: 1px solid #f9f9f9; }
     .drop-item:hover { background: var(--light-bg); color: var(--primary); }
 
     .screen { display: none; width: 100%; min-height: 100vh; background: var(--bg); }
     .screen.active { display: block; }
 
-    /* Auth Box */
-    .auth-box { max-width: 400px; margin: 100px auto; padding: 40px; border: 1px solid var(--border); border-radius: 20px; text-align: center; }
-
     /* Shop Grid */
     .shop-container { display: flex; max-width: 1400px; margin: 0 auto; padding: 60px 5%; gap: 60px; }
     .sidebar { width: 220px; flex-shrink: 0; position: sticky; top: 120px; }
-    .sidebar h4 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; color: #aaa; }
     .sidebar-list { list-style: none; margin-bottom: 40px; }
     .sidebar-list li { padding: 10px 0; font-size: 0.9rem; color: #666; cursor: pointer; transition: 0.2s; }
-    .sidebar-list li:hover { color: var(--primary); }
     .sidebar-list li.active { color: var(--primary); font-weight: 700; border-left: 2px solid var(--primary); padding-left: 15px; margin-left: -17px; }
 
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; flex: 1; }
@@ -55,14 +49,13 @@
     .img-box { width: 100%; aspect-ratio: 1; background: #fafafa; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .img-box img { width: 75%; height: 75%; object-fit: contain; }
 
-    /* Checkout Restored */
-    .checkout-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
-    .checkout-left { background: var(--light-bg); padding: 60px 10%; border-right: 1px solid var(--border); }
-    .checkout-right { padding: 60px 10%; background: #fff; }
-    .pay-container { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 20px; }
-    .pay-row { display: flex; border-top: 1px solid var(--border); background: #fff; }
-    .sub-input { border: none; width: 65px; text-align: center; border-right: 1px solid var(--border); padding: 16px; outline: none; }
-    .cvc-input { border: none; flex: 1; text-align: right; padding: 16px 20px; outline: none; }
+    /* Detail Page */
+    .detail-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px; align-items: start; }
+    .dispatch-timer { font-size: 0.8rem; color: var(--accent); font-weight: 700; margin: 15px 0; }
+
+    /* Centered Order History */
+    .orders-wrapper { max-width: 800px; margin: 0 auto; padding: 60px 5%; text-align: center; }
+    .order-card { border: 1px solid var(--border); border-radius: 15px; padding: 25px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; background: #fff; text-align: left; }
 
     input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; margin-bottom: 12px; }
     .btn { width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
@@ -71,16 +64,19 @@
     .drawer { position: fixed; top: 0; right: -450px; width: 450px; height: 100%; background: #fff; z-index: 3000; transition: 0.5s; display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(0,0,0,0.1); }
     .drawer.active { right: 0; }
 
-    .order-card { border: 1px solid var(--border); border-radius: 15px; padding: 25px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; background: #fff; }
-    
-    @media (max-width: 900px) { .checkout-layout, .shop-container { grid-template-columns: 1fr; } .drawer { width: 100%; right: -100%; } }
+    @media (max-width: 900px) { .shop-container { flex-direction: column; } .drawer { width: 100%; right: -100%; } .detail-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body onload="initApp()">
 
 <div id="loader">
     <div class="spinner"></div>
-    <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700;">Authorizing Member...</p>
+    <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700;">Authorizing Session...</p>
+</div>
+
+<div id="social-toast">
+    <div style="width:10px; height:10px; border-radius:50%; background:var(--accent);"></div>
+    <div id="toast-text" style="font-size: 0.8rem; font-weight: 600;"></div>
 </div>
 
 <div id="overlay" onclick="closeAll()"></div>
@@ -95,7 +91,7 @@
             <div class="drop-item" style="color: var(--error);" onclick="logout()">Logout</div>
         </div>
     </div>
-    <div style="position: relative; cursor: pointer;" onclick="toggleCart()">
+    <div id="bag-icon" style="position: relative; cursor: pointer;" onclick="toggleCart()">
       <i class="fa-solid fa-bag-shopping"></i>
       <span id="badge-count" style="position: absolute; top: -10px; right: -12px; background: var(--primary); color: #fff; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800;">0</span>
     </div>
@@ -104,8 +100,8 @@
 
 <section id="auth-screen" class="screen active">
     <div class="auth-box">
-        <h2 style="font-weight: 800; margin-bottom: 10px;">LITHOS MEMBER</h2>
-        <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 30px;">Login required to enter the gallery.</p>
+        <h2 style="font-weight: 800; margin-bottom: 10px;">LITHOS COLLECTIVE</h2>
+        <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 30px;">Mandatory login required.</p>
         <input type="text" id="auth-email" placeholder="Email Address">
         <input type="password" placeholder="Password">
         <button class="btn" onclick="login()">Enter Collective</button>
@@ -115,7 +111,7 @@
 <section id="shop-screen" class="screen">
   <div class="shop-container">
     <aside class="sidebar">
-      <h4>Collection</h4>
+      <h4 style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; color: #aaa;">Collection</h4>
       <ul class="sidebar-list">
         <li class="active" onclick="filterItems('all', this)">All Friends</li>
         <li onclick="filterItems('volcanic', this)">Volcanic</li>
@@ -130,75 +126,60 @@
 <section id="detail-screen" class="screen">
   <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 60px 5%;">
     <div style="cursor: pointer; margin-bottom: 40px; font-weight: 700; font-size: 0.7rem; color: #aaa;" onclick="showScreen('shop-screen')">BACK</div>
-    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px;">
+    <div class="detail-grid">
       <div style="background: #fcfcfc; border-radius: 30px; padding: 60px; text-align: center;"><img id="detail-img" src="" style="width: 100%; max-height: 500px; object-fit: contain;"></div>
       <div>
         <h1 id="detail-title" style="font-size: 3.5rem; font-weight: 800; margin-bottom: 10px;"></h1>
-        <p id="detail-price" style="font-size: 2rem; margin-bottom: 30px; font-weight: 300;"></p>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+            <span id="detail-rating" style="color:var(--accent); font-weight:700;"></span>
+            <span style="font-size:0.8rem; color:#aaa; cursor:pointer; text-decoration:underline;" onclick="toggleReviews()">View Reviews</span>
+        </div>
+        <p id="detail-price" style="font-size: 2rem; margin-bottom: 10px; font-weight: 300;"></p>
+        <div class="dispatch-timer"><i class="fa-solid fa-clock"></i> Next Dispatch in <span id="timer-val">--:--:--</span></div>
         <p id="detail-desc" style="line-height: 1.8; color: #666; margin-bottom: 40px;"></p>
         <button class="btn" onclick="addCurrentToCart()">Add to Bag</button>
       </div>
+    </div>
+    <div id="reviews-section" style="display:none; margin-top:60px; border-top:1px solid var(--border); padding-top:40px;">
+        <h3 id="review-header-text"></h3>
+        <div id="reviews-container" style="display:grid; gap:20px; margin-top:20px;"></div>
     </div>
   </div>
 </section>
 
 <section id="orders-screen" class="screen">
-    <div class="container" style="max-width: 900px;">
-        <h1 style="font-weight: 800; margin-bottom: 10px;">ORDER HISTORY</h1>
-        <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 40px;">Persistent tracking for your geologic companions.</p>
+    <div class="orders-wrapper">
+        <h1 style="font-weight: 800; margin-bottom: 10px; letter-spacing: -1px;">ORDER HISTORY</h1>
+        <p style="color: #aaa; margin-bottom: 40px;">Your geologic companions currently in transit.</p>
         <div id="orders-list"></div>
     </div>
 </section>
 
 <section id="checkout-screen" class="screen">
-  <div class="checkout-layout">
-    <div class="checkout-left">
-      <div style="cursor: pointer; font-weight: 700; font-size: 0.7rem; color: #aaa; margin-bottom: 40px;" onclick="showScreen('shop-screen')">RETURN</div>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh;">
+    <div style="background: var(--light-bg); padding: 60px 10%;">
       <h2 id="ch-total-hero" style="font-size: 3rem; font-weight: 800; margin-bottom: 40px;"></h2>
-      <div id="ch-summary-list" style="flex:1;"></div>
-      <div style="border-top: 1px solid #ddd; padding-top: 25px;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">Subtotal <span id="ch-sub"></span></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">Shipping <span>$5.00</span></div>
-        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.4rem; margin-top: 10px;">Total <span id="ch-final"></span></div>
+      <div id="ch-list" style="flex:1;"></div>
+      <div style="border-top:1px solid #ddd; padding-top:20px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">Subtotal <span id="ch-sub"></span></div>
+          <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.4rem;">Total <span id="ch-final"></span></div>
       </div>
     </div>
-    <div class="checkout-right">
-        <h4 style="margin-bottom: 30px;">SECURE CHECKOUT</h4>
-        <input type="text" id="ship-name" placeholder="Full Name">
+    <div style="padding: 60px 10%; background:#fff;">
+        <h4 style="margin-bottom:30px;">SECURE CHECKOUT</h4>
         <input type="text" id="ship-addr" placeholder="Street Address">
-        <div class="pay-container">
-            <input type="text" id="card-num" style="border:none; border-bottom: 1px solid var(--border); width:100%; padding:16px;" placeholder="Card Number" maxlength="19">
-            <div class="pay-row">
-                <input type="text" id="exp-mm" class="sub-input" placeholder="MM" maxlength="2">
-                <input type="text" id="exp-yy" class="sub-input" placeholder="YY" maxlength="2">
-                <input type="text" placeholder="CVC" class="cvc-input" maxlength="3">
+        <div style="border:1px solid var(--border); border-radius:12px; overflow:hidden;">
+            <input type="text" id="card-num" style="border:none; border-bottom:1px solid var(--border); border-radius:0;" placeholder="Card Number" maxlength="19">
+            <div style="display:flex;">
+                <input type="text" id="exp-mm" style="border:none; width:60px; text-align:center;" placeholder="MM" maxlength="2">
+                <input type="text" id="exp-yy" style="border:none; width:60px; text-align:center;" placeholder="YY" maxlength="2">
+                <input type="text" placeholder="CVC" style="border:none; flex:1; text-align:right; padding-right:20px;" maxlength="3">
             </div>
         </div>
         <button class="adopt-btn" onclick="processAdoption()">Complete Adoption</button>
     </div>
   </div>
 </section>
-
-<section id="tracking-screen" class="screen">
-    <div class="container" style="text-align: center; padding-top: 150px;">
-      <i class="fa-solid fa-circle-check fa-5x" style="color: var(--success); margin-bottom: 30px;"></i>
-      <h1>ADOPTION CONFIRMED.</h1>
-      <div id="track-id-box" style="margin: 40px 0; font-family: monospace; font-size: 1.4rem; background: #f8f8f8; padding: 25px;"></div>
-      <button class="btn" style="width: 250px;" onclick="showScreen('orders-screen')">View My Orders</button>
-    </div>
-</section>
-
-<div id="drawer" class="drawer">
-  <div style="padding: 30px; border-bottom: 1px solid var(--border); font-weight: 800; letter-spacing: 2px;">YOUR BAG</div>
-  <div id="cart-content" style="flex:1; padding:30px; overflow-y:auto;"></div>
-  <div style="padding:30px; border-top:1px solid var(--border); background:#fafafa;">
-    <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:20px;">
-        <span>SUBTOTAL</span>
-        <span id="subtotal"></span>
-    </div>
-    <button class="btn" onclick="goToCheckout()">CHECKOUT</button>
-  </div>
-</div>
 
 <script>
   let cart = [];
@@ -207,53 +188,32 @@
   let activeProduct = null;
 
   const products = [
-    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', desc: 'Patient igneous friend.' },
-    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', desc: 'Layered history.' },
-    { id: 3, type: 'smooth', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', desc: 'Centuries of water.' },
-    { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', desc: 'Shiny volcanic glass.' },
-    { id: 5, type: 'all', name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', desc: 'Full household.' },
-    { id: 6, type: 'smooth', name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', desc: 'Charismatic specimen.' },
-    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', desc: 'Polished limestone.' }
+    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', count: 128, desc: 'Igneous masterpiece.' },
+    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', count: 42, desc: 'Layered focus stone.' },
+    { id: 3, type: 'smooth', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', count: 85, desc: 'Alpine water smoothed.' },
+    { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', count: 31, desc: 'Volcanic glass.' },
+    { id: 5, type: 'all', name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', count: 18, desc: 'Household set.' },
+    { id: 6, type: 'smooth', name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', count: 212, desc: 'Includes sweater.' },
+    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', count: 56, desc: 'Metamorphic limestone.' }
   ];
 
   function initApp() {
-    if (isLoggedIn) {
-        document.getElementById('main-nav-icons').style.display = 'flex';
-        showScreen('shop-screen');
-    }
-    renderGrid();
-    renderOrders();
+    if (isLoggedIn) { document.getElementById('main-nav-icons').style.display = 'flex'; showScreen('shop-screen'); }
+    renderGrid(); renderOrders();
+    startSocialProof();
   }
 
-  function login() {
-    isLoggedIn = true;
-    localStorage.setItem('lithos_logged_in', 'true');
-    document.getElementById('main-nav-icons').style.display = 'flex';
-    showScreen('shop-screen');
-  }
-
-  function logout() {
-    isLoggedIn = false;
-    localStorage.removeItem('lithos_logged_in');
-    document.getElementById('main-nav-icons').style.display = 'none';
-    showScreen('auth-screen');
-  }
+  function login() { isLoggedIn = true; localStorage.setItem('lithos_logged_in', 'true'); document.getElementById('main-nav-icons').style.display = 'flex'; showScreen('shop-screen'); }
+  function logout() { isLoggedIn = false; localStorage.removeItem('lithos_logged_in'); document.getElementById('main-nav-icons').style.display = 'none'; showScreen('auth-screen'); }
 
   function renderGrid(items = products) {
     document.getElementById('product-grid').innerHTML = items.map(p => `
       <div class="product-card" onclick="openProduct(${p.id})">
         ${p.badge ? `<span style="position:absolute; top:15px; left:15px; padding:5px 12px; border-radius:50px; font-size:0.6rem; font-weight:800; background:#121212; color:#fff;">${p.badge}</span>` : ''}
-        <div class="img-box"><img src="${p.img}" onerror="this.src='https://via.placeholder.com/300?text=Specimen'"></div>
-        <h3 style="font-size: 0.9rem; letter-spacing: 2px; text-transform:uppercase; font-weight: 700;">${p.name}</h3>
+        <div class="img-box"><img src="${p.img}"></div>
+        <h3 style="font-size: 0.9rem; text-transform:uppercase; font-weight: 700;">${p.name}</h3>
         <p style="color:#aaa;">$${p.price}.00</p>
       </div>`).join('');
-  }
-
-  function filterItems(type, el) {
-    document.querySelectorAll('.sidebar-list li').forEach(li => li.classList.remove('active'));
-    el.classList.add('active');
-    const filtered = type === 'all' ? products : products.filter(p => p.type === type);
-    renderGrid(filtered);
   }
 
   function openProduct(id) {
@@ -262,42 +222,24 @@
     document.getElementById('detail-price').innerText = `$${activeProduct.price}.00`;
     document.getElementById('detail-desc').innerText = activeProduct.desc;
     document.getElementById('detail-img').src = activeProduct.img;
+    document.getElementById('detail-rating').innerText = `★ 5.0 / 5.0`;
+    document.getElementById('review-header-text').innerText = `${activeProduct.count} Verified Feedback Entries`;
+    
+    // Unique Reviews
+    let revs = "";
+    const names = ["Arthur", "Lydia", "Marcus", "Elena", "Julian"];
+    for(let i=0; i<Math.min(activeProduct.count, 8); i++) {
+        revs += `<div style="border-bottom:1px solid #f0f0f0; padding-bottom:15px;"><p style="font-weight:600;">"Arrived safely. Perfectly stoic."</p><p style="font-size:0.7rem; color:#aaa; margin-top:5px;">— ${names[i%5]} Collector</p></div>`;
+    }
+    document.getElementById('reviews-container').innerHTML = revs;
+    document.getElementById('reviews-section').style.display = 'none';
     showScreen('detail-screen');
   }
 
-  function toggleCart() {
-    document.getElementById('drawer').classList.toggle('active');
-    document.getElementById('overlay').classList.toggle('active');
-  }
-
-  function toggleDropdown() {
-    document.getElementById('account-dropdown').classList.toggle('show');
-  }
-
-  function addCurrentToCart() {
-    cart.push({...activeProduct});
-    renderCart(); toggleCart();
-  }
-
-  function renderCart() {
-    let sub = cart.reduce((a, b) => a + b.price, 0);
-    document.getElementById('badge-count').innerText = cart.length;
-    document.getElementById('subtotal').innerText = `$${sub.toFixed(2)}`;
-    document.getElementById('cart-content').innerHTML = cart.map(item => `
-      <div style="display:flex; gap:15px; margin-bottom:20px; align-items:center;">
-          <div style="width:60px; height:60px; background:#f4f4f4; border-radius:10px; display:flex; align-items:center; justify-content:center;"><img src="${item.img}" style="width:80%;"></div>
-          <div style="flex:1;"><div style="font-weight:700; font-size:0.8rem;">${item.name}</div><div style="color:var(--accent); font-size:0.8rem;">$${item.price}.00</div></div>
-      </div>`).join('');
-  }
-
-  function goToCheckout() {
-    let sub = cart.reduce((a, b) => a + b.price, 0);
-    document.getElementById('ch-total-hero').innerText = `$${(sub + 5).toFixed(2)}`;
-    document.getElementById('ch-sub').innerText = `$${sub.toFixed(2)}`;
-    document.getElementById('ch-final').innerText = `$${(sub + 5).toFixed(2)}`;
-    document.getElementById('ch-summary-list').innerHTML = cart.map(item => `
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><span>${item.name}</span><span style="font-weight:700;">$${item.price}.00</span></div>`).join('');
-    toggleCart(); showScreen('checkout-screen');
+  function renderOrders() {
+    const list = document.getElementById('orders-list');
+    if (!orders.length) { list.innerHTML = `<div style="text-align:center; padding:100px 0; color:#ccc;">No adoptions manifested.</div>`; return; }
+    list.innerHTML = orders.map(o => `<div class="order-card"><div><div style="font-weight:800;">${o.id}</div><div style="color:#aaa; font-size:0.7rem;">Placed ${o.date}</div></div><div style="font-weight:800; color:var(--accent); font-size:0.7rem; text-transform:uppercase;">In Transit</div></div>`).join('');
   }
 
   function processAdoption() {
@@ -306,52 +248,59 @@
     setTimeout(() => {
         document.getElementById('loader').style.display = 'none';
         const tid = "LITH-" + Math.floor(Math.random()*90000000);
-        const order = { id: tid, date: new Date().toLocaleDateString(), total: cart.reduce((a, b) => a + b.price, 0) + 5, items: [...cart] };
-        orders.unshift(order);
+        orders.unshift({ id: tid, date: new Date().toLocaleDateString() });
         localStorage.setItem('lithos_orders', JSON.stringify(orders));
         renderOrders();
-        document.getElementById('track-id-box').innerText = tid;
-        cart = []; renderCart();
-        showScreen('tracking-screen');
+        cart = []; renderCart(); showScreen('orders-screen');
     }, 2000);
   }
 
-  function renderOrders() {
-    const list = document.getElementById('orders-list');
-    if (orders.length === 0) {
-        list.innerHTML = `<div style="text-align: center; padding: 100px 0; color: #ccc;">No companions Manifested.</div>`;
-        return;
-    }
-    list.innerHTML = orders.map(o => `
-        <div class="order-card">
-            <div>
-                <div style="font-weight:800; font-size: 1.1rem;">${o.id}</div>
-                <div style="color:#aaa; font-size:0.75rem; margin: 4px 0 10px 0;">Order placed ${o.date} — $${o.total.toFixed(2)}</div>
-                <div style="display:flex; gap:10px;">
-                    ${o.items.map(i => `<div style="width:40px; height:40px; background:#f9f9f9; border-radius:6px; display:flex; align-items:center; justify-content:center;"><img src="${i.img}" style="width:70%;"></div>`).join('')}
-                </div>
-            </div>
-            <div style="text-align:right;">
-                <div style="font-weight:800; color:var(--accent); font-size:0.7rem; text-transform:uppercase;">In Transit</div>
-            </div>
-        </div>`).join('');
+  // Timer & UI Logic
+  function startSocialProof() {
+    const names = ["Arthur", "Sophie", "Clara", "Julian"];
+    setInterval(() => {
+        const toast = document.getElementById('social-toast');
+        document.getElementById('toast-text').innerText = `${names[Math.floor(Math.random()*4)]} just adopted a rock!`;
+        toast.style.display = 'flex';
+        setTimeout(() => toast.style.display = 'none', 4000);
+    }, 15000);
   }
 
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    document.getElementById('account-dropdown').classList.remove('show');
-    window.scrollTo(0,0);
+  function updateTimer() {
+      const now = new Date();
+      const ms = (10 * 3600000) - (now.getTime() % (10 * 3600000));
+      const h = Math.floor(ms / 3600000);
+      const m = Math.floor((ms % 3600000) / 60000);
+      const s = Math.floor((ms % 60000) / 1000);
+      document.getElementById('timer-val').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+  setInterval(updateTimer, 1000);
+
+  function filterItems(type, el) {
+    document.querySelectorAll('.sidebar-list li').forEach(li => li.classList.remove('active'));
+    el.classList.add('active');
+    renderGrid(type === 'all' ? products : products.filter(p => p.type === type));
   }
 
+  function toggleReviews() { const s = document.getElementById('reviews-section'); s.style.display = s.style.display === 'block' ? 'none' : 'block'; }
+  function toggleDropdown() { document.getElementById('account-dropdown').classList.toggle('show'); }
+  function toggleCart() { document.getElementById('drawer').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
   function handleLogoClick() { if(isLoggedIn) showScreen('shop-screen'); else showScreen('auth-screen'); }
-
-  function closeAll() {
-    document.getElementById('drawer').classList.remove('active');
-    document.getElementById('overlay').classList.remove('active');
-    document.getElementById('account-dropdown').classList.remove('show');
+  function addCurrentToCart() { cart.push({...activeProduct}); renderCart(); toggleCart(); }
+  function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); document.getElementById('account-dropdown').classList.remove('show'); }
+  function closeAll() { document.getElementById('drawer').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); document.getElementById('account-dropdown').classList.remove('show'); }
+  function goToCheckout() { toggleCart(); showScreen('checkout-screen'); }
+  function renderCart() {
+    let sub = cart.reduce((a, b) => a + b.price, 0);
+    document.getElementById('badge-count').innerText = cart.length;
+    document.getElementById('subtotal').innerText = `$${sub}.00`;
+    document.getElementById('ch-sub').innerText = `$${sub}.00`;
+    document.getElementById('ch-final').innerText = `$${sub + 5}.00`;
+    document.getElementById('ch-total-hero').innerText = `$${sub + 5}.00`;
+    document.getElementById('cart-content').innerHTML = cart.map(item => `<div style="display:flex; gap:10px; margin-bottom:15px; align-items:center;"><img src="${item.img}" style="width:40px;"><div><div style="font-weight:700;">${item.name}</div><div>$${item.price}.00</div></div></div>`).join('');
   }
 
+  // Card formatting
   document.getElementById('exp-mm').addEventListener('input', function() { if(this.value.length === 2) document.getElementById('exp-yy').focus(); });
   document.getElementById('card-num').addEventListener('input', function() {
     let val = this.value.replace(/\D/g, '').substring(0, 16);
@@ -359,7 +308,6 @@
     for(let i=0; i < val.length; i++) { if(i > 0 && i % 4 === 0) out += " "; out += val[i]; }
     this.value = out;
   });
-
 </script>
 </body>
 </html>
