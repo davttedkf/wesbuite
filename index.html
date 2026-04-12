@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LITHOS | Curated Geologic Companions</title>
-  <link rel="icon" href="favicon.ico?v=9">
+  <link rel="icon" href="favicon.ico?v=10">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -32,13 +32,13 @@
     .btn:hover { transform: scale(1.02); background: #000; }
     .btn:active { transform: scale(0.98); }
 
-    /* Badge Styling Restored to Original */
+    /* Muted/Toned Down Badge Styling */
     .badge { position: absolute; top: 15px; left: 15px; padding: 5px 12px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; z-index: 10; }
-    .badge-best { background: #121212; color: #fff; }
+    .badge-best { background: #e5e5e5; color: #444; }
     .badge-bundle { background: #e2d1c3; color: #5a4a3a; }
-    .badge-new { background: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; }
-    .badge-fan { background: #ffeb3b; color: #000; }
-    .badge-sharp { background: #fce4ec; color: #c2185b; }
+    .badge-new { background: #dce7e1; color: #4a6755; }
+    .badge-fan { background: #f2e9d0; color: #7a6e4e; }
+    .badge-sharp { background: #e8d7de; color: #7c5a67; }
 
     .shop-layout { display: flex; gap: 50px; }
     .sidebar { width: 200px; flex-shrink: 0; position: sticky; top: 100px; height: fit-content; }
@@ -192,7 +192,7 @@
     { id: 3, type: 'river', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', badgeClass: '', rating: 4.8, count: 85, desc: 'Smoothed by centuries of river water. The perfect pocket-sized companion.' },
     { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', badgeClass: 'badge-sharp', rating: 4.6, count: 31, desc: 'Volcanic glass. Shiny, elegant, and sophisticated. Handle with care.' },
     { id: 5, type: 'special', name: 'Family Rock Pack', price: 95, img: 'family.png', badge: 'BUNDLE', badgeClass: 'badge-bundle', rating: 5.0, count: 18, desc: 'A collection of 4 rocks of varying sizes. Perfect for building a rocky household.' },
-    { id: 6, type: 'fun', name: 'Adopt-a-Rock', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', badgeClass: 'badge-fan', rating: 4.9, count: 212, desc: 'A hand-selected pet rock wearing a custom knit outfit and googly eyes. Ready for love.' },
+    { id: 6, type: 'fun', name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', badgeClass: 'badge-fan', rating: 4.9, count: 212, desc: 'A hand-selected pet rock wearing a custom knit outfit and googly eyes. Ready for love.' },
     { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', badgeClass: 'badge-best', rating: 4.8, count: 56, desc: 'Polished metamorphic limestone with stunning natural veins. A truly luxurious companion.' }
   ];
 
@@ -231,7 +231,6 @@
             showScreen('tracking-screen');
             cart = [];
             renderCart();
-            // Reset button for future sessions
             target.disabled = false;
             target.innerHTML = originalText;
             target.style.background = type === 'apple' ? "#000" : "var(--primary)";
