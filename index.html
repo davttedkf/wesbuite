@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LITHOS | Curated Geologic Companions</title>
-  <link rel="icon" href="favicon.ico?v=19">
+  <link rel="icon" href="favicon.ico?v=20">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -40,47 +40,39 @@
     .img-box { width: 100%; aspect-ratio: 1/1; background: #fafafa; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .img-box img { width: 75%; height: 75%; object-fit: contain; }
 
-    /* Detail Page */
-    .detail-container { max-width: 1200px; margin: 0 auto; padding: 60px 5%; }
-    .detail-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 80px; align-items: start; }
-    .detail-img-wrap { background: #fcfcfc; padding: 60px; border-radius: 30px; text-align: center; border: 1px solid #f0f0f0; }
-    .detail-img-wrap img { width: 100%; max-height: 500px; object-fit: contain; }
+    .badge { position: absolute; top: 15px; left: 15px; padding: 5px 12px; border-radius: 50px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; z-index: 10; background:#121212; color:#fff; }
 
-    .care-box { background: var(--light-bg); padding: 25px; border-radius: 15px; margin-top: 30px; font-size: 0.9rem; border: 1px solid var(--border); }
-    .engrave-input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-top: 10px; display: none; font-family: inherit; }
-
-    /* Checkout Container */
+    /* Restored Split Checkout */
     .checkout-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
-    .checkout-left { background: var(--light-bg); padding: 60px 10%; border-right: 1px solid var(--border); }
+    .checkout-left { background: var(--light-bg); padding: 60px 10%; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
     .checkout-right { padding: 60px 10%; background: #fff; }
 
-    .payment-container { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 10px; }
-    .card-num-input { border: none; border-bottom: 1px solid var(--border); border-radius: 0; width: 100%; padding: 16px; font-size: 1rem; }
-    .expiry-cvc-row { display: flex; align-items: center; background: #fff; }
-    .sub-input { border: none; border-radius: 0; padding: 16px; width: 65px; text-align: center; font-size: 1rem; }
-    .cvc-input { border: none; border-radius: 0; flex: 1; text-align: right; padding: 16px 20px; font-size: 1rem; }
+    /* Card Field UI matched to image */
+    .payment-box { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 10px; }
+    .pay-input { border: none; padding: 16px; width: 100%; font-size: 1rem; font-family: inherit; }
+    .pay-input:focus { outline: none; }
+    .pay-row { display: flex; border-top: 1px solid var(--border); }
+    .sub-input { border: none; width: 65px; text-align: center; border-right: 1px solid var(--border); padding: 16px; }
+    .cvc-input { border: none; flex: 1; text-align: right; padding: 16px 20px; }
 
-    /* Tracking Visual */
-    .status-bar { width: 100%; height: 8px; background: #eee; border-radius: 10px; margin: 40px 0; overflow: hidden; position: relative; }
-    .status-fill { width: 33%; height: 100%; background: var(--accent); transition: 1s ease; }
-    .status-labels { display: flex; justify-content: space-between; font-size: 0.65rem; text-transform: uppercase; color: #aaa; font-weight: 800; letter-spacing: 1px; }
+    .btn { width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; }
+    .btn:hover { background: #333; }
 
-    /* Social Proof Toast */
+    /* Social Proof */
     #social-toast { position: fixed; bottom: 30px; left: 30px; background: #fff; border: 1px solid var(--border); padding: 15px 20px; border-radius: 12px; display: none; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); z-index: 5000; animation: slideUp 0.5s ease; }
     @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-    .btn { width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; }
     .drawer { position: fixed; top: 0; right: -450px; width: 450px; height: 100%; background: #fff; z-index: 3000; transition: 0.5s; display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(0,0,0,0.1); }
     .drawer.active { right: 0; }
 
-    @media (max-width: 900px) { .checkout-layout, .detail-grid, .shop-container { grid-template-columns: 1fr; flex-direction: column; } .drawer { width: 100%; right: -100%; } }
+    @media (max-width: 900px) { .checkout-layout, .shop-container { grid-template-columns: 1fr; flex-direction: column; } .drawer { width: 100%; right: -100%; } }
   </style>
 </head>
 <body>
 
 <div id="loader">
     <div class="spinner"></div>
-    <p id="loader-text" style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700;">Processing Geologic Manifest...</p>
+    <p id="loader-text" style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700;">Processing Manifest...</p>
 </div>
 
 <div id="social-toast">
@@ -119,32 +111,21 @@
 </section>
 
 <section id="detail-screen" class="screen">
-  <div class="detail-container">
+  <div class="container" style="max-width:1200px; margin:0 auto; padding:60px 5%;">
     <div style="cursor: pointer; margin-bottom: 40px; font-weight: 700; font-size: 0.7rem; color: #aaa;" onclick="showScreen('shop-screen')">BACK</div>
-    <div class="detail-grid">
-      <div class="detail-img-wrap"><img id="detail-img" src=""></div>
+    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px; align-items: start;">
+      <div style="background: #fcfcfc; padding: 60px; border-radius: 30px; text-align: center; border: 1px solid #f0f0f0;">
+          <img id="detail-img" src="" style="width: 100%; max-height: 500px; object-fit: contain;">
+      </div>
       <div>
         <h1 id="detail-title" style="font-size: 3.5rem; font-weight: 800; margin-bottom: 10px;"></h1>
         <div style="margin-bottom: 30px; display: flex; align-items: center;">
             <span id="detail-rating-header" style="color: var(--accent); font-weight: 600;"></span>
-            <span id="view-reviews-btn" onclick="toggleReviews()" style="font-size:0.8rem; color:#aaa; margin-left:10px; cursor:pointer; text-decoration:underline;">View Reviews</span>
+            <span class="view-reviews-link" onclick="toggleReviews()" style="font-size:0.8rem; color:#aaa; margin-left:10px; cursor:pointer; text-decoration:underline;">View Reviews</span>
         </div>
         <p id="detail-price" style="font-size: 2rem; margin-bottom: 30px;"></p>
-        
-        <div style="margin-bottom: 30px;">
-            <label style="display:flex; align-items:center; gap:10px; font-weight:700; font-size:0.9rem; cursor:pointer;">
-                <input type="checkbox" id="engrave-check" onchange="toggleEngraving()"> Custom Engraving (+$5.00)
-            </label>
-            <input type="text" id="engrave-name" class="engrave-input" placeholder="Enter name to engrave...">
-        </div>
-
-        <p id="detail-desc" style="line-height: 1.8; color: #666; margin-bottom: 30px;"></p>
+        <p id="detail-desc" style="line-height: 1.8; color: #666; margin-bottom: 40px;"></p>
         <button class="btn" onclick="addCurrentToCart()">Add to Bag</button>
-
-        <div class="care-box">
-            <h4 style="margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; font-size:0.7rem;">Companion Care Guide</h4>
-            <p style="color:#777; line-height:1.6;">• <strong>Feeding:</strong> Not required. Ever.<br>• <strong>Sleep:</strong> Prefers absolute darkness.<br>• <strong>Exercise:</strong> Stationary by nature.</p>
-        </div>
       </div>
     </div>
     <div id="reviews-section" style="display:none; margin-top:60px; border-top:1px solid var(--border); padding-top:40px;">
@@ -158,48 +139,36 @@
   <div class="checkout-layout">
     <div class="checkout-left">
       <div style="cursor: pointer; font-weight: 700; font-size: 0.7rem; color: #aaa; margin-bottom: 40px;" onclick="showScreen('shop-screen')">RETURN</div>
-      <h2 style="font-size: 2.5rem; margin-bottom: 40px;">Order Review</h2>
-      <div id="checkout-items-summary" style="margin-bottom: 30px;"></div>
+      <h2 id="checkout-total-display" style="font-size: 3rem; margin-bottom: 40px; font-weight: 800;"></h2>
+      <div id="checkout-items-summary" style="flex:1;"></div>
       <div style="border-top: 1px solid #ddd; padding-top: 20px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">Subtotal <span id="ch-sub"></span></div>
         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">Shipping <span>$5.00</span></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px; color:#888; font-size:0.9rem;">Estimated Tax (6%) <span id="ch-tax"></span></div>
         <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.5rem;">Total <span id="ch-total"></span></div>
       </div>
     </div>
     <div class="checkout-right">
-        <h4 style="margin-bottom:40px; letter-spacing:1px;">SECURE CHECKOUT</h4>
-        <input type="text" id="ship-name" placeholder="Full Name">
-        <input type="text" id="ship-addr" placeholder="Street Address" style="margin-top:10px;">
-        <div class="payment-container" style="margin-top:20px;">
-            <input type="text" id="card-num" class="card-num-input" placeholder="Card Number" maxlength="19">
-            <div class="expiry-cvc-row">
+        <button class="btn" style="background: #000; margin-bottom: 40px;" onclick="validateAndProcess()"> Pay</button>
+        <input type="text" id="ship-name" placeholder="Full Name" style="margin-bottom:10px;">
+        <input type="text" id="ship-addr" placeholder="Address">
+        <div class="payment-box">
+            <input type="text" id="card-num" class="pay-input" placeholder="Card Number" maxlength="19">
+            <div class="pay-row">
                 <input type="text" id="exp-mm" class="sub-input" placeholder="MM" maxlength="2">
-                <span style="color: #ddd;">/</span>
                 <input type="text" id="exp-yy" class="sub-input" placeholder="YY" maxlength="2">
-                <div style="width:1px; height:30px; background:var(--border);"></div>
                 <input type="text" id="cvc" class="cvc-input" placeholder="CVC" maxlength="3">
             </div>
         </div>
-        <button class="btn" style="margin-top:30px;" onclick="validateAndProcess()">Adopt Companion</button>
+        <button class="btn" style="margin-top:30px;" onclick="validateAndProcess()">Complete Adoption</button>
     </div>
   </div>
 </section>
 
 <section id="tracking-screen" class="screen">
-    <div class="container" style="text-align: center; padding-top: 120px; max-width:600px; margin:0 auto;">
-      <h1 style="font-weight: 800;">PET SECURED.</h1>
-      
-      <div class="status-bar">
-          <div class="status-fill"></div>
-      </div>
-      <div class="status-labels">
-          <span>Sedimentation</span>
-          <span>Tectonic Shift</span>
-          <span>Surface Emergence</span>
-      </div>
-
-      <div id="track-id" style="margin: 40px 0; font-family: monospace; font-size: 1.2rem; background: #f8f8f8; padding: 25px; border: 1px dashed #ccc;"></div>
+    <div class="container" style="text-align: center; padding-top: 150px; max-width:600px; margin:0 auto;">
+      <i class="fa-solid fa-circle-check fa-5x" style="color: var(--success); margin-bottom: 30px;"></i>
+      <h1>ADOPTION CONFIRMED.</h1>
+      <div id="track-id" style="margin: 40px 0; font-family: monospace; font-size: 1.2rem; background: #f8f8f8; padding: 25px;"></div>
       <button class="btn" style="width: 250px;" onclick="location.reload()">HOME</button>
     </div>
 </section>
@@ -221,29 +190,45 @@
   let activeProduct = null;
 
   const products = [
-    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', rating: 4.9, count: 128, desc: 'Forged in fire. A patient, loyal companion.' },
-    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', rating: 4.7, count: 42, desc: 'Layered metamorphic history. Ideal for contemplation.' },
-    { id: 3, type: 'river', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', rating: 4.8, count: 85, desc: 'Water-smoothed Alpine stone. High tactile satisfaction.' },
+    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', rating: 4.9, count: 128, desc: 'A dense igneous masterpiece. Patient and loyal.' },
+    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', rating: 4.7, count: 42, desc: 'Layered metamorphic rock. Excellent for deep contemplation.' },
+    { id: 3, type: 'river', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', rating: 4.8, count: 85, desc: 'Smoothed by Alpine water. High tactile satisfaction.' },
     { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', rating: 4.6, count: 31, desc: 'Glassy volcanic sheen. Handle with care.' },
-    { id: 5, type: 'special', name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', rating: 5.0, count: 18, desc: 'Four specimens of varying ages.' },
+    { id: 5, type: 'special', name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', rating: 5.0, count: 18, desc: 'Four specimens of varying sizes.' },
     { id: 6, type: 'fun', name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', rating: 4.9, count: 212, desc: 'Includes knit sweater and biologic eyes.' },
-    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', rating: 4.8, count: 56, desc: 'Distinct veining and polished finish.' }
+    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', rating: 4.8, count: 56, desc: 'Polished metamorphic limestone with natural veining.' }
   ];
+
+  // Unique Review Logic
+  const revPool = {
+    volcanic: ["So dense!", "Feels like the heat of a volcano.", "The texture is incredible.", "Heaviest rock I own."],
+    metamorphic: ["The layers tell a story.", "So much character.", "Looks amazing on my desk.", "Very deep focus."],
+    river: ["So smooth...", "Perfect pocket companion.", "I haven't stopped holding it.", "Calming finish."],
+    fun: ["The eyes follow me!", "Sweater is high quality.", "My favorite pet.", "Actually adorable."],
+    special: ["Great family dynamic.", "Kids love them.", "Good value pack.", "Full household of rocks."]
+  };
+
+  function generateUniqueReviews(p) {
+    let html = "";
+    const names = ["James", "Emma", "Sarah", "Michael", "David", "Olivia", "Robert", "Sophia", "Will", "Luna", "Noah", "Mia", "Leo"];
+    const traits = revPool[p.type] || ["Very solid choice."];
+    for(let i=0; i<p.count; i++) {
+        const name = names[Math.floor(Math.random() * names.length)];
+        const trait = traits[Math.floor(Math.random() * traits.length)];
+        html += `<div style="border-bottom:1px solid #f0f0f0; padding-bottom:15px;"><p style="font-weight:600;">"${trait} Satisfied collector."</p><p style="font-size:0.7rem; color:#aaa; margin-top:5px;">— ${name} ${String.fromCharCode(65 + i % 26)}.</p></div>`;
+    }
+    return html;
+  }
 
   function renderGrid(items = products) {
     document.getElementById('product-grid').innerHTML = items.map(p => `
       <div class="product-card" onclick="openProduct(${p.id})">
-        ${p.badge ? `<span class="badge" style="position:absolute; top:15px; left:15px; padding:5px 12px; border-radius:50px; font-size:0.6rem; font-weight:800; background:#121212; color:#fff;">${p.badge}</span>` : ''}
-        <div class="img-box"><img src="${p.img}" onerror="this.src='https://via.placeholder.com/300?text=Pet+Rock'"></div>
+        ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
+        <div class="img-box"><img src="${p.img}"></div>
         <div style="font-size:0.75rem; color:var(--accent); margin-bottom:5px;"><i class="fa-solid fa-star"></i> ${p.rating} (${p.count})</div>
         <h3 style="font-size: 0.9rem; letter-spacing: 2px; text-transform:uppercase;">${p.name}</h3>
         <p style="color:#aaa;">$${p.price}.00</p>
       </div>`).join('');
-  }
-
-  function toggleEngraving() {
-      const input = document.getElementById('engrave-name');
-      input.style.display = document.getElementById('engrave-check').checked ? 'block' : 'none';
   }
 
   function openProduct(id) {
@@ -254,93 +239,52 @@
     document.getElementById('detail-desc').innerText = p.desc;
     document.getElementById('detail-img').src = p.img;
     document.getElementById('detail-rating-header').innerText = `★ ${p.rating} / 5.0`;
-    document.getElementById('view-reviews-btn').innerText = `View ${p.count} Reviews`;
-    document.getElementById('review-title-count').innerText = `${p.count} Collector Feedback Entries`;
+    document.getElementById('review-title-count').innerText = `${p.count} Verified Feedback Entries`;
+    document.getElementById('reviews-container').innerHTML = generateUniqueReviews(p);
     document.getElementById('reviews-section').style.display = 'none';
-    document.getElementById('engrave-check').checked = false;
-    document.getElementById('engrave-name').style.display = 'none';
-    document.getElementById('engrave-name').value = '';
-
-    let revs = "";
-    for(let i=0; i<Math.min(p.count, 10); i++) {
-        revs += `<div style="border-bottom:1px solid #f0f0f0; padding-bottom:15px;"><p style="font-weight:600;">"Arrived safely. Perfectly stoic."</p><p style="font-size:0.7rem; color:#aaa; margin-top:5px;">Verified Collector</p></div>`;
-    }
-    document.getElementById('reviews-container').innerHTML = revs;
     showScreen('detail-screen');
   }
 
-  function toggleReviews() {
-    const s = document.getElementById('reviews-section');
-    s.style.display = s.style.display === 'block' ? 'none' : 'block';
-  }
-
-  function toggleCart() {
-    document.getElementById('drawer').classList.toggle('active');
-    document.getElementById('overlay').classList.toggle('active');
-  }
-
-  function addCurrentToCart() {
-    let finalPrice = activeProduct.price;
-    let nameAddon = "";
-    if(document.getElementById('engrave-check').checked) {
-        finalPrice += 5;
-        nameAddon = ` (Engraved: ${document.getElementById('engrave-name').value || 'Rocky'})`;
-    }
-    cart.push({...activeProduct, price: finalPrice, name: activeProduct.name + nameAddon});
-    renderCart(); toggleCart();
-  }
+  function toggleReviews() { const s = document.getElementById('reviews-section'); s.style.display = s.style.display === 'block' ? 'none' : 'block'; }
+  function toggleCart() { document.getElementById('drawer').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+  function addCurrentToCart() { cart.push({...activeProduct}); renderCart(); toggleCart(); }
 
   function renderCart() {
     let sub = cart.reduce((a, b) => a + b.price, 0);
-    let tax = sub * 0.06;
-    document.getElementById('cart-content').innerHTML = cart.map(item => `
-      <div style="display:flex; gap:15px; margin-bottom:20px; align-items:center;">
-          <div style="width:60px; height:60px; background:#f4f4f4; border-radius:8px;"><img src="${item.img}" style="width:100%; height:100%; object-fit:contain;"></div>
-          <div style="flex:1;"><div style="font-weight:700; font-size:0.8rem;">${item.name}</div><div style="color:var(--accent); font-size:0.8rem;">$${item.price}.00</div></div>
-      </div>`).join('');
+    document.getElementById('cart-content').innerHTML = cart.map(item => `<div style="display:flex; gap:15px; margin-bottom:20px; align-items:center;"><div style="width:60px; height:60px; background:#f4f4f4; border-radius:8px; overflow:hidden;"><img src="${item.img}" style="width:100%; height:100%; object-fit:contain;"></div><div style="flex:1;"><div style="font-weight:700;">${item.name}</div><div style="color:var(--accent);">$${item.price}.00</div></div></div>`).join('');
     document.getElementById('badge-count').innerText = cart.length;
-    document.getElementById('subtotal').innerText = `$${sub.toFixed(2)}`;
-    document.getElementById('ch-sub').innerText = `$${sub.toFixed(2)}`;
-    document.getElementById('ch-tax').innerText = `$${tax.toFixed(2)}`;
-    document.getElementById('ch-total').innerText = `$${(sub + 5 + tax).toFixed(2)}`;
-    document.getElementById('checkout-items-summary').innerHTML = cart.map(item => `<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>${item.name}</span><span style="font-weight:700;">$${item.price}.00</span></div>`).join('');
+    document.getElementById('subtotal').innerText = `$${sub}.00`;
+    document.getElementById('ch-sub').innerText = `$${sub}.00`;
+    document.getElementById('ch-total').innerText = `$${sub + 5}.00`;
+    document.getElementById('checkout-total-display').innerText = `$${sub + 5}.00`;
+    document.getElementById('checkout-items-summary').innerHTML = cart.map(item => `<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>${item.name}</span><span>$${item.price}.00</span></div>`).join('');
   }
+
+  function goToCheckout() { toggleCart(); showScreen('checkout-screen'); }
+  function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
 
   function validateAndProcess() {
     if(!document.getElementById('ship-addr').value) return alert("Enter address");
     document.getElementById('loader').style.display = 'flex';
     setTimeout(() => {
         document.getElementById('loader').style.display = 'none';
-        document.getElementById('track-id').innerText = "TRACK-LITH-" + Math.floor(Math.random()*90000000);
+        document.getElementById('track-id').innerText = "LITH-" + Math.floor(Math.random()*90000000);
         showScreen('tracking-screen');
         cart = []; renderCart();
-    }, 2500);
+    }, 2800);
   }
 
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo(0,0);
-  }
-
-  function filterItems(type, el) {
-    document.querySelectorAll('.sidebar-list li').forEach(li => li.classList.remove('active'));
-    el.classList.add('active');
-    renderGrid(type === 'all' ? products : products.filter(p => p.type === type));
-  }
-
-  // Social Proof Slow-Loop
-  const visitors = ["Sarah", "Mark", "Julian", "Elena", "Marcus", "Lydia"];
-  const rocks = ["Volcanic Basalt", "Smooth Stone", "Family Pack"];
+  // Social Proof Frequency
+  const visitors = ["Sarah", "Mark", "Julian", "Elena", "Marcus", "Lydia", "Clara", "Arthur"];
   function showSocial() {
       const toast = document.getElementById('social-toast');
       const text = document.getElementById('toast-text');
-      text.innerText = `${visitors[Math.floor(Math.random()*visitors.length)]} from London just adopted a ${rocks[Math.floor(Math.random()*rocks.length)]}!`;
+      text.innerText = `${visitors[Math.floor(Math.random()*visitors.length)]} from London just adopted a rock!`;
       toast.style.display = 'flex';
-      setTimeout(() => toast.style.display = 'none', 5000);
+      setTimeout(() => toast.style.display = 'none', 4000);
   }
-  setInterval(showSocial, 36000000); // 10 Hours logic, but for demo it runs once.
-  setTimeout(showSocial, 2000); // Demo first one quickly.
+  setInterval(showSocial, 15000); // 15 Seconds
+  setTimeout(showSocial, 2000);
 
   document.getElementById('exp-mm').addEventListener('input', function() { if(this.value.length === 2) document.getElementById('exp-yy').focus(); });
   document.getElementById('card-num').addEventListener('input', function() {
@@ -350,7 +294,11 @@
     this.value = out;
   });
 
-  function goToCheckout() { toggleCart(); showScreen('checkout-screen'); }
+  function filterItems(type, el) {
+    document.querySelectorAll('.sidebar-list li').forEach(li => li.classList.remove('active'));
+    el.classList.add('active');
+    renderGrid(type === 'all' ? products : products.filter(p => p.type === type));
+  }
 
   renderGrid();
 </script>
