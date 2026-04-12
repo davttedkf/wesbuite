@@ -1,10 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-      initial-scale=1.0">
-    <title>LITHOS | Curated Geologic Specimens</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <style> :root { --primary: #121212; --accent: #a38a6d; --bg: #f8f8f6; --white: #ffffff; --border: #e2e2df; } * { box-sizing: border-box; margin: 0; padding: 0; } body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--primary); overflow-x: hidden; } #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); opacity: 0; visibility: hidden; transition: 0.3s ease; z-index: 1500; } #overlay.active { opacity: 1; visibility: visible; } /* --- Navigation --- */ nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: var(--white); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; } .logo { font-weight: 800; letter-spacing: 5px; text-transform: uppercase; cursor: pointer; } .cart-trigger { position: relative; cursor: pointer; font-size: 1.2rem; } .badge { position: absolute; top: -10px; right: -12px; background: var(--primary); color: white; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; } /* --- Sections --- */ .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; } .screen { display: none; transition: 0.3s ease; } .screen.active { display: block; animation: fadeIn 0.4s ease forwards; } @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } } /* --- Product Grid --- */ .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; } .product-card { background: white; border: 1px solid var(--border); padding: 24px; border-radius: 4px; } .img-box { background: #f3f3f1; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: #bbb; margin-bottom: 20px; } .price { font-weight: 600; color: var(--accent); margin-bottom: 20px; font-size: 1.1rem; } /* --- Cart Drawer --- */ #drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 420px; height: 100%; background: white; z-index: 2000; transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; box-shadow: -15px 0 40px rgba(0,0,0,0.08); } #drawer.active { right: 0; } .drawer-header { padding: 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; } .drawer-content { flex: 1; padding: 30px; overflow-y: auto; } .cart-item { display: flex; gap: 20px; margin-bottom: 25px; align-items: center; } .item-img { width: 80px; height: 80px; background: #f4f4f4; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; border-radius: 2px; } .qty-wrap { display: flex; align-items: center; border: 1px solid var(--border); width: fit-content; margin-top: 10px; } .qty-btn { cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; } .qty-btn:hover { background: #f0f0f0; } .drawer-footer { padding: 30px; background: #fafaf9; border-top: 1px solid var(--border); } /* --- Checkout Styling --- */ .checkout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; } .form-section { margin-bottom: 30px; } .form-section h3 { font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; color: #777; } input, textarea { width: 100%; padding: 14px; border: 1px solid var(--border); font-family: inherit; font-size: 0.95rem; margin-bottom: 12px; border-radius: 4px; } input:focus { outline: none; border-color: var(--accent); } .stored-payment { display: flex; align-items: center; gap: 15px; padding: 20px; border: 1px solid var(--primary); background: #f9f9f9; border-radius: 4px; } .btn { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; border-radius: 2px; } .btn:hover { background: #000; } /* --- Reviews --- */ .reviews { margin-top: 100px; padding: 60px 0; border-top: 1px solid var(--border); } .review-item { margin-bottom: 40px; border-left: 2px solid var(--accent); padding-left: 25px; } /* --- Tracking --- */ .track-num { background: #eee; padding: 15px; font-family: monospace; display: block; margin: 20px 0; font-size: 1.1rem; } </style> </head> <body> <div id="overlay" onclick="toggleCart()"></div> <nav> <div class="logo" onclick="location.reload()">LITHOS</div> <div class="cart-trigger" onclick="toggleCart()"> <i class="fa-solid fa-bag-shopping"></i> <span class="badge" id="badge-count">0</span> </div> </nav> <section id="shop-screen" class="screen active"> <div class="container"> <h1 style="font-weight: 300; margin-bottom: 50px; font-size: 2.5rem;">Select your companion.</h1> <div class="grid"> <div class="product-card"> <div class="img-box"><i class="fa-solid fa-mountain"></i></div> <h3>Highland Slate</h3> <p class="price">$34.00</p> <button class="btn" onclick="addToCart('Highland Slate', 34, 'fa-mountain')">Add to Bag</button> </div> <div class="product-card"> <div class="img-box"><i class="fa-solid fa-water"></i></div> <h3>River Bed Stone</h3> <p class="price">$28.00</p> <button class="btn" onclick="addToCart('River Bed Stone', 28, 'fa-water')">Add to Bag</button> </div> <div class="product-card"> <div class="img-box"><i class="fa-solid fa-volcano"></i></div> <h3>Volcanic Basalt</h3> <p class="price">$49.00</p> <button class="btn" onclick="addToCart('Volcanic Basalt', 49, 'fa-volcano')">Add to Bag</button> </div> </div> <div class="reviews"> <h2 style="font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; color: #888;">Collector Testimony</h2> <div class="review-item"> <div style="color: var(--accent); margin-bottom: 10px;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div> <p style="font-style: italic;">"The Basalt arrived with a calming presence. Truly low-maintenance and structurally sound."</p> <p style="margin-top: 10px; font-weight: 600; font-size: 0.8rem;">— ELIZA R.</p> </div> <div class="review-item"> <div style="color: var(--accent); margin-bottom: 10px;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div> <p style="font-style: italic;">"Fast tectonic shipping. It looks exactly like the photo, only more still."</p> <p style="margin-top: 10px; font-weight: 600; font-size: 0.8rem;">— MARCUS W.</p> </div> </div> </div> </section> <section id="payment-screen" class="screen"> <div class="container"> <h1 style="margin-bottom: 40px; font-weight: 300;">Checkout</h1> <div class="checkout-grid"> <div class="form-container"> <div class="form-section"> <h3>1. Shipping Address</h3> <input type="text" id="cust-name" placeholder="Full Name"> <input type="text" id="cust-street" placeholder="Street Address"> <div style="display: flex; gap: 10px;"> <input type="text" id="cust-city" placeholder="City"> <input type="text" id="cust-zip" placeholder="Zip"> </div> </div> <div class="form-section"> <h3>2. Payment Method</h3> <div class="stored-payment"> <i class="fa-brands fa-cc-visa fa-2x"></i> <div style="flex: 1;"> <div style="font-weight: 600;">Stored Visa Card</div> <div style="font-size: 0.8rem; opacity: 0.6;">•••• •••• •••• 4492</div> </div> <i class="fa-solid fa-circle-check"></i> </div> </div> </div> <div class="order-summary" style="background: white; padding: 30px; border: 1px solid var(--border); height: fit-content;"> <h3 style="font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 20px;">Order Summary</h3> <div id="checkout-items-list"></div> <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);"> <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.2rem; margin-bottom: 30px;"> <span>Total</span> <span id="pay-total">$0.00</span> </div> <button class="btn" onclick="processOrder()">Place Order</button> </div> </div> </div> </section> <section id="tracking-screen" class="screen"> <div class="container" style="text-align: center; max-width: 600px;"> <i class="fa-solid fa-box-open fa-3x" style="color: var(--accent); margin-bottom: 30px;"></i> <h2>Your companion is on the way.</h2> <p style="color: #666; margin-top: 15px;">Your order has been confirmed and added to the tectonic manifest.</p> <div class="track-num" id="track-id">LITH-0000</div> <p><strong>Shipping Window:</strong> 1 Week — 1 Month</p> <p style="font-size: 0.8rem; color: #999; margin-top: 20px;">Shipping to: <span id="final-addr"></span></p> <button class="btn" style="margin-top: 40px; background: none; color: #121212; border: 1px solid #ccc;" onclick="location.reload()">Back to Home</button> </div> </section> <div id="drawer"> <div class="drawer-header"> <span style="font-weight: 800; letter-spacing: 3px; font-size: 0.9rem;">YOUR BAG</span> <i class="fa-solid fa-xmark" style="cursor: pointer; font-size: 1.2rem;" onclick="toggleCart()"></i> </div> <div class="drawer-content" id="cart-items"> </div> <div class="drawer-footer"> <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 600;"> <span>Subtotal</span> <span id="subtotal">$0.00</span> </div> <button class="btn" id="checkout-btn" onclick="startCheckout()">Continue to Checkout</button> </div> </div> <script> let cart = []; function toggleCart() { const drawer = document.getElementById('drawer'); const overlay = document.getElementById('overlay'); drawer.classList.toggle('active'); overlay.classList.toggle('active'); } function addToCart(name, price, icon) { const existing = cart.find(i => i.name === name); if (existing) { existing.qty++; } else { cart.push({ name, price, icon, qty: 1 }); } render(); if(!document.getElementById('drawer').classList.contains('active')) toggleCart(); } function updateQty(index, delta) { cart[index].qty += delta; if(cart[index].qty <= 0) cart.splice(index, 1); render(); } function render() { const container = document.getElementById('cart-items'); const checkList = document.getElementById('checkout-items-list'); const badge = document.getElementById('badge-count'); const subtotal = document.getElementById('subtotal'); let total = 0; let count = 0; container.innerHTML = cart.length === 0 ? '<p style="text-align:center; margin-top:60px; color:#999; font-size:0.9rem;">Your bag is empty.</p>' : cart.map((item, i) => { total += item.price * item.qty; count += item.qty; return <div class="cart-item"> <div class="item-img"><i class="fa-solid ${item.icon}"></i></div> <div style="flex:1;"> <div style="font-weight:600; font-size:0.9rem;">${item.name}</div> <div style="color:var(--accent); font-size:0.85rem;">$${item.price}.00</div> <div class="qty-wrap"> <div class="qty-btn" onclick="updateQty(${i}, -1)">-</div> <div style="padding: 0 10px; font-size: 0.8rem;">${item.qty}</div> <div class="qty-btn" onclick="updateQty(${i}, 1)">+</div> </div> </div> </div> ; }).join(''); checkList.innerHTML = cart.map(item => <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:0.9rem;"> <span>${item.name} (x${item.qty})</span> <span>$${item.price * item.qty}.00</span> </div> ).join(''); badge.innerText = count; subtotal.innerText = $${total}.00; document.getElementById('pay-total').innerText = $${total}.00; document.getElementById('checkout-btn').style.display = cart.length === 0 ? 'none' : 'block'; } function startCheckout() { toggleCart(); document.getElementById('shop-screen').classList.remove('active'); document.getElementById('payment-screen').classList.add('active'); window.scrollTo(0,0); } function processOrder() { const name = document.getElementById('cust-name').value || "Collector"; const street = document.getElementById('cust-street').value || "Unknown Location"; if(!document.getElementById('cust-street').value) { alert("Please enter a shipping address."); return; } const id = "LITH-" + Math.floor(1000 + Math.random() * 9000); document.getElementById('track-id').innerText = id; document.getElementById('final-addr').innerText = street; document.getElementById('payment-screen').classList.remove('active'); document.getElementById('tracking-screen').classList.add('active'); window.scrollTo(0,0); } </script> </body> </html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LITHOS | Curated Geologic Specimens</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #121212;
+      --accent: #a38a6d;
+      --bg: #f8f8f6;
+      --white: #ffffff;
+      --border: #e2e2df;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--primary); overflow-x: hidden; }
+    
+    #overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.3);
+      opacity: 0; visibility: hidden; transition: 0.3s ease; z-index: 1500;
+    }
+    #overlay.active { opacity: 1; visibility: visible; }
+
+    /* --- Navigation --- */
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 5%; background: var(--white); border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 1000;
+    }
+    .logo { font-weight: 800; letter-spacing: 5px; text-transform: uppercase; cursor: pointer; }
+    .cart-trigger { position: relative; cursor: pointer; font-size: 1.2rem; }
+    .badge {
+      position: absolute; top: -10px; right: -12px;
+      background: var(--primary); color: white;
+      font-size: 10px; width: 18px; height: 18px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* --- Sections --- */
+    .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+    .screen { display: none; transition: 0.3s ease; }
+    .screen.active { display: block; animation: fadeIn 0.4s ease forwards; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* --- Product Grid --- */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+    .product-card { background: white; border: 1px solid var(--border); padding: 24px; border-radius: 4px; }
+    .img-box { 
+      background: #f3f3f1; aspect-ratio: 1; display: flex; 
+      align-items: center; justify-content: center; font-size: 4rem; color: #bbb; margin-bottom: 20px; 
+    }
+    .price { font-weight: 600; color: var(--accent); margin-bottom: 20px; font-size: 1.1rem; }
+
+    /* --- Cart Drawer --- */
+    #drawer {
+      position: fixed; top: 0; right: -100%; width: 100%; max-width: 420px; height: 100%;
+      background: white; z-index: 2000; transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex; flex-direction: column; box-shadow: -15px 0 40px rgba(0,0,0,0.08);
+    }
+    #drawer.active { right: 0; }
+    .drawer-header { padding: 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .drawer-content { flex: 1; padding: 30px; overflow-y: auto; }
+    
+    .cart-item { display: flex; gap: 20px; margin-bottom: 25px; align-items: center; }
+    .item-img { width: 80px; height: 80px; background: #f4f4f4; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; border-radius: 2px; }
+    .qty-wrap { display: flex; align-items: center; border: 1px solid var(--border); width: fit-content; margin-top: 10px; }
+    .qty-btn { cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+    .qty-btn:hover { background: #f0f0f0; }
+
+    .drawer-footer { padding: 30px; background: #fafaf9; border-top: 1px solid var(--border); }
+
+    /* --- Checkout Styling --- */
+    .checkout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+    .form-section { margin-bottom: 30px; }
+    .form-section h3 { font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; color: #777; }
+    
+    input, textarea { 
+      width: 100%; padding: 14px; border: 1px solid var(--border); font-family: inherit; font-size: 0.95rem; margin-bottom: 12px; border-radius: 4px;
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+
+    .stored-payment {
+      display: flex; align-items: center; gap: 15px; padding: 20px; border: 1px solid var(--primary); background: #f9f9f9; border-radius: 4px;
+    }
+
+    .btn {
+      width: 100%; padding: 18px; background: var(--primary); color: white;
+      border: none; cursor: pointer; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 2px; font-size: 0.85rem; border-radius: 2px;
+    }
+    .btn:hover { background: #000; }
+
+    /* --- Reviews --- */
+    .reviews { margin-top: 100px; padding: 60px 0; border-top: 1px solid var(--border); }
+    .review-item { margin-bottom: 40px; border-left: 2px solid var(--accent); padding-left: 25px; }
+
+    /* --- Tracking --- */
+    .track-num { background: #eee; padding: 15px; font-family: monospace; display: block; margin: 20px 0; font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+
+<div id="overlay" onclick="toggleCart()"></div>
+
+<nav>
+  <div class="logo" onclick="location.reload()">LITHOS</div>
+  <div class="cart-trigger" onclick="toggleCart()">
+    <i class="fa-solid fa-bag-shopping"></i>
+    <span class="badge" id="badge-count">0</span>
+  </div>
+</nav>
+
+<section id="shop-screen" class="screen active">
+  <div class="container">
+    <h1 style="font-weight: 300; margin-bottom: 50px; font-size: 2.5rem;">Select your companion.</h1>
+    <div class="grid">
+      <div class="product-card">
+        <div class="img-box"><i class="fa-solid fa-mountain"></i></div>
+        <h3>Highland Slate</h3>
+        <p class="price">$34.00</p>
+        <button class="btn" onclick="addToCart('Highland Slate', 34, 'fa-mountain')">Add to Bag</button>
+      </div>
+      <div class="product-card">
+        <div class="img-box"><i class="fa-solid fa-water"></i></div>
+        <h3>River Bed Stone</h3>
+        <p class="price">$28.00</p>
+        <button class="btn" onclick="addToCart('River Bed Stone', 28, 'fa-water')">Add to Bag</button>
+      </div>
+      <div class="product-card">
+        <div class="img-box"><i class="fa-solid fa-volcano"></i></div>
+        <h3>Volcanic Basalt</h3>
+        <p class="price">$49.00</p>
+        <button class="btn" onclick="addToCart('Volcanic Basalt', 49, 'fa-volcano')">Add to Bag</button>
+      </div>
+    </div>
+
+    <div class="reviews">
+      <h2 style="font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; color: #888;">Collector Testimony</h2>
+      <div class="review-item">
+        <div style="color: var(--accent); margin-bottom: 10px;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p style="font-style: italic;">"The Basalt arrived with a calming presence. Truly low-maintenance and structurally sound."</p>
+        <p style="margin-top: 10px; font-weight: 600; font-size: 0.8rem;">— ELIZA R.</p>
+      </div>
+      <div class="review-item">
+        <div style="color: var(--accent); margin-bottom: 10px;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p style="font-style: italic;">"Fast tectonic shipping. It looks exactly like the photo, only more still."</p>
+        <p style="margin-top: 10px; font-weight: 600; font-size: 0.8rem;">— MARCUS W.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="payment-screen" class="screen">
+  <div class="container">
+    <h1 style="margin-bottom: 40px; font-weight: 300;">Checkout</h1>
+    
+    <div class="checkout-grid">
+      <div class="form-container">
+        <div class="form-section">
+          <h3>1. Shipping Address</h3>
+          <input type="text" id="cust-name" placeholder="Full Name">
+          <input type="text" id="cust-street" placeholder="Street Address">
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="cust-city" placeholder="City">
+            <input type="text" id="cust-zip" placeholder="Zip">
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>2. Payment Method</h3>
+          <div class="stored-payment">
+            <i class="fa-brands fa-cc-visa fa-2x"></i>
+            <div style="flex: 1;">
+              <div style="font-weight: 600;">Stored Visa Card</div>
+              <div style="font-size: 0.8rem; opacity: 0.6;">•••• •••• •••• 4492</div>
+            </div>
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-summary" style="background: white; padding: 30px; border: 1px solid var(--border); height: fit-content;">
+        <h3 style="font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 20px;">Order Summary</h3>
+        <div id="checkout-items-list"></div>
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
+        <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.2rem; margin-bottom: 30px;">
+          <span>Total</span>
+          <span id="pay-total">$0.00</span>
+        </div>
+        <button class="btn" onclick="processOrder()">Place Order</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tracking-screen" class="screen">
+  <div class="container" style="text-align: center; max-width: 600px;">
+    <i class="fa-solid fa-box-open fa-3x" style="color: var(--accent); margin-bottom: 30px;"></i>
+    <h2>Your companion is on the way.</h2>
+    <p style="color: #666; margin-top: 15px;">Your order has been confirmed and added to the tectonic manifest.</p>
+    <div class="track-num" id="track-id">LITH-0000</div>
+    <p><strong>Shipping Window:</strong> 1 Week — 1 Month</p>
+    <p style="font-size: 0.8rem; color: #999; margin-top: 20px;">Shipping to: <span id="final-addr"></span></p>
+    <button class="btn" style="margin-top: 40px; background: none; color: #121212; border: 1px solid #ccc;" onclick="location.reload()">Back to Home</button>
+  </div>
+</section>
+
+<div id="drawer">
+  <div class="drawer-header">
+    <span style="font-weight: 800; letter-spacing: 3px; font-size: 0.9rem;">YOUR BAG</span>
+    <i class="fa-solid fa-xmark" style="cursor: pointer; font-size: 1.2rem;" onclick="toggleCart()"></i>
+  </div>
+  <div class="drawer-content" id="cart-items">
+    </div>
+  <div class="drawer-footer">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 600;">
+      <span>Subtotal</span>
+      <span id="subtotal">$0.00</span>
+    </div>
+    <button class="btn" id="checkout-btn" onclick="startCheckout()">Continue to Checkout</button>
+  </div>
+</div>
+
+<script>
+  let cart = [];
+
+  function toggleCart() {
+    const drawer = document.getElementById('drawer');
+    const overlay = document.getElementById('overlay');
+    drawer.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+
+  function addToCart(name, price, icon) {
+    const existing = cart.find(i => i.name === name);
+    if (existing) { existing.qty++; } 
+    else { cart.push({ name, price, icon, qty: 1 }); }
+    render();
+    if(!document.getElementById('drawer').classList.contains('active')) toggleCart();
+  }
+
+  function updateQty(index, delta) {
+    cart[index].qty += delta;
+    if(cart[index].qty <= 0) cart.splice(index, 1);
+    render();
+  }
+
+  function render() {
+    const container = document.getElementById('cart-items');
+    const checkList = document.getElementById('checkout-items-list');
+    const badge = document.getElementById('badge-count');
+    const subtotal = document.getElementById('subtotal');
+    
+    let total = 0;
+    let count = 0;
+
+    container.innerHTML = cart.length === 0 ? '<p style="text-align:center; margin-top:60px; color:#999; font-size:0.9rem;">Your bag is empty.</p>' : 
+      cart.map((item, i) => {
+        total += item.price * item.qty;
+        count += item.qty;
+        return `
+          <div class="cart-item">
+            <div class="item-img"><i class="fa-solid ${item.icon}"></i></div>
+            <div style="flex:1;">
+              <div style="font-weight:600; font-size:0.9rem;">${item.name}</div>
+              <div style="color:var(--accent); font-size:0.85rem;">$${item.price}.00</div>
+              <div class="qty-wrap">
+                <div class="qty-btn" onclick="updateQty(${i}, -1)">-</div>
+                <div style="padding: 0 10px; font-size: 0.8rem;">${item.qty}</div>
+                <div class="qty-btn" onclick="updateQty(${i}, 1)">+</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    checkList.innerHTML = cart.map(item => `
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:0.9rem;">
+        <span>${item.name} (x${item.qty})</span>
+        <span>$${item.price * item.qty}.00</span>
+      </div>
+    `).join('');
+
+    badge.innerText = count;
+    subtotal.innerText = `$${total}.00`;
+    document.getElementById('pay-total').innerText = `$${total}.00`;
+    document.getElementById('checkout-btn').style.display = cart.length === 0 ? 'none' : 'block';
+  }
+
+  function startCheckout() {
+    toggleCart();
+    document.getElementById('shop-screen').classList.remove('active');
+    document.getElementById('payment-screen').classList.add('active');
+    window.scrollTo(0,0);
+  }
+
+  function processOrder() {
+    const name = document.getElementById('cust-name').value || "Collector";
+    const street = document.getElementById('cust-street').value || "Unknown Location";
+    
+    if(!document.getElementById('cust-street').value) {
+        alert("Please enter a shipping address.");
+        return;
+    }
+
+    const id = "LITH-" + Math.floor(1000 + Math.random() * 9000);
+    document.getElementById('track-id').innerText = id;
+    document.getElementById('final-addr').innerText = street;
+    
+    document.getElementById('payment-screen').classList.remove('active');
+    document.getElementById('tracking-screen').classList.add('active');
+    window.scrollTo(0,0);
+  }
+</script>
+
+</body>
+</html>
