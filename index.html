@@ -3,259 +3,317 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solid – Artisanal Pet Rocks</title>
+  <title>Lithos | Artisanal Earth-Ware</title>
   <style>
     :root {
-      --primary: #4a453e;
-      --accent: #d4a373;
-      --bg: #faf9f6;
-      --text: #2d2d2d;
+      --primary: #1a1a1a;
+      --secondary: #636363;
+      --accent: #a38a6d;
+      --bg: #fdfdfc;
+      --border: #e8e8e1;
+      --success: #2d5a27;
     }
+
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
+      color: var(--primary);
+      overflow-x: hidden;
     }
+
+    /* --- Icons (Inline SVGs) --- */
+    .icon { width: 20px; height: 20px; vertical-align: middle; fill: none; stroke: currentColor; stroke-width: 2; }
 
     /* --- Navigation --- */
     nav {
       display: flex;
       justify-content: space-between;
-      padding: 20px 5%;
       align-items: center;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
       background: white;
-      border-bottom: 1px solid #eee;
       position: sticky;
       top: 0;
       z-index: 100;
     }
 
     .logo {
-      font-weight: 800;
-      letter-spacing: 2px;
-      font-size: 24px;
-      color: var(--primary);
-    }
-
-    /* --- Hero Section --- */
-    .hero {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 80px 20px;
-      background: #f1f1e6;
-    }
-
-    .hero-tag {
+      font-weight: 700;
+      letter-spacing: 4px;
+      font-size: 1.2rem;
       text-transform: uppercase;
-      font-size: 12px;
-      letter-spacing: 3px;
-      color: var(--accent);
-      font-weight: bold;
-      margin-bottom: 10px;
     }
 
-    .hero h1 {
-      font-size: clamp(32px, 5vw, 64px);
-      margin: 0 0 20px 0;
-      max-width: 800px;
-      text-align: center;
-    }
+    .nav-tools { display: flex; gap: 20px; align-items: center; cursor: pointer; }
 
-    /* --- Product Section --- */
-    .product-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 50px;
-      max-width: 1100px;
-      margin: 60px auto;
-      padding: 0 20px;
-    }
-
-    .product-image {
-      background: #e5e5e5;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 150px;
-      min-height: 400px;
-      box-shadow: inset 0 0 50px rgba(0,0,0,0.05);
-    }
-
-    .product-info {
-      text-align: left;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .price {
-      font-size: 24px;
-      color: var(--primary);
-      margin-bottom: 20px;
-      font-weight: bold;
-    }
-
-    .select-label {
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    select {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-bottom: 20px;
-      font-size: 16px;
-    }
-
-    .btn {
+    .cart-count {
       background: var(--primary);
       color: white;
-      padding: 18px 40px;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-left: -10px;
+    }
+
+    /* --- Main Layout --- */
+    .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+    .product-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 60px; align-items: start; }
+
+    .image-viewer {
+      background: #f4f4f2;
+      aspect-ratio: 1/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+
+    .product-details h1 { font-size: 2.5rem; margin-bottom: 10px; font-weight: 500; }
+    .price { font-size: 1.5rem; color: var(--secondary); margin-bottom: 30px; }
+
+    .selection-group { margin-bottom: 25px; }
+    .selection-group label { display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; color: var(--secondary); }
+
+    .btn {
+      width: 100%;
+      padding: 18px;
+      background: var(--primary);
+      color: white;
       border: none;
-      border-radius: 50px;
-      font-size: 18px;
-      font-weight: bold;
       cursor: pointer;
-      transition: transform 0.2s, background 0.2s;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: opacity 0.2s;
     }
 
-    .btn:hover {
-      background: #000;
-      transform: translateY(-2px);
-    }
+    .btn:hover { opacity: 0.9; }
 
-    /* --- Features --- */
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 30px;
-      padding: 60px 5%;
+    /* --- Side Cart Panel --- */
+    #cart-panel {
+      position: fixed;
+      right: -400px;
+      top: 0;
+      width: 400px;
+      height: 100%;
       background: white;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.05);
+      z-index: 1000;
+      transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
     }
 
-    .feature-card {
-      padding: 30px;
-      border-radius: 15px;
-      background: var(--bg);
-    }
+    #cart-panel.active { right: 0; }
 
-    /* --- Checkout Modal (Hidden) --- */
-    #checkout-overlay {
+    .cart-header { display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+
+    /* --- Checkout Modal --- */
+    .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.8);
+      background: rgba(255,255,255,0.95);
+      z-index: 2000;
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
     }
 
-    .modal {
+    .checkout-form { width: 100%; max-width: 450px; padding: 20px; }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    /* --- Tracking View --- */
+    .tracking-card {
+      text-align: center;
+      padding: 60px;
       background: white;
-      padding: 40px;
-      border-radius: 20px;
-      max-width: 400px;
-      width: 90%;
-      color: #333;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .tracking-num {
+      font-family: monospace;
+      background: #f0f0f0;
+      padding: 10px 20px;
+      display: inline-block;
+      margin: 20px 0;
+      font-size: 1.2rem;
+    }
+
+    .status-bar {
+      height: 4px;
+      background: var(--border);
+      margin: 40px 0;
+      position: relative;
+    }
+    .status-fill {
+      width: 25%;
+      height: 100%;
+      background: var(--accent);
     }
 
     .hidden { display: none; }
-
-    footer {
-      padding: 60px 20px;
-      background: var(--primary);
-      color: #ccc;
-      font-size: 14px;
-    }
-
-    @media (max-width: 768px) {
-      .product-container { grid-template-columns: 1fr; }
-    }
   </style>
 </head>
 <body>
 
 <nav>
-  <div class="logo">SOLID.</div>
-  <div>Shop | About | Care Guide</div>
+  <div class="logo">Lithos</div>
+  <div class="nav-tools" onclick="toggleCart()">
+    <svg class="icon"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <span class="cart-count" id="cart-indicator">0</span>
+  </div>
 </nav>
 
-<section class="hero">
-  <span class="hero-tag">Limited Batch 001</span>
-  <h1>Quiet. Grounded. Eternal.</h1>
-  <p>Ethically sourced, hand-selected volcanic companions for the modern home.</p>
-</section>
+<div class="container" id="main-content">
+  <div class="product-grid">
+    <div class="image-viewer">
+      <div style="width: 200px; height: 160px; background: #888; border-radius: 50% 60% 40% 50%; filter: contrast(1.1); box-shadow: 20px 20px 60px rgba(0,0,0,0.1);"></div>
+    </div>
 
-<main class="product-container">
-  <div class="product-image" id="rock-display">🪨</div>
-  
-  <div class="product-info">
-    <h2>The Essential Granite</h2>
-    <div class="price">$35.00</div>
-    <p>Our flagship companion. Sourced from the high peaks of the Sierra Nevadas, each Granite Pet Rock™ features a unique grain and a stoic temperament.</p>
-    
-    <label class="select-label">Choose Personality</label>
-    <select id="personality" onchange="updateRock()">
-      <option value="🪨">The Introvert (Standard)</option>
-      <option value="🪨">The Thinker (Polished)</option>
-      <option value="🪨">The Adventurer (Rugged)</option>
-    </select>
+    <div class="product-details">
+      <p style="color: var(--accent); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;">Limited Edition</p>
+      <h1>The Basalt Companion</h1>
+      <div class="price">$48.00</div>
+      
+      <div class="selection-group">
+        <label>Select Finish</label>
+        <select id="finish" style="width: 100%; padding: 12px; border: 1px solid var(--border);">
+          <option>Raw Volcanic</option>
+          <option>River Tumbled</option>
+          <option>Deep Matte Black</option>
+        </select>
+      </div>
 
-    <button class="btn" onclick="openCheckout()">Add to Cart</button>
-    <p style="font-size: 12px; margin-top: 15px; color: #777;">✨ Free 2-day shipping to the afterlife.</p>
-  </div>
-</main>
+      <div class="selection-group">
+        <label>Origin</label>
+        <p style="font-size: 0.9rem;">Sourced from the Reykjavik Peninsula, Iceland.</p>
+      </div>
 
-<section class="features">
-  <div class="feature-card">
-    <h3>Zero Carbon Footprint</h3>
-    <p>Literally. It doesn't move. It doesn't breathe. It just is.</p>
-  </div>
-  <div class="feature-card">
-    <h3>Hypoallergenic</h3>
-    <p>100% dander-free and water-resistant. Perfect for sensitive souls.</p>
-  </div>
-  <div class="feature-card">
-    <h3>Lifetime Warranty</h3>
-    <p>If your rock breaks, we'll send you the pieces. They are also rocks.</p>
-  </div>
-</section>
-
-<div id="checkout-overlay">
-  <div class="modal">
-    <h2>Processing Order...</h2>
-    <p>We are currently hand-whispering to your rock to prepare it for its journey.</p>
-    <hr>
-    <p><strong>Total: $35.00</strong></p>
-    <p>Status: <span style="color: #d4a373;">Waiting for the earth to shift.</span></p>
-    <button class="btn" style="width:100%" onclick="location.reload()">Back to Gallery</button>
+      <button class="btn" onclick="addToCart()">Add to bag</button>
+    </div>
   </div>
 </div>
 
-<footer>
-  <p>&copy; 2026 SOLID COMPANIONS INC. | ADOPT RESPONSIBLY</p>
-</footer>
+<div id="cart-panel">
+  <div class="cart-header">
+    <span style="font-weight: 600;">Your Bag</span>
+    <span style="cursor: pointer;" onclick="toggleCart()">
+      <svg class="icon"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </span>
+  </div>
+  <div id="cart-items" style="flex-grow: 1;">
+    <p style="color: var(--secondary);">Your bag is empty.</p>
+  </div>
+  <div id="cart-footer" class="hidden">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 600;">
+      <span>Subtotal</span>
+      <span>$48.00</span>
+    </div>
+    <button class="btn" onclick="showCheckout()">Checkout</button>
+  </div>
+</div>
+
+<div class="overlay" id="checkout-view">
+  <div class="checkout-form">
+    <h2 style="margin-bottom: 30px;">Payment Details</h2>
+    <input type="text" placeholder="Email Address">
+    <input type="text" placeholder="Shipping Address">
+    <div style="background: #f9f9f9; padding: 20px; border-radius: 4px; margin-bottom: 20px;">
+      <label style="font-size: 0.7rem; text-transform: uppercase; display: block; margin-bottom: 10px;">Credit Card</label>
+      <input type="text" value="4242 4242 4242 4242" disabled style="background: #eee;">
+      <div class="input-row">
+        <input type="text" value="12/28" disabled style="background: #eee;">
+        <input type="text" value="***" disabled style="background: #eee;">
+      </div>
+    </div>
+    <button class="btn" onclick="processOrder()">Complete Purchase</button>
+    <p style="text-align: center; font-size: 0.8rem; color: var(--secondary); margin-top: 15px; cursor: pointer;" onclick="closeCheckout()">Cancel</p>
+  </div>
+</div>
+
+<div class="container hidden" id="success-view">
+  <div class="tracking-card">
+    <div style="color: var(--success); margin-bottom: 20px;">
+      <svg class="icon" style="width: 40px; height: 40px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+    </div>
+    <h2>Order Confirmed</h2>
+    <p>Your companion is being selected from our vaults.</p>
+    
+    <div class="status-bar">
+      <div class="status-fill"></div>
+    </div>
+    
+    <p style="font-size: 0.8rem; text-transform: uppercase; color: var(--secondary);">Tracking Number</p>
+    <div class="tracking-num" id="tracking-id">LT-0000-0000</div>
+    
+    <p style="font-size: 0.9rem; margin-top: 30px;">Estimated Arrival: 4-6 Million Years</p>
+  </div>
+</div>
 
 <script>
-  function updateRock() {
-    const rock = document.getElementById("rock-display");
-    rock.style.transform = "scale(1.1)";
-    setTimeout(() => {
-      rock.style.transform = "scale(1)";
-    }, 200);
+  let cart = [];
+
+  function toggleCart() {
+    document.getElementById('cart-panel').classList.toggle('active');
   }
 
-  function openCheckout() {
-    document.getElementById("checkout-overlay").style.display = "flex";
+  function addToCart() {
+    cart.push({name: "The Basalt Companion", price: 48});
+    updateCartUI();
+    toggleCart();
+  }
+
+  function updateCartUI() {
+    const itemsDiv = document.getElementById('cart-items');
+    const indicator = document.getElementById('cart-indicator');
+    const footer = document.getElementById('cart-footer');
+    
+    indicator.innerText = cart.length;
+    
+    if(cart.length > 0) {
+      itemsDiv.innerHTML = `
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <div style="width: 60px; height: 60px; background: #eee; border-radius: 4px;"></div>
+          <div>
+            <div style="font-weight: 600;">The Basalt Companion</div>
+            <div style="font-size: 0.8rem; color: var(--secondary);">$48.00</div>
+          </div>
+        </div>
+      `;
+      footer.classList.remove('hidden');
+    }
+  }
+
+  function showCheckout() {
+    document.getElementById('checkout-view').style.display = 'flex';
+  }
+
+  function closeCheckout() {
+    document.getElementById('checkout-view').style.display = 'none';
+  }
+
+  function processOrder() {
+    const trackingId = "LT-" + Math.floor(1000 + Math.random() * 9000) + "-" + Math.floor(1000 + Math.random() * 9000);
+    document.getElementById('tracking-id').innerText = trackingId;
+    
+    document.getElementById('checkout-view').style.display = 'none';
+    document.getElementById('cart-panel').classList.remove('active');
+    document.getElementById('main-content').classList.add('hidden');
+    document.getElementById('success-view').classList.remove('hidden');
   }
 </script>
 
