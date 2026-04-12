@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LITHOS | Curated Geologic Companions</title>
-  <link rel="icon" href="favicon.ico?v=26">
+  <link rel="icon" href="favicon.ico?v=27">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -19,7 +19,6 @@
     .spinner { width: 40px; height: 40px; border: 3px solid #eee; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* Social Proof Toast */
     #social-toast { position: fixed; bottom: 30px; left: 30px; background: #fff; border: 1px solid var(--border); padding: 15px 20px; border-radius: 12px; display: none; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); z-index: 5000; animation: slideUp 0.5s ease; }
     @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
@@ -49,13 +48,19 @@
     .img-box { width: 100%; aspect-ratio: 1; background: #fafafa; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .img-box img { width: 75%; height: 75%; object-fit: contain; }
 
+    /* Rating on Main Page */
+    .card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    .card-rating { font-size: 0.7rem; color: var(--accent); font-weight: 700; }
+
     /* Detail Page */
     .detail-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px; align-items: start; }
     .dispatch-timer { font-size: 0.8rem; color: var(--accent); font-weight: 700; margin: 15px 0; }
 
     /* Centered Order History */
-    .orders-wrapper { max-width: 800px; margin: 0 auto; padding: 60px 5%; text-align: center; }
-    .order-card { border: 1px solid var(--border); border-radius: 15px; padding: 25px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; background: #fff; text-align: left; }
+    .orders-wrapper { max-width: 800px; margin: 0 auto; padding: 60px 5%; }
+    .order-card { border: 1px solid var(--border); border-radius: 15px; padding: 30px; margin-bottom: 30px; background: #fff; }
+    .track-visual { height: 6px; background: #eee; border-radius: 10px; margin: 25px 0; position: relative; overflow: hidden; }
+    .track-fill { height: 100%; background: var(--success); transition: width 1s ease; }
 
     input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; margin-bottom: 12px; }
     .btn { width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
@@ -149,8 +154,8 @@
 
 <section id="orders-screen" class="screen">
     <div class="orders-wrapper">
-        <h1 style="font-weight: 800; margin-bottom: 10px; letter-spacing: -1px;">ORDER HISTORY</h1>
-        <p style="color: #aaa; margin-bottom: 40px;">Your geologic companions currently in transit.</p>
+        <h1 style="font-weight: 800; margin-bottom: 10px; letter-spacing: -1px;">ORDER TRACKING</h1>
+        <p style="color: #aaa; margin-bottom: 40px;">Real-time tectonic movement monitoring.</p>
         <div id="orders-list"></div>
     </div>
 </section>
@@ -181,6 +186,27 @@
   </div>
 </section>
 
+<section id="tracking-screen" class="screen">
+    <div class="container" style="text-align: center; padding-top: 150px;">
+      <i class="fa-solid fa-circle-check fa-5x" style="color: var(--success); margin-bottom: 30px;"></i>
+      <h1>ADOPTION CONFIRMED.</h1>
+      <div id="track-id-box" style="margin: 40px 0; font-family: monospace; font-size: 1.4rem; background: #f8f8f8; padding: 25px; border: 1px dashed #ccc;"></div>
+      <button class="btn" style="width: 250px;" onclick="showScreen('orders-screen')">Track Adoption</button>
+    </div>
+</section>
+
+<div id="drawer" class="drawer">
+  <div style="padding: 30px; border-bottom: 1px solid var(--border); font-weight: 800;">YOUR BAG</div>
+  <div id="cart-content" style="flex:1; padding:30px; overflow-y:auto;"></div>
+  <div style="padding:30px; border-top:1px solid var(--border); background:#fafafa;">
+    <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:20px;">
+        <span>SUBTOTAL</span>
+        <span id="subtotal"></span>
+    </div>
+    <button class="btn" onclick="goToCheckout()">CHECKOUT</button>
+  </div>
+</div>
+
 <script>
   let cart = [];
   let orders = JSON.parse(localStorage.getItem('lithos_orders')) || [];
@@ -188,13 +214,13 @@
   let activeProduct = null;
 
   const products = [
-    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', count: 128, desc: 'Igneous masterpiece.' },
-    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', count: 42, desc: 'Layered focus stone.' },
-    { id: 3, type: 'smooth', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', count: 85, desc: 'Alpine water smoothed.' },
-    { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', count: 31, desc: 'Volcanic glass.' },
-    { id: 5, type: 'all', name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', count: 18, desc: 'Household set.' },
-    { id: 6, type: 'smooth', name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', count: 212, desc: 'Includes sweater.' },
-    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', count: 56, desc: 'Metamorphic limestone.' }
+    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', count: 128, rating: 4.9 },
+    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', count: 42, rating: 4.7 },
+    { id: 3, type: 'smooth', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', count: 85, rating: 4.8 },
+    { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', count: 31, rating: 4.6 },
+    { id: 5, type: 'all', name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', count: 18, rating: 5.0 },
+    { id: 6, type: 'smooth', name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', count: 212, rating: 4.9 },
+    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', count: 56, rating: 4.8 }
   ];
 
   function initApp() {
@@ -212,7 +238,10 @@
         ${p.badge ? `<span style="position:absolute; top:15px; left:15px; padding:5px 12px; border-radius:50px; font-size:0.6rem; font-weight:800; background:#121212; color:#fff;">${p.badge}</span>` : ''}
         <div class="img-box"><img src="${p.img}"></div>
         <h3 style="font-size: 0.9rem; text-transform:uppercase; font-weight: 700;">${p.name}</h3>
-        <p style="color:#aaa;">$${p.price}.00</p>
+        <div class="card-meta">
+            <span style="font-weight:400; color:#888;">$${p.price}.00</span>
+            <span class="card-rating"><i class="fa-solid fa-star"></i> ${p.rating} (${p.count})</span>
+        </div>
       </div>`).join('');
   }
 
@@ -220,16 +249,28 @@
     activeProduct = products.find(p => p.id === id);
     document.getElementById('detail-title').innerText = activeProduct.name;
     document.getElementById('detail-price').innerText = `$${activeProduct.price}.00`;
-    document.getElementById('detail-desc').innerText = activeProduct.desc;
+    document.getElementById('detail-desc').innerText = `A premium geologic specimen, hand-selected for its stoic temperament and low maintenance requirements.`;
     document.getElementById('detail-img').src = activeProduct.img;
-    document.getElementById('detail-rating').innerText = `★ 5.0 / 5.0`;
+    document.getElementById('detail-rating').innerText = `★ ${activeProduct.rating} / 5.0`;
     document.getElementById('review-header-text').innerText = `${activeProduct.count} Verified Feedback Entries`;
     
-    // Unique Reviews
+    // Complex, Varied Reviews
+    const names = ["Arthur", "Lydia", "Marcus", "Elena", "Julian", "Clara", "Henry", "Beatrice"];
+    const tones = [
+        "Absolutely stunning. I named him Jasper and he's been the perfect desk companion. Doesn't move an inch.",
+        "A bit heavier than expected, but the density just adds to the quality. The packaging was eco-friendly.",
+        "Honestly, I thought it was a joke until it arrived. The stone has such a calming presence.",
+        "Exactly what I needed for my minimalist apartment. Very grounded energy.",
+        "Fast shipping. The veins in the rock are even better in person.",
+        "My children are obsessed. It's surprisingly high-quality for a geologic pet.",
+        "Five stars. He doesn't bark, he doesn't bite, and he never needs feeding. Truly the ultimate pet."
+    ];
     let revs = "";
-    const names = ["Arthur", "Lydia", "Marcus", "Elena", "Julian"];
-    for(let i=0; i<Math.min(activeProduct.count, 8); i++) {
-        revs += `<div style="border-bottom:1px solid #f0f0f0; padding-bottom:15px;"><p style="font-weight:600;">"Arrived safely. Perfectly stoic."</p><p style="font-size:0.7rem; color:#aaa; margin-top:5px;">— ${names[i%5]} Collector</p></div>`;
+    for(let i=0; i<Math.min(activeProduct.count, 6); i++) {
+        revs += `<div style="border-bottom:1px solid #f0f0f0; padding-bottom:15px;">
+            <p style="font-weight:600; font-size:0.95rem;">"${tones[Math.floor(Math.random()*tones.length)]}"</p>
+            <p style="font-size:0.75rem; color:#aaa; margin-top:5px;">— ${names[Math.floor(Math.random()*names.length)]} ${String.fromCharCode(65 + i)}., Verified Collector</p>
+        </div>`;
     }
     document.getElementById('reviews-container').innerHTML = revs;
     document.getElementById('reviews-section').style.display = 'none';
@@ -239,7 +280,31 @@
   function renderOrders() {
     const list = document.getElementById('orders-list');
     if (!orders.length) { list.innerHTML = `<div style="text-align:center; padding:100px 0; color:#ccc;">No adoptions manifested.</div>`; return; }
-    list.innerHTML = orders.map(o => `<div class="order-card"><div><div style="font-weight:800;">${o.id}</div><div style="color:#aaa; font-size:0.7rem;">Placed ${o.date}</div></div><div style="font-weight:800; color:var(--accent); font-size:0.7rem; text-transform:uppercase;">In Transit</div></div>`).join('');
+    
+    const now = new Date().getTime();
+    list.innerHTML = orders.map(o => {
+        const diff = (now - o.timestamp) / 3600000; // hours
+        let stage = 1; let statusText = "Order Received"; let width = "15%";
+        if(diff > 2) { stage = 2; statusText = "Preparing for Nesting"; width = "40%"; }
+        if(diff > 10) { stage = 3; statusText = "Tectonic Shift Initiated"; width = "75%"; }
+        if(diff > 24) { stage = 4; statusText = "Delivered / Surface Emergence"; width = "100%"; }
+
+        return `<div class="order-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-weight:800; font-size:1.1rem;">Order #${o.id.substring(5, 13)}</div>
+                    <div style="color:#aaa; font-size:0.75rem; margin-top:3px;">Ordered on ${o.date}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-weight:800; color:var(--accent); font-size:0.75rem; text-transform:uppercase;">${statusText}</div>
+                </div>
+            </div>
+            <div class="track-visual"><div class="track-fill" style="width:${width}"></div></div>
+            <div style="display:flex; gap:10px;">
+                ${o.items.map(i => `<img src="${i.img}" style="width:40px; height:40px; background:#f9f9f9; padding:5px; border-radius:8px;">`).join('')}
+            </div>
+        </div>`;
+    }).join('');
   }
 
   function processAdoption() {
@@ -248,22 +313,22 @@
     setTimeout(() => {
         document.getElementById('loader').style.display = 'none';
         const tid = "LITH-" + Math.floor(Math.random()*90000000);
-        orders.unshift({ id: tid, date: new Date().toLocaleDateString() });
+        orders.unshift({ id: tid, date: new Date().toLocaleDateString(), timestamp: new Date().getTime(), items: [...cart], total: cart.reduce((a, b) => a + b.price, 0) + 5 });
         localStorage.setItem('lithos_orders', JSON.stringify(orders));
         renderOrders();
-        cart = []; renderCart(); showScreen('orders-screen');
+        document.getElementById('track-id-box').innerText = tid;
+        cart = []; renderCart(); showScreen('tracking-screen');
     }, 2000);
   }
 
-  // Timer & UI Logic
   function startSocialProof() {
-    const names = ["Arthur", "Sophie", "Clara", "Julian"];
+    const names = ["Arthur", "Sophie", "Clara", "Julian", "Marcus", "Elena"];
     setInterval(() => {
         const toast = document.getElementById('social-toast');
-        document.getElementById('toast-text').innerText = `${names[Math.floor(Math.random()*4)]} just adopted a rock!`;
+        document.getElementById('toast-text').innerText = `${names[Math.floor(Math.random()*names.length)]} from London just adopted a rock!`;
         toast.style.display = 'flex';
         setTimeout(() => toast.style.display = 'none', 4000);
-    }, 15000);
+    }, 20000);
   }
 
   function updateTimer() {
@@ -297,10 +362,10 @@
     document.getElementById('ch-sub').innerText = `$${sub}.00`;
     document.getElementById('ch-final').innerText = `$${sub + 5}.00`;
     document.getElementById('ch-total-hero').innerText = `$${sub + 5}.00`;
+    document.getElementById('ch-list').innerHTML = cart.map(item => `<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>${item.name}</span><span>$${item.price}.00</span></div>`).join('');
     document.getElementById('cart-content').innerHTML = cart.map(item => `<div style="display:flex; gap:10px; margin-bottom:15px; align-items:center;"><img src="${item.img}" style="width:40px;"><div><div style="font-weight:700;">${item.name}</div><div>$${item.price}.00</div></div></div>`).join('');
   }
 
-  // Card formatting
   document.getElementById('exp-mm').addEventListener('input', function() { if(this.value.length === 2) document.getElementById('exp-yy').focus(); });
   document.getElementById('card-num').addEventListener('input', function() {
     let val = this.value.replace(/\D/g, '').substring(0, 16);
