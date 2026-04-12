@@ -11,7 +11,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--primary); overflow-x: hidden; position: relative; }
     
-    /* ANIMATIONS */
+    /* BACKGROUND ANIMATIONS */
     .tectonic-bg { position: fixed; inset: 0; z-index: -1; opacity: 0.4; pointer-events: none; }
     .plate { position: absolute; background: radial-gradient(circle, #f0f0f0 0%, rgba(255,255,255,0) 70%); border-radius: 50%; filter: blur(60px); animation: shift 30s infinite alternate ease-in-out; }
     .plate-1 { width: 800px; height: 800px; top: -200px; left: -200px; }
@@ -19,9 +19,8 @@
     @keyframes shift { from { transform: translate(0, 0); } to { transform: translate(100px, 50px); } }
 
     /* BUTTON HAPTICS */
-    button, .qty-btn, .remove-link, .logo, .drop-item { cursor: pointer; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s; }
+    button, .qty-btn, .logo, .drop-item { cursor: pointer; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     button:active { transform: scale(0.95); }
-    button:hover { opacity: 0.9; transform: translateY(-2px); }
 
     #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: 0.3s; z-index: 1500; }
     #overlay.active { opacity: 1; visibility: visible; }
@@ -38,42 +37,46 @@
     .dropdown-content { display: none; position: absolute; right: 0; top: 35px; background: #fff; min-width: 200px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--border); z-index: 2100; overflow: hidden; }
     .dropdown-content.show { display: block; }
     .drop-item { padding: 15px 20px; font-size: 0.85rem; color: #666; border-bottom: 1px solid #f9f9f9; }
+    .drop-item:hover { background: var(--light-bg); }
 
     .screen { display: none; width: 100%; min-height: 100vh; }
     .screen.active { display: block; }
 
-    /* Grid */
+    /* SHOP GRID & HOVER ANIMATION */
     .shop-container { display: flex; max-width: 1400px; margin: 0 auto; padding: 60px 5%; gap: 60px; }
     .sidebar { width: 220px; flex-shrink: 0; position: sticky; top: 120px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; flex: 1; }
-    .product-card { border: 2px solid var(--border); border-radius: 20px; padding: 20px; background: #fff; }
-    .img-box { width: 100%; aspect-ratio: 1; background: #fafafa; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    .img-box img { width: 75%; height: 75%; object-fit: contain; }
+    .product-card { border: 2px solid var(--border); border-radius: 20px; padding: 20px; background: #fff; transition: 0.4s; }
+    .product-card:hover { border-color: var(--accent); transform: translateY(-8px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    .img-box { width: 100%; aspect-ratio: 1; background: #fafafa; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: 0.4s; }
+    .img-box img { width: 75%; transition: 0.5s; filter: grayscale(0.5); }
+    .product-card:hover .img-box img { transform: scale(1.1); filter: grayscale(0); }
 
-    /* CHECKOUT UI - NO BLACK COLOR */
+    /* DETAIL PAGE */
+    .detail-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px; align-items: start; }
+    .flash-sale-timer { background: #fffcf0; border: 1px solid #f9e8a0; padding: 15px; border-radius: 12px; margin: 20px 0; font-size: 0.85rem; display: flex; align-items: center; gap: 10px; }
+
+    /* CHECKOUT */
     .checkout-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
     .checkout-left { background: #fdfdfd; padding: 60px 10%; border-right: 1px solid var(--border); }
     .checkout-right { padding: 60px 10%; background: #fff; }
-    
     .checkout-summary-card { background: #f8f8f6; padding: 30px; border-radius: 20px; margin-bottom: 30px; border: 1px solid var(--border); }
     .checkout-item-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-    
-    .promo-box { background: #fff; border: 1px dashed var(--accent); border-radius: 12px; padding: 20px; margin: 30px 0; }
     .pay-block { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 10px; }
     .pay-row { display: flex; border-top: 1px solid var(--border); }
     .sub-input { border: none; width: 65px; text-align: center; border-right: 1px solid var(--border); padding: 16px; outline: none; }
     .cvc-input { border: none; flex: 1; text-align: right; padding: 16px 20px; outline: none; }
 
-    /* CART UI */
+    /* CART */
     .drawer { position: fixed; top: 0; right: -450px; width: 450px; height: 100%; background: #fff; z-index: 3000; transition: 0.5s; display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(0,0,0,0.1); }
     .drawer.active { right: 0; }
     .cart-item { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; }
-    .qty-control { display: flex; align-items: center; gap: 10px; background: #f5f5f5; padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; margin-top: 5px; }
+    .qty-control { display: flex; align-items: center; gap: 10px; background: #f5f5f5; padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; }
 
-    /* ORDERS PAGE */
+    /* ORDERS PAGE (CENTERED) */
     .orders-wrapper { max-width: 800px; margin: 0 auto; padding: 60px 5%; text-align: center; }
-    .order-card { border: 1px solid var(--border); border-radius: 15px; padding: 30px; margin-bottom: 30px; background: #fff; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
-    .track-visual { height: 6px; background: #eee; border-radius: 10px; margin: 20px 0; overflow: hidden; }
+    .order-card { border: 1px solid var(--border); border-radius: 15px; padding: 30px; margin-bottom: 30px; background: #fff; text-align: left; }
+    .track-line { height: 6px; background: #eee; border-radius: 10px; margin: 20px 0; overflow: hidden; }
     .track-fill { height: 100%; background: var(--success); transition: 1s ease; }
     .cancel-btn { background: none; border: 1px solid #ddd; color: #999; padding: 8px 15px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-top: 15px; }
     .cancel-btn:hover { background: var(--error); color: #fff; border-color: var(--error); }
@@ -82,7 +85,7 @@
     .btn { width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
     .adopt-btn { width: 100%; padding: 20px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; margin-top: 30px; }
 
-    @media (max-width: 900px) { .checkout-layout { grid-template-columns: 1fr; } .drawer { width: 100%; } }
+    @media (max-width: 900px) { .checkout-layout, .detail-grid { grid-template-columns: 1fr; } .drawer { width: 100%; } }
   </style>
 </head>
 <body onload="initApp()">
@@ -91,8 +94,10 @@
 
 <div id="loader">
     <div class="spinner"></div>
-    <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700;">Authorizing Session...</p>
+    <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700;">Synchronizing Ledger...</p>
 </div>
+
+<div id="overlay" onclick="closeAll()"></div>
 
 <nav>
   <div class="logo" onclick="handleLogoClick()">LITHOS</div>
@@ -111,13 +116,13 @@
   </div>
 </nav>
 
-<div id="overlay" onclick="closeAll()"></div>
-
 <section id="auth-screen" class="screen active">
     <div style="max-width: 400px; margin: 100px auto; padding: 40px; border: 1px solid var(--border); border-radius: 20px; text-align: center; background: #fff;">
-        <h2 style="font-weight: 800; margin-bottom: 10px;">LITHOS COLLECTIVE</h2>
-        <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 30px;">Mandatory login required.</p>
-        <button class="btn" onclick="login()">Enter Collective</button>
+        <h2 style="font-weight: 800; margin-bottom: 10px;">LITHOS MEMBER</h2>
+        <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 30px;">Collective identification required.</p>
+        <input type="text" placeholder="Member ID">
+        <input type="password" placeholder="Password">
+        <button class="btn" onclick="login()">Enter collective</button>
     </div>
 </section>
 
@@ -148,7 +153,7 @@
             <span style="font-size:0.8rem; color:#aaa; cursor:pointer; text-decoration:underline;">View Reviews</span>
         </div>
         <p id="detail-price" style="font-size: 2rem; margin-bottom: 10px; font-weight: 300;"></p>
-        <div class="flash-sale-box">
+        <div class="flash-sale-timer">
             <i class="fa-solid fa-bolt" style="color:#f9e8a0;"></i>
             <span>Order in <span id="timer-val" style="font-weight:800; font-family:monospace;">--:--:--</span> for 20% OFF.</span>
         </div>
@@ -161,7 +166,7 @@
 
 <section id="orders-screen" class="screen">
     <div class="orders-wrapper">
-        <h1 style="font-weight: 800; margin-bottom: 40px;">ORDER HISTORY</h1>
+        <h1 style="font-weight: 800; margin-bottom: 10px;">ORDER HISTORY</h1>
         <div id="orders-list"></div>
     </div>
 </section>
@@ -173,11 +178,9 @@
       <h2 id="ch-total-hero" style="font-size: 4rem; font-weight: 800; margin-bottom: 40px; line-height: 0.8;"></h2>
       <div class="checkout-summary-card" id="ch-list"></div>
       
-      <div class="promo-box">
-          <div style="display:flex; gap:10px;">
-              <input type="text" id="promo-input" placeholder="CODE" style="margin-bottom:0;">
-              <button class="btn" style="width:auto; padding:0 20px;" onclick="applyPromo()">Apply</button>
-          </div>
+      <div style="display:flex; gap:10px; margin-bottom:30px;">
+          <input type="text" id="promo-input" placeholder="PROMO CODE" style="margin-bottom:0;">
+          <button class="btn" style="width:auto; padding:0 20px;" onclick="applyPromo()">Apply</button>
       </div>
 
       <div style="border-top: 1px solid #eee; padding-top: 25px;">
@@ -188,7 +191,7 @@
     </div>
     <div class="checkout-right">
         <h4 style="margin-bottom:30px;">SECURE CHECKOUT</h4>
-        <input type="text" id="ship-name" placeholder="Full Legal Name">
+        <input type="text" id="ship-name" placeholder="Full Name">
         <input type="text" id="ship-addr" placeholder="Street Address">
         <div class="pay-block">
             <input type="text" id="card-num" style="border:none; border-bottom: 1px solid var(--border); width:100%; padding:16px; border-radius:0;" placeholder="Card Number" maxlength="19">
@@ -203,10 +206,19 @@
   </div>
 </section>
 
+<section id="tracking-screen" class="screen">
+    <div class="container" style="text-align: center; padding-top: 150px;">
+      <i class="fa-solid fa-circle-check fa-5x" style="color: var(--success); margin-bottom: 30px;"></i>
+      <h1>ADOPTION CONFIRMED.</h1>
+      <div id="track-id-box" style="margin: 40px 0; font-family: monospace; font-size: 1.4rem; background: #f8f8f8; padding: 25px;"></div>
+      <button class="btn" style="width: 250px;" onclick="showScreen('orders-screen')">Track Manifest</button>
+    </div>
+</section>
+
 <div id="drawer" class="drawer">
   <div style="padding: 30px; border-bottom: 1px solid var(--border); font-weight: 800;">YOUR BAG</div>
   <div id="cart-content" style="flex:1; padding:30px; overflow-y:auto;"></div>
-  <div class="drawer-footer" style="padding:30px; border-top:1px solid var(--border);">
+  <div style="padding:30px; border-top:1px solid var(--border); background:#fafafa;">
     <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:20px;">
         <span>SUBTOTAL</span><span id="subtotal"></span>
     </div>
@@ -222,13 +234,13 @@
   let appliedDiscount = 0;
 
   const products = [
-    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', count: 128, rating: 4.9 },
-    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', count: 42, rating: 4.7 },
-    { id: 3, type: 'smooth', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', count: 85, rating: 4.8 },
-    { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', count: 31, rating: 4.6 },
-    { id: 5, type: 'all', name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', count: 18, rating: 5.0 },
-    { id: 6, type: 'smooth', name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', count: 212, rating: 4.9 },
-    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', count: 56, rating: 4.8 }
+    { id: 1, type: 'volcanic', name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', rating: 4.9 },
+    { id: 2, type: 'metamorphic', name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', rating: 4.7 },
+    { id: 3, type: 'smooth', name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', rating: 4.8 },
+    { id: 4, type: 'volcanic', name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', rating: 4.6 },
+    { id: 5, type: 'all', name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', rating: 5.0 },
+    { id: 6, type: 'smooth', name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', rating: 4.9 },
+    { id: 7, type: 'metamorphic', name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', rating: 4.8 }
   ];
 
   function initApp() {
@@ -243,7 +255,7 @@
     document.getElementById('product-grid').innerHTML = items.map(p => `
       <div class="product-card" onclick="openProduct(${p.id})">
         ${p.badge ? `<span style="position:absolute; top:15px; left:15px; padding:5px 12px; border-radius:50px; font-size:0.6rem; font-weight:800; background:#121212; color:#fff;">${p.badge}</span>` : ''}
-        <div class="img-box"><img src="${p.img}" onerror="this.src='https://via.placeholder.com/300?text=Specimen'"></div>
+        <div class="img-box"><img src="${p.img}"></div>
         <h3 style="font-size: 0.9rem; text-transform:uppercase; font-weight: 700;">${p.name}</h3>
         <p style="color:#aaa;">$${p.price}.00</p>
       </div>`).join('');
@@ -253,7 +265,7 @@
     activeProduct = products.find(p => p.id === id);
     document.getElementById('detail-title').innerText = activeProduct.name;
     document.getElementById('detail-price').innerText = `$${activeProduct.price}.00`;
-    document.getElementById('detail-desc').innerText = `A high-density geologic specimen. Displays absolute loyalty and requires zero maintenance.`;
+    document.getElementById('detail-desc').innerText = `A high-density geologic specimen. Calm, low-maintenance, and perfectly grounded.`;
     document.getElementById('detail-img').src = activeProduct.img;
     document.getElementById('detail-rating').innerText = `★ ${activeProduct.rating} / 5.0`;
     showScreen('detail-screen');
@@ -271,7 +283,7 @@
   }
 
   function processAdoption() {
-    if(!document.getElementById('ship-addr').value || !document.getElementById('ship-name').value) return alert("Fields Required");
+    if(!document.getElementById('ship-addr').value || !document.getElementById('ship-name').value) return alert("Missing Info");
     document.getElementById('loader').style.display = 'flex';
     setTimeout(() => {
         document.getElementById('loader').style.display = 'none';
@@ -279,7 +291,8 @@
         const sub = cart.reduce((a,b)=>a+(b.price*b.qty), 0);
         orders.unshift({ id: tid, date: new Date().toLocaleDateString(), timestamp: new Date().getTime(), total: sub + 5 - appliedDiscount, items: cart.map(i=>({...i, pPrice: i.price})) });
         localStorage.setItem('lithos_orders', JSON.stringify(orders));
-        renderOrders(); cart = []; appliedDiscount = 0; renderCart(); showScreen('orders-screen');
+        renderOrders(); cart = []; appliedDiscount = 0; renderCart(); showScreen('tracking-screen');
+        document.getElementById('track-id-box').innerText = tid;
     }, 2500);
   }
 
@@ -298,7 +311,7 @@
                 <div><div style="font-weight:800;">Manifest #${o.id.substring(6,12)}</div><div style="color:#aaa; font-size:0.7rem;">${o.date}</div></div>
                 <div style="font-weight:800; color:var(--accent); font-size:0.7rem; text-transform:uppercase;">${s}</div>
             </div>
-            <div class="track-visual"><div class="track-fill" style="width:${w}"></div></div>
+            <div class="track-line"><div class="track-fill" style="width:${w}"></div></div>
             <div style="font-size:0.85rem; margin:15px 0;">${o.items.map(i=>`<div>${i.name} (x${i.qty}) — <strong>$${i.pPrice}.00</strong></div>`).join('')}</div>
             <div style="font-weight:800;">Paid: $${o.total.toFixed(2)}</div>
             ${canCancel ? `<button class="cancel-btn" onclick="cancelOrder('${o.id}')">Cancel Manifest</button>` : ''}
@@ -317,7 +330,7 @@
     document.getElementById('cart-content').innerHTML = cart.map(item => `
         <div class="cart-item">
             <img src="${item.img}" style="width:50px;">
-            <div style="flex:1;"><div style="font-weight:700;">${item.name}</div>
+            <div style="flex:1;"><div style="font-weight:700; font-size:0.8rem;">${item.name}</div>
                 <div class="qty-control"><span class="qty-btn" onclick="updateQty(${item.id},-1)">-</span><span>${item.qty}</span><span class="qty-btn" onclick="updateQty(${item.id},1)">+</span></div>
             </div>
             <div style="font-weight:800;">$${item.price * item.qty}.00</div>
@@ -330,7 +343,9 @@
           appliedDiscount = cart.reduce((a, b) => a + (b.price * b.qty), 0) * 0.10;
           document.getElementById('promo-row').style.display = 'flex';
           document.getElementById('ch-disc').innerText = `-$${appliedDiscount.toFixed(2)}`;
-          goToCheckout();
+          const total = cart.reduce((a, b) => a + (b.price * b.qty), 0) + 5 - appliedDiscount;
+          document.getElementById('ch-total-hero').innerText = `$${total.toFixed(2)}`;
+          document.getElementById('ch-final').innerText = `$${total.toFixed(2)}`;
       } else alert("Invalid Code");
   }
 
@@ -350,15 +365,15 @@
   function handleLogoClick() { isLoggedIn ? showScreen('shop-screen') : showScreen('auth-screen'); }
   function goToCheckout() { if(!cart.length) return; 
     let sub = cart.reduce((a, b) => a + (b.price * b.qty), 0);
-    document.getElementById('ch-total-hero').innerText = `$${(sub + 5 - appliedDiscount).toFixed(2)}`;
+    let total = sub + 5 - appliedDiscount;
+    document.getElementById('ch-total-hero').innerText = `$${total.toFixed(2)}`;
     document.getElementById('ch-sub').innerText = `$${sub.toFixed(2)}`;
-    document.getElementById('ch-final').innerText = `$${(sub + 5 - appliedDiscount).toFixed(2)}`;
+    document.getElementById('ch-final').innerText = `$${total.toFixed(2)}`;
     document.getElementById('ch-list').innerHTML = cart.map(i=>`<div class="checkout-item-row"><span>${i.name} (x${i.qty})</span><span>$${i.price*i.qty}.00</span></div>`).join('');
     toggleCart(); showScreen('checkout-screen'); 
   }
   function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); document.getElementById('account-dropdown').classList.remove('show'); window.scrollTo(0,0); }
   function closeAll() { document.getElementById('drawer').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); document.getElementById('account-dropdown').classList.remove('show'); }
-  function toggleReviews() { alert("Collector feedback is synchronized with the geologic ledger."); }
 </script>
 </body>
 </html>
