@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LITHOS | Curated Geologic Companions</title>
-  <link rel="icon" href="favicon.ico?v=23">
+  <link rel="icon" href="favicon.ico?v=24">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -15,11 +15,15 @@
     #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: 0.3s; z-index: 1500; }
     #overlay.active { opacity: 1; visibility: visible; }
 
+    #loader { position: fixed; inset: 0; background: #fff; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+    .spinner { width: 40px; height: 40px; border: 3px solid #eee; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
     nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 2000; }
     .logo { font-weight: 800; letter-spacing: 6px; text-transform: uppercase; cursor: pointer; font-size: 1.1rem; }
     .nav-icons { display: flex; gap: 25px; align-items: center; font-size: 1.1rem; position: relative; }
 
-    /* REAL DROPDOWN MENU */
+    /* Dropdown UI */
     .dropdown-container { position: relative; display: inline-block; }
     .dropdown-content { 
       display: none; position: absolute; right: 0; top: 35px; background: #fff; min-width: 200px; 
@@ -28,17 +32,18 @@
     }
     .dropdown-content.show { display: block; }
     @keyframes dropDown { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
     .drop-item { padding: 15px 20px; font-size: 0.85rem; color: #666; cursor: pointer; border-bottom: 1px solid #f9f9f9; }
     .drop-item:hover { background: var(--light-bg); color: var(--primary); }
-    .drop-logout { color: var(--error); border-top: 1px solid var(--border); }
 
     .screen { display: none; width: 100%; min-height: 100vh; background: var(--bg); }
     .screen.active { display: block; }
 
-    /* Grid Restored */
+    /* Auth Screen - Initial State */
+    .auth-box { max-width: 400px; margin: 100px auto; padding: 40px; border: 1px solid var(--border); border-radius: 20px; text-align: center; }
+
+    /* Shop Layout Restored */
     .shop-container { display: flex; max-width: 1400px; margin: 0 auto; padding: 60px 5%; gap: 60px; }
-    .sidebar { width: 220px; flex-shrink: 0; }
+    .sidebar { width: 220px; flex-shrink: 0; position: sticky; top: 120px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; flex: 1; }
     .product-card { border: 2px solid var(--border); border-radius: 20px; padding: 20px; cursor: pointer; transition: 0.4s; position: relative; background: #fff; }
     .product-card:hover { border-color: var(--accent); transform: translateY(-8px); }
@@ -50,49 +55,37 @@
     .checkout-left { background: var(--light-bg); padding: 60px 10%; border-right: 1px solid var(--border); }
     .checkout-right { padding: 60px 10%; background: #fff; }
     .pay-container { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 20px; }
-    .pay-input { border: none; padding: 16px; width: 100%; font-size: 1rem; outline: none; }
     .pay-row { display: flex; border-top: 1px solid var(--border); background: #fff; }
     .sub-input { border: none; width: 65px; text-align: center; border-right: 1px solid var(--border); padding: 16px; outline: none; }
     .cvc-input { border: none; flex: 1; text-align: right; padding: 16px 20px; outline: none; }
 
     input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; margin-bottom: 12px; }
-    .btn { width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; }
+    .btn { width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
     .adopt-btn { width: 100%; padding: 20px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; margin-top: 30px; }
 
     .drawer { position: fixed; top: 0; right: -450px; width: 450px; height: 100%; background: #fff; z-index: 3000; transition: 0.5s; display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(0,0,0,0.1); }
     .drawer.active { right: 0; }
-
-    @media (max-width: 900px) { .checkout-layout, .shop-container { grid-template-columns: 1fr; } .drawer { width: 100%; right: -100%; } }
   </style>
 </head>
 <body>
 
-<div id="loader" style="position: fixed; inset: 0; background: #fff; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center;">
-    <div style="width: 40px; height: 40px; border: 3px solid #eee; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-    <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700; margin-top:20px;">Processing Transfer...</p>
+<div id="loader">
+    <div class="spinner"></div>
+    <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700;">Validating Membership...</p>
 </div>
 
 <div id="overlay" onclick="closeAll()"></div>
 
 <nav>
-  <div class="logo" onclick="showScreen('shop-screen')">LITHOS</div>
-  <div class="nav-icons">
+  <div class="logo" onclick="handleLogoClick()">LITHOS</div>
+  <div class="nav-icons" id="main-nav-icons" style="display: none;">
     <div class="dropdown-container">
         <i class="fa-regular fa-circle-user" style="cursor: pointer;" onclick="toggleDropdown()"></i>
         <div id="account-dropdown" class="dropdown-content">
-            <div id="guest-links">
-                <div class="drop-item" onclick="showScreen('auth-screen')">Sign In</div>
-                <div class="drop-item" onclick="showScreen('auth-screen')">Create Account</div>
-            </div>
-            <div id="user-links" style="display: none;">
-                <div style="padding: 10px 20px; font-size: 0.65rem; color: #bbb; text-transform: uppercase; font-weight: 800;">Member</div>
-                <div class="drop-item" onclick="showScreen('orders-screen')">My Orders</div>
-                <div class="drop-item" onclick="showScreen('shop-screen')">Browse Gallery</div>
-                <div class="drop-item drop-logout" onclick="logout()">Logout</div>
-            </div>
+            <div class="drop-item" onclick="showScreen('orders-screen')">My Orders</div>
+            <div class="drop-item" style="color: var(--error);" onclick="logout()">Logout</div>
         </div>
     </div>
-    
     <div style="position: relative; cursor: pointer;" onclick="toggleCart()">
       <i class="fa-solid fa-bag-shopping"></i>
       <span id="badge-count" style="position: absolute; top: -10px; right: -12px; background: var(--primary); color: #fff; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800;">0</span>
@@ -100,37 +93,30 @@
   </div>
 </nav>
 
-<section id="shop-screen" class="screen active">
+<section id="auth-screen" class="screen active">
+    <div class="auth-box">
+        <h2 style="font-weight: 800; margin-bottom: 10px;">LITHOS COLLECTIVE</h2>
+        <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 30px;">Login required to view the gallery.</p>
+        <input type="text" placeholder="Member ID or Email">
+        <input type="password" placeholder="Password">
+        <button class="btn" onclick="login()">Enter Collective</button>
+        <p style="margin-top: 20px; font-size: 0.75rem; color: #ccc;">No credentials? <span style="text-decoration: underline; cursor: pointer;">Register your interest.</span></p>
+    </div>
+</section>
+
+<section id="shop-screen" class="screen">
   <div class="shop-container">
     <aside class="sidebar">
       <h4 style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; color: #aaa;">Collection</h4>
       <ul style="list-style: none; color: #666; font-size: 0.9rem; line-height: 2.5; cursor: pointer;">
         <li style="color: #000; font-weight: 700;">All Friends</li>
-        <li>Volcanic</li>
+        <li>Volcanic Origins</li>
         <li>Metamorphic</li>
         <li>Smooth Stones</li>
       </ul>
     </aside>
     <div class="grid" id="product-grid"></div>
   </div>
-</section>
-
-<section id="orders-screen" class="screen">
-    <div class="container" style="max-width: 900px; margin: 0 auto; padding: 60px 5%;">
-        <h1 style="font-weight: 800; margin-bottom: 40px; letter-spacing: -1px;">YOUR ADOPTIONS</h1>
-        <div id="orders-list">
-            <div style="text-align: center; padding: 100px 0; color: #ccc;">No geologic companions recorded.</div>
-        </div>
-    </div>
-</section>
-
-<section id="auth-screen" class="screen">
-    <div class="container" style="max-width: 400px; margin: 100px auto; text-align: center;">
-        <h2 style="font-weight: 800; margin-bottom: 30px;">MEMBER ACCESS</h2>
-        <input type="text" placeholder="Email Address">
-        <input type="password" placeholder="Password">
-        <button class="btn" onclick="login()">Enter Collective</button>
-    </div>
 </section>
 
 <section id="detail-screen" class="screen">
@@ -148,28 +134,36 @@
   </div>
 </section>
 
+<section id="orders-screen" class="screen">
+    <div class="container" style="max-width: 900px; margin: 0 auto; padding: 60px 5%;">
+        <h1 style="font-weight: 800; margin-bottom: 40px;">YOUR ADOPTIONS</h1>
+        <div id="orders-list">
+            <div style="text-align: center; padding: 100px 0; color: #ccc;">No companions Manifested.</div>
+        </div>
+    </div>
+</section>
+
 <section id="checkout-screen" class="screen">
   <div class="checkout-layout">
     <div class="checkout-left">
-      <h2 id="ch-total-hero" style="font-size: 3.5rem; font-weight: 800; margin-bottom: 40px;"></h2>
+      <h2 id="ch-total-hero" style="font-size: 3rem; font-weight: 800; margin-bottom: 40px;"></h2>
       <div id="ch-summary-list" style="flex:1;"></div>
       <div style="border-top: 1px solid #ddd; padding-top: 25px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">Subtotal <span id="ch-sub"></span></div>
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">Shipping <span>$5.00</span></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px; color:#888; font-size:0.9rem;">Estimated Tax (6%) <span id="ch-tax"></span></div>
-        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.6rem;">Total Due <span id="ch-final"></span></div>
+        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.4rem; margin-top: 10px;">Total <span id="ch-final"></span></div>
       </div>
     </div>
     <div class="checkout-right">
-        <button class="btn" style="background: #000; margin-bottom: 40px;" onclick="processAdoption()"> Pay</button>
+        <h4 style="margin-bottom: 30px;">SECURE CHECKOUT</h4>
         <input type="text" id="ship-name" placeholder="Full Name">
         <input type="text" id="ship-addr" placeholder="Street Address">
         <div class="pay-container">
-            <input type="text" id="card-num" class="pay-input" placeholder="Card Number" maxlength="19">
+            <input type="text" id="card-num" style="border:none; border-bottom: 1px solid var(--border); border-radius:0; width:100%; padding:16px;" placeholder="Card Number" maxlength="19">
             <div class="pay-row">
                 <input type="text" id="exp-mm" class="sub-input" placeholder="MM" maxlength="2">
                 <input type="text" id="exp-yy" class="sub-input" placeholder="YY" maxlength="2">
-                <input type="text" id="cvc" class="cvc-input" placeholder="CVC" maxlength="3">
+                <input type="text" placeholder="CVC" class="cvc-input" maxlength="3">
             </div>
         </div>
         <button class="adopt-btn" onclick="processAdoption()">Complete Adoption</button>
@@ -180,17 +174,17 @@
 <section id="tracking-screen" class="screen">
     <div class="container" style="text-align: center; padding-top: 150px;">
       <i class="fa-solid fa-circle-check fa-5x" style="color: var(--success); margin-bottom: 30px;"></i>
-      <h1 style="font-weight: 800;">ADOPTION CONFIRMED.</h1>
-      <div id="track-id-box" style="margin: 40px 0; font-family: monospace; font-size: 1.4rem; background: #f8f8f8; padding: 25px; border: 1px dashed #ccc;"></div>
+      <h1>ADOPTION CONFIRMED.</h1>
+      <div id="track-id-box" style="margin: 40px 0; font-family: monospace; font-size: 1.4rem; background: #f8f8f8; padding: 25px;"></div>
       <button class="btn" style="width: 250px;" onclick="showScreen('orders-screen')">View My Orders</button>
     </div>
 </section>
 
 <div id="drawer" class="drawer">
-  <div style="padding: 30px; border-bottom: 1px solid var(--border); font-weight: 800; letter-spacing: 2px;">YOUR BAG</div>
+  <div style="padding: 30px; border-bottom: 1px solid var(--border); font-weight: 800;">YOUR BAG</div>
   <div id="cart-content" style="flex:1; padding:30px; overflow-y:auto;"></div>
   <div style="padding:30px; border-top:1px solid var(--border); background:#fafafa;">
-    <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:20px; font-size: 1.2rem;">
+    <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:20px;">
         <span>SUBTOTAL</span>
         <span id="subtotal"></span>
     </div>
@@ -205,41 +199,40 @@
   let activeProduct = null;
 
   const products = [
-    { id: 1, name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', desc: 'Dense igneous masterpiece. Stoic and loyal.' },
-    { id: 2, name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', desc: 'Layered metamorphic history. Ideal for contemplation.' },
-    { id: 3, name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', desc: 'Centuries of Alpine water. Silk finish.' },
-    { id: 4, name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', desc: 'Shiny volcanic glass. Handle with care.' },
+    { id: 1, name: 'Volcanic Basalt', price: 49, img: 'basalt.png', badge: 'BEST SELLER', desc: 'Patient and loyal igneous friend.' },
+    { id: 2, name: 'Highland Slate', price: 34, img: 'slate.png', badge: 'NEW', desc: 'Layered metamorphic rock.' },
+    { id: 3, name: 'River Bed Stone', price: 28, img: 'river.png', badge: '', desc: 'Smoothed by centuries of water.' },
+    { id: 4, name: 'Obsidian Shard', price: 55, img: 'obsidian.png', badge: 'SHARP', desc: 'Shiny volcanic glass.' },
     { id: 5, name: 'Family Pack', price: 95, img: 'family.png', badge: 'BUNDLE', desc: 'A full household of companions.' },
-    { id: 6, name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', desc: 'Features knit sweater and biologic eyes.' },
-    { id: 7, name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', desc: 'Distinct veining and polished finish.' }
+    { id: 6, name: 'Smooth Stone', price: 42, img: 'adopt.png', badge: 'FAN FAVORITE', desc: 'Includes knit sweater.' },
+    { id: 7, name: 'Imperial Marble', price: 65, img: 'marble.png', badge: 'PREMIUM', desc: 'Polished limestone with natural veins.' }
   ];
-
-  function renderGrid() {
-    document.getElementById('product-grid').innerHTML = products.map(p => `
-      <div class="product-card" onclick="openProduct(${p.id})">
-        ${p.badge ? `<span style="position:absolute; top:15px; left:15px; padding:5px 12px; border-radius:50px; font-size:0.6rem; font-weight:800; background:#121212; color:#fff;">${p.badge}</span>` : ''}
-        <div class="img-box"><img src="${p.img}" onerror="this.src='https://via.placeholder.com/300?text=Specimen'"></div>
-        <h3 style="font-size: 0.9rem; letter-spacing: 2px; text-transform:uppercase; font-weight: 700;">${p.name}</h3>
-        <p style="color:#aaa; font-weight:400;">$${p.price}.00</p>
-      </div>`).join('');
-  }
-
-  function toggleDropdown() {
-    document.getElementById('account-dropdown').classList.toggle('show');
-  }
 
   function login() {
     isLoggedIn = true;
-    document.getElementById('guest-links').style.display = 'none';
-    document.getElementById('user-links').style.display = 'block';
+    document.getElementById('main-nav-icons').style.display = 'flex';
     showScreen('shop-screen');
   }
 
   function logout() {
     isLoggedIn = false;
-    document.getElementById('guest-links').style.display = 'block';
-    document.getElementById('user-links').style.display = 'none';
-    showScreen('shop-screen');
+    document.getElementById('main-nav-icons').style.display = 'none';
+    showScreen('auth-screen');
+  }
+
+  function handleLogoClick() {
+      if(isLoggedIn) showScreen('shop-screen');
+      else showScreen('auth-screen');
+  }
+
+  function renderGrid() {
+    document.getElementById('product-grid').innerHTML = products.map(p => `
+      <div class="product-card" onclick="openProduct(${p.id})">
+        ${p.badge ? `<span style="position:absolute; top:15px; left:15px; padding:5px 12px; border-radius:50px; font-size:0.6rem; font-weight:800; background:#121212; color:#fff;">${p.badge}</span>` : ''}
+        <div class="img-box"><img src="${p.img}" onerror="this.src='https://via.placeholder.com/300?text=Pet+Rock'"></div>
+        <h3 style="font-size: 0.9rem; letter-spacing: 2px; text-transform:uppercase; font-weight: 700;">${p.name}</h3>
+        <p style="color:#aaa;">$${p.price}.00</p>
+      </div>`).join('');
   }
 
   function openProduct(id) {
@@ -256,6 +249,10 @@
     document.getElementById('overlay').classList.toggle('active');
   }
 
+  function toggleDropdown() {
+    document.getElementById('account-dropdown').classList.toggle('show');
+  }
+
   function addCurrentToCart() {
     cart.push({...activeProduct});
     renderCart(); toggleCart();
@@ -267,51 +264,42 @@
     document.getElementById('subtotal').innerText = `$${sub.toFixed(2)}`;
     document.getElementById('cart-content').innerHTML = cart.map(item => `
       <div style="display:flex; gap:15px; margin-bottom:20px; align-items:center;">
-          <div style="width:65px; height:65px; background:#f4f4f4; border-radius:10px; display:flex; align-items:center; justify-content:center;"><img src="${item.img}" style="width:80%; height:80%; object-fit:contain;"></div>
-          <div style="flex:1;"><div style="font-weight:700; font-size:0.85rem; text-transform:uppercase;">${item.name}</div><div style="color:var(--accent); font-size:0.8rem;">$${item.price}.00</div></div>
+          <div style="width:60px; height:60px; background:#f4f4f4; border-radius:10px; display:flex; align-items:center; justify-content:center;"><img src="${item.img}" style="width:80%;"></div>
+          <div style="flex:1;"><div style="font-weight:700; font-size:0.8rem;">${item.name}</div><div style="color:var(--accent); font-size:0.8rem;">$${item.price}.00</div></div>
       </div>`).join('');
   }
 
   function goToCheckout() {
     let sub = cart.reduce((a, b) => a + b.price, 0);
-    let tax = sub * 0.06;
-    let total = sub + 5 + tax;
-    document.getElementById('ch-total-hero').innerText = `$${total.toFixed(2)}`;
+    document.getElementById('ch-total-hero').innerText = `$${(sub + 5).toFixed(2)}`;
     document.getElementById('ch-sub').innerText = `$${sub.toFixed(2)}`;
-    document.getElementById('ch-tax').innerText = `$${tax.toFixed(2)}`;
-    document.getElementById('ch-final').innerText = `$${total.toFixed(2)}`;
+    document.getElementById('ch-final').innerText = `$${(sub + 5).toFixed(2)}`;
     document.getElementById('ch-summary-list').innerHTML = cart.map(item => `
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:0.95rem;">
-            <span>${item.name}</span>
-            <span style="font-weight:700;">$${item.price}.00</span>
-        </div>`).join('');
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><span>${item.name}</span><span style="font-weight:700;">$${item.price}.00</span></div>`).join('');
     toggleCart(); showScreen('checkout-screen');
   }
 
   function processAdoption() {
+    if(!document.getElementById('ship-addr').value) return alert("Enter address");
     document.getElementById('loader').style.display = 'flex';
     setTimeout(() => {
         document.getElementById('loader').style.display = 'none';
-        const trackID = "LITH-" + Math.floor(Math.random()*90000000);
-        const order = { id: trackID, date: new Date().toLocaleDateString(), items: [...cart], total: cart.reduce((a, b) => a + b.price, 0) + 5 };
+        const tid = "LITH-" + Math.floor(Math.random()*90000000);
+        const order = { id: tid, date: new Date().toLocaleDateString(), total: cart.reduce((a, b) => a + b.price, 0) + 5, items: [...cart] };
         orders.unshift(order);
         renderOrders();
-        document.getElementById('track-id-box').innerText = trackID;
+        document.getElementById('track-id-box').innerText = tid;
         cart = []; renderCart();
         showScreen('tracking-screen');
-    }, 2500);
+    }, 2000);
   }
 
   function renderOrders() {
     const list = document.getElementById('orders-list');
     list.innerHTML = orders.map(o => `
-        <div style="border: 1px solid var(--border); border-radius: 15px; padding: 30px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <div style="font-weight: 800; font-size: 1.1rem; letter-spacing: 1px;">${o.id}</div>
-                <div style="color: #aaa; font-size: 0.8rem; margin: 5px 0;">Adoption Manifested ${o.date}</div>
-                <div style="font-size: 0.9rem;">${o.items.map(i => i.name).join(', ')}</div>
-            </div>
-            <div style="font-weight: 800; color: var(--accent); font-size: 0.7rem; text-transform: uppercase;">Tectonic Shift</div>
+        <div style="border:1px solid var(--border); border-radius:15px; padding:30px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+            <div><div style="font-weight:800;">${o.id}</div><div style="color:#aaa; font-size:0.8rem;">Adoption Manifested ${o.date}</div></div>
+            <div style="font-weight:800; color:var(--accent); font-size:0.7rem; text-transform:uppercase;">In Transit</div>
         </div>`).join('');
   }
 
@@ -328,8 +316,13 @@
     document.getElementById('account-dropdown').classList.remove('show');
   }
 
-  // MM/YY Jump
   document.getElementById('exp-mm').addEventListener('input', function() { if(this.value.length === 2) document.getElementById('exp-yy').focus(); });
+  document.getElementById('card-num').addEventListener('input', function() {
+    let val = this.value.replace(/\D/g, '').substring(0, 16);
+    let out = "";
+    for(let i=0; i < val.length; i++) { if(i > 0 && i % 4 === 0) out += " "; out += val[i]; }
+    this.value = out;
+  });
 
   renderGrid();
 </script>
