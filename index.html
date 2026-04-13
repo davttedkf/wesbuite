@@ -93,6 +93,21 @@
     .drawer.active { right: 0; }
 
     @media (max-width: 900px) { .checkout-layout { grid-template-columns: 1fr; } .shop-container { flex-direction: column; } .drawer { width: 100%; right: -100%; } }
+
+    /* Admin */
+    .admin-wrapper { max-width: 1100px; margin: 0 auto; padding: 60px 5%; }
+    .admin-stat { background: var(--light-bg); border-radius: 14px; padding: 24px 28px; }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 30px; }
+    .admin-table th { text-align: left; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: #aaa; padding: 0 16px 14px; border-bottom: 2px solid var(--border); }
+    .admin-table td { padding: 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: #fafaf8; }
+    .status-pill { display: inline-block; padding: 4px 10px; border-radius: 50px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .pill-received  { background: #e8f4fd; color: #1565c0; }
+    .pill-nesting   { background: #fff8e1; color: #f57f17; }
+    .pill-shipped   { background: #f3e5f5; color: #6a1b9a; }
+    .pill-delivered { background: #e8f5e9; color: var(--success); }
+    .admin-badge { background: #c62828; color: #fff; font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; margin-left: 8px; vertical-align: middle; }
   </style>
 </head>
 <body>
@@ -117,7 +132,8 @@
     <div class="dropdown-container">
         <i class="fa-regular fa-circle-user" style="cursor: pointer;" onclick="toggleDropdown(event)"></i>
         <div id="account-dropdown" class="dropdown-content">
-            <div class="drop-item" onclick="showScreen('orders-screen')">My Orders</div>
+            <div class="drop-item" id="nav-orders" onclick="showScreen('orders-screen')">My Orders</div>
+            <div class="drop-item" id="nav-admin" style="display:none;" onclick="showScreen('admin-screen')">Admin Panel <span style="background:#c62828;color:#fff;font-size:0.55rem;font-weight:800;padding:2px 6px;border-radius:3px;margin-left:4px;">ADMIN</span></div>
             <div class="drop-item" style="color: var(--error);" onclick="logout()">Logout</div>
         </div>
     </div>
@@ -227,6 +243,7 @@
     </div>
     <div class="checkout-right">
         <h4 style="margin-bottom:30px; letter-spacing:1px; font-size:0.8rem; text-transform:uppercase;">Secure Checkout</h4>
+        <input type="text" id="ship-name" placeholder="Full Name">
         <input type="text" id="ship-addr" placeholder="Street Address">
         <div style="border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:12px;">
             <input id="card-num" type="text" style="border:none; border-bottom:1px solid var(--border); border-radius:0; width:100%; padding:16px; margin-bottom:0;" placeholder="Card Number" maxlength="19">
@@ -251,6 +268,56 @@
       <div id="track-id-box" style="margin: 0 auto 40px; font-family: monospace; font-size: 1.4rem; background: #f8f8f8; padding: 25px; border-radius:12px; max-width:400px;"></div>
       <button class="btn" style="width: 250px;" onclick="showScreen('orders-screen')">View Order History</button>
     </div>
+</section>
+
+
+<!-- ADMIN SCREEN -->
+<section id="admin-screen" class="screen">
+  <div class="admin-wrapper">
+    <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:6px;">
+      <h1 style="font-weight:800; letter-spacing:-1px;">ADMIN PANEL</h1>
+      <span class="admin-badge">Staff Only</span>
+    </div>
+    <p style="color:#aaa; margin-bottom:40px; font-size:0.85rem;">All customer orders across the store.</p>
+
+    <!-- Stats bar -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-bottom:40px;" id="admin-stats"></div>
+
+    <!-- Filters -->
+    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:20px;">
+      <input type="text" id="admin-search" placeholder="Search by name, order ID or item..." style="max-width:320px; margin-bottom:0; padding:12px 16px; font-size:0.85rem;" oninput="renderAdminOrders()">
+      <select id="admin-filter" onchange="renderAdminOrders()" style="padding:12px 16px; border:1px solid var(--border); border-radius:12px; font-family:inherit; font-size:0.85rem; background:#fff; cursor:pointer;">
+        <option value="all">All Statuses</option>
+        <option value="received">Order Received</option>
+        <option value="nesting">Nesting Complete</option>
+        <option value="shipped">Shipped</option>
+        <option value="delivered">Delivered</option>
+      </select>
+      <span id="admin-count" style="font-size:0.8rem; color:#aaa; margin-left:auto;"></span>
+    </div>
+
+    <!-- Table -->
+    <div style="overflow-x:auto;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Ship To</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="admin-tbody"></tbody>
+      </table>
+    </div>
+    <div id="admin-empty" style="display:none; text-align:center; padding:80px 0; color:#ccc;">
+      <i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom:16px; display:block;"></i>
+      No orders match your search.
+    </div>
+  </div>
 </section>
 
 <!-- FOOTER -->
@@ -372,6 +439,7 @@
   var cart = [];
   var orders = [];
   var isLoggedIn = false;
+  var isAdmin = false;
   var activeProduct = null;
   var appliedDiscount = 0;
   var flashInterval = null;
@@ -380,6 +448,7 @@
   // Safe localStorage reads
   try { orders = JSON.parse(localStorage.getItem('lithos_orders') || '[]'); } catch(e) { orders = []; }
   try { isLoggedIn = localStorage.getItem('lithos_logged_in') === 'true'; } catch(e) {}
+  try { isAdmin = localStorage.getItem('lithos_is_admin') === 'true'; } catch(e) {}
 
   // ── Products ───────────────────────────────────────────────────────────
   var products = [
@@ -401,7 +470,13 @@
     startSocialProof();
     if (isLoggedIn) {
       document.getElementById('main-nav-icons').style.display = 'flex';
-      showScreen('shop-screen');
+      if (isAdmin) {
+        document.getElementById('nav-admin').style.display = 'block';
+        document.getElementById('nav-orders').style.display = 'none';
+        showScreen('admin-screen');
+      } else {
+        showScreen('shop-screen');
+      }
     }
   });
 
@@ -424,15 +499,22 @@
       if (!pass)  passEl.classList.add('input-error');
       return;
     }
+    var isAdmin = (email.toLowerCase() === 'admin' && pass === 'alex');
     isLoggedIn = true;
     try { localStorage.setItem('lithos_logged_in', 'true'); } catch(e) {}
+    try { localStorage.setItem('lithos_is_admin', isAdmin ? 'true' : 'false'); } catch(e) {}
     document.getElementById('main-nav-icons').style.display = 'flex';
-    showScreen('shop-screen');
+    document.getElementById('nav-admin').style.display = isAdmin ? 'block' : 'none';
+    document.getElementById('nav-orders').style.display = isAdmin ? 'none' : 'block';
+    if (isAdmin) { showScreen('admin-screen'); } else { showScreen('shop-screen'); }
   }
 
   function logout() {
     isLoggedIn = false;
     try { localStorage.removeItem('lithos_logged_in'); } catch(e) {}
+    try { localStorage.removeItem('lithos_is_admin'); } catch(e) {}
+    document.getElementById('nav-admin').style.display = 'none';
+    document.getElementById('nav-orders').style.display = 'block';
     document.getElementById('main-nav-icons').style.display = 'none';
     closeAll();
     showScreen('auth-screen');
@@ -626,6 +708,8 @@
       var finalTotal = parseFloat((sub + 5 - appliedDiscount).toFixed(2));
 
       // Store items with purchase price snapshot
+      var customerName = document.getElementById('ship-name').value.trim();
+      var customerAddr = document.getElementById('ship-addr').value.trim();
       var itemSnapshot = cart.map(function(item) {
         return { id: item.id, name: item.name, purchasePrice: item.price, img: item.img };
       });
@@ -635,7 +719,9 @@
         date: new Date().toLocaleDateString(),
         timestamp: Date.now(),
         items: itemSnapshot,
-        total: finalTotal
+        total: finalTotal,
+        customerName: customerName,
+        customerAddr: customerAddr
       };
 
       orders.unshift(order);
@@ -646,6 +732,7 @@
       cart = [];
       appliedDiscount = 0;
       renderCart();
+      document.getElementById('ship-name').value = '';
       document.getElementById('ship-addr').value = '';
       document.getElementById('card-num').value = '';
       document.getElementById('exp-mm').value = '';
@@ -771,6 +858,7 @@
     window.scrollTo(0, 0);
     // Refresh orders every time that screen is visited
     if (id === 'orders-screen') renderOrders();
+    if (id === 'admin-screen') renderAdminOrders();
   }
 
   function handleLogoClick() {
@@ -790,6 +878,80 @@
   }
 
   // Close dropdown when clicking anywhere else
+
+  // ── Admin ──────────────────────────────────────────────────────────────
+  function getOrderStatus(o) {
+    var ts = o.timestamp || Date.now();
+    var diff = (Date.now() - ts) / 3600000;
+    if (diff > 24) return { label: 'Delivered',   cls: 'pill-delivered', key: 'delivered' };
+    if (diff > 10) return { label: 'Shipped',      cls: 'pill-shipped',   key: 'shipped' };
+    if (diff > 2)  return { label: 'Nesting',      cls: 'pill-nesting',   key: 'nesting' };
+    return             { label: 'Received',      cls: 'pill-received',  key: 'received' };
+  }
+
+  function renderAdminOrders() {
+    var allOrders = [];
+    try { allOrders = JSON.parse(localStorage.getItem('lithos_orders') || '[]'); } catch(e) {}
+
+    var search = (document.getElementById('admin-search').value || '').toLowerCase();
+    var filter = document.getElementById('admin-filter').value;
+
+    // Stats
+    var revenue = allOrders.reduce(function(a, o) { return a + (o.total || 0); }, 0);
+    var items   = allOrders.reduce(function(a, o) { return a + (Array.isArray(o.items) ? o.items.length : 0); }, 0);
+    document.getElementById('admin-stats').innerHTML =
+      stat('Total Orders',   allOrders.length) +
+      stat('Total Revenue',  '$' + revenue.toFixed(2)) +
+      stat('Items Sold',     items) +
+      stat('Avg Order Value', allOrders.length ? '$' + (revenue / allOrders.length).toFixed(2) : '$0.00');
+
+    // Filter + search
+    var filtered = allOrders.filter(function(o) {
+      var st = getOrderStatus(o);
+      if (filter !== 'all' && st.key !== filter) return false;
+      if (!search) return true;
+      var haystack = [
+        o.id, o.customerName, o.customerAddr,
+        (Array.isArray(o.items) ? o.items.map(function(i){ return i.name; }).join(' ') : '')
+      ].join(' ').toLowerCase();
+      return haystack.indexOf(search) !== -1;
+    });
+
+    document.getElementById('admin-count').innerText = filtered.length + ' order' + (filtered.length !== 1 ? 's' : '');
+
+    if (!filtered.length) {
+      document.getElementById('admin-tbody').innerHTML = '';
+      document.getElementById('admin-empty').style.display = 'block';
+      return;
+    }
+    document.getElementById('admin-empty').style.display = 'none';
+
+    document.getElementById('admin-tbody').innerHTML = filtered.map(function(o) {
+      var st = getOrderStatus(o);
+      var items = Array.isArray(o.items) ? o.items : [];
+      var itemList = items.map(function(i) {
+        return '<div style="white-space:nowrap;">• ' + (i.name || '?') + ' <span style="color:#aaa;">$' + (i.purchasePrice || i.price || '?') + '</span></div>';
+      }).join('');
+      var shortId = (o.id || '').replace('LITH-','');
+      var name = o.customerName || '<span style="color:#ccc;">—</span>';
+      var addr = o.customerAddr || '<span style="color:#ccc;">—</span>';
+      return '<tr>' +
+        '<td><span style="font-family:monospace; font-size:0.8rem; font-weight:700;">' + shortId + '</span></td>' +
+        '<td style="font-weight:600;">' + name + '</td>' +
+        '<td style="color:#666; font-size:0.82rem; max-width:180px;">' + addr + '</td>' +
+        '<td>' + (itemList || '<span style="color:#ccc;">—</span>') + '</td>' +
+        '<td style="font-weight:800;">$' + (typeof o.total === 'number' ? o.total.toFixed(2) : '—') + '</td>' +
+        '<td style="color:#aaa; white-space:nowrap; font-size:0.82rem;">' + (o.date || '') + '</td>' +
+        '<td><span class="status-pill ' + st.cls + '">' + st.label + '</span></td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  function stat(label, val) {
+    return '<div class="admin-stat"><div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:2px; color:#aaa; margin-bottom:8px;">' + label + '</div>' +
+      '<div style="font-size:1.6rem; font-weight:800;">' + val + '</div></div>';
+  }
+
   document.addEventListener('click', function(e) {
     var dd = document.getElementById('account-dropdown');
     if (dd && dd.classList.contains('show') && !e.target.closest('.dropdown-container')) {
