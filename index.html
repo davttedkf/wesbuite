@@ -109,7 +109,8 @@
     .pill-received  { background: #e8f4fd; color: #1565c0; }
     .pill-nesting   { background: #fff8e1; color: #f57f17; }
     .pill-shipped   { background: #f3e5f5; color: #6a1b9a; }
-    .pill-delivered { background: #e8f5e9; color: var(--success); }
+    .pill-delivered  { background: #e8f5e9; color: var(--success); }
+    .pill-cancelled  { background: #fdecea; color: #c62828; }
     .admin-badge { background: #c62828; color: #fff; font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; margin-left: 8px; vertical-align: middle; }
   </style>
 </head>
@@ -281,45 +282,76 @@
       <h1 style="font-weight:800; letter-spacing:-1px;">ADMIN PANEL</h1>
       <span class="admin-badge">Staff Only</span>
     </div>
-    <p style="color:#aaa; margin-bottom:40px; font-size:0.85rem;">All customer orders across the store.</p>
 
-    <!-- Stats bar -->
-    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-bottom:40px;" id="admin-stats"></div>
-
-    <!-- Filters -->
-    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:20px;">
-      <input type="text" id="admin-search" placeholder="Search by name, order ID or item..." style="max-width:320px; margin-bottom:0; padding:12px 16px; font-size:0.85rem;" oninput="renderAdminTable(cachedAdminOrders)">
-      <select id="admin-filter" onchange="renderAdminTable(cachedAdminOrders)" style="padding:12px 16px; border:1px solid var(--border); border-radius:12px; font-family:inherit; font-size:0.85rem; background:#fff; cursor:pointer;">
-        <option value="all">All Statuses</option>
-        <option value="received">Order Received</option>
-        <option value="nesting">Nesting Complete</option>
-        <option value="shipped">Shipped</option>
-        <option value="delivered">Delivered</option>
-      </select>
-      <span id="admin-count" style="font-size:0.8rem; color:#aaa; margin-left:auto;"></span>
+    <!-- Tabs -->
+    <div style="display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:40px; margin-top:24px;">
+      <button id="tab-orders-btn" onclick="switchAdminTab('orders')" style="background:none; border:none; border-bottom:2px solid var(--primary); margin-bottom:-2px; padding:12px 28px; font-family:inherit; font-size:0.8rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; cursor:pointer; color:var(--primary);">Orders</button>
+      <button id="tab-discounts-btn" onclick="switchAdminTab('discounts')" style="background:none; border:none; border-bottom:2px solid transparent; margin-bottom:-2px; padding:12px 28px; font-family:inherit; font-size:0.8rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; cursor:pointer; color:#aaa;">Discount Codes</button>
     </div>
 
-    <!-- Table -->
-    <div style="overflow-x:auto;">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Customer</th>
-            <th>Ship To</th>
-            <th>Items</th>
-            <th>Total</th>
-            <th>Date</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="admin-tbody"></tbody>
-      </table>
+    <!-- ORDERS TAB -->
+    <div id="tab-orders">
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-bottom:40px;" id="admin-stats"></div>
+      <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:20px;">
+        <input type="text" id="admin-search" placeholder="Search by name, order ID or item..." style="max-width:320px; margin-bottom:0; padding:12px 16px; font-size:0.85rem;" oninput="renderAdminTable(cachedAdminOrders)">
+        <select id="admin-filter" onchange="renderAdminTable(cachedAdminOrders)" style="padding:12px 16px; border:1px solid var(--border); border-radius:12px; font-family:inherit; font-size:0.85rem; background:#fff; cursor:pointer;">
+          <option value="all">All Statuses</option>
+          <option value="received">Order Received</option>
+          <option value="nesting">Nesting Complete</option>
+          <option value="shipped">Shipped</option>
+          <option value="delivered">Delivered</option>
+        </select>
+        <span id="admin-count" style="font-size:0.8rem; color:#aaa; margin-left:auto;"></span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead><tr>
+            <th>Order ID</th><th>Customer</th><th>Ship To</th><th>Items</th><th>Total</th><th>Date</th><th>Status</th>
+          </tr></thead>
+          <tbody id="admin-tbody"></tbody>
+        </table>
+      </div>
+      <div id="admin-empty" style="display:none; text-align:center; padding:80px 0; color:#ccc;">
+        <i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom:16px; display:block;"></i>
+        No orders match your search.
+      </div>
     </div>
-    <div id="admin-empty" style="display:none; text-align:center; padding:80px 0; color:#ccc;">
-      <i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom:16px; display:block;"></i>
-      No orders match your search.
+
+    <!-- DISCOUNTS TAB -->
+    <div id="tab-discounts" style="display:none;">
+      <p style="color:#aaa; font-size:0.85rem; margin-bottom:32px;">Create and manage promo codes. Customers enter these at checkout.</p>
+
+      <!-- Create form -->
+      <div style="background:var(--light-bg); border-radius:16px; padding:28px; margin-bottom:36px;">
+        <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; font-weight:700; color:#aaa; margin-bottom:20px;">New Discount Code</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:12px; align-items:end; flex-wrap:wrap;">
+          <div>
+            <div style="font-size:0.75rem; font-weight:700; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px; color:#888;">Code</div>
+            <input type="text" id="dc-code" placeholder="e.g. SUMMER20" style="margin-bottom:0; text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
+          </div>
+          <div>
+            <div style="font-size:0.75rem; font-weight:700; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px; color:#888;">Discount Type</div>
+            <select id="dc-type" style="width:100%; padding:16px; border:1px solid var(--border); border-radius:12px; font-family:inherit; font-size:0.9rem; background:#fff;">
+              <option value="percent">Percentage (%)</option>
+              <option value="fixed">Fixed Amount ($)</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:0.75rem; font-weight:700; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px; color:#888;">Amount</div>
+            <input type="number" id="dc-amount" placeholder="e.g. 15" min="1" max="100" style="margin-bottom:0;">
+          </div>
+          <button class="btn" style="width:auto; padding:16px 24px; white-space:nowrap;" onclick="createDiscountCode()">Add Code</button>
+        </div>
+        <p id="dc-msg" style="margin-top:12px; font-size:0.8rem; min-height:1.2em;"></p>
+      </div>
+
+      <!-- Codes list -->
+      <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; font-weight:700; color:#aaa; margin-bottom:16px;">Active Codes</div>
+      <div id="dc-list">
+        <div style="text-align:center; padding:60px 0; color:#ccc;"><i class="fa-solid fa-tag fa-2x" style="margin-bottom:16px; display:block;"></i>No discount codes yet.</div>
+      </div>
     </div>
+
   </div>
 </section>
 
@@ -683,21 +715,34 @@
       msgEl.style.color = 'var(--error)';
       return;
     }
-    if (code === 'GEOLOGIC10') {
+
+    // Look up code in Firebase
+    db.collection('discounts').doc(code).get().then(function(doc) {
+      if (!doc.exists || doc.data().active === false) {
+        appliedDiscount = 0;
+        renderCart();
+        document.getElementById('promo-row').style.display = 'none';
+        msgEl.innerText = 'Invalid or expired promo code.';
+        msgEl.style.color = 'var(--error)';
+        return;
+      }
+      var d = doc.data();
       var sub = cart.reduce(function(a, b) { return a + b.price; }, 0);
-      appliedDiscount = parseFloat((sub * 0.10).toFixed(2));
+      if (d.type === 'percent') {
+        appliedDiscount = parseFloat((sub * (d.amount / 100)).toFixed(2));
+        msgEl.innerText = d.amount + '% discount applied!';
+      } else {
+        appliedDiscount = Math.min(parseFloat(d.amount), sub);
+        msgEl.innerText = '$' + d.amount + ' discount applied!';
+      }
       renderCart();
       document.getElementById('promo-row').style.display = 'flex';
       document.getElementById('ch-disc').innerText = '-$' + appliedDiscount.toFixed(2);
-      msgEl.innerText = '10% discount applied!';
       msgEl.style.color = 'var(--success)';
-    } else {
-      appliedDiscount = 0;
-      renderCart();
-      document.getElementById('promo-row').style.display = 'none';
-      msgEl.innerText = 'Invalid promo code.';
+    }).catch(function() {
+      msgEl.innerText = 'Could not verify code. Try again.';
       msgEl.style.color = 'var(--error)';
-    }
+    });
   }
 
   // ── Checkout ───────────────────────────────────────────────────────────
@@ -788,10 +833,12 @@
       var status = 'Order Received';
       var w = '15%';
       var canCancel = true;
+      var isCancelled = o.cancelled === true;
 
-      if (diff > 2)  { status = 'Nesting Complete'; w = '45%'; }
-      if (diff > 10) { status = 'Shipped / In Transit'; w = '75%'; canCancel = false; }
-      if (diff > 24) { status = 'Delivered'; w = '100%'; canCancel = false; }
+      if (isCancelled) { status = 'Cancelled'; w = '0%'; canCancel = false; }
+      else if (diff > 24) { status = 'Delivered'; w = '100%'; canCancel = false; }
+      else if (diff > 10) { status = 'Shipped / In Transit'; w = '75%'; canCancel = false; }
+      else if (diff > 2)  { status = 'Nesting Complete'; w = '45%'; }
 
       // FIX: guard against missing items array
       var items = Array.isArray(o.items) ? o.items : [];
@@ -813,7 +860,7 @@
             '<div style="font-weight:800;">Manifest #' + shortId + '</div>' +
             '<div style="color:#aaa; font-size:0.7rem; margin-top:4px;">' + (o.date || '') + '</div>' +
           '</div>' +
-          '<span style="font-size:0.7rem; font-weight:700; color:var(--accent); text-align:right;">' + status + '</span>' +
+          '<span style="font-size:0.7rem; font-weight:700; color:' + (isCancelled ? 'var(--error)' : 'var(--accent)') + '; text-align:right;">' + status + '</span>' +
         '</div>' +
         '<div style="font-size:0.85rem; color:#666; margin-bottom:15px;">' + itemsHtml + '</div>' +
         '<div class="track-visual"><div class="track-fill" style="width:' + w + '"></div></div>' +
@@ -827,7 +874,15 @@
 
   function cancelOrder(id) {
     if (!confirm('Are you sure you want to cancel this manifest?')) return;
-    orders = orders.filter(function(o) { return o.id !== id; });
+    // Mark cancelled in Firebase
+    db.collection('orders').doc(id).update({ cancelled: true }).catch(function(e) {
+      console.warn('Firebase cancel failed:', e);
+    });
+    // Mark cancelled locally
+    orders = orders.map(function(o) {
+      if (o.id === id) return Object.assign({}, o, { cancelled: true });
+      return o;
+    });
     try { localStorage.setItem('lithos_orders', JSON.stringify(orders)); } catch(e) {}
     renderOrders();
   }
@@ -901,14 +956,93 @@
 
   // Close dropdown when clicking anywhere else
 
+
+  // ── Discount Code Admin ────────────────────────────────────────────────
+  function switchAdminTab(tab) {
+    document.getElementById('tab-orders').style.display    = tab === 'orders'    ? 'block' : 'none';
+    document.getElementById('tab-discounts').style.display = tab === 'discounts' ? 'block' : 'none';
+    document.getElementById('tab-orders-btn').style.borderBottomColor    = tab === 'orders'    ? 'var(--primary)' : 'transparent';
+    document.getElementById('tab-discounts-btn').style.borderBottomColor = tab === 'discounts' ? 'var(--primary)' : 'transparent';
+    document.getElementById('tab-orders-btn').style.color    = tab === 'orders'    ? 'var(--primary)' : '#aaa';
+    document.getElementById('tab-discounts-btn').style.color = tab === 'discounts' ? 'var(--primary)' : '#aaa';
+    if (tab === 'discounts') loadDiscountCodes();
+  }
+
+  function loadDiscountCodes() {
+    var listEl = document.getElementById('dc-list');
+    if (!listEl) return;
+    listEl.innerHTML = '<div style="text-align:center; padding:40px; color:#aaa;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>';
+    db.collection('discounts').orderBy('createdAt', 'desc').get().then(function(snap) {
+      if (snap.empty) {
+        listEl.innerHTML = '<div style="text-align:center; padding:60px 0; color:#ccc;"><i class="fa-solid fa-tag fa-2x" style="margin-bottom:16px; display:block;"></i>No discount codes yet. Create one above.</div>';
+        return;
+      }
+      var codes = [];
+      snap.forEach(function(doc) { codes.push(Object.assign({ _id: doc.id }, doc.data())); });
+      listEl.innerHTML = '<table class="admin-table"><thead><tr>' +
+        '<th>Code</th><th>Type</th><th>Value</th><th>Status</th><th style="text-align:right;">Actions</th>' +
+        '</tr></thead><tbody>' +
+        codes.map(function(c) {
+          var active = c.active !== false;
+          var valueLabel = c.type === 'percent' ? c.amount + '% off' : '$' + c.amount + ' off';
+          var toggleLabel = active ? 'Disable' : 'Enable';
+          var btnStyle = 'background:none; border:1px solid #ddd; border-radius:8px; padding:6px 14px; font-size:0.7rem; font-weight:700; cursor:pointer; text-transform:uppercase; letter-spacing:1px; margin-right:8px;';
+          var delStyle  = 'background:none; border:1px solid #ddd; border-radius:8px; padding:6px 14px; font-size:0.7rem; font-weight:700; cursor:pointer; text-transform:uppercase; letter-spacing:1px; color:#c62828;';
+          return '<tr>' +
+            '<td><span style="font-family:monospace; font-weight:800; font-size:0.95rem; letter-spacing:2px;">' + c._id + '</span></td>' +
+            '<td style="color:#666;">' + (c.type === 'percent' ? 'Percentage' : 'Fixed $') + '</td>' +
+            '<td style="font-weight:700; color:var(--success);">' + valueLabel + '</td>' +
+            '<td><span class="status-pill ' + (active ? 'pill-delivered' : 'pill-cancelled') + '">' + (active ? 'Active' : 'Disabled') + '</span></td>' +
+            '<td style="text-align:right;">' +
+              '<button style="' + btnStyle + '" onclick="toggleDiscountCode(' + JSON.stringify(c._id) + ',' + active + ')">' + toggleLabel + '</button>' +
+              '<button style="' + delStyle  + '" onclick="deleteDiscountCode(' + JSON.stringify(c._id) + ')">Delete</button>' +
+            '</td></tr>';
+        }).join('') + '</tbody></table>';
+    }).catch(function(e) {
+      listEl.innerHTML = '<div style="color:var(--error); padding:20px;">Error: ' + e.message + '</div>';
+    });
+  }
+
+  function createDiscountCode() {
+    var code   = document.getElementById('dc-code').value.trim().toUpperCase();
+    var type   = document.getElementById('dc-type').value;
+    var amount = parseFloat(document.getElementById('dc-amount').value);
+    var msgEl  = document.getElementById('dc-msg');
+
+    if (!code)                              { msgEl.innerText = 'Enter a code name.';           msgEl.style.color = 'var(--error)'; return; }
+    if (!amount || amount <= 0)             { msgEl.innerText = 'Enter a valid amount.';         msgEl.style.color = 'var(--error)'; return; }
+    if (type === 'percent' && amount > 100) { msgEl.innerText = 'Percentage cannot exceed 100.'; msgEl.style.color = 'var(--error)'; return; }
+
+    msgEl.innerText = 'Saving...'; msgEl.style.color = '#aaa';
+    db.collection('discounts').doc(code).set({ type: type, amount: amount, active: true, createdAt: Date.now() })
+      .then(function() {
+        msgEl.innerText = code + ' created successfully!'; msgEl.style.color = 'var(--success)';
+        document.getElementById('dc-code').value = '';
+        document.getElementById('dc-amount').value = '';
+        loadDiscountCodes();
+      }).catch(function(e) { msgEl.innerText = 'Error: ' + e.message; msgEl.style.color = 'var(--error)'; });
+  }
+
+  function toggleDiscountCode(code, currentlyActive) {
+    db.collection('discounts').doc(code).update({ active: !currentlyActive })
+      .then(loadDiscountCodes).catch(function(e) { alert('Error: ' + e.message); });
+  }
+
+  function deleteDiscountCode(code) {
+    if (!confirm('Delete code ' + code + '? This cannot be undone.')) return;
+    db.collection('discounts').doc(code).delete()
+      .then(loadDiscountCodes).catch(function(e) { alert('Error: ' + e.message); });
+  }
+
   // ── Admin ──────────────────────────────────────────────────────────────
   function getOrderStatus(o) {
+    if (o.cancelled) return { label: 'Cancelled', cls: 'pill-cancelled', key: 'cancelled' };
     var ts = o.timestamp || Date.now();
     var diff = (Date.now() - ts) / 3600000;
-    if (diff > 24) return { label: 'Delivered',   cls: 'pill-delivered', key: 'delivered' };
-    if (diff > 10) return { label: 'Shipped',      cls: 'pill-shipped',   key: 'shipped' };
-    if (diff > 2)  return { label: 'Nesting',      cls: 'pill-nesting',   key: 'nesting' };
-    return             { label: 'Received',      cls: 'pill-received',  key: 'received' };
+    if (diff > 24) return { label: 'Delivered', cls: 'pill-delivered', key: 'delivered' };
+    if (diff > 10) return { label: 'Shipped',   cls: 'pill-shipped',   key: 'shipped' };
+    if (diff > 2)  return { label: 'Nesting',   cls: 'pill-nesting',   key: 'nesting' };
+    return               { label: 'Received',  cls: 'pill-received',  key: 'received' };
   }
 
   function renderAdminOrders() {
