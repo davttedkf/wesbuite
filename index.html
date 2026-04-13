@@ -7,6 +7,9 @@
   <link rel="icon" href="favicon.ico?v=29">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
   <style>
     :root { --primary: #121212; --accent: #a38a6d; --bg: #ffffff; --light-bg: #f8f8f6; --border: #e8e8e6; --success: #2d5a27; --error: #c62828; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -285,8 +288,8 @@
 
     <!-- Filters -->
     <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:20px;">
-      <input type="text" id="admin-search" placeholder="Search by name, order ID or item..." style="max-width:320px; margin-bottom:0; padding:12px 16px; font-size:0.85rem;" oninput="renderAdminOrders()">
-      <select id="admin-filter" onchange="renderAdminOrders()" style="padding:12px 16px; border:1px solid var(--border); border-radius:12px; font-family:inherit; font-size:0.85rem; background:#fff; cursor:pointer;">
+      <input type="text" id="admin-search" placeholder="Search by name, order ID or item..." style="max-width:320px; margin-bottom:0; padding:12px 16px; font-size:0.85rem;" oninput="renderAdminTable(cachedAdminOrders)">
+      <select id="admin-filter" onchange="renderAdminTable(cachedAdminOrders)" style="padding:12px 16px; border:1px solid var(--border); border-radius:12px; font-family:inherit; font-size:0.85rem; background:#fff; cursor:pointer;">
         <option value="all">All Statuses</option>
         <option value="received">Order Received</option>
         <option value="nesting">Nesting Complete</option>
@@ -435,6 +438,18 @@
 </div>
 
 <script>
+  // ── Firebase ───────────────────────────────────────────────────────────
+  var firebaseConfig = {
+    apiKey: "AIzaSyDECWS725cgFvaRV9i44ExNBPHxejocnMs",
+    authDomain: "lithos-shop.firebaseapp.com",
+    projectId: "lithos-shop",
+    storageBucket: "lithos-shop.firebasestorage.app",
+    messagingSenderId: "517806088096",
+    appId: "1:517806088096:web:cfc26c91d65244db034ec5"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var db = firebase.firestore();
+
   // ── State ──────────────────────────────────────────────────────────────
   var cart = [];
   var orders = [];
@@ -444,6 +459,7 @@
   var appliedDiscount = 0;
   var flashInterval = null;
   var socialInterval = null;
+  var cachedAdminOrders = [];
 
   // Safe localStorage reads
   try { orders = JSON.parse(localStorage.getItem('lithos_orders') || '[]'); } catch(e) { orders = []; }
@@ -724,6 +740,12 @@
         customerAddr: customerAddr
       };
 
+      // Save to Firebase
+      db.collection('orders').doc(tid).set(order).catch(function(e) {
+        console.warn('Firebase save failed:', e);
+      });
+
+      // Also save locally for "My Orders" page
       orders.unshift(order);
       try { localStorage.setItem('lithos_orders', JSON.stringify(orders)); } catch(e) {}
       renderOrders();
@@ -890,9 +912,22 @@
   }
 
   function renderAdminOrders() {
-    var allOrders = [];
-    try { allOrders = JSON.parse(localStorage.getItem('lithos_orders') || '[]'); } catch(e) {}
+    var tbodyEl = document.getElementById('admin-tbody');
+    var statsEl = document.getElementById('admin-stats');
+    if (!tbodyEl) return;
+    tbodyEl.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#aaa;"><i class="fa-solid fa-spinner fa-spin"></i> Loading orders...</td></tr>';
 
+    db.collection('orders').orderBy('timestamp', 'desc').get().then(function(snapshot) {
+      var allOrders = [];
+      snapshot.forEach(function(doc) { allOrders.push(doc.data()); });
+      cachedAdminOrders = allOrders;
+      renderAdminTable(allOrders);
+    }).catch(function(err) {
+      tbodyEl.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--error);">Could not load orders: ' + err.message + '</td></tr>';
+    });
+  }
+
+  function renderAdminTable(allOrders) {
     var search = (document.getElementById('admin-search').value || '').toLowerCase();
     var filter = document.getElementById('admin-filter').value;
 
