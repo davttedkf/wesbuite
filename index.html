@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
   <style>
     :root { --primary: #121212; --accent: #a38a6d; --bg: #ffffff; --light-bg: #f8f8f6; --border: #e8e8e6; --success: #2d5a27; --error: #c62828; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,83 +19,65 @@
     .plate-1 { width: 800px; height: 800px; top: -200px; left: -200px; }
     .plate-2 { width: 600px; height: 600px; bottom: -100px; right: -100px; animation-duration: 45s; }
     @keyframes shift { from { transform: translate(0, 0); } to { transform: translate(100px, 50px); } }
-
     #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: 0.3s; z-index: 1500; }
     #overlay.active { opacity: 1; visibility: visible; }
-
     #loader { position: fixed; inset: 0; background: #fff; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
     .spinner { width: 40px; height: 40px; border: 3px solid #eee; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
     #social-toast { position: fixed; bottom: 30px; left: 30px; background: #fff; border: 1px solid var(--border); padding: 15px 20px; border-radius: 12px; display: none; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); z-index: 5000; animation: slideUp 0.5s ease; }
     @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
     nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 2000; }
     .logo { font-weight: 800; letter-spacing: 6px; text-transform: uppercase; cursor: pointer; font-size: 1.1rem; }
     .nav-icons { display: flex; gap: 25px; align-items: center; font-size: 1.1rem; position: relative; }
-
     .dropdown-container { position: relative; display: inline-block; }
     .dropdown-content { display: none; position: absolute; right: 0; top: 35px; background: #fff; min-width: 200px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--border); z-index: 2100; overflow: hidden; }
     .dropdown-content.show { display: block; }
     .drop-item { padding: 15px 20px; font-size: 0.85rem; color: #666; cursor: pointer; border-bottom: 1px solid #f9f9f9; }
     .drop-item:hover { background: var(--light-bg); color: var(--primary); }
-
     .screen { display: none; width: 100%; min-height: 100vh; }
     .screen.active { display: block; }
-
     /* FIX: detail-grid was missing CSS */
     .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
     @media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; } }
-
     .shop-container { display: flex; max-width: 1400px; margin: 0 auto; padding: 60px 5%; gap: 60px; }
     .sidebar { width: 220px; flex-shrink: 0; position: sticky; top: 120px; }
     .sidebar-list { list-style: none; margin-bottom: 40px; }
     .sidebar-list li { padding: 10px 0; font-size: 0.9rem; color: #666; cursor: pointer; transition: 0.2s; }
     .sidebar-list li.active { color: var(--primary); font-weight: 700; border-left: 2px solid var(--primary); padding-left: 15px; margin-left: -17px; }
-
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; flex: 1; }
     .product-card { border: 2px solid var(--border); border-radius: 20px; padding: 20px; cursor: pointer; transition: 0.4s; position: relative; background: #fff; }
     .product-card:hover { border-color: var(--accent); transform: translateY(-8px); }
     .img-box { width: 100%; aspect-ratio: 1; background: #fafafa; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .img-box img { width: 75%; height: 75%; object-fit: contain; }
-
     .flash-sale-banner { background: #fffcf0; border: 1px solid #f9e8a0; padding: 15px; border-radius: 12px; margin: 20px 0; font-size: 0.85rem; display: flex; align-items: center; gap: 12px; }
     .flash-timer { font-weight: 800; color: #856404; font-family: monospace; font-size: 1.1rem; }
-
     .fact-sheet { width: 100%; margin-top: 30px; border-collapse: collapse; font-size: 0.85rem; }
     .fact-sheet td { padding: 12px 0; border-bottom: 1px solid #f0f0f0; color: #777; }
     .fact-sheet td:first-child { font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; width: 40%; }
-
     .checkout-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
     .checkout-left { background: var(--light-bg); padding: 60px 10%; border-right: 1px solid var(--border); }
     .checkout-right { padding: 60px 10%; background: #fff; }
     .promo-group { display: flex; gap: 10px; margin-bottom: 20px; }
     .promo-group input { margin-bottom: 0; }
     .promo-btn { width: 100px; font-size: 0.7rem; letter-spacing: 1px; padding: 0; }
-
     .orders-wrapper { max-width: 800px; margin: 0 auto; padding: 60px 5%; }
     .order-card { border: 1px solid var(--border); border-radius: 15px; padding: 30px; margin-bottom: 30px; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
     .track-visual { height: 6px; background: #eee; border-radius: 10px; margin: 25px 0; position: relative; overflow: hidden; }
     .track-fill { height: 100%; background: var(--success); transition: width 1s ease; }
     .cancel-btn { background: none; border: 1px solid #ddd; color: #999; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; transition: 0.3s; }
     .cancel-btn:hover { background: var(--error); border-color: var(--error); color: #fff; }
-
     /* FIX: auth error state */
     .input-error { border-color: var(--error) !important; }
     .auth-error { color: var(--error); font-size: 0.8rem; margin-bottom: 12px; display: none; }
-
     input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; margin-bottom: 12px; outline: none; transition: border-color 0.2s; }
     input:focus { border-color: var(--accent); }
     .btn { width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; }
     .btn:hover { opacity: 0.85; }
     .adopt-btn { width: 100%; padding: 20px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; margin-top: 30px; transition: 0.3s; }
     .adopt-btn:hover { opacity: 0.85; }
-
     .drawer { position: fixed; top: 0; right: -450px; width: 450px; height: 100%; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); z-index: 3000; transition: 0.5s; display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(0,0,0,0.1); }
     .drawer.active { right: 0; }
-
     @media (max-width: 900px) { .checkout-layout { grid-template-columns: 1fr; } .shop-container { flex-direction: column; } .drawer { width: 100%; right: -100%; } }
-
     /* Admin */
     .admin-wrapper { max-width: 1100px; margin: 0 auto; padding: 60px 5%; }
     .admin-stat { background: var(--light-bg); border-radius: 14px; padding: 24px 28px; }
@@ -112,24 +93,21 @@
     .pill-delivered  { background: #e8f5e9; color: var(--success); }
     .pill-cancelled  { background: #fdecea; color: #c62828; }
     .admin-badge { background: #c62828; color: #fff; font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; margin-left: 8px; vertical-align: middle; }
+    
+    .status-dropdown { padding: 6px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.75rem; background: #fff; cursor: pointer; }
   </style>
 </head>
 <body>
-
 <div class="tectonic-bg"><div class="plate plate-1"></div><div class="plate plate-2"></div></div>
-
 <div id="loader" style="display:none; flex-direction:column; align-items:center; justify-content:center;">
     <div class="spinner"></div>
     <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700;">Validating Membership...</p>
 </div>
-
 <div id="social-toast">
     <div style="width:10px; height:10px; border-radius:50%; background:var(--accent); flex-shrink:0;"></div>
     <div id="toast-text" style="font-size: 0.8rem; font-weight: 600;"></div>
 </div>
-
 <div id="overlay" onclick="closeAll()"></div>
-
 <nav>
   <div class="logo" onclick="handleLogoClick()">LITHOS</div>
   <div class="nav-icons" id="main-nav-icons" style="display: none;">
@@ -147,8 +125,6 @@
     </div>
   </div>
 </nav>
-
-<!-- AUTH SCREEN -->
 <section id="auth-screen" class="screen active">
     <div style="max-width: 400px; margin: 100px auto; padding: 40px; border: 1px solid var(--border); border-radius: 20px; text-align: center; background: #fff;">
         <h2 style="font-weight: 800; margin-bottom: 10px;">LITHOS COLLECTIVE</h2>
@@ -159,8 +135,6 @@
         <button class="btn" onclick="login()">Enter Collective</button>
     </div>
 </section>
-
-<!-- SHOP SCREEN -->
 <section id="shop-screen" class="screen">
   <div class="shop-container">
     <aside class="sidebar">
@@ -175,8 +149,6 @@
     <div class="grid" id="product-grid"></div>
   </div>
 </section>
-
-<!-- DETAIL SCREEN -->
 <section id="detail-screen" class="screen">
   <div style="max-width: 1200px; margin: 0 auto; padding: 60px 5%;">
     <div style="cursor: pointer; margin-bottom: 40px; font-weight: 700; font-size: 0.7rem; color: #aaa; display:inline-flex; align-items:center; gap:8px;" onclick="showScreen('shop-screen')">
@@ -198,10 +170,8 @@
             <i class="fa-solid fa-bolt" style="color:#856404;"></i>
             <span>Order before <span id="timer-val" class="flash-timer">--:--:--</span> for <strong>20% OFF</strong>.</span>
         </div>
-
         <p id="detail-desc" style="line-height: 1.8; color: #666; margin-bottom: 40px;"></p>
         <button class="btn" onclick="addCurrentToCart()">Add to Bag</button>
-
         <table class="fact-sheet">
             <tr><td>Hardness</td><td id="fact-hard"></td></tr>
             <tr><td>Origin</td><td id="fact-origin"></td></tr>
@@ -215,8 +185,6 @@
     </div>
   </div>
 </section>
-
-<!-- ORDERS SCREEN -->
 <section id="orders-screen" class="screen">
     <div class="orders-wrapper">
         <h1 style="font-weight: 800; margin-bottom: 10px; letter-spacing: -1px;">ORDER HISTORY</h1>
@@ -224,8 +192,6 @@
         <div id="orders-list"></div>
     </div>
 </section>
-
-<!-- CHECKOUT SCREEN -->
 <section id="checkout-screen" class="screen">
   <div class="checkout-layout">
     <div class="checkout-left">
@@ -237,7 +203,6 @@
           <button class="btn promo-btn" onclick="applyPromo()">Apply</button>
       </div>
       <p id="promo-msg" style="font-size:0.8rem; margin-bottom:16px; min-height:1.2em;"></p>
-
       <div style="border-top: 1px solid #ddd; padding-top: 20px;">
           <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.9rem;">Subtotal <span id="ch-sub"></span></div>
           <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.9rem;">Shipping <span>$5.00</span></div>
@@ -262,8 +227,6 @@
     </div>
   </div>
 </section>
-
-<!-- TRACKING SCREEN -->
 <section id="tracking-screen" class="screen">
     <div style="text-align: center; padding: 150px 5%;">
       <i class="fa-solid fa-circle-check fa-5x" style="color: var(--success); margin-bottom: 30px;"></i>
@@ -273,23 +236,16 @@
       <button class="btn" style="width: 250px;" onclick="showScreen('orders-screen')">View Order History</button>
     </div>
 </section>
-
-
-<!-- ADMIN SCREEN -->
 <section id="admin-screen" class="screen">
   <div class="admin-wrapper">
     <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:6px;">
       <h1 style="font-weight:800; letter-spacing:-1px;">ADMIN PANEL</h1>
       <span class="admin-badge">Staff Only</span>
     </div>
-
-    <!-- Tabs -->
     <div style="display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:40px; margin-top:24px;">
       <button id="tab-orders-btn" onclick="switchAdminTab('orders')" style="background:none; border:none; border-bottom:2px solid var(--primary); margin-bottom:-2px; padding:12px 28px; font-family:inherit; font-size:0.8rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; cursor:pointer; color:var(--primary);">Orders</button>
       <button id="tab-discounts-btn" onclick="switchAdminTab('discounts')" style="background:none; border:none; border-bottom:2px solid transparent; margin-bottom:-2px; padding:12px 28px; font-family:inherit; font-size:0.8rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; cursor:pointer; color:#aaa;">Discount Codes</button>
     </div>
-
-    <!-- ORDERS TAB -->
     <div id="tab-orders">
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-bottom:40px;" id="admin-stats"></div>
       <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:20px;">
@@ -300,13 +256,14 @@
           <option value="nesting">Nesting Complete</option>
           <option value="shipped">Shipped</option>
           <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
         </select>
         <span id="admin-count" style="font-size:0.8rem; color:#aaa; margin-left:auto;"></span>
       </div>
       <div style="overflow-x:auto;">
         <table class="admin-table">
           <thead><tr>
-            <th>Order ID</th><th>Customer</th><th>Ship To</th><th>Items</th><th>Total</th><th>Date</th><th>Status</th>
+            <th>Order ID</th><th>Customer</th><th>Ship To</th><th>Items</th><th>Total</th><th>Date</th><th>Status</th><th>Set Status</th>
           </tr></thead>
           <tbody id="admin-tbody"></tbody>
         </table>
@@ -316,12 +273,8 @@
         No orders match your search.
       </div>
     </div>
-
-    <!-- DISCOUNTS TAB -->
     <div id="tab-discounts" style="display:none;">
       <p style="color:#aaa; font-size:0.85rem; margin-bottom:32px;">Create and manage promo codes. Customers enter these at checkout.</p>
-
-      <!-- Create form -->
       <div style="background:var(--light-bg); border-radius:16px; padding:28px; margin-bottom:36px;">
         <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; font-weight:700; color:#aaa; margin-bottom:20px;">New Discount Code</div>
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:12px; align-items:end; flex-wrap:wrap;">
@@ -344,25 +297,16 @@
         </div>
         <p id="dc-msg" style="margin-top:12px; font-size:0.8rem; min-height:1.2em;"></p>
       </div>
-
-      <!-- Codes list -->
       <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; font-weight:700; color:#aaa; margin-bottom:16px;">Active Codes</div>
       <div id="dc-list">
         <div style="text-align:center; padding:60px 0; color:#ccc;"><i class="fa-solid fa-tag fa-2x" style="margin-bottom:16px; display:block;"></i>No discount codes yet.</div>
       </div>
     </div>
-
   </div>
 </section>
-
-<!-- FOOTER -->
 <footer id="site-footer" style="background: #fafaf8; border-top: 1px solid var(--border); margin-top: 0; padding: 60px 5% 30px;">
   <div style="max-width: 1400px; margin: 0 auto;">
-
-    <!-- Top row: brand + columns -->
     <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 50px;">
-
-      <!-- Brand blurb -->
       <div>
         <div style="font-weight: 800; letter-spacing: 6px; font-size: 1rem; margin-bottom: 16px;">LITHOS</div>
         <p style="font-size: 0.82rem; color: #888; line-height: 1.8; max-width: 280px;">The #1 pet rock provider, ethically sourced from tectonic formations worldwide. Every stone ships with a certificate of authenticity.</p>
@@ -373,8 +317,6 @@
           <a href="#" style="color: #aaa; text-decoration:none; font-size: 0.9rem;" onclick="return false;"><i class="fa-brands fa-x-twitter"></i></a>
         </div>
       </div>
-
-      <!-- Shop column -->
       <div>
         <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: #bbb; margin-bottom: 16px;">Shop</div>
         <ul style="list-style:none; display:flex; flex-direction:column; gap:10px;">
@@ -385,8 +327,6 @@
           <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Gift Bundles</a></li>
         </ul>
       </div>
-
-      <!-- Support column -->
       <div>
         <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: #bbb; margin-bottom: 16px;">Support</div>
         <ul style="list-style:none; display:flex; flex-direction:column; gap:10px;">
@@ -397,8 +337,6 @@
           <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Contact Us</a></li>
         </ul>
       </div>
-
-      <!-- Company column -->
       <div>
         <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: #bbb; margin-bottom: 16px;">Company</div>
         <ul style="list-style:none; display:flex; flex-direction:column; gap:10px;">
@@ -410,19 +348,14 @@
         </ul>
       </div>
     </div>
-
-    <!-- Payment icons -->
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:30px; flex-wrap:wrap;">
       <span style="font-size:0.65rem; text-transform:uppercase; letter-spacing:1.5px; color:#ccc; margin-right:6px;">We Accept</span>
-      <!-- Card icons as styled pills -->
       <span style="background:#fff; border:1px solid #e0e0e0; border-radius:5px; padding:4px 10px; font-size:0.7rem; font-weight:700; color:#555; letter-spacing:1px;">VISA</span>
       <span style="background:#fff; border:1px solid #e0e0e0; border-radius:5px; padding:4px 10px; font-size:0.7rem; font-weight:700; color:#555; letter-spacing:1px;">MC</span>
       <span style="background:#fff; border:1px solid #e0e0e0; border-radius:5px; padding:4px 10px; font-size:0.7rem; font-weight:700; color:#555; letter-spacing:1px;">AMEX</span>
       <span style="background:#fff; border:1px solid #e0e0e0; border-radius:5px; padding:4px 10px; font-size:0.7rem; font-weight:700; color:#007ee5; letter-spacing:1px;">PayPal</span>
       <span style="background:#fff; border:1px solid #e0e0e0; border-radius:5px; padding:4px 10px; font-size:0.7rem; font-weight:700; color:#555; letter-spacing:1px;">Apple Pay</span>
     </div>
-
-    <!-- Bottom bar -->
     <div style="border-top: 1px solid var(--border); padding-top: 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
       <p style="font-size: 0.75rem; color: #bbb;">
         &copy; <span id="footer-year"></span> Lithos Collective, Inc. All rights reserved. Registered in Delaware, USA.
@@ -434,10 +367,8 @@
         <a href="#" onclick="return false;" style="font-size:0.75rem; color:#bbb; text-decoration:none;">Accessibility</a>
       </div>
     </div>
-
   </div>
 </footer>
-
 <script>
   document.getElementById('footer-year').innerText = new Date().getFullYear();
   // Hide footer on auth/checkout/tracking screens to keep them clean
@@ -452,8 +383,6 @@
   showScreen = function(id) { _origShow(id); updateFooterVisibility(); };
   document.addEventListener('DOMContentLoaded', updateFooterVisibility);
 </script>
-
-<!-- CART DRAWER -->
 <div id="drawer" class="drawer">
   <div style="padding: 30px; border-bottom: 1px solid var(--border); font-weight: 800; display:flex; justify-content:space-between; align-items:center;">
     YOUR BAG
@@ -468,7 +397,6 @@
     <button class="btn" onclick="goToCheckout()">CHECKOUT</button>
   </div>
 </div>
-
 <script>
   // ── Firebase ───────────────────────────────────────────────────────────
   var firebaseConfig = {
@@ -481,7 +409,6 @@
   };
   firebase.initializeApp(firebaseConfig);
   var db = firebase.firestore();
-
   // ── State ──────────────────────────────────────────────────────────────
   var cart = [];
   var orders = [];
@@ -492,12 +419,10 @@
   var flashInterval = null;
   var socialInterval = null;
   var cachedAdminOrders = [];
-
   // Safe localStorage reads
   try { orders = JSON.parse(localStorage.getItem('lithos_orders') || '[]'); } catch(e) { orders = []; }
   try { isLoggedIn = localStorage.getItem('lithos_logged_in') === 'true'; } catch(e) {}
   try { isAdmin = localStorage.getItem('lithos_is_admin') === 'true'; } catch(e) {}
-
   // ── Products ───────────────────────────────────────────────────────────
   var products = [
     { id: 1, type: 'volcanic',    name: 'Volcanic Basalt',  price: 49, img: 'basalt.png',   badge: 'BEST SELLER',  count: 128, rating: 4.9, hardness: "6.0",    origin: "Oceanic",  mineral: "Plagioclase" },
@@ -508,7 +433,6 @@
     { id: 6, type: 'smooth',      name: 'Smooth Stone',     price: 42, img: 'adopt.png',    badge: 'FAN FAVORITE', count: 212, rating: 4.9, hardness: "4.0",    origin: "Eroded",   mineral: "Calcite" },
     { id: 7, type: 'metamorphic', name: 'Imperial Marble',  price: 65, img: 'marble.png',   badge: 'PREMIUM',      count: 56,  rating: 4.8, hardness: "3.0",    origin: "Tectonic", mineral: "Calcite" }
   ];
-
   // ── Init ───────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function() {
     renderGrid();
@@ -527,7 +451,6 @@
       }
     }
   });
-
   // ── Auth ───────────────────────────────────────────────────────────────
   function login() {
     var email = document.getElementById('login-email').value.trim();
@@ -535,11 +458,9 @@
     var errEl = document.getElementById('auth-error');
     var emailEl = document.getElementById('login-email');
     var passEl  = document.getElementById('login-password');
-
     emailEl.classList.remove('input-error');
     passEl.classList.remove('input-error');
     errEl.style.display = 'none';
-
     if (!email || !pass) {
       errEl.innerText = 'Please enter your email and password.';
       errEl.style.display = 'block';
@@ -556,7 +477,6 @@
     document.getElementById('nav-orders').style.display = isAdmin ? 'none' : 'block';
     if (isAdmin) { showScreen('admin-screen'); } else { showScreen('shop-screen'); }
   }
-
   function logout() {
     isLoggedIn = false;
     try { localStorage.removeItem('lithos_logged_in'); } catch(e) {}
@@ -567,7 +487,6 @@
     closeAll();
     showScreen('auth-screen');
   }
-
   // ── Shop ───────────────────────────────────────────────────────────────
   function renderGrid(items) {
     if (!items) items = products;
@@ -582,19 +501,16 @@
         '</div></div>';
     }).join('');
   }
-
   // FIX: filterItems — 'all' now just passes the full list rather than filtering by type
   function filterItems(type, el) {
     document.querySelectorAll('.sidebar-list li').forEach(function(li) { li.classList.remove('active'); });
     el.classList.add('active');
     renderGrid(type === 'all' ? products : products.filter(function(p) { return p.type === type; }));
   }
-
   // ── Product Detail ─────────────────────────────────────────────────────
   function openProduct(id) {
     activeProduct = products.find(function(p) { return p.id === id; });
     if (!activeProduct) return;
-
     document.getElementById('detail-title').innerText = activeProduct.name;
     document.getElementById('detail-price').innerText = '$' + activeProduct.price + '.00';
     document.getElementById('detail-desc').innerText = 'Hand-selected biologic companion. Rare ' + activeProduct.mineral + ' specimen.';
@@ -604,7 +520,6 @@
     document.getElementById('fact-hard').innerText = activeProduct.hardness + ' Mohs';
     document.getElementById('fact-origin').innerText = activeProduct.origin;
     document.getElementById('fact-mineral').innerText = activeProduct.mineral;
-
     var revs = '';
     var reviewTexts = [
       'Very grounded energy. Great desk friend.',
@@ -625,12 +540,10 @@
     document.getElementById('reviews-section').style.display = 'none';
     showScreen('detail-screen');
   }
-
   function toggleReviews() {
     var s = document.getElementById('reviews-section');
     s.style.display = s.style.display === 'block' ? 'none' : 'block';
   }
-
   // ── Cart ───────────────────────────────────────────────────────────────
   function addCurrentToCart() {
     if (!activeProduct) return;
@@ -639,15 +552,12 @@
     closeAll();
     toggleCart();
   }
-
   function renderCart() {
     var sub = cart.reduce(function(a, b) { return a + b.price; }, 0);
     var total = sub + 5 - appliedDiscount;
     if (total < 0) total = 0;
-
     document.getElementById('badge-count').innerText = cart.length;
     document.getElementById('subtotal').innerText = '$' + sub.toFixed(2);
-
     // Checkout summary
     document.getElementById('ch-sub').innerText   = '$' + sub.toFixed(2);
     document.getElementById('ch-final').innerText = '$' + total.toFixed(2);
@@ -657,7 +567,6 @@
         '<span>' + item.name + '</span>' +
         '<span style="font-weight:700;">$' + item.price + '.00</span></div>';
     }).join('');
-
     // Drawer content
     var drawerHtml = '';
     if (cart.length === 0) {
@@ -676,7 +585,6 @@
     }
     document.getElementById('cart-content').innerHTML = drawerHtml;
   }
-
   function removeFromCart(idx) {
     cart.splice(idx, 1);
     // Recalculate discount if applied
@@ -687,12 +595,10 @@
     }
     renderCart();
   }
-
   function toggleCart() {
     document.getElementById('drawer').classList.toggle('active');
     document.getElementById('overlay').classList.toggle('active');
   }
-
   function goToCheckout() {
     if (!cart.length) { alert('Your bag is empty.'); return; }
     closeAll();
@@ -704,18 +610,15 @@
     document.getElementById('promo-row').style.display = 'none';
     showScreen('checkout-screen');
   }
-
   // ── Promo ──────────────────────────────────────────────────────────────
   function applyPromo() {
     var code = document.getElementById('promo-input').value.trim().toUpperCase();
     var msgEl = document.getElementById('promo-msg');
-
     if (!cart.length) {
       msgEl.innerText = 'Add items to your bag first.';
       msgEl.style.color = 'var(--error)';
       return;
     }
-
     // Look up code in Firebase
     db.collection('discounts').doc(code).get().then(function(doc) {
       if (!doc.exists || doc.data().active === false) {
@@ -744,7 +647,6 @@
       msgEl.style.color = 'var(--error)';
     });
   }
-
   // ── Checkout ───────────────────────────────────────────────────────────
   function processAdoption() {
     var addr = document.getElementById('ship-addr').value.trim();
@@ -752,29 +654,23 @@
     var mm = document.getElementById('exp-mm').value.trim();
     var yy = document.getElementById('exp-yy').value.trim();
     var cvc = document.getElementById('cvc').value.trim();
-
     if (!addr) { alert('Please enter a shipping address.'); return; }
     if (cardNum.length < 16) { alert('Please enter a valid 16-digit card number.'); return; }
     if (!mm || !yy) { alert('Please enter card expiry.'); return; }
     if (!cvc) { alert('Please enter CVC.'); return; }
-
     var loaderEl = document.getElementById('loader');
     loaderEl.style.display = 'flex';
-
     setTimeout(function() {
       loaderEl.style.display = 'none';
-
       var tid = 'LITH-' + Math.floor(Math.random() * 90000000);
       var sub = cart.reduce(function(a, b) { return a + b.price; }, 0);
       var finalTotal = parseFloat((sub + 5 - appliedDiscount).toFixed(2));
-
       // Store items with purchase price snapshot
       var customerName = document.getElementById('ship-name').value.trim();
       var customerAddr = document.getElementById('ship-addr').value.trim();
       var itemSnapshot = cart.map(function(item) {
         return { id: item.id, name: item.name, purchasePrice: item.price, img: item.img };
       });
-
       var order = {
         id: tid,
         date: new Date().toLocaleDateString(),
@@ -782,19 +678,17 @@
         items: itemSnapshot,
         total: finalTotal,
         customerName: customerName,
-        customerAddr: customerAddr
+        customerAddr: customerAddr,
+        overrideStatus: "" // Initialized empty for admin use
       };
-
       // Save to Firebase
       db.collection('orders').doc(tid).set(order).catch(function(e) {
         console.warn('Firebase save failed:', e);
       });
-
       // Also save locally for "My Orders" page
       orders.unshift(order);
       try { localStorage.setItem('lithos_orders', JSON.stringify(orders)); } catch(e) {}
       renderOrders();
-
       // Reset checkout state
       cart = [];
       appliedDiscount = 0;
@@ -808,39 +702,39 @@
       document.getElementById('promo-input').value = '';
       document.getElementById('promo-msg').innerText = '';
       document.getElementById('promo-row').style.display = 'none';
-
       document.getElementById('track-id-box').innerText = tid;
       showScreen('tracking-screen');
     }, 2000);
   }
-
   // ── Orders ─────────────────────────────────────────────────────────────
   function renderOrders() {
     var list = document.getElementById('orders-list');
     if (!list) return;
-
     if (!orders || !orders.length) {
       list.innerHTML = '<div style="text-align:center; padding:100px 0; color:#ccc;"><i class="fa-solid fa-box-open fa-2x" style="margin-bottom:15px; display:block;"></i>No adoptions manifested yet.</div>';
       return;
     }
-
     var now = Date.now();
     list.innerHTML = orders.map(function(o) {
-      // FIX: guard against orders without timestamp (legacy data)
       var ts = o.timestamp || now;
       var diff = (now - ts) / 3600000;
-
       var status = 'Order Received';
       var w = '15%';
       var canCancel = true;
       var isCancelled = o.cancelled === true;
 
-      if (isCancelled) { status = 'Cancelled'; w = '0%'; canCancel = false; }
-      else if (diff > 24) { status = 'Delivered'; w = '100%'; canCancel = false; }
-      else if (diff > 10) { status = 'Shipped / In Transit'; w = '75%'; canCancel = false; }
-      else if (diff > 2)  { status = 'Nesting Complete'; w = '45%'; }
+      // PRIORITY: Use admin override status if it exists
+      if (o.overrideStatus === "packaging") { status = "Packaging Stone"; w = "30%"; }
+      else if (o.overrideStatus === "shipped") { status = "Shipped / In Transit"; w = "75%"; canCancel = false; }
+      else if (o.overrideStatus === "complete") { status = "Delivered & Complete"; w = "100%"; canCancel = false; }
+      else {
+          // Fallback to time-based logic
+          if (isCancelled) { status = 'Cancelled'; w = '0%'; canCancel = false; }
+          else if (diff > 24) { status = 'Delivered'; w = '100%'; canCancel = false; }
+          else if (diff > 10) { status = 'Shipped / In Transit'; w = '75%'; canCancel = false; }
+          else if (diff > 2)  { status = 'Nesting Complete'; w = '45%'; }
+      }
 
-      // FIX: guard against missing items array
       var items = Array.isArray(o.items) ? o.items : [];
       var itemsHtml = items.length
         ? items.map(function(i) {
@@ -848,12 +742,11 @@
             return '<div>' + (i.name || 'Unknown item') + ' — <span style="font-weight:700; color:var(--primary);">$' + price + '.00</span></div>';
           }).join('')
         : '<div style="color:#bbb;">Item details unavailable.</div>';
-
-      // FIX: safe total display
+      
       var total = (typeof o.total === 'number') ? o.total.toFixed(2) : '—';
       var orderId = o.id || 'UNKNOWN';
       var shortId = orderId.length > 6 ? orderId.substring(5, 13) : orderId;
-
+      
       return '<div class="order-card">' +
         '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">' +
           '<div>' +
@@ -871,14 +764,11 @@
         '</div>';
     }).join('');
   }
-
   function cancelOrder(id) {
     if (!confirm('Are you sure you want to cancel this manifest?')) return;
-    // Mark cancelled in Firebase
     db.collection('orders').doc(id).update({ cancelled: true }).catch(function(e) {
       console.warn('Firebase cancel failed:', e);
     });
-    // Mark cancelled locally
     orders = orders.map(function(o) {
       if (o.id === id) return Object.assign({}, o, { cancelled: true });
       return o;
@@ -886,9 +776,110 @@
     try { localStorage.setItem('lithos_orders', JSON.stringify(orders)); } catch(e) {}
     renderOrders();
   }
+  // ── Admin Override Logic ────────────────────────────────────────────────
+  function updateOrderOverride(orderId, newStatus) {
+    db.collection('orders').doc(orderId).update({ overrideStatus: newStatus }).then(function() {
+        // Find in cache and update locally so it shows on user page immediately if they are the same person
+        orders = orders.map(function(o) {
+            if (o.id === orderId) return Object.assign({}, o, { overrideStatus: newStatus });
+            return o;
+        });
+        try { localStorage.setItem('lithos_orders', JSON.stringify(orders)); } catch(e) {}
+        renderAdminOrders();
+    }).catch(function(e) {
+        alert("Error updating status: " + e.message);
+    });
+  }
+  // ── Admin Order Rendering ─────────────────────────────────────────────
+  function getOrderStatus(o) {
+    if (o.cancelled) return { label: 'Cancelled', cls: 'pill-cancelled', key: 'cancelled' };
+    
+    // Check override status first
+    if (o.overrideStatus === "packaging") return { label: 'Packaging', cls: 'pill-nesting', key: 'packaging' };
+    if (o.overrideStatus === "shipped")   return { label: 'Shipped',   cls: 'pill-shipped',   key: 'shipped' };
+    if (o.overrideStatus === "complete")  return { label: 'Complete',  cls: 'pill-delivered', key: 'complete' };
 
+    var ts = o.timestamp || Date.now();
+    var diff = (Date.now() - ts) / 3600000;
+    if (diff > 24) return { label: 'Delivered', cls: 'pill-delivered', key: 'delivered' };
+    if (diff > 10) return { label: 'Shipped',   cls: 'pill-shipped',   key: 'shipped' };
+    if (diff > 2)  return { label: 'Nesting',   cls: 'pill-nesting',   key: 'nesting' };
+    return               { label: 'Received',  cls: 'pill-received',  key: 'received' };
+  }
+  function renderAdminOrders() {
+    var tbodyEl = document.getElementById('admin-tbody');
+    if (!tbodyEl) return;
+    tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:#aaa;"><i class="fa-solid fa-spinner fa-spin"></i> Loading orders...</td></tr>';
+    db.collection('orders').orderBy('timestamp', 'desc').get().then(function(snapshot) {
+      var allOrders = [];
+      snapshot.forEach(function(doc) { allOrders.push(doc.data()); });
+      cachedAdminOrders = allOrders;
+      renderAdminTable(allOrders);
+    }).catch(function(err) {
+      tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:var(--error);">Could not load orders: ' + err.message + '</td></tr>';
+    });
+  }
+  function renderAdminTable(allOrders) {
+    var search = (document.getElementById('admin-search').value || '').toLowerCase();
+    var filter = document.getElementById('admin-filter').value;
+    // Stats
+    var revenue = allOrders.reduce(function(a, o) { return a + (o.total || 0); }, 0);
+    var items   = allOrders.reduce(function(a, o) { return a + (Array.isArray(o.items) ? o.items.length : 0); }, 0);
+    document.getElementById('admin-stats').innerHTML =
+      stat('Total Orders',   allOrders.length) +
+      stat('Total Revenue',  '$' + revenue.toFixed(2)) +
+      stat('Items Sold',     items) +
+      stat('Avg Order Value', allOrders.length ? '$' + (revenue / allOrders.length).toFixed(2) : '$0.00');
+    // Filter + search
+    var filtered = allOrders.filter(function(o) {
+      var st = getOrderStatus(o);
+      if (filter !== 'all' && st.key !== filter) return false;
+      if (!search) return true;
+      var haystack = [
+        o.id, o.customerName, o.customerAddr,
+        (Array.isArray(o.items) ? o.items.map(function(i){ return i.name; }).join(' ') : '')
+      ].join(' ').toLowerCase();
+      return haystack.indexOf(search) !== -1;
+    });
+    document.getElementById('admin-count').innerText = filtered.length + ' order' + (filtered.length !== 1 ? 's' : '');
+    if (!filtered.length) {
+      document.getElementById('admin-tbody').innerHTML = '';
+      document.getElementById('admin-empty').style.display = 'block';
+      return;
+    }
+    document.getElementById('admin-empty').style.display = 'none';
+    document.getElementById('admin-tbody').innerHTML = filtered.map(function(o) {
+      var st = getOrderStatus(o);
+      var items = Array.isArray(o.items) ? o.items : [];
+      var itemList = items.map(function(i) {
+        return '<div style="white-space:nowrap;">• ' + (i.name || '?') + ' <span style="color:#aaa;">$' + (i.purchasePrice || i.price || '?') + '</span></div>';
+      }).join('');
+      var shortId = (o.id || '').replace('LITH-','');
+      var name = o.customerName || '<span style="color:#ccc;">—</span>';
+      var addr = o.customerAddr || '<span style="color:#ccc;">—</span>';
+      
+      // DROP DOWN HTML FOR ADMIN
+      var currentOver = o.overrideStatus || "";
+      var dropdownHtml = '<select class="status-dropdown" onchange="updateOrderOverride(\'' + o.id + '\', this.value)">' +
+          '<option value="" ' + (currentOver === "" ? "selected" : "") + '>Natural Progression</option>' +
+          '<option value="packaging" ' + (currentOver === "packaging" ? "selected" : "") + '>Packaging</option>' +
+          '<option value="shipped" ' + (currentOver === "shipped" ? "selected" : "") + '>Shipped</option>' +
+          '<option value="complete" ' + (currentOver === "complete" ? "selected" : "") + '>Complete</option>' +
+        '</select>';
+
+      return '<tr>' +
+        '<td><span style="font-family:monospace; font-size:0.8rem; font-weight:700;">' + shortId + '</span></td>' +
+        '<td style="font-weight:600;">' + name + '</td>' +
+        '<td style="color:#666; font-size:0.82rem; max-width:180px;">' + addr + '</td>' +
+        '<td>' + (itemList || '<span style="color:#ccc;">—</span>') + '</td>' +
+        '<td style="font-weight:800;">$' + (typeof o.total === 'number' ? o.total.toFixed(2) : '—') + '</td>' +
+        '<td style="color:#aaa; white-space:nowrap; font-size:0.82rem;">' + (o.date || '') + '</td>' +
+        '<td><span class="status-pill ' + st.cls + '">' + st.label + '</span></td>' +
+        '<td>' + dropdownHtml + '</td>' +
+        '</tr>';
+    }).join('');
+  }
   // ── Flash Timer ────────────────────────────────────────────────────────
-  // FIX: was only running when detail screen was active; now always ticking
   function startFlashTimer() {
     if (flashInterval) clearInterval(flashInterval);
     function tick() {
@@ -905,11 +896,8 @@
     tick();
     flashInterval = setInterval(tick, 1000);
   }
-
   function pad(n) { return String(n).padStart(2, '0'); }
-
   // ── Social Proof ───────────────────────────────────────────────────────
-  // FIX: show first toast immediately after 5s instead of 20s
   function startSocialProof() {
     if (socialInterval) clearInterval(socialInterval);
     var names = ['Arthur', 'Lydia', 'Marcus', 'Elena', 'Sven', 'Mira'];
@@ -925,7 +913,6 @@
       socialInterval = setInterval(showToast, 20000);
     }, 5000);
   }
-
   // ── Navigation ─────────────────────────────────────────────────────────
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
@@ -933,31 +920,21 @@
     if (el) el.classList.add('active');
     closeAll();
     window.scrollTo(0, 0);
-    // Refresh orders every time that screen is visited
     if (id === 'orders-screen') renderOrders();
     if (id === 'admin-screen') renderAdminOrders();
   }
-
   function handleLogoClick() {
     isLoggedIn ? showScreen('shop-screen') : showScreen('auth-screen');
   }
-
   function closeAll() {
     document.getElementById('drawer').classList.remove('active');
     document.getElementById('overlay').classList.remove('active');
     document.getElementById('account-dropdown').classList.remove('show');
   }
-
-  // FIX: stopPropagation so overlay click doesn't immediately re-close dropdown
   function toggleDropdown(event) {
     if (event) event.stopPropagation();
     document.getElementById('account-dropdown').classList.toggle('show');
   }
-
-  // Close dropdown when clicking anywhere else
-
-
-  // ── Discount Code Admin ────────────────────────────────────────────────
   function switchAdminTab(tab) {
     document.getElementById('tab-orders').style.display    = tab === 'orders'    ? 'block' : 'none';
     document.getElementById('tab-discounts').style.display = tab === 'discounts' ? 'block' : 'none';
@@ -967,7 +944,6 @@
     document.getElementById('tab-discounts-btn').style.color = tab === 'discounts' ? 'var(--primary)' : '#aaa';
     if (tab === 'discounts') loadDiscountCodes();
   }
-
   function loadDiscountCodes() {
     var listEl = document.getElementById('dc-list');
     if (!listEl) return;
@@ -1002,17 +978,14 @@
       listEl.innerHTML = '<div style="color:var(--error); padding:20px;">Error: ' + e.message + '</div>';
     });
   }
-
   function createDiscountCode() {
     var code   = document.getElementById('dc-code').value.trim().toUpperCase();
     var type   = document.getElementById('dc-type').value;
     var amount = parseFloat(document.getElementById('dc-amount').value);
     var msgEl  = document.getElementById('dc-msg');
-
     if (!code)                              { msgEl.innerText = 'Enter a code name.';           msgEl.style.color = 'var(--error)'; return; }
     if (!amount || amount <= 0)             { msgEl.innerText = 'Enter a valid amount.';         msgEl.style.color = 'var(--error)'; return; }
     if (type === 'percent' && amount > 100) { msgEl.innerText = 'Percentage cannot exceed 100.'; msgEl.style.color = 'var(--error)'; return; }
-
     msgEl.innerText = 'Saving...'; msgEl.style.color = '#aaa';
     db.collection('discounts').doc(code).set({ type: type, amount: amount, active: true, createdAt: Date.now() })
       .then(function() {
@@ -1022,113 +995,25 @@
         loadDiscountCodes();
       }).catch(function(e) { msgEl.innerText = 'Error: ' + e.message; msgEl.style.color = 'var(--error)'; });
   }
-
   function toggleDiscountCode(code, currentlyActive) {
     db.collection('discounts').doc(code).update({ active: !currentlyActive })
       .then(loadDiscountCodes).catch(function(e) { alert('Error: ' + e.message); });
   }
-
   function deleteDiscountCode(code) {
     if (!confirm('Delete code ' + code + '? This cannot be undone.')) return;
     db.collection('discounts').doc(code).delete()
       .then(loadDiscountCodes).catch(function(e) { alert('Error: ' + e.message); });
   }
-
-  // ── Admin ──────────────────────────────────────────────────────────────
-  function getOrderStatus(o) {
-    if (o.cancelled) return { label: 'Cancelled', cls: 'pill-cancelled', key: 'cancelled' };
-    var ts = o.timestamp || Date.now();
-    var diff = (Date.now() - ts) / 3600000;
-    if (diff > 24) return { label: 'Delivered', cls: 'pill-delivered', key: 'delivered' };
-    if (diff > 10) return { label: 'Shipped',   cls: 'pill-shipped',   key: 'shipped' };
-    if (diff > 2)  return { label: 'Nesting',   cls: 'pill-nesting',   key: 'nesting' };
-    return               { label: 'Received',  cls: 'pill-received',  key: 'received' };
-  }
-
-  function renderAdminOrders() {
-    var tbodyEl = document.getElementById('admin-tbody');
-    var statsEl = document.getElementById('admin-stats');
-    if (!tbodyEl) return;
-    tbodyEl.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#aaa;"><i class="fa-solid fa-spinner fa-spin"></i> Loading orders...</td></tr>';
-
-    db.collection('orders').orderBy('timestamp', 'desc').get().then(function(snapshot) {
-      var allOrders = [];
-      snapshot.forEach(function(doc) { allOrders.push(doc.data()); });
-      cachedAdminOrders = allOrders;
-      renderAdminTable(allOrders);
-    }).catch(function(err) {
-      tbodyEl.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--error);">Could not load orders: ' + err.message + '</td></tr>';
-    });
-  }
-
-  function renderAdminTable(allOrders) {
-    var search = (document.getElementById('admin-search').value || '').toLowerCase();
-    var filter = document.getElementById('admin-filter').value;
-
-    // Stats
-    var revenue = allOrders.reduce(function(a, o) { return a + (o.total || 0); }, 0);
-    var items   = allOrders.reduce(function(a, o) { return a + (Array.isArray(o.items) ? o.items.length : 0); }, 0);
-    document.getElementById('admin-stats').innerHTML =
-      stat('Total Orders',   allOrders.length) +
-      stat('Total Revenue',  '$' + revenue.toFixed(2)) +
-      stat('Items Sold',     items) +
-      stat('Avg Order Value', allOrders.length ? '$' + (revenue / allOrders.length).toFixed(2) : '$0.00');
-
-    // Filter + search
-    var filtered = allOrders.filter(function(o) {
-      var st = getOrderStatus(o);
-      if (filter !== 'all' && st.key !== filter) return false;
-      if (!search) return true;
-      var haystack = [
-        o.id, o.customerName, o.customerAddr,
-        (Array.isArray(o.items) ? o.items.map(function(i){ return i.name; }).join(' ') : '')
-      ].join(' ').toLowerCase();
-      return haystack.indexOf(search) !== -1;
-    });
-
-    document.getElementById('admin-count').innerText = filtered.length + ' order' + (filtered.length !== 1 ? 's' : '');
-
-    if (!filtered.length) {
-      document.getElementById('admin-tbody').innerHTML = '';
-      document.getElementById('admin-empty').style.display = 'block';
-      return;
-    }
-    document.getElementById('admin-empty').style.display = 'none';
-
-    document.getElementById('admin-tbody').innerHTML = filtered.map(function(o) {
-      var st = getOrderStatus(o);
-      var items = Array.isArray(o.items) ? o.items : [];
-      var itemList = items.map(function(i) {
-        return '<div style="white-space:nowrap;">• ' + (i.name || '?') + ' <span style="color:#aaa;">$' + (i.purchasePrice || i.price || '?') + '</span></div>';
-      }).join('');
-      var shortId = (o.id || '').replace('LITH-','');
-      var name = o.customerName || '<span style="color:#ccc;">—</span>';
-      var addr = o.customerAddr || '<span style="color:#ccc;">—</span>';
-      return '<tr>' +
-        '<td><span style="font-family:monospace; font-size:0.8rem; font-weight:700;">' + shortId + '</span></td>' +
-        '<td style="font-weight:600;">' + name + '</td>' +
-        '<td style="color:#666; font-size:0.82rem; max-width:180px;">' + addr + '</td>' +
-        '<td>' + (itemList || '<span style="color:#ccc;">—</span>') + '</td>' +
-        '<td style="font-weight:800;">$' + (typeof o.total === 'number' ? o.total.toFixed(2) : '—') + '</td>' +
-        '<td style="color:#aaa; white-space:nowrap; font-size:0.82rem;">' + (o.date || '') + '</td>' +
-        '<td><span class="status-pill ' + st.cls + '">' + st.label + '</span></td>' +
-        '</tr>';
-    }).join('');
-  }
-
   function stat(label, val) {
     return '<div class="admin-stat"><div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:2px; color:#aaa; margin-bottom:8px;">' + label + '</div>' +
       '<div style="font-size:1.6rem; font-weight:800;">' + val + '</div></div>';
   }
-
   document.addEventListener('click', function(e) {
     var dd = document.getElementById('account-dropdown');
     if (dd && dd.classList.contains('show') && !e.target.closest('.dropdown-container')) {
       dd.classList.remove('show');
     }
   });
-
-  // ── Card Number Formatting ─────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function() {
     var cardInput = document.getElementById('card-num');
     if (cardInput) {
@@ -1142,12 +1027,10 @@
         this.value = out;
       });
     }
-    // Allow only numbers in expiry/cvc
     ['exp-mm','exp-yy','cvc'].forEach(function(fid) {
       var el = document.getElementById(fid);
       if (el) el.addEventListener('input', function() { this.value = this.value.replace(/\D/g,''); });
     });
-    // Enter key submits login
     document.getElementById('login-password').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') login();
     });
