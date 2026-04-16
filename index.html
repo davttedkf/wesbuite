@@ -22,13 +22,14 @@
             margin: 0; background: var(--bg); color: white;
             font-family: 'Archivo', sans-serif;
             height: 100vh; display: grid; grid-template-columns: 320px 1fr;
-            overflow: hidden;
+            overflow: hidden; /* Prevents scrolling if things get tight */
         }
 
         /* --- SIDEBAR --- */
         .sidebar { background: #000; border-right: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
         .label-gold { font-size: 0.65rem; color: var(--gold); letter-spacing: 2px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; }
-        
+        .stat-val { font-family: 'JetBrains Mono'; color: var(--green); font-size: 1.2rem; margin-bottom: 20px; }
+
         .history-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
         .dot { aspect-ratio: 1; border-radius: 4px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; }
         .dot.win { background: var(--green); color: #000; }
@@ -43,48 +44,68 @@
         .daily-trigger { 
             background: var(--green); color: #000; border: none; padding: 10px 20px; 
             border-radius: 4px; font-weight: 900; cursor: pointer; font-size: 0.75rem; 
-            box-shadow: 0 0 15px rgba(0,255,149,0.3); transition: 0.3s;
         }
-        .daily-trigger:disabled { background: #333; color: #666; cursor: not-allowed; box-shadow: none; }
 
         #arena { flex-grow: 1; position: relative; display: flex; justify-content: center; align-items: center; perspective: 1200px; }
         .floor { position: absolute; bottom: 0; width: 100%; height: 40%; background: radial-gradient(ellipse at center, #161a2e 0%, #020308 80%); transform: rotateX(60deg); }
         .cup-node { position: absolute; width: 150px; bottom: 120px; z-index: 20; }
         .cup-mesh { width: 130px; height: 170px; margin: 0 auto; background: linear-gradient(135deg, #ef4444 0%, #7f1d1d 100%); clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%); position: relative; border-bottom: 6px solid #2b060c; }
-        .cup-mesh::before { content: ''; position: absolute; top: 0; width: 100%; height: 8px; background: var(--gold); }
         .ball { position: absolute; width: 40px; height: 40px; background: radial-gradient(circle at 30% 30%, #fff, #bdc3c7); border-radius: 50%; display: none; bottom: 125px; z-index: 10; }
 
-        /* --- FOOTER UI --- */
-        .footer { height: 180px; background: #000; border-top: 1px solid var(--border); display: flex; align-items: center; padding: 0 40px; justify-content: space-between; position: relative; }
-        .control-stack { display: flex; flex-direction: column; gap: 15px; }
-        .bet-input-row { display: flex; align-items: center; background: #080a0f; border-radius: 4px; border: 1px solid #1a1a1a; overflow: hidden; }
+        /* --- FIXED FOOTER (NO OVERFLOW) --- */
+        .footer { 
+            height: 160px; background: #000; border-top: 1px solid var(--border); 
+            display: grid; grid-template-columns: 1fr 150px 1fr; /* 3-Column Lock */
+            align-items: center; padding: 0 40px; 
+        }
+        
+        .bet-input-row { display: flex; align-items: center; background: #080a0f; border-radius: 4px; border: 1px solid #1a1a1a; overflow: hidden; width: fit-content; margin-top: 5px;}
         .adj-btn { width: 40px; height: 40px; background: #111; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; border-right: 1px solid #1a1a1a; }
-        .bet-val { width: 100px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 1.2rem; color: #fff; }
-        .chip { padding: 6px 14px; border-radius: 4px; background: #0d1117; border: 1px solid #222; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: #666; }
-        .chip.active { border: 2px solid var(--cyan); color: var(--cyan); }
-        .go-btn { width: 110px; height: 110px; border-radius: 50%; background: #fff; color: #000; border: 12px solid #161a24; font-weight: 900; font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
+        .bet-val { width: 80px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 1.1rem; color: #fff; }
+        
+        .risk-row { display: flex; gap: 8px; margin-top: 5px;}
+        .chip { 
+            padding: 8px 20px; border-radius: 4px; background: #0d1117; 
+            border: 1px solid #222; font-size: 0.8rem; font-weight: 900; 
+            cursor: pointer; color: #555; transition: 0.2s; 
+        }
+        /* MATCHING YOUR SCREENSHOT STYLE */
+        .chip.active { 
+            border: 2px solid var(--cyan); 
+            color: var(--cyan); 
+            box-shadow: inset 0 0 10px rgba(0, 229, 255, 0.1);
+        }
+
+        .go-btn {
+            width: 100px; height: 100px; border-radius: 50%; background: #fff; color: #000; 
+            border: 10px solid #161a24; font-weight: 900; font-size: 1.4rem; cursor: pointer;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1); transition: 0.2s;
+        }
+        .go-btn:hover:not(:disabled) { transform: scale(1.05); }
 
         /* --- WHEEL MODAL --- */
         #wheel-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 2000; }
-        .wheel-box { position: relative; width: 500px; height: 500px; border: 10px solid #111; border-radius: 50%; box-shadow: 0 0 50px rgba(0,0,0,1), 0 0 20px var(--gold); }
+        .wheel-box { position: relative; width: 480px; height: 480px; border: 10px solid #111; border-radius: 50%; }
         #wheel-svg { width: 100%; height: 100%; }
         .pointer { 
-            position: absolute; top: -15px; left: 50%; transform: translateX(-50%) rotate(0deg); 
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%); 
             width: 35px; height: 45px; background: var(--gold); 
             clip-path: polygon(0 0, 100% 0, 50% 100%); z-index: 10; 
             transform-origin: top center;
         }
-        
+
         #toast-bin { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; }
         .toast { padding: 15px 40px; border-radius: 50px; background: #000; border: 1px solid var(--gold); font-weight: 900; animation: tIn 0.3s forwards; }
         @keyframes tIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        .timer-text { color: #666; font-size: 0.8rem; margin-top: 10px; font-family: 'JetBrains Mono'; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <aside class="sidebar">
+        <div>
+            <div class="label-gold">Potential Payout</div>
+            <div class="stat-val" id="payout-ui">13.50 FUN</div>
+        </div>
         <div><div class="label-gold">Roadmap</div><div class="history-grid" id="roadmap"></div></div>
         <div style="flex-grow:1; overflow:hidden;"><div class="label-gold">Live Feed</div><div id="feed" style="display:flex;flex-direction:column;gap:5px;"></div></div>
     </aside>
@@ -95,7 +116,7 @@
             <div style="display:flex;gap:15px;align-items:center;">
                 <div style="display:flex; flex-direction:column; align-items:flex-end;">
                     <button id="daily-btn-header" class="daily-trigger" onclick="Rewards.open()">DAILY SPIN</button>
-                    <div id="countdown-header" class="timer-text"></div>
+                    <div id="countdown-header" style="font-size: 0.7rem; color: #444; font-family: 'JetBrains Mono'; margin-top: 5px;"></div>
                 </div>
                 <div class="balance-pill" id="balance-ui" style="background:#000;padding:12px;border:1px solid var(--gold);font-family:'JetBrains Mono';color:var(--gold);min-width:180px;text-align:right;">150,191.57 FUN</div>
             </div>
@@ -110,7 +131,7 @@
         </div>
 
         <div class="footer">
-            <div class="control-stack">
+            <div style="display:flex; flex-direction:column; gap:10px;">
                 <div>
                     <div class="label-gold">Bet Amount</div>
                     <div class="bet-input-row">
@@ -129,7 +150,12 @@
                     </div>
                 </div>
             </div>
+            
             <button class="go-btn" id="go-btn" onclick="Game.play()">GO!</button>
+
+            <div style="text-align: right; color: #333; font-size: 0.7rem; letter-spacing: 2px;">
+                HOUSE EDGE: 15.0%<br>V 2.1 ELITE CASINO
+            </div>
         </div>
     </main>
 
@@ -140,7 +166,7 @@
             <svg id="wheel-svg" viewBox="0 0 100 100"></svg>
         </div>
         <button id="spin-btn-modal" class="go-btn" style="margin-top:40px;height:70px;width:180px;border-radius:8px;" onclick="Rewards.spin()">SPIN</button>
-        <div id="countdown-modal" class="timer-text" style="font-size:1.2rem; color:var(--red); margin-top:15px;"></div>
+        <div id="countdown-modal" style="font-family:'JetBrains Mono'; margin-top:15px; color:var(--red);"></div>
         <p onclick="Rewards.close()" style="color:#444;margin-top:20px;cursor:pointer;">CLOSE</p>
     </div>
 
@@ -164,16 +190,18 @@
         const Game = (function() {
             const S = { balance: 150191.57, bet: 4.50, risk: 3, busy: false, order:[0,1,2], ball:0 };
             return {
-                adjBet: (v) => { if(S.busy) return; S.bet = Math.max(0.5, S.bet + v); document.getElementById('bet-ui').innerText = S.bet.toFixed(2); AudioFX.tick(); },
-                setRisk: (r, el) => { if(S.busy) return; S.risk = r; document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); AudioFX.tick(); },
+                adjBet: (v) => { if(S.busy) return; S.bet = Math.max(0.5, S.bet + v); document.getElementById('bet-ui').innerText = S.bet.toFixed(2); this.updPayout(); AudioFX.tick(); },
+                setRisk: (r, el) => { if(S.busy) return; S.risk = r; document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); this.updPayout(); AudioFX.tick(); },
+                updPayout: () => document.getElementById('payout-ui').innerText = (S.bet * S.risk).toFixed(2) + " FUN",
                 play: function() {
                     if(S.busy || S.balance < S.bet) return;
                     S.busy = true; document.getElementById('go-btn').disabled = true;
                     S.balance -= S.bet; this.upd();
+                    const b = document.getElementById('ball');
                     const cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
                     const pos = cups.map(c => c.offsetLeft);
                     S.ball = Math.floor(Math.random()*3);
-                    gsap.set("#ball", { left: pos[S.ball]+45, display:'block', bottom: 125 });
+                    gsap.set(b, { left: pos[S.ball]+45, display:'block', bottom: 125 });
                     gsap.to(".cup-mesh", { y:-160, duration:0.6, ease:"power2.out" });
                     setTimeout(()=> gsap.to(".cup-mesh", { y:0, duration:0.4, onComplete:()=>this.shuffle(pos) }), 1200);
                 },
@@ -194,7 +222,7 @@
                         if(!S.busy) return;
                         if(Math.random() < 0.8 && i === S.ball) S.ball = (i+1)%3;
                         const win = (i === S.ball);
-                        gsap.set("#ball", { left: pos[S.order.indexOf(S.ball)]+45, display:'block' });
+                        gsap.set(document.getElementById('ball'), { left: pos[S.order.indexOf(S.ball)]+45, display:'block' });
                         gsap.to(".cup-mesh", { y:-180, duration:0.7, ease:"back.out" });
                         setTimeout(()=> {
                             if(win) { S.balance += (S.bet*S.risk); AudioFX.win(); Rewards.toast("WIN!", "win"); }
@@ -217,26 +245,23 @@
             function checkTimer() {
                 const last = localStorage.getItem('last_spin');
                 if(!last) return true;
-                const diff = Date.now() - parseInt(last);
-                return diff >= 86400000; // 24 Hours
+                return Date.now() - parseInt(last) >= 86400000;
             }
 
             function updateUI() {
-                const canSpin = checkTimer();
-                document.getElementById('daily-btn-header').disabled = !canSpin;
-                document.getElementById('spin-btn-modal').disabled = !canSpin;
-                if(!canSpin) {
+                const can = checkTimer();
+                document.getElementById('daily-btn-header').disabled = !can;
+                document.getElementById('spin-btn-modal').disabled = !can;
+                if(!can) {
                     const next = parseInt(localStorage.getItem('last_spin')) + 86400000;
                     const rem = next - Date.now();
                     const h = Math.floor(rem/3600000), m = Math.floor((rem%3600000)/60000), s = Math.floor((rem%60000)/1000);
-                    const timeStr = `Next spin in: ${h}h ${m}m ${s}s`;
-                    document.getElementById('countdown-header').innerText = timeStr;
-                    document.getElementById('countdown-modal').innerText = timeStr;
-                    document.getElementById('spin-btn-modal').innerText = "LOCKED";
+                    const ts = `RESET IN: ${h}h ${m}m ${s}s`;
+                    document.getElementById('countdown-header').innerText = ts;
+                    document.getElementById('countdown-modal').innerText = ts;
                 } else {
                     document.getElementById('countdown-header').innerText = "";
                     document.getElementById('countdown-modal').innerText = "";
-                    document.getElementById('spin-btn-modal').innerText = "SPIN";
                 }
             }
             setInterval(updateUI, 1000);
@@ -253,33 +278,24 @@
                         svg.innerHTML += `<path d="M50,50 L${x1},${y1} A50,50 0 0,1 ${x2},${y2} Z" fill="${colors[i]}" stroke="#222" stroke-width="0.3"/>`;
                         const tang = (i*ang)+(ang/2);
                         const tx = 50 + 36 * Math.cos(Math.PI*(tang-90)/180), ty = 50 + 36 * Math.sin(Math.PI*(tang-90)/180);
-                        svg.innerHTML += `
-                            <text x="${tx}" y="${ty-2}" fill="white" font-size="3.5" font-weight="900" text-anchor="middle" transform="rotate(${tang},${tx},${ty})">${p}</text>
-                            <text x="${tx}" y="${ty+2}" fill="rgba(255,255,255,0.5)" font-size="1.8" font-weight="400" text-anchor="middle" transform="rotate(${tang},${tx},${ty})">${odds[i]}</text>
-                        `;
+                        svg.innerHTML += `<text x="${tx}" y="${ty-2}" fill="white" font-size="3.5" font-weight="900" text-anchor="middle" transform="rotate(${tang},${tx},${ty})">${p}</text>`;
+                        svg.innerHTML += `<text x="${tx}" y="${ty+2}" fill="rgba(255,255,255,0.4)" font-size="1.8" font-weight="400" text-anchor="middle" transform="rotate(${tang},${tx},${ty})">${odds[i]}</text>`;
                     });
                 },
                 spin: function() {
                     if(spinning || !checkTimer()) return; 
-                    spinning = true;
-                    document.getElementById('spin-btn-modal').disabled = true;
-                    
+                    spinning = true; document.getElementById('spin-btn-modal').disabled = true;
                     const targetIdx = 4; // Target 150 (Troll near-miss)
                     const sliceAng = 360/prizes.length;
                     const finalRot = (360 * 10) + (360 - (targetIdx * sliceAng)) - (sliceAng/2);
-
                     let lastTick = 0;
                     gsap.to("#wheel-svg", { 
-                        rotation: finalRot, 
-                        duration: 7, 
-                        ease: "power4.out", 
+                        rotation: finalRot, duration: 7, ease: "power4.out", 
                         onUpdate: function() {
-                            const curRot = gsap.getProperty("#wheel-svg", "rotation");
-                            const tickIdx = Math.floor(curRot / sliceAng);
-                            if(tickIdx !== lastTick) {
-                                lastTick = tickIdx;
-                                AudioFX.tick();
-                                // Pin Flick Animation
+                            const cr = gsap.getProperty("#wheel-svg", "rotation");
+                            const ti = Math.floor(cr / sliceAng);
+                            if(ti !== lastTick) {
+                                lastTick = ti; AudioFX.tick();
                                 gsap.fromTo("#wheel-ticker", { rotation: -25 }, { rotation: 0, duration: 0.15, ease: "back.out(4)" });
                             }
                         },
@@ -287,8 +303,7 @@
                             localStorage.setItem('last_spin', Date.now());
                             Game.balance += prizes[targetIdx]; Game.upd();
                             Rewards.toast(`+${prizes[targetIdx]} FUN`, "win");
-                            updateUI();
-                            setTimeout(() => { spinning=false; Rewards.close(); gsap.set("#wheel-svg", {rotation:0}); }, 2500);
+                            spinning = false; updateUI();
                         }
                     });
                 },
