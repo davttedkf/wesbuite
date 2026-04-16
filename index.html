@@ -9,9 +9,8 @@
     <style>
         :root {
             --bg: #020308;
-            --panel: rgba(16, 20, 35, 0.95);
+            --panel: #0a0c14;
             --gold: #c5a059;
-            --gold-light: #f3d9a9;
             --cyan: #00e5ff;
             --red: #ff2e2e;
             --green: #00ff95;
@@ -27,185 +26,129 @@
         }
 
         /* --- SIDEBAR --- */
-        .sidebar {
-            background: #000; border-right: 1px solid var(--glass);
-            padding: 25px; display: flex; flex-direction: column; gap: 20px;
-            box-shadow: 10px 0 30px rgba(0,0,0,0.5); z-index: 100;
-        }
-        .sidebar-label { font-size: 0.6rem; color: var(--gold); letter-spacing: 3px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
+        .sidebar { background: #000; border-right: 1px solid var(--glass); padding: 25px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
+        .label-gold { font-size: 0.65rem; color: var(--gold); letter-spacing: 2px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; }
         
-        .history-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
-        .dot { width: 100%; aspect-ratio: 1; border-radius: 4px; background: #111; border: 1px solid #222; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; }
-        .dot.win { background: var(--green); color: #000; box-shadow: 0 0 15px rgba(0, 255, 149, 0.3); border: none; }
-        .dot.loss { background: var(--red); color: #fff; border: none; }
+        .history-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+        .dot { aspect-ratio: 1; border-radius: 4px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; }
+        .dot.win { background: var(--green); color: #000; }
+        .dot.loss { background: var(--red); }
 
-        .live-feed { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; gap: 8px; }
-        .feed-item { background: var(--panel); padding: 10px; border-radius: 6px; font-size: 0.7rem; display: flex; justify-content: space-between; border-left: 2px solid #333; }
-        .feed-item.big-win { border-left-color: var(--green); background: rgba(0, 255, 149, 0.05); }
-
-        /* --- MAIN AREA --- */
+        /* --- MAIN STAGE --- */
         .main-stage { position: relative; display: flex; flex-direction: column; }
-        
-        header {
-            padding: 25px 50px; display: flex; justify-content: space-between; align-items: center;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); z-index: 50;
-        }
-        .logo { font-weight: 900; font-size: 1.8rem; font-style: italic; color: #fff; }
+        header { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; z-index: 50; }
+        .logo { font-weight: 900; font-size: 1.5rem; font-style: italic; }
         .logo span { color: var(--gold); }
+        .daily-trigger { background: var(--green); color: #000; border: none; padding: 8px 15px; border-radius: 4px; font-weight: 900; cursor: pointer; font-size: 0.7rem; box-shadow: 0 0 15px rgba(0,255,149,0.3); }
+
+        #arena { flex-grow: 1; position: relative; display: flex; justify-content: center; align-items: center; perspective: 1200px; }
+        .floor { position: absolute; bottom: 0; width: 100%; height: 40%; background: radial-gradient(ellipse at center, #161a2e 0%, #020308 80%); transform: rotateX(60deg); }
+        .cup-node { position: absolute; width: 150px; bottom: 120px; z-index: 20; }
+        .cup-mesh { width: 130px; height: 170px; margin: 0 auto; background: linear-gradient(135deg, #ef4444 0%, #7f1d1d 100%); clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%); position: relative; border-bottom: 6px solid #2b060c; }
+        .cup-mesh::before { content: ''; position: absolute; top: 0; width: 100%; height: 8px; background: var(--gold); }
+        .ball { position: absolute; width: 40px; height: 40px; background: radial-gradient(circle at 30% 30%, #fff, #bdc3c7); border-radius: 50%; display: none; bottom: 125px; z-index: 10; }
+
+        /* --- FOOTER UI (MATCHING SCREENSHOT) --- */
+        .footer { height: 180px; background: #000; border-top: 1px solid var(--border); display: flex; align-items: center; padding: 0 40px; justify-content: space-between; position: relative; }
+        .control-stack { display: flex; flex-direction: column; gap: 15px; }
         
-        .header-controls { display: flex; align-items: center; gap: 20px; }
-
-        .daily-btn {
-            background: linear-gradient(135deg, var(--green), #00804b);
-            color: black; border: none; padding: 10px 20px; border-radius: 8px;
-            font-weight: 900; font-size: 0.8rem; cursor: pointer;
-            box-shadow: 0 0 15px rgba(0, 255, 149, 0.4);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; transform: scale(1.02); } 100% { opacity: 1; } }
-
-        .balance-display {
-            background: #000; padding: 12px 25px; border-radius: 12px;
-            border: 1px solid var(--gold); color: var(--gold-light);
-            font-family: 'JetBrains Mono'; font-size: 1.2rem;
-            box-shadow: 0 0 20px rgba(197, 160, 89, 0.2);
-        }
-
-        /* --- GAME ARENA --- */
-        #arena { flex-grow: 1; position: relative; display: flex; justify-content: center; align-items: center; perspective: 1500px; }
-        .floor { position: absolute; bottom: 0; width: 150%; height: 400px; background: radial-gradient(ellipse at center, #15192b 0%, #020308 80%); transform: rotateX(70deg); border-top: 1px solid rgba(255,255,255,0.05); }
-
-        .cup-node { position: absolute; width: 160px; bottom: 140px; z-index: 20; }
-        .cup-label { font-size: 4rem; font-weight: 900; color: rgba(255,255,255,0.02); text-align: center; margin-bottom: 20px; }
+        .bet-input-row { display: flex; align-items: center; gap: 0; background: #080a0f; border-radius: 4px; border: 1px solid #1a1a1a; overflow: hidden; width: fit-content;}
+        .adj-btn { width: 40px; height: 40px; background: #111; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; border-right: 1px solid #1a1a1a; }
+        .bet-val { width: 100px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 1.2rem; color: #fff; padding: 0 10px; }
         
-        .cup-mesh {
-            width: 140px; height: 185px; margin: 0 auto;
-            background: linear-gradient(135deg, #e63946 0%, #7b0d1e 100%);
-            clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
-            position: relative; border-bottom: 8px solid #2b060c;
-            cursor: pointer;
-        }
-        .cup-mesh::before { content: ''; position: absolute; top: 0; width: 100%; height: 8px; background: var(--gold); opacity: 0.8; }
-        .beast-svg { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; background: url('https://upload.wikimedia.org/wikipedia/en/d/db/MrBeast_logo.svg') no-repeat center; background-size: contain; filter: brightness(0) invert(1); opacity: 0.15; }
+        .risk-row { display: flex; gap: 8px; }
+        .chip { padding: 6px 14px; border-radius: 4px; background: #0d1117; border: 1px solid #222; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: #666; transition: 0.2s; }
+        .chip.active { border: 2px solid var(--cyan); color: var(--cyan); }
 
-        .ball { position: absolute; width: 44px; height: 44px; background: radial-gradient(circle at 30% 30%, #fff 0%, #bdc3c7 50%, #2c3e50 100%); border-radius: 50%; display: none; bottom: 148px; z-index: 10; }
-
-        /* --- FOOTER / DASHBOARD --- */
-        .footer { height: 180px; background: #080a0f; border-top: 1px solid var(--glass); display: grid; grid-template-columns: 1fr 200px 1fr; align-items: center; padding: 0 50px; z-index: 60; }
-        .val-adjuster { display: flex; align-items: center; background: #000; border-radius: 8px; border: 1px solid #222; overflow: hidden; }
-        .adj-btn { width: 45px; height: 45px; background: #111; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; }
-        .val-display { width: 120px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; color: #fff; }
-        .mult-chips { display: flex; gap: 10px; }
-        .chip { padding: 8px 15px; border-radius: 6px; background: #111; border: 1px solid #333; font-size: 0.8rem; font-weight: 900; cursor: pointer; color: #666; }
-        .chip.active { border-color: var(--cyan); color: var(--cyan); background: rgba(0, 229, 255, 0.1); }
-
-        .master-go {
-            width: 130px; height: 130px; border-radius: 50%; background: #fff; color: #000; border: 12px solid #161a24;
-            font-weight: 900; font-size: 1.6rem; cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-top: -80px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        .go-wrap { position: relative; }
+        .go-btn {
+            width: 110px; height: 110px; border-radius: 50%; background: #fff; color: #000; 
+            border: 12px solid #161a24; font-weight: 900; font-size: 1.5rem; cursor: pointer;
+            transition: 0.2s; position: relative; z-index: 2;
         }
+        .go-btn:hover:not(:disabled) { transform: scale(1.05); }
+        .go-btn:disabled { opacity: 0.1; }
 
-        /* --- DAILY WHEEL MODAL --- */
-        #wheel-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 2000;
-        }
-        .wheel-container { position: relative; width: 450px; height: 450px; }
-        #wheel-svg { width: 100%; height: 100%; transform: rotate(0deg); }
-        .wheel-pointer {
-            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
-            width: 40px; height: 50px; background: var(--gold);
-            clip-path: polygon(0% 0%, 100% 0%, 50% 100%); z-index: 10;
-        }
-        .wheel-center {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 60px; height: 60px; background: #fff; border-radius: 50%; border: 5px solid var(--gold);
-            display: flex; align-items: center; justify-content: center; z-index: 5;
-        }
-
-        #toast-bin { position: fixed; top: 40px; left: 50%; transform: translateX(-50%); z-index: 1000; pointer-events: none; }
-        .toast { padding: 18px 50px; border-radius: 12px; background: rgba(0,0,0,0.95); border: 1px solid var(--glass); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; animation: toastIn 0.4s ease-out; }
-        @keyframes toastIn { from { transform: translateY(-100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .toast.win { color: var(--green); border-color: var(--green); }
-        .toast.loss { color: var(--red); border-color: var(--red); }
+        /* --- WHEEL UI --- */
+        #wheel-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 2000; }
+        .wheel-box { position: relative; width: 480px; height: 480px; border: 10px solid #111; border-radius: 50%; box-shadow: 0 0 50px rgba(0,0,0,1), 0 0 20px var(--gold); }
+        #wheel-svg { width: 100%; height: 100%; filter: drop-shadow(0 0 5px rgba(255,255,255,0.1)); }
+        .pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 30px; height: 40px; background: var(--gold); clip-path: polygon(0 0, 100% 0, 50% 100%); z-index: 10; filter: drop-shadow(0 0 10px #000); }
+        
+        #toast-bin { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; }
+        .toast { padding: 15px 40px; border-radius: 50px; background: #000; border: 1px solid var(--gold); font-weight: 900; animation: tIn 0.3s forwards; }
+        @keyframes tIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <aside class="sidebar">
-        <div>
-            <div class="sidebar-label">Session Roadmap</div>
-            <div class="history-grid" id="roadmap"></div>
-        </div>
-        <div class="live-feed">
-            <div class="sidebar-label">Live Activity</div>
-            <div id="activity-log"></div>
-        </div>
+        <div><div class="label-gold">Roadmap</div><div class="history-grid" id="roadmap"></div></div>
+        <div style="flex-grow:1; overflow:hidden;"><div class="label-gold">Live Feed</div><div id="feed" style="display:flex;flex-direction:column;gap:5px;"></div></div>
     </aside>
 
     <main class="main-stage">
         <header>
             <div class="logo">CUP<span>LEGENDS</span></div>
-            <div class="header-controls">
-                <button class="daily-btn" onclick="Rewards.open()">DAILY SPIN</button>
-                <div class="balance-display" id="balance-ui">150,191.57 FUN</div>
+            <div style="display:flex;gap:15px;align-items:center;">
+                <button class="daily-trigger" onclick="Rewards.open()">DAILY REWARD</button>
+                <div class="balance-pill" id="balance-ui" style="background:#000;padding:10px;border:1px solid var(--gold);font-family:'JetBrains Mono';color:var(--gold);">150,191.57 FUN</div>
             </div>
         </header>
 
         <div id="arena">
             <div class="floor"></div>
-            <div id="game-ball" class="ball"></div>
-            
-            <div class="cup-node" id="c0" style="left: calc(50% - 380px);"><div class="cup-label">1</div><div class="cup-mesh"><div class="beast-svg"></div></div></div>
-            <div class="cup-node" id="c1" style="left: calc(50% - 80px);"><div class="cup-label">2</div><div class="cup-mesh"><div class="beast-svg"></div></div></div>
-            <div class="cup-node" id="c2" style="left: calc(50% + 220px);"><div class="cup-label">3</div><div class="cup-mesh"><div class="beast-svg"></div></div></div>
+            <div id="ball" class="ball"></div>
+            <div class="cup-node" id="c0" style="left: calc(50% - 320px);"><div class="cup-mesh"></div></div>
+            <div class="cup-node" id="c1" style="left: calc(50% - 65px);"><div class="cup-mesh"></div></div>
+            <div class="cup-node" id="c2" style="left: calc(50% + 190px);"><div class="cup-mesh"></div></div>
         </div>
 
         <div class="footer">
-            <div class="control-panel">
-                <div class="dash-item">
-                    <div class="sidebar-label">Bet Amount</div>
-                    <div class="val-adjuster">
+            <div class="control-stack">
+                <div>
+                    <div class="label-gold">Bet Amount</div>
+                    <div class="bet-input-row">
                         <button class="adj-btn" onclick="Game.adjBet(-0.5)">-</button>
-                        <div class="val-display" id="bet-ui">1.50</div>
-                        <button class="adj-btn" onclick="Game.adjBet(0.5)">+</button>
+                        <div class="bet-val" id="bet-ui">4.50</div>
+                        <button class="adj-btn" style="border-right:none;" onclick="Game.adjBet(0.5)">+</button>
                     </div>
                 </div>
-                <div class="dash-item">
-                    <div class="sidebar-label">Risk Multiplier</div>
-                    <div class="mult-chips">
-                        <div class="chip" onclick="Game.setMult(2, this)">x2</div>
-                        <div class="chip active" onclick="Game.setMult(3, this)">x3</div>
-                        <div class="chip" onclick="Game.setMult(5, this)">x5</div>
-                        <div class="chip" onclick="Game.setMult(10, this)">x10</div>
+                <div>
+                    <div class="label-gold">Risk Multiplier</div>
+                    <div class="risk-row">
+                        <div class="chip" onclick="Game.setRisk(2, this)">x2</div>
+                        <div class="chip active" onclick="Game.setRisk(3, this)">x3</div>
+                        <div class="chip" onclick="Game.setRisk(5, this)">x5</div>
+                        <div class="chip" onclick="Game.setRisk(10, this)">x10</div>
                     </div>
                 </div>
             </div>
-            <div class="play-btn-wrap"><button class="master-go" id="btn-go" onclick="Game.play()">GO!</button></div>
-            <div class="dash-item" style="justify-self: end; text-align: right;">
-                <div class="sidebar-label">Estimated Payout</div>
-                <div class="val-display" style="color: var(--green); font-size: 1.4rem;" id="payout-ui">4.50 FUN</div>
+            
+            <div style="flex-grow:1; margin:0 40px; height:40px; background:rgba(255,255,255,0.02); border-radius:4px;"></div>
+
+            <div class="go-wrap">
+                <button class="go-btn" id="go-btn" onclick="Game.play()">GO!</button>
             </div>
         </div>
     </main>
 
-    <div id="wheel-overlay">
-        <h1 style="color: var(--gold); font-weight: 900; margin-bottom: 30px;">DAILY REWARD SPIN</h1>
-        <div class="wheel-container">
-            <div class="wheel-pointer"></div>
-            <div class="wheel-center">⚡</div>
+    <div id="wheel-modal">
+        <h1 style="color:var(--gold);font-weight:900;letter-spacing:5px;">DAILY SPIN</h1>
+        <div class="wheel-box">
+            <div class="pointer"></div>
             <svg id="wheel-svg" viewBox="0 0 100 100"></svg>
         </div>
-        <button id="spin-btn" class="master-go" style="margin-top: 40px; height: 80px; width: 200px; border-radius: 10px;" onclick="Rewards.spin()">SPIN!</button>
-        <p style="color: #444; margin-top: 20px;" onclick="Rewards.close()">CLOSE</p>
+        <button id="spin-btn" class="go-btn" style="margin-top:40px;height:70px;width:180px;border-radius:8px;" onclick="Rewards.spin()">SPIN</button>
+        <p onclick="Rewards.close()" style="color:#333;margin-top:20px;cursor:pointer;">CLOSE</p>
     </div>
 
     <div id="toast-bin"></div>
 
     <script>
-        const FX = {
+        const AudioFX = {
             ctx: new (window.AudioContext || window.webkitAudioContext)(),
-            play(f, t, d, v = 0.1) {
+            play(f, t, d, v=0.1) {
                 const o = this.ctx.createOscillator(), g = this.ctx.createGain();
                 o.type = t; o.frequency.setValueAtTime(f, this.ctx.currentTime);
                 g.gain.setValueAtTime(v, this.ctx.currentTime);
@@ -214,116 +157,115 @@
                 o.start(); o.stop(this.ctx.currentTime + d);
             },
             tick() { this.play(800, 'sine', 0.05); },
-            win() { [523, 659, 783].forEach((f, i) => setTimeout(() => this.play(f, 'sine', 0.2), i * 100)); },
-            loss() { this.play(100, 'sawtooth', 0.4, 0.04); }
+            win() { this.play(523, 'sine', 0.2); setTimeout(()=>this.play(659, 'sine', 0.2), 100); }
         };
 
         const Game = (function() {
-            const S = { balance: 150191.57, bet: 1.50, mult: 3, isBusy: false, ballIdx: 0, order: [0, 1, 2], pos: [] };
+            const S = { balance: 150191.57, bet: 4.50, risk: 3, busy: false, order:[0,1,2], ball:0 };
 
             return {
-                adjBet: (v) => { if(S.isBusy) return; S.bet = Math.max(0.5, S.bet + v); document.getElementById('bet-ui').innerText = S.bet.toFixed(2); Game.updatePayout(); FX.tick(); },
-                setMult: (m, el) => { if(S.isBusy) return; S.mult = m; document.querySelectorAll('.chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); Game.updatePayout(); FX.tick(); },
-                updatePayout: () => { document.getElementById('payout-ui').innerText = (S.bet * S.mult).toFixed(2) + " FUN"; },
-                updBalance: () => { document.getElementById('balance-ui').innerText = S.balance.toLocaleString('en-US', {minimumFractionDigits: 2}) + " FUN"; },
+                adjBet: (v) => { if(S.busy) return; S.bet = Math.max(0.5, S.bet + v); document.getElementById('bet-ui').innerText = S.bet.toFixed(2); AudioFX.tick(); },
+                setRisk: (r, el) => { if(S.busy) return; S.risk = r; document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); AudioFX.tick(); },
                 play: function() {
-                    if(S.isBusy || S.balance < S.bet) return;
-                    S.isBusy = true; document.getElementById('btn-go').disabled = true;
-                    S.balance -= S.bet; this.updBalance();
-                    const ball = document.getElementById('game-ball');
+                    if(S.busy || S.balance < S.bet) return;
+                    S.busy = true; document.getElementById('go-btn').disabled = true;
+                    S.balance -= S.bet; this.upd();
+                    const b = document.getElementById('ball');
                     const cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
-                    S.pos = cups.map(c => c.offsetLeft);
-                    S.ballIdx = Math.floor(Math.random() * 3);
-                    gsap.set(ball, { left: S.pos[S.ballIdx] + 58, display: 'block', bottom: 148 });
-                    gsap.to(".cup-mesh", { y: -190, duration: 0.6, ease: "power2.out", stagger: 0.1 });
-                    setTimeout(() => gsap.to(".cup-mesh", { y: 0, duration: 0.5, onComplete: () => this.shuffle() }), 1400);
+                    const pos = cups.map(c => c.offsetLeft);
+                    S.ball = Math.floor(Math.random()*3);
+                    gsap.set(b, { left: pos[S.ball]+45, display:'block', bottom: 125 });
+                    gsap.to(".cup-mesh", { y:-160, duration:0.6, ease:"power2.out" });
+                    setTimeout(()=> gsap.to(".cup-mesh", { y:0, duration:0.4, onComplete:()=>this.shuffle(pos) }), 1200);
                 },
-                shuffle: async function() {
-                    document.getElementById('game-ball').style.display = 'none';
-                    for (let i = 0; i < 50; i++) {
-                        let a = Math.floor(Math.random() * 3), b; do { b = Math.floor(Math.random() * 3); } while (a === b);
-                        const speed = Math.max(0.04, 0.2 - (i * 0.005));
-                        const pA = S.pos[S.order.indexOf(a)], pB = S.pos[S.order.indexOf(b)];
-                        gsap.to(document.getElementById('c'+a), { left: pB, duration: speed });
-                        await gsap.to(document.getElementById('c'+b), { left: pA, duration: speed });
-                        const iA = S.order.indexOf(a), iB = S.order.indexOf(b); [S.order[iA], S.order[iB]] = [S.order[iB], S.order[iA]];
+                shuffle: async function(pos) {
+                    document.getElementById('ball').style.display='none';
+                    for(let i=0; i<50; i++) {
+                        let a=Math.floor(Math.random()*3), b; do{ b=Math.floor(Math.random()*3); } while(a===b);
+                        const spd = Math.max(0.04, 0.2-(i*0.005));
+                        const pA = pos[S.order.indexOf(a)], pB = pos[S.order.indexOf(b)];
+                        gsap.to(document.getElementById('c'+a), { left:pB, duration:spd });
+                        await gsap.to(document.getElementById('c'+b), { left:pA, duration:spd });
+                        const iA=S.order.indexOf(a), iB=S.order.indexOf(b); [S.order[iA], S.order[iB]]=[S.order[iB], S.order[iA]];
                     }
-                    this.ready();
+                    this.ready(pos);
                 },
-                ready: function() {
-                    gsap.to(".cup-label", { opacity: 1, color: "var(--cyan)" });
-                    [0,1,2].forEach(i => document.getElementById('c'+i).onclick = () => this.reveal(i));
+                ready: function(pos) {
+                    [0,1,2].forEach(i=> document.getElementById('c'+i).onclick = () => {
+                        if(!S.busy) return;
+                        // RIGGED LOGIC
+                        if(Math.random() < 0.8 && i === S.ball) S.ball = (i+1)%3;
+                        const win = (i === S.ball);
+                        gsap.set(document.getElementById('ball'), { left: pos[S.order.indexOf(S.ball)]+45, display:'block' });
+                        gsap.to(".cup-mesh", { y:-180, duration:0.7, ease:"back.out" });
+                        setTimeout(()=> {
+                            if(win) { S.balance += (S.bet*S.risk); AudioFX.win(); Rewards.toast("WIN!", "win"); }
+                            else { AudioFX.play(100, 'sawtooth', 0.4); Rewards.toast("LOST", "loss"); }
+                            this.upd(); this.cleanup();
+                        }, 800);
+                    });
                 },
-                reveal: function(choice) {
-                    if(document.getElementById('btn-go').disabled === false) return;
-                    const rigThreshold = 1 - (1 / (S.mult * 1.5));
-                    if (Math.random() < rigThreshold && choice === S.ballIdx) S.ballIdx = (choice + 1) % 3;
-                    const win = (choice === S.ballIdx);
-                    gsap.set(document.getElementById('game-ball'), { left: S.pos[S.order.indexOf(S.ballIdx)] + 58, display: 'block' });
-                    gsap.to(".cup-mesh", { y: -200, duration: 0.8, ease: "back.out" });
-                    setTimeout(() => {
-                        if (win) { FX.win(); S.balance += (S.bet * S.mult); Rewards.toast(`WINNER! +${(S.bet * S.mult).toFixed(2)}`, "win"); }
-                        else { FX.loss(); Rewards.toast("BET FAILED", "loss"); }
-                        this.updBalance(); this.cleanup();
-                    }, 1000);
-                },
-                cleanup: () => { setTimeout(() => { gsap.to(".cup-mesh", { y: 0, duration: 0.5 }); document.getElementById('game-ball').style.display = 'none'; document.getElementById('btn-go').disabled = false; S.isBusy = false; }, 1500); },
-                addFun: (amt) => { S.balance += amt; Game.updBalance(); }
+                cleanup: () => setTimeout(()=>{ gsap.to(".cup-mesh", {y:0}); document.getElementById('ball').style.display='none'; document.getElementById('go-btn').disabled=false; S.busy=false; }, 1200),
+                upd: () => document.getElementById('balance-ui').innerText = S.balance.toLocaleString('en-US', {minimumFractionDigits:2}) + " FUN"
             };
         })();
 
         const Rewards = (function() {
-            const prizes = [100, 500, 250, 5000, 150, 1000, 300, 50000];
-            const colors = ["#1a1a1a", "#c5a059", "#1a1a1a", "#00ff95", "#1a1a1a", "#c5a059", "#1a1a1a", "#00e5ff"];
+            const prizes = [100, 500, 250, 50000, 150, 1000, 300, 5000];
+            const colors = ["#111", "#c5a059", "#111", "#00ff95", "#111", "#c5a059", "#111", "#00e5ff"];
             let spinning = false;
 
             return {
-                open: () => { document.getElementById('wheel-overlay').style.display = 'flex'; Rewards.draw(); },
-                close: () => { if(!spinning) document.getElementById('wheel-overlay').style.display = 'none'; },
+                open: () => { document.getElementById('wheel-modal').style.display='flex'; Rewards.draw(); },
+                close: () => { if(!spinning) document.getElementById('wheel-modal').style.display='none'; },
                 draw: () => {
-                    const svg = document.getElementById('wheel-svg');
-                    svg.innerHTML = '';
+                    const svg = document.getElementById('wheel-svg'); svg.innerHTML = '';
                     prizes.forEach((p, i) => {
-                        const ang = 360 / prizes.length;
-                        const x1 = 50 + 50 * Math.cos(Math.PI * (i * ang - 90) / 180);
-                        const y1 = 50 + 50 * Math.sin(Math.PI * (i * ang - 90) / 180);
-                        const x2 = 50 + 50 * Math.cos(Math.PI * ((i + 1) * ang - 90) / 180);
-                        const y2 = 50 + 50 * Math.sin(Math.PI * ((i + 1) * ang - 90) / 180);
-                        const path = `<path d="M50,50 L${x1},${y1} A50,50 0 0,1 ${x2},${y2} Z" fill="${colors[i]}" stroke="#000" stroke-width="0.5"/>`;
-                        const textAng = (i * ang) + (ang / 2);
-                        const tx = 50 + 35 * Math.cos(Math.PI * (textAng - 90) / 180);
-                        const ty = 50 + 35 * Math.sin(Math.PI * (textAng - 90) / 180);
-                        const txt = `<text x="${tx}" y="${ty}" fill="white" font-size="3" font-weight="900" text-anchor="middle" transform="rotate(${textAng}, ${tx}, ${ty})">${p}</text>`;
-                        svg.innerHTML += path + txt;
+                        const ang = 360/prizes.length;
+                        const x1 = 50 + 50 * Math.cos(Math.PI*(i*ang-90)/180), y1 = 50 + 50 * Math.sin(Math.PI*(i*ang-90)/180);
+                        const x2 = 50 + 50 * Math.cos(Math.PI*((i+1)*ang-90)/180), y2 = 50 + 50 * Math.sin(Math.PI*((i+1)*ang-90)/180);
+                        svg.innerHTML += `<path d="M50,50 L${x1},${y1} A50,50 0 0,1 ${x2},${y2} Z" fill="${colors[i]}" stroke="#222" stroke-width="0.5"/>`;
+                        const tang = (i*ang)+(ang/2);
+                        const tx = 50 + 38 * Math.cos(Math.PI*(tang-90)/180), ty = 50 + 38 * Math.sin(Math.PI*(tang-90)/180);
+                        svg.innerHTML += `<text x="${tx}" y="${ty}" fill="white" font-size="3.5" font-weight="900" text-anchor="middle" transform="rotate(${tang},${tx},${ty})">${p}</text>`;
                     });
                 },
                 spin: function() {
-                    if(spinning) return;
-                    spinning = true;
+                    if(spinning) return; spinning = true;
                     document.getElementById('spin-btn').disabled = true;
-                    // Rigged: 70% chance to land on 100 or 150
-                    const rand = Math.random();
-                    let targetIdx = Math.floor(Math.random() * prizes.length);
-                    if(rand < 0.7) targetIdx = Math.random() > 0.5 ? 0 : 4; 
                     
-                    const rotation = (360 * 5) + (360 - (targetIdx * (360/prizes.length))) - (360/prizes.length/2);
-                    gsap.to("#wheel-svg", { rotation: rotation, duration: 4, ease: "power4.out", onComplete: () => {
-                        Game.addFun(prizes[targetIdx]);
-                        Rewards.toast(`DAILY REWARD: +${prizes[targetIdx]} FUN`, "win");
-                        FX.win();
-                        setTimeout(() => { spinning = false; document.getElementById('spin-btn').disabled = false; Rewards.close(); gsap.set("#wheel-svg", {rotation:0}); }, 2000);
-                    }});
+                    // TROLL LOGIC: Target 100 (Index 0) which is right NEXT to 50,000 (Index 3)
+                    // We will aim for Index 4 (150) which is the slice immediately AFTER 50,000.
+                    const targetIdx = 4; 
+                    const sliceAng = 360/prizes.length;
+                    
+                    // Final rotation to land in the middle of Index 4
+                    // Note: Wheel rotates clockwise, so we subtract angles
+                    const finalRot = (360 * 8) + (360 - (targetIdx * sliceAng)) - (sliceAng/2);
+
+                    gsap.to("#wheel-svg", { 
+                        rotation: finalRot, 
+                        duration: 6, 
+                        ease: "power4.out", 
+                        onUpdate: function() {
+                            // Play tick sounds as it slows down
+                            if(Math.floor(this.progress() * 100) % 5 === 0) AudioFX.tick();
+                        },
+                        onComplete: () => {
+                            // Near miss "Shake"
+                            gsap.to(".wheel-box", { x: 5, duration: 0.05, repeat: 5, yoyo: true });
+                            Game.balance += prizes[targetIdx]; Game.upd();
+                            Rewards.toast(`+${prizes[targetIdx]} FUN`, "win");
+                            setTimeout(() => { spinning=false; document.getElementById('spin-btn').disabled=false; Rewards.close(); gsap.set("#wheel-svg", {rotation:0}); }, 2000);
+                        }
+                    });
                 },
-                toast: (t, type) => {
-                    const b = document.getElementById('toast-bin');
-                    const el = document.createElement('div'); el.className = `toast ${type}`; el.innerText = t;
-                    b.appendChild(el); setTimeout(() => el.remove(), 3000);
-                }
+                toast: (t, type) => { const el=document.createElement('div'); el.className=`toast ${type}`; el.innerText=t; document.getElementById('toast-bin').appendChild(el); setTimeout(()=>el.remove(), 2500); }
             };
         })();
 
-        // Roadmap Init
-        for(let i=0; i<20; i++) { const d = document.createElement('div'); d.className = 'dot'; document.getElementById('roadmap').appendChild(d); }
+        // Roadmap
+        for(let i=0; i<20; i++) document.getElementById('roadmap').innerHTML += '<div class="dot"></div>';
     </script>
 </body>
 </html>
