@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>THE $1,000,000 IMPOSSIBLE CHALLENGE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@900&display=swap" rel="stylesheet">
     <style>
         :root {
             --neon-pink: #ff00ff;
             --neon-cyan: #00f2ff;
             --money-green: #00ff88;
-            --cup-red: #d00000;
-            --bg-dark: #0a0a0c;
+            --cup-red: #e61919;
+            --bg-dark: #050508;
         }
 
         body, html {
@@ -22,17 +22,26 @@
             font-family: 'Inter', sans-serif;
             overflow: hidden;
             height: 100vh;
+            user-select: none;
+        }
+
+        .studio {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(0, 242, 255, 0.1) 0%, transparent 40%);
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* --- UI OVERLAY --- */
-        #ui-top {
+        header {
             width: 100%;
-            height: 120px;
-            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
-            border-bottom: 2px solid var(--neon-pink);
+            height: 140px;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 4px solid var(--neon-cyan);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -40,293 +49,228 @@
             z-index: 100;
         }
 
-        .prize-pool {
+        .prize-amount {
             font-family: 'Archivo Black', sans-serif;
-            font-size: 3.5rem;
+            font-size: 4.5rem;
             color: var(--money-green);
-            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
             margin: 0;
         }
 
-        .challenge-label {
-            font-size: 0.9rem;
-            letter-spacing: 4px;
-            color: var(--neon-cyan);
-            text-transform: uppercase;
-            font-weight: 900;
-        }
-
-        /* --- THE STAGE --- */
-        #stage {
+        #game-area {
             position: relative;
             width: 1000px;
-            height: 500px;
-            margin-top: 50px;
+            height: 600px;
+            margin-top: 40px;
+            z-index: 10;
         }
 
-        .cup-container {
+        .cup-wrap {
             position: absolute;
-            width: 140px;
-            height: 180px;
-            bottom: 50px;
+            width: 160px;
+            height: 200px;
+            bottom: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             cursor: pointer;
-            display: flex;
-            justify-content: center;
-            transition: transform 0.2s;
         }
 
-        /* THE REAL LOGO CUP */
-        .cup {
-            position: relative;
-            width: 120px;
-            height: 160px;
-            background: var(--cup-red);
+        .cup-mesh {
+            width: 130px;
+            height: 170px;
+            background: linear-gradient(135deg, var(--cup-red) 0%, #800000 100%);
             clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
-            border-bottom: 8px solid #800000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
+            position: relative;
+            border-bottom: 10px solid #500000;
         }
 
-        .cup::before {
-            content: '';
+        .beast-logo {
             position: absolute;
-            top: 0; width: 100%; height: 10px;
-            background: #ff4d4d;
-        }
-
-        /* Custom Logo on Cup */
-        .cup-logo {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .cup-logo::after {
-            content: '$';
-            font-family: 'Archivo Black';
-            font-size: 24px;
-            color: white;
-            opacity: 0.5;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px; height: 60px;
+            background: url('https://upload.wikimedia.org/wikipedia/en/d/db/MrBeast_logo.svg') no-repeat center;
+            background-size: contain;
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
         }
 
         .ball {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: 44px; height: 44px;
             background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
             border-radius: 50%;
-            bottom: 60px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            z-index: 1;
+            z-index: 5;
             display: none;
         }
 
-        .cup-number {
-            position: absolute;
-            top: -50px;
+        .label-num {
             font-family: 'Archivo Black';
-            font-size: 40px;
+            font-size: 50px;
             color: var(--neon-cyan);
+            margin-bottom: 20px;
             opacity: 0;
-            transition: opacity 0.3s;
         }
 
-        /* --- SCREEN STATES --- */
         .overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 200;
-        }
-
-        .btn-play {
-            padding: 20px 60px;
-            font-family: 'Archivo Black';
-            font-size: 2rem;
-            background: var(--neon-cyan);
-            border: none;
-            color: black;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
-
-        .btn-play:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px var(--neon-cyan);
-        }
-
-        #message {
-            font-family: 'Archivo Black';
-            font-size: 3rem;
-            margin-bottom: 30px;
             text-align: center;
         }
 
-        .hidden { display: none !important; }
+        .btn-action {
+            padding: 25px 80px;
+            font-family: 'Archivo Black';
+            font-size: 2.2rem;
+            background: var(--money-green);
+            color: black;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+
+        #status-msg {
+            font-family: 'Archivo Black';
+            font-size: 4rem;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
-    <div id="ui-top">
-        <p class="challenge-label">The Impossible Challenge</p>
-        <h1 class="prize-pool" id="prize">$1,000,000</h1>
-    </div>
+    <div class="studio">
+        <header>
+            <h1 class="prize-amount" id="prize-display">$1,000,000</h1>
+        </header>
 
-    <div id="stage">
-        <div id="ball" class="ball"></div>
+        <div id="game-area">
+            <div id="ball-obj" class="ball"></div>
 
-        <div class="cup-container" id="cup-0" style="left: 100px;">
-            <div class="cup-number">1</div>
-            <div class="cup">
-                <div class="cup-logo"></div>
+            <div class="cup-wrap" id="c0" style="left: 80px;">
+                <div class="label-num">1</div>
+                <div class="cup-mesh"><div class="beast-logo"></div></div>
             </div>
-        </div>
 
-        <div class="cup-container" id="cup-1" style="left: 430px;">
-            <div class="cup-number">2</div>
-            <div class="cup">
-                <div class="cup-logo"></div>
+            <div class="cup-wrap" id="c1" style="left: 420px;">
+                <div class="label-num">2</div>
+                <div class="cup-mesh"><div class="beast-logo"></div></div>
             </div>
-        </div>
 
-        <div class="cup-container" id="cup-2" style="left: 760px;">
-            <div class="cup-number">3</div>
-            <div class="cup">
-                <div class="cup-logo"></div>
+            <div class="cup-wrap" id="c2" style="left: 760px;">
+                <div class="label-num">3</div>
+                <div class="cup-mesh"><div class="beast-logo"></div></div>
             </div>
         </div>
     </div>
 
-    <div id="menu-overlay" class="overlay">
-        <div style="font-size: 1.5rem; color: var(--neon-pink); margin-bottom: 10px;">MR BEAST PRESENTS</div>
-        <div id="message">CAN YOU WIN THE MILLION?</div>
-        <button class="btn-play" onclick="startGame()">PLAY NOW</button>
+    <div id="overlay" class="overlay">
+        <div id="status-msg">WIN THE MILLION</div>
+        <button class="btn-action" onclick="Game.init()">START CHALLENGE</button>
     </div>
 
     <script>
-        const ball = document.getElementById('ball');
-        const cups = [
-            document.getElementById('cup-0'),
-            document.getElementById('cup-1'),
-            document.getElementById('cup-2')
-        ];
-        const positions = [100, 430, 760];
-        let cupOrder = [0, 1, 2]; // Tracks which cup is at which visual position
-        let ballSlot = 0; // The index of the cup containing the ball
-        let isSpinning = false;
+        const Game = (function() {
+            const state = {
+                ballSlot: 0,
+                isBusy: false,
+                cups: [],
+                positions: [80, 420, 760],
+                cupOrder: [0, 1, 2]
+            };
 
-        function startGame() {
-            document.getElementById('menu-overlay').classList.add('hidden');
-            ballSlot = Math.floor(Math.random() * 3);
-            
-            // 1. Show Ball
-            const ballX = positions[ballSlot] + 50;
-            ball.style.left = ballX + 'px';
-            ball.style.display = 'block';
+            return {
+                init: function() {
+                    document.getElementById('overlay').style.display = 'none';
+                    state.cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
+                    this.start();
+                },
 
-            // 2. Lift Cups
-            gsap.to(".cup", { y: -150, duration: 0.6, stagger: 0.1, ease: "back.out" });
+                start: function() {
+                    state.isBusy = true;
+                    state.cupOrder = [0, 1, 2];
+                    state.cups.forEach((c, i) => {
+                        gsap.set(c, { left: state.positions[i] });
+                        c.onclick = () => this.checkWin(i);
+                    });
 
-            // 3. Lower and Shuffle
-            setTimeout(() => {
-                gsap.to(".cup", { y: 0, duration: 0.5, ease: "power2.in", onComplete: startShuffle });
-            }, 1500);
-        }
+                    state.ballSlot = Math.floor(Math.random() * 3);
+                    const ball = document.getElementById('ball-obj');
+                    
+                    gsap.set(ball, { display: 'block', left: state.positions[state.ballSlot] + 58, bottom: 120 });
+                    gsap.to(".cup-mesh", { y: -180, duration: 0.8, ease: "power3.out" });
 
-        async function startShuffle() {
-            isSpinning = true;
-            ball.style.display = 'none';
+                    setTimeout(() => {
+                        gsap.to(".cup-mesh", { y: 0, duration: 0.5, onComplete: () => this.shuffle() });
+                    }, 1500);
+                },
 
-            // IMPOSSIBLE LOGIC: 50 swaps, accelerating to lightspeed
-            const totalSwaps = 50;
-            
-            for (let i = 0; i < totalSwaps; i++) {
-                const [idxA, idxB] = getRandomPair();
-                const speed = Math.max(0.05, 0.2 - (i * 0.004)); // Speeds up!
-                
-                await swapCups(idxA, idxB, speed);
-                
-                // Add screen shake at high speeds
-                if (i > 30) {
-                    gsap.to("#stage", { x: i%2===0?5:-5, y: i%2===0?-5:5, duration: 0.05 });
+                shuffle: async function() {
+                    document.getElementById('ball-obj').style.display = 'none';
+                    for (let i = 0; i < 60; i++) {
+                        const idx1 = Math.floor(Math.random() * 3);
+                        let idx2;
+                        do { idx2 = Math.floor(Math.random() * 3); } while (idx1 === idx2);
+                        const speed = Math.max(0.03, 0.2 - (i * 0.005));
+                        await this.performSwap(idx1, idx2, speed);
+                    }
+                    state.isBusy = false;
+                    gsap.to(".label-num", { opacity: 1, duration: 0.5 });
+                },
+
+                performSwap: function(idxA, idxB, speed) {
+                    return new Promise(resolve => {
+                        const posA = state.positions[state.cupOrder.indexOf(idxA)];
+                        const posB = state.positions[state.cupOrder.indexOf(idxB)];
+                        gsap.to(state.cups[idxA], { left: posB, duration: speed });
+                        gsap.to(state.cups[idxB], { left: posA, duration: speed, onComplete: resolve });
+                        const iA = state.cupOrder.indexOf(idxA);
+                        const iB = state.cupOrder.indexOf(idxB);
+                        [state.cupOrder[iA], state.cupOrder[iB]] = [state.cupOrder[iB], state.cupOrder[iA]];
+                    });
+                },
+
+                checkWin: function(clickedIndex) {
+                    if (state.isBusy) return;
+                    state.isBusy = true;
+
+                    // --- RIGGED LOGIC START ---
+                    // If the user picked the right cup, we move the ball index to a different cup.
+                    if (clickedIndex === state.ballSlot) {
+                        let newSlot;
+                        do {
+                            newSlot = Math.floor(Math.random() * 3);
+                        } while (newSlot === clickedIndex);
+                        state.ballSlot = newSlot;
+                    }
+                    // --- RIGGED LOGIC END ---
+
+                    const ball = document.getElementById('ball-obj');
+                    // Find where the rigged ball index ended up horizontally
+                    const finalBallPos = state.positions[state.cupOrder.indexOf(state.ballSlot)] + 58;
+                    
+                    gsap.set(ball, { left: finalBallPos, display: 'block' });
+                    gsap.to(".cup-mesh", { y: -180, duration: 1, ease: "back.out", stagger: 0.1 });
+                    gsap.to(".label-num", { opacity: 0, duration: 0.3 });
+
+                    setTimeout(() => {
+                        const overlay = document.getElementById('overlay');
+                        const msg = document.getElementById('status-msg');
+                        overlay.style.display = 'flex';
+                        msg.innerHTML = "❌ YOU LOST EVERYTHING! ❌";
+                        msg.style.color = "#ff3333";
+                        document.getElementById('prize-display').innerText = "$0";
+                    }, 1500);
                 }
-            }
-
-            gsap.to("#stage", { x: 0, y: 0, duration: 0.1 });
-            endShuffle();
-        }
-
-        function getRandomPair() {
-            let a = Math.floor(Math.random() * 3);
-            let b;
-            do { b = Math.floor(Math.random() * 3); } while (a === b);
-            return [a, b];
-        }
-
-        function swapCups(idxA, idxB, speed) {
-            return new Promise(resolve => {
-                const posA = positions[cupOrder.indexOf(idxA)];
-                const posB = positions[cupOrder.indexOf(idxB)];
-
-                // Visual Swap
-                gsap.to(cups[idxA], { left: posB, duration: speed, ease: "power2.inOut" });
-                gsap.to(cups[idxB], { left: posA, duration: speed, ease: "power2.inOut", onComplete: resolve });
-
-                // Update Logic Order
-                const entryA = cupOrder.indexOf(idxA);
-                const entryB = cupOrder.indexOf(idxB);
-                [cupOrder[entryA], cupOrder[entryB]] = [cupOrder[entryB], cupOrder[entryA]];
-            });
-        }
-
-        function endShuffle() {
-            isSpinning = false;
-            // Show Numbers
-            gsap.to(".cup-number", { opacity: 1, duration: 0.5 });
-            
-            cups.forEach((cup, index) => {
-                cup.onclick = () => selectCup(index);
-            });
-        }
-
-        function selectCup(index) {
-            if (isSpinning) return;
-            
-            // Move ball to chosen cup position logic
-            const finalBallX = parseInt(cups[ballSlot].style.left) + 50;
-            ball.style.left = finalBallX + 'px';
-            ball.style.display = 'block';
-
-            // Reveal All
-            gsap.to(".cup", { y: -150, duration: 0.6, ease: "back.out" });
-            gsap.to(".cup-number", { opacity: 0, duration: 0.2 });
-
-            setTimeout(() => {
-                const overlay = document.getElementById('menu-overlay');
-                const msg = document.getElementById('message');
-                overlay.classList.remove('hidden');
-                
-                if (index === ballSlot) {
-                    msg.innerHTML = "🏆 YOU WON $1,000,000! 🏆";
-                    msg.style.color = "var(--money-green)";
-                } else {
-                    msg.innerHTML = "❌ YOU LOST EVERYTHING! ❌";
-                    msg.style.color = "var(--neon-pink)";
-                    document.getElementById('prize').innerText = "$0";
-                }
-            }, 1000);
-        }
+            };
+        })();
     </script>
 </body>
 </html>
