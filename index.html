@@ -3,306 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CUP LEGENDS | HIGH STAKES</title>
+    <title>CUP LEGENDS | PRO GAMBLER</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-deep: #06070d;
-            --panel-bg: rgba(20, 24, 45, 0.7);
-            --accent-gold: #facc15;
-            --accent-cyan: #22d3ee;
-            --cup-red: #ef4444;
-            --win-green: #10b981;
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg: #05060a;
+            --panel: rgba(15, 18, 28, 0.8);
+            --gold: #facc15;
+            --cyan: #22d3ee;
+            --red: #ef4444;
+            --green: #10b981;
+            --border: rgba(255, 255, 255, 0.05);
         }
 
         * { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
-
         body {
-            margin: 0; padding: 0;
-            background: var(--bg-deep);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            height: 100vh;
-            display: grid;
-            grid-template-columns: 300px 1fr;
+            margin: 0; background: var(--bg); color: white;
+            font-family: 'Archivo', sans-serif;
+            height: 100vh; display: grid; grid-template-columns: 280px 1fr;
             overflow: hidden;
         }
 
-        /* --- SIDEBAR: LIVE FEED --- */
+        /* --- SIDEBAR --- */
         .sidebar {
-            background: rgba(0, 0, 0, 0.4);
-            border-right: 1px solid var(--glass-border);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            background: rgba(0, 0, 0, 0.5); border-right: 1px solid var(--border);
+            padding: 20px; display: flex; flex-direction: column; gap: 12px;
         }
-        .sidebar-title { font-size: 0.8rem; font-weight: 700; color: var(--accent-cyan); letter-spacing: 2px; }
-        .live-bet {
-            background: var(--panel-bg);
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            display: flex;
-            justify-content: space-between;
-            border-left: 3px solid var(--cup-red);
-            animation: slideIn 0.3s ease-out;
+        .feed-title { font-size: 0.7rem; color: var(--cyan); letter-spacing: 2px; font-weight: 900; }
+        .log-entry {
+            background: var(--panel); padding: 10px; border-radius: 6px;
+            font-size: 0.7rem; display: flex; justify-content: space-between;
+            border-left: 3px solid var(--red);
         }
-        @keyframes slideIn { from { opacity:0; transform: translateX(-10px); } to { opacity:1; transform: translateX(0); } }
+        .log-entry.win { border-left-color: var(--green); }
 
-        /* --- MAIN STAGE --- */
-        .main-container {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            background: radial-gradient(circle at 50% 50%, #161b33 0%, #06070d 100%);
-        }
-
+        /* --- MAIN AREA --- */
+        .main { position: relative; display: flex; flex-direction: column; }
+        
         header {
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 40px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border);
         }
-        .logo { font-weight: 900; font-size: 1.5rem; letter-spacing: -1px; }
-        .logo span { color: var(--accent-gold); }
-
-        .balance-pill {
-            background: #111827;
-            padding: 8px 20px;
-            border-radius: 99px;
-            border: 1px solid var(--accent-gold);
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--accent-gold);
+        .logo { font-weight: 900; font-size: 1.4rem; font-style: italic; }
+        .logo span { color: var(--gold); }
+        .balance-box {
+            background: #000; padding: 10px 20px; border-radius: 8px;
+            border: 1px solid var(--gold); font-family: 'JetBrains Mono'; color: var(--gold);
         }
 
-        /* --- THE GAME --- */
+        /* --- GAME STAGE --- */
         #stage {
-            flex-grow: 1;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 1200px;
+            flex-grow: 1; position: relative; display: flex; justify-content: center;
+            align-items: center; perspective: 1000px;
+            background: radial-gradient(circle at 50% 100%, #1a1e36 0%, #05060a 100%);
         }
 
-        .cup-wrapper {
-            position: absolute;
-            width: 160px;
-            text-align: center;
-            cursor: pointer;
-            z-index: 10;
-        }
-
+        .cup-item { position: absolute; width: 140px; cursor: pointer; }
         .cup-num {
-            font-size: 4rem;
-            font-weight: 900;
-            margin-bottom: 30px;
-            color: rgba(255, 255, 255, 0.1);
-            transition: 0.3s;
+            font-size: 3rem; font-weight: 900; color: rgba(255,255,255,0.05);
+            text-align: center; margin-bottom: 20px; pointer-events: none;
+        }
+        .cup-visual {
+            width: 130px; height: 170px; margin: 0 auto;
+            background: linear-gradient(135deg, #ff3333 0%, #660000 100%);
+            clip-path: polygon(12% 0%, 88% 0%, 100% 100%, 0% 100%);
+            position: relative; border-bottom: 8px solid #330000;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+        .cup-visual::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px;
+            background: rgba(255,255,255,0.3);
+        }
+        .beast-seal {
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+            width: 60px; height: 60px; background: url('https://upload.wikimedia.org/wikipedia/en/d/db/MrBeast_logo.svg') no-repeat center;
+            background-size: contain; filter: brightness(0) invert(1); opacity: 0.15;
         }
 
-        .pro-cup {
-            width: 140px;
-            height: 180px;
-            background: linear-gradient(135deg, #ff4d4d 0%, #7f1d1d 100%);
-            clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
-            position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            border-bottom: 8px solid #450a0a;
-        }
-        .pro-cup::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 10px; background: rgba(255,255,255,0.2);
+        .ball {
+            position: absolute; width: 40px; height: 40px;
+            background: radial-gradient(circle at 30% 30%, #fff, #777);
+            border-radius: 50%; display: none; bottom: 100px;
+            box-shadow: 0 0 25px rgba(255,255,255,0.2);
         }
 
-        .beast-mark {
-            position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
-            width: 70px; height: 70px;
-            background: url('https://upload.wikimedia.org/wikipedia/en/d/db/MrBeast_logo.svg') no-repeat center;
-            background-size: contain; filter: brightness(0) invert(1); opacity: 0.2;
+        /* --- CONTROLS --- */
+        .controls {
+            height: 140px; background: #0a0c14; border-top: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-evenly; padding: 0 40px;
         }
-
-        .orb {
-            position: absolute;
-            width: 45px; height: 45px;
-            background: radial-gradient(circle at 30% 30%, #fff, var(--accent-cyan));
-            border-radius: 50%;
-            bottom: 120px;
-            display: none;
-            box-shadow: 0 0 30px var(--accent-cyan);
-            z-index: 5;
-        }
-
-        /* --- DASHBOARD --- */
-        .dashboard {
-            height: 160px;
-            background: #0d1117;
-            border-top: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            padding: 0 50px;
-        }
-
-        .bet-control {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .label { font-size: 0.7rem; color: #6b7280; font-weight: 700; text-transform: uppercase; }
-        .input-box {
-            background: #1f2937;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.2rem;
-            border: 1px solid #374151;
+        .control-group { display: flex; flex-direction: column; gap: 4px; }
+        .label { font-size: 0.65rem; color: #555; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        .input-display {
+            background: #161b22; padding: 12px 20px; border-radius: 6px;
+            font-family: 'JetBrains Mono'; border: 1px solid #222; min-width: 140px;
         }
 
         .go-btn {
-            width: 120px; height: 120px;
-            border-radius: 50%;
-            background: white;
-            color: black;
-            border: 10px solid #1f2937;
-            font-weight: 900;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
-            transition: 0.2s;
-            margin-top: -60px;
+            width: 100px; height: 100px; border-radius: 50%; background: #fff;
+            color: #000; border: 8px solid #1a1e26; font-weight: 900;
+            font-size: 1.2rem; cursor: pointer; transition: 0.2s;
+            margin-top: -50px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .go-btn:hover { transform: scale(1.05); background: var(--accent-gold); }
-        .go-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+        .go-btn:hover { background: var(--gold); transform: scale(1.05); }
+        .go-btn:disabled { opacity: 0.1; filter: grayscale(1); }
 
-        /* --- WIN/LOSS MODAL --- */
-        #overlay {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.9);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
+        /* --- NOTIFICATIONS --- */
+        #notif-container {
+            position: fixed; top: 20px; right: 20px; z-index: 2000;
+            display: flex; flex-direction: column; gap: 10px;
         }
-        .result-title { font-size: 5rem; font-weight: 900; margin-bottom: 10px; }
-        .result-sub { color: #6b7280; margin-bottom: 30px; }
+        .toast {
+            padding: 15px 25px; border-radius: 8px; background: var(--panel);
+            backdrop-filter: blur(10px); border: 1px solid var(--border);
+            font-weight: 700; font-size: 0.9rem; animation: slideToast 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            display: flex; align-items: center; gap: 12px;
+        }
+        @keyframes slideToast { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast.win { border-left: 5px solid var(--green); color: var(--green); }
+        .toast.loss { border-left: 5px solid var(--red); color: var(--red); }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
     <aside class="sidebar">
-        <div class="sidebar-title">LIVE CHALLENGE FEED</div>
-        <div id="feed-container">
-            </div>
+        <div class="feed-title">REAL-TIME CHALLENGE LOG</div>
+        <div id="feed"></div>
     </aside>
 
-    <main class="main-container">
+    <div class="main">
         <header>
             <div class="logo">CUP<span>LEGENDS</span></div>
-            <div class="balance-pill" id="balance">150 191.57 FUN</div>
+            <div class="balance-box" id="balance">150 191.57 FUN</div>
         </header>
 
         <div id="stage">
-            <div id="target-orb" class="orb"></div>
-
-            <div class="cup-wrapper" id="cup0" style="left: calc(50% - 350px);">
+            <div id="the-ball" class="ball"></div>
+            <div class="cup-item" id="c0" style="left: calc(50% - 320px);">
                 <div class="cup-num">1</div>
-                <div class="pro-cup"><div class="beast-mark"></div></div>
+                <div class="cup-visual"><div class="beast-seal"></div></div>
             </div>
-
-            <div class="cup-wrapper" id="cup1" style="left: calc(50% - 70px);">
+            <div class="cup-item" id="c1" style="left: calc(50% - 65px);">
                 <div class="cup-num">2</div>
-                <div class="pro-cup"><div class="beast-mark"></div></div>
+                <div class="cup-visual"><div class="beast-seal"></div></div>
             </div>
-
-            <div class="cup-wrapper" id="cup2" style="left: calc(50% + 210px);">
+            <div class="cup-item" id="c2" style="left: calc(50% + 190px);">
                 <div class="cup-num">3</div>
-                <div class="pro-cup"><div class="beast-mark"></div></div>
+                <div class="cup-visual"><div class="beast-seal"></div></div>
             </div>
         </div>
 
-        <div class="dashboard">
-            <div class="bet-control">
-                <span class="label">Profit Multiplier</span>
-                <div class="input-box" style="color: var(--win-green);">×3.00</div>
+        <div class="controls">
+            <div class="control-group">
+                <div class="label">Multiplier</div>
+                <div class="input-display" style="color:var(--green)">x3.00</div>
             </div>
-
             <button class="go-btn" id="go-btn" onclick="Game.play()">GO!</button>
-
-            <div class="bet-control">
-                <span class="label">Current Bet</span>
-                <div class="input-box">1.50 FUN</div>
+            <div class="control-group">
+                <div class="label">Bet Amount</div>
+                <div class="input-display">1.50 FUN</div>
             </div>
         </div>
-    </main>
-
-    <div id="overlay">
-        <div class="result-title" id="res-msg">FAILED</div>
-        <div class="result-sub">QUANTUM SWAP ACTIVE: BALL RELOCATED</div>
-        <button class="btn-action" style="padding: 15px 50px; cursor:pointer; font-weight:900;" onclick="Game.reset()">NEXT ROUND</button>
     </div>
 
+    <div id="notif-container"></div>
+
     <script>
+        // --- AUDIO ENGINE (Synthesized) ---
+        const AudioFX = {
+            ctx: new (window.AudioContext || window.webkitAudioContext)(),
+            play(freq, type, dur, vol = 0.1) {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + dur);
+            },
+            click() { this.play(800, 'sine', 0.1); },
+            whoosh() { this.play(150, 'triangle', 0.2, 0.05); },
+            win() { 
+                this.play(523.25, 'sine', 0.1); 
+                setTimeout(() => this.play(659.25, 'sine', 0.1), 100);
+                setTimeout(() => this.play(783.99, 'sine', 0.3), 200);
+            },
+            loss() { this.play(100, 'sawtooth', 0.4, 0.05); }
+        };
+
         const Game = (function() {
             const state = {
                 ballSlot: 0,
                 isBusy: false,
                 cupOrder: [0, 1, 2],
                 balance: 150191.57,
-                positions: [0, 0, 0]
+                positions: [0,0,0]
             };
 
+            function notify(msg, type) {
+                const container = document.getElementById('notif-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `<span>${type === 'win' ? '✅' : '❌'}</span> ${msg}`;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 4000);
+            }
+
             // Fake Live Feed
-            const names = ["User_88", "GamerX", "Satoshi99", "BeastFan", "Hidden_Whale"];
             setInterval(() => {
-                const feed = document.getElementById('feed-container');
-                const div = document.createElement('div');
-                div.className = 'live-bet';
-                div.innerHTML = `<span>${names[Math.floor(Math.random()*5)]}</span><span style="color:#ef4444">-1.50 FUN</span>`;
-                feed.prepend(div);
-                if(feed.children.length > 8) feed.lastChild.remove();
-            }, 4000);
+                const feed = document.getElementById('feed');
+                const win = Math.random() > 0.8;
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${win ? 'win' : ''}`;
+                entry.innerHTML = `<span>User_${Math.floor(Math.random()*999)}</span> <span>${win ? '+' : '-'}${win ? '4.50' : '1.50'} FUN</span>`;
+                feed.prepend(entry);
+                if(feed.children.length > 10) feed.lastChild.remove();
+            }, 3000);
 
             return {
                 play: function() {
                     if (state.isBusy) return;
+                    AudioFX.click();
                     state.isBusy = true;
                     document.getElementById('go-btn').disabled = true;
 
                     state.balance -= 1.50;
                     document.getElementById('balance').innerText = state.balance.toLocaleString('en-US', {minimumFractionDigits: 2}) + " FUN";
 
-                    const orb = document.getElementById('target-orb');
-                    const cups = [document.getElementById('cup0'), document.getElementById('cup1'), document.getElementById('cup2')];
-                    
-                    // 1. Initial Reveal
-                    state.ballSlot = Math.floor(Math.random() * 3);
+                    const ball = document.getElementById('the-ball');
+                    const cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
                     state.positions = cups.map(c => c.offsetLeft);
-                    
-                    gsap.set(orb, { left: state.positions[state.ballSlot] + 55, display: 'block', bottom: 120 });
-                    gsap.to(".pro-cup", { y: -200, duration: 0.7, ease: "power4.out", stagger: 0.1 });
 
-                    // 2. Start Rigged Shuffle
+                    // 1. Initial Position
+                    state.ballSlot = Math.floor(Math.random() * 3);
+                    gsap.set(ball, { left: state.positions[state.ballSlot] + 50, display: 'block', bottom: 100 });
+                    
+                    // 2. Reveal then Shuffle
+                    gsap.to(".cup-visual", { y: -160, duration: 0.6, ease: "power2.out", stagger: 0.1 });
+                    
                     setTimeout(() => {
-                        gsap.to(".pro-cup", { y: 0, duration: 0.5, onComplete: () => this.shuffle() });
-                    }, 1500);
+                        gsap.to(".cup-visual", { y: 0, duration: 0.4, onComplete: () => this.shuffle() });
+                    }, 1200);
                 },
 
                 shuffle: async function() {
-                    document.getElementById('target-orb').style.display = 'none';
-                    const cups = [document.getElementById('cup0'), document.getElementById('cup1'), document.getElementById('cup2')];
+                    document.getElementById('the-ball').style.display = 'none';
+                    const cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
                     
-                    for (let i = 0; i < 60; i++) {
+                    for (let i = 0; i < 50; i++) {
                         let a = Math.floor(Math.random() * 3);
                         let b; do { b = Math.floor(Math.random() * 3); } while (a === b);
-
-                        const speed = Math.max(0.03, 0.25 - (i * 0.006));
+                        
+                        const speed = Math.max(0.05, 0.22 - (i * 0.005));
+                        AudioFX.whoosh();
                         
                         const pA = state.positions[state.cupOrder.indexOf(a)];
                         const pB = state.positions[state.cupOrder.indexOf(b)];
@@ -314,46 +268,57 @@
                         const iB = state.cupOrder.indexOf(b);
                         [state.cupOrder[iA], state.cupOrder[iB]] = [state.cupOrder[iB], state.cupOrder[iA]];
                     }
-
                     this.enableSelection();
                 },
 
                 enableSelection: function() {
-                    gsap.to(".cup-num", { opacity: 1, color: "var(--accent-cyan)" });
-                    const cups = [document.getElementById('cup0'), document.getElementById('cup1'), document.getElementById('cup2')];
+                    gsap.to(".cup-num", { opacity: 1, color: "var(--cyan)" });
+                    const cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
                     cups.forEach((c, i) => {
                         c.onclick = () => this.reveal(i);
                     });
+                    state.isBusy = false;
                 },
 
-                reveal: function(clickedIndex) {
-                    // THE RIG: Milliseconds before the reveal, the ball moves
-                    // Logic: If user is right, pick any other cup.
-                    if (clickedIndex === state.ballSlot) {
-                        state.ballSlot = (clickedIndex + 1) % 3;
+                reveal: function(choice) {
+                    if(state.isBusy) return;
+                    state.isBusy = true;
+
+                    // THE RIG: 85% Chance you lose.
+                    const forceLoss = Math.random() < 0.85;
+                    if (forceLoss && choice === state.ballSlot) {
+                        state.ballSlot = (choice + 1) % 3; // Shift ball away
                     }
 
-                    const orb = document.getElementById('target-orb');
-                    const cups = [document.getElementById('cup0'), document.getElementById('cup1'), document.getElementById('cup2')];
-                    const finalX = state.positions[state.cupOrder.indexOf(state.ballSlot)] + 55;
+                    const won = (choice === state.ballSlot);
+                    const ball = document.getElementById('the-ball');
+                    const finalX = state.positions[state.cupOrder.indexOf(state.ballSlot)] + 50;
                     
-                    gsap.set(orb, { left: finalX, display: 'block' });
-                    gsap.to(".pro-cup", { y: -200, duration: 0.8, ease: "back.out", stagger: 0.05 });
+                    gsap.set(ball, { left: finalX, display: 'block' });
+                    gsap.to(".cup-visual", { y: -160, duration: 0.8, ease: "back.out", stagger: 0.05 });
                     gsap.to(".cup-num", { opacity: 0 });
 
                     setTimeout(() => {
-                        const overlay = document.getElementById('overlay');
-                        overlay.style.display = 'flex';
-                        document.getElementById('res-msg').style.color = "#ef4444";
-                    }, 1500);
+                        if (won) {
+                            AudioFX.win();
+                            state.balance += 4.50;
+                            notify("JACKPOT! +4.50 FUN Credited.", "win");
+                        } else {
+                            AudioFX.loss();
+                            notify("FAILED. Try again to recover losses.", "loss");
+                        }
+                        document.getElementById('balance').innerText = state.balance.toLocaleString('en-US', {minimumFractionDigits: 2}) + " FUN";
+                        this.reset();
+                    }, 1000);
                 },
 
                 reset: function() {
-                    document.getElementById('overlay').style.display = 'none';
-                    document.getElementById('go-btn').disabled = false;
-                    gsap.set(".pro-cup", { y: 0 });
-                    document.getElementById('target-orb').style.display = 'none';
-                    state.isBusy = false;
+                    setTimeout(() => {
+                        gsap.to(".cup-visual", { y: 0, duration: 0.5 });
+                        document.getElementById('the-ball').style.display = 'none';
+                        document.getElementById('go-btn').disabled = false;
+                        state.isBusy = false;
+                    }, 1000);
                 }
             };
         })();
