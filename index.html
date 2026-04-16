@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CUP LEGENDS | FAIR ELITE</title>
+    <title>CUP LEGENDS | SOVEREIGN RANKED</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
@@ -32,11 +32,12 @@
         
         .tab-row { display: flex; gap: 8px; margin-bottom: 10px; background: #080808; padding: 4px; border-radius: 6px; }
         .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: #444; font-size: 0.7rem; font-weight: 900; cursor: pointer; border-radius: 4px; transition: 0.2s; }
-        .tab-btn.active { color: var(--gold); background: #111; }
+        .tab-btn.active { color: var(--gold); background: #111; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
 
-        .list-container { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
-        .entry { background: var(--panel); padding: 12px; border-radius: 6px; font-size: 0.75rem; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #1a1a1a; }
+        .list-container { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; scrollbar-width: none; }
+        .entry { background: var(--panel); padding: 12px; border-radius: 6px; font-size: 0.75rem; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #1a1a1a; transition: 0.3s; }
         .entry.win { border-left-color: var(--green); background: rgba(0, 255, 149, 0.02); }
+        .entry.player { border-left-color: var(--cyan); background: rgba(0, 229, 255, 0.05); outline: 1px solid rgba(0, 229, 255, 0.2); }
 
         /* --- MAIN STAGE --- */
         .main-stage { position: relative; display: flex; flex-direction: column; background: radial-gradient(circle at 50% 120%, #0f1425 0%, #020308 100%); }
@@ -46,21 +47,18 @@
         
         .header-actions { display: flex; gap: 15px; align-items: center; }
         .btn-header { background: #111; color: #fff; border: 1px solid #222; padding: 10px 16px; border-radius: 6px; font-size: 0.75rem; font-weight: 900; cursor: pointer; transition: 0.2s; }
-        .btn-header:hover { border-color: var(--gold); transform: translateY(-2px); }
-
-        .balance-pill { background: #000; padding: 12px 24px; border-radius: 10px; border: 1px solid var(--gold); color: var(--gold-bright); font-family: 'JetBrains Mono'; font-size: 1.1rem; }
+        
+        .balance-pill { background: #000; padding: 12px 24px; border-radius: 10px; border: 1px solid var(--gold); color: var(--gold-bright); font-family: 'JetBrains Mono'; font-size: 1.1rem; box-shadow: 0 0 20px rgba(197, 160, 89, 0.15); }
 
         #arena { flex-grow: 1; position: relative; display: flex; justify-content: center; align-items: center; perspective: 2000px; }
         .floor { position: absolute; bottom: 0; width: 100%; height: 40%; background: radial-gradient(ellipse at center, rgba(22, 26, 46, 0.8) 0%, #020308 80%); transform: rotateX(65deg); border-top: 1px solid rgba(255,255,255,0.03); }
         
-        /* --- PRO CUP UI --- */
         .cup-node { position: absolute; width: 160px; bottom: 130px; z-index: 20; cursor: pointer; }
         .cup-mesh { 
             width: 140px; height: 185px; margin: 0 auto; 
             background: linear-gradient(135deg, #e63946 0%, #7b0d1e 100%); 
             clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%); 
             position: relative; border-bottom: 8px solid #2b060c;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
         }
         .cup-mesh::before { content: ''; position: absolute; top: 0; width: 100%; height: 10px; background: linear-gradient(to right, var(--gold), var(--gold-bright), var(--gold)); }
         
@@ -69,23 +67,12 @@
 
         /* --- CONTROLS --- */
         .footer { height: 180px; background: #000; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 200px 1fr; align-items: center; padding: 0 60px; }
-        .control-panel { display: flex; flex-direction: column; gap: 15px; }
+        .control-panel { display: flex; flex-direction: column; gap: 12px; }
         .input-row { display: flex; align-items: center; background: #080a0f; border-radius: 6px; border: 1px solid #1a1a1a; overflow: hidden; width: fit-content; }
-        
-        .btn-adjust { 
-            width: 44px; height: 44px; background: #111; border: none; color: #fff; font-size: 1.3rem; 
-            cursor: pointer; border-right: 1px solid #1a1a1a; transition: 0.15s; 
-        }
-        .btn-adjust:hover:not(:disabled) { color: var(--gold); background: #1a1a1a; }
+        .btn-adjust { width: 44px; height: 44px; background: #111; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; transition: 0.15s; }
+        .btn-adjust:hover { background: #222; color: var(--gold); }
         .val-display { width: 100px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; color: #fff; font-size: 1.1rem; }
         
-        .chip-row { display: flex; gap: 10px; }
-        .chip { 
-            padding: 10px 18px; border-radius: 6px; background: #0d1117; border: 1px solid #222; 
-            font-size: 0.75rem; font-weight: 900; color: #555; cursor: pointer; transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        }
-        .chip.active { color: #fff; border: 2px solid var(--cyan); background: rgba(0, 229, 255, 0.1); }
-
         .go-btn { 
             width: 130px; height: 130px; border-radius: 50%; background: #fff; color: #000; 
             border: 12px solid #161a24; font-weight: 900; font-size: 1.6rem; cursor: pointer; 
@@ -94,17 +81,7 @@
         .go-btn:hover:not(:disabled) { transform: scale(1.1); background: var(--gold); }
         .go-btn:disabled { opacity: 0.05; filter: grayscale(1); }
 
-        .toggle-pill { 
-            padding: 8px 16px; border-radius: 50px; background: #111; border: 1px solid #222; 
-            font-size: 0.65rem; font-weight: 900; color: #444; cursor: pointer; transition: 0.2s; 
-        }
-        .toggle-pill.active { color: #fff; border-color: var(--cyan); }
-
-        /* --- MODALS --- */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 2000; text-align: center; }
-        .modal-box { max-width: 500px; padding: 40px; }
-        .hash-code { background: #000; padding: 20px; border-radius: 8px; font-family: 'JetBrains Mono'; font-size: 0.8rem; color: #555; border: 1px solid #222; word-break: break-all; }
-
+        /* --- PROMPTS --- */
         #gamble-prompt { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
         .btn-gamble { padding: 18px 45px; border-radius: 10px; font-weight: 900; cursor: pointer; margin: 10px; border: none; font-size: 1.1rem; }
 
@@ -119,8 +96,8 @@
 
     <aside class="sidebar">
         <div class="tab-row">
-            <button class="tab-btn active" onclick="UI.setTab('feed', this)">FEED</button>
-            <button class="tab-btn" onclick="UI.setTab('rank', this)">RANKING</button>
+            <button class="tab-btn active" id="tab-feed" onclick="UI.setTab('feed')">FEED</button>
+            <button class="tab-btn" id="tab-rank" onclick="UI.setTab('rank')">RANKING</button>
         </div>
         <div class="label-gold" id="list-title">Live Activity</div>
         <div class="list-container" id="side-list"></div>
@@ -134,7 +111,7 @@
         <header>
             <div class="logo">CUP<span>LEGENDS</span></div>
             <div class="header-actions">
-                <button class="btn-header" onclick="UI.modal('fair-modal', true)">VERIFY</button>
+                <button class="btn-header" onclick="UI.toggleFair()">VERIFY</button>
                 <button class="btn-header" style="background: var(--green); color:#000; border:none;" onclick="Rewards.claim()">DAILY REWARD</button>
                 <div class="balance-pill" id="balance-ui">150,191.57 FUN</div>
             </div>
@@ -167,8 +144,8 @@
                     <button class="btn-adjust" style="border-right:none;" onclick="Game.adjBet(1)">+</button>
                 </div>
                 <div style="display:flex; gap:8px;">
-                    <button id="turbo-btn" class="toggle-pill" onclick="Game.toggleTurbo()">TURBO: OFF</button>
-                    <button id="auto-btn" class="toggle-pill" onclick="Game.toggleAuto()">AUTO: OFF</button>
+                    <button id="turbo-btn" class="btn-header" style="font-size:0.6rem; padding:6px 12px;" onclick="Game.toggleTurbo()">TURBO: OFF</button>
+                    <button id="auto-btn" class="btn-header" style="font-size:0.6rem; padding:6px 12px;" onclick="Game.toggleAuto()">AUTO: OFF</button>
                 </div>
             </div>
 
@@ -177,26 +154,12 @@
             </div>
 
             <div style="text-align:right;">
-                <div class="label-gold">Risk Multiplier</div>
-                <div class="chip-row" style="justify-content:flex-end; margin-top:8px;">
-                    <div class="chip active" onclick="Game.setMult(3, this)">x3</div>
-                    <div class="chip" onclick="Game.setMult(5, this)">x5</div>
-                    <div class="chip" onclick="Game.setMult(10, this)">x10</div>
-                </div>
-                <div id="payout-ui" style="margin-top:15px; font-size:1.6rem; color:var(--green); font-weight:900; font-family:'JetBrains Mono';">13.50</div>
+                <div class="label-gold">Payout Multiplier</div>
+                <div style="margin-top:8px; font-size:1.6rem; color:var(--green); font-weight:900; font-family:'JetBrains Mono';">x3.00</div>
+                <div id="payout-ui" style="font-size:0.8rem; color:#444;">13.50 Potential</div>
             </div>
         </div>
     </main>
-
-    <div id="fair-modal" class="modal">
-        <div class="modal-box">
-            <h2 style="color:var(--gold); font-size: 2rem;">PROVABLY FAIR</h2>
-            <p style="color:#777; margin-bottom: 30px;">Outcome hashed before choice. System remains skill-based with no real-time adjustment.</p>
-            <div class="label-gold" style="margin-bottom:10px;">SHA-256 Round Hash</div>
-            <div class="hash-code" id="modal-hash">Waiting for seed...</div>
-            <button class="btn-header" style="margin-top:40px; padding: 15px 40px;" onclick="UI.modal('fair-modal', false)">CONTINUE</button>
-        </div>
-    </div>
 
     <div id="toast-bin"></div>
 
@@ -218,16 +181,17 @@
 
         const Game = (function() {
             const S = { 
-                balance: 150191.57, bet: 4.50, mult: 3, busy: false, 
+                playerName: "Alex Davitt",
+                balance: parseFloat(localStorage.getItem('balance')) || 150191.57,
+                bet: 4.50, mult: 3, busy: false, 
                 turbo: false, auto: false, ballSlot: 0, order: [0, 1, 2], winAmt: 0 
             };
 
             return {
-                adjBet: (v) => { if(S.busy) return; S.bet = Math.max(1, S.bet + v); document.getElementById('bet-ui').innerText = S.bet.toFixed(2); Game.updPayout(); FX.tick(); },
-                setMult: (m, el) => { if(S.busy) return; S.mult = m; document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); Game.updPayout(); FX.tick(); },
-                updPayout: () => document.getElementById('payout-ui').innerText = (S.bet * S.mult).toFixed(2),
-                toggleTurbo: () => { S.turbo = !S.turbo; document.getElementById('turbo-btn').classList.toggle('active', S.turbo); document.getElementById('turbo-btn').innerText = `TURBO: ${S.turbo?'ON':'OFF'}`; },
-                toggleAuto: () => { S.auto = !S.auto; document.getElementById('auto-btn').classList.toggle('active', S.auto); document.getElementById('go-btn').classList.toggle('auto', S.auto); document.getElementById('auto-btn').innerText = `AUTO: ${S.auto?'ON':'OFF'}`; if(S.auto && !S.busy) Game.play(); },
+                state: S,
+                adjBet: (v) => { if(S.busy) return; S.bet = Math.max(1, S.bet + v); document.getElementById('bet-ui').innerText = S.bet.toFixed(2); document.getElementById('payout-ui').innerText = (S.bet * S.mult).toFixed(2); FX.tick(); },
+                toggleTurbo: () => { S.turbo = !S.turbo; document.getElementById('turbo-btn').innerText = `TURBO: ${S.turbo?'ON':'OFF'}`; },
+                toggleAuto: () => { S.auto = !S.auto; document.getElementById('auto-btn').innerText = `AUTO: ${S.auto?'ON':'OFF'}`; if(S.auto && !S.busy) Game.play(); },
                 
                 play: function() {
                     if(S.busy || S.balance < S.bet) { S.auto = false; return; }
@@ -236,7 +200,6 @@
                     
                     const hash = Array(40).fill(0).map(() => Math.random().toString(36)[2]).join('');
                     document.getElementById('side-hash').innerText = hash;
-                    document.getElementById('modal-hash').innerText = hash;
 
                     const cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
                     const pos = cups.map(c => c.offsetLeft);
@@ -275,19 +238,12 @@
                 reveal: function(choice) {
                     if(document.getElementById('go-btn').disabled === false && !S.auto) return;
                     S.busy = true;
-                    // REMOVED RIGGED LOGIC - GAME IS NOW FAIR
                     
                     const win = (choice === S.ballSlot);
                     const pos = [document.getElementById('c0').offsetLeft, document.getElementById('c1').offsetLeft, document.getElementById('c2').offsetLeft];
                     gsap.set("#ball", { left: pos[S.order.indexOf(S.ballSlot)]+48, display:'block' });
 
-                    // STAGGERED REVEAL
-                    gsap.to(".cup-mesh", { 
-                        y: -190, 
-                        duration: S.turbo ? 0.1 : 0.6, 
-                        ease: "back.out(1.5)", 
-                        stagger: S.turbo ? 0.05 : 0.2 
-                    });
+                    gsap.to(".cup-mesh", { y: -190, duration: S.turbo ? 0.1 : 0.6, ease: "back.out(1.5)", stagger: S.turbo ? 0.05 : 0.2 });
 
                     setTimeout(() => {
                         if(win) {
@@ -295,12 +251,14 @@
                             if(S.auto) {
                                 S.balance += S.winAmt;
                                 UI.toast(`SUCCESS +${S.winAmt.toFixed(2)}`, 'win');
+                                UI.addFeedEntry(S.playerName, S.winAmt, true);
                                 this.upd(); this.cleanup();
                             } else {
                                 document.getElementById('gamble-prompt').style.display = 'flex';
                             }
                         } else {
                             UI.toast("FAILED", "loss");
+                            UI.addFeedEntry(S.playerName, S.bet, false);
                             FX.loss();
                             this.upd(); this.cleanup();
                         }
@@ -315,13 +273,16 @@
                             S.balance += (S.winAmt * 2);
                             FX.win();
                             UI.toast(`DOUBLE SUCCESS +${(S.winAmt * 2).toFixed(2)}`, 'win');
+                            UI.addFeedEntry(S.playerName, S.winAmt * 2, true);
                         } else {
                             FX.loss();
                             UI.toast("LOSS", 'loss');
+                            UI.addFeedEntry(S.playerName, S.winAmt, false);
                         }
                     } else {
                         S.balance += S.winAmt;
                         UI.toast(`COLLECTED +${S.winAmt.toFixed(2)}`, 'win');
+                        UI.addFeedEntry(S.playerName, S.winAmt, true);
                     }
                     this.upd(); this.cleanup();
                 },
@@ -337,49 +298,89 @@
                 },
 
                 upd: () => {
+                    localStorage.setItem('balance', S.balance);
                     document.getElementById('balance-ui').innerText = S.balance.toLocaleString('en-US', {minimumFractionDigits:2}) + " FUN";
+                    UI.updateLeaderboard();
                     UI.refresh();
                 }
             };
         })();
 
         const UI = {
-            tab: 'feed',
-            setTab(t, el) {
-                this.tab = t;
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                el.classList.add('active');
+            currentTab: 'feed',
+            feed: [],
+            leaderboard: JSON.parse(localStorage.getItem('leaderboard')) || [
+                {n: 'SlotGod', b: 2450000}, {n: 'HiddenWhale', b: 820000}, {n: 'Satoshi', b: 520000}, {n: 'BeastBot', b: 310000}
+            ],
+
+            setTab(t) {
+                this.currentTab = t;
+                document.getElementById('tab-feed').className = t === 'feed' ? 'tab-btn active' : 'tab-btn';
+                document.getElementById('tab-rank').className = t === 'rank' ? 'tab-btn active' : 'tab-btn';
                 document.getElementById('list-title').innerText = t === 'feed' ? 'Live Activity' : 'Top Hall of Fame';
                 this.refresh();
             },
-            modal(id, s) { document.getElementById(id).style.display = s ? 'flex' : 'none'; },
+
+            addFeedEntry(name, amount, isWin) {
+                this.feed.unshift({n: name, a: amount, w: isWin});
+                if(this.feed.length > 10) this.feed.pop();
+            },
+
+            updateLeaderboard() {
+                const player = Game.state.playerName;
+                const balance = Game.state.balance;
+                
+                let found = false;
+                this.leaderboard.forEach(entry => {
+                    if(entry.n === player) {
+                        entry.b = balance;
+                        found = true;
+                    }
+                });
+                
+                if(!found) this.leaderboard.push({n: player, b: balance});
+                
+                this.leaderboard.sort((a, b) => b.b - a.b);
+                this.leaderboard = this.leaderboard.slice(0, 15);
+                localStorage.setItem('leaderboard', JSON.stringify(this.leaderboard));
+            },
+
             toast(m, type) {
                 const b = document.getElementById('toast-bin');
                 const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = m;
                 b.appendChild(t); setTimeout(() => t.remove(), 3000);
             },
+
             refresh() {
                 const list = document.getElementById('side-list');
                 list.innerHTML = '';
-                if(this.tab === 'feed') {
-                    for(let i=0; i<8; i++) {
+                
+                if(this.currentTab === 'feed') {
+                    // Show actual player feed mixed with fake activity
+                    this.feed.forEach(entry => {
+                        list.innerHTML += `<div class="entry ${entry.w?'win':''} player"><span>${entry.n}</span> <span>${entry.w?'+':'-'}${entry.a.toFixed(2)}</span></div>`;
+                    });
+                    for(let i=0; i < (8 - this.feed.length); i++) {
                         const win = Math.random() > 0.85;
                         list.innerHTML += `<div class="entry ${win?'win':''}"><span>User_${Math.floor(Math.random()*999)}</span> <span>${win?'+':'-'}${(Math.random()*25).toFixed(2)}</span></div>`;
                     }
                 } else {
-                    const tops = [{n: 'CasinoGod', b: 2450000}, {n: 'MrBeast_Fan', b: 840000}, {n: 'HiddenWhale', b: 520000}, {n: 'Satoshi', b: 210000}];
-                    tops.forEach(m => {
-                        list.innerHTML += `<div class="entry win"><span>${m.n}</span> <span>${m.b.toLocaleString()}</span></div>`;
+                    this.leaderboard.forEach((m, i) => {
+                        const isPlayer = m.n === Game.state.playerName;
+                        list.innerHTML += `<div class="entry win ${isPlayer?'player':''}"><span>${i+1}. ${m.n}</span> <span>${m.b.toLocaleString()}</span></div>`;
                     });
                 }
             }
         };
 
         const Rewards = {
-            claim() { UI.toast("BONUS CLAIMED +500", "win"); Game.balance += 500; Game.upd(); FX.win(); }
+            claim() { UI.toast("BONUS CLAIMED +500", "win"); Game.state.balance += 500; Game.upd(); FX.win(); }
         };
 
+        // Initial setup
+        UI.updateLeaderboard();
         UI.refresh();
+        Game.upd();
     </script>
 </body>
 </html>
