@@ -14,7 +14,7 @@
             --cyan: #00e5ff;
             --red: #ff2e2e;
             --green: #00ff95;
-            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.08);
         }
 
         * { box-sizing: border-box; -webkit-user-select: none; user-select: none; outline: none; }
@@ -26,7 +26,7 @@
         }
 
         /* --- SIDEBAR --- */
-        .sidebar { background: #000; border-right: 1px solid var(--glass); padding: 25px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
+        .sidebar { background: #000; border-right: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; gap: 20px; z-index: 100; }
         .label-gold { font-size: 0.65rem; color: var(--gold); letter-spacing: 2px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; }
         
         .history-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
@@ -39,7 +39,13 @@
         header { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; z-index: 50; }
         .logo { font-weight: 900; font-size: 1.5rem; font-style: italic; }
         .logo span { color: var(--gold); }
-        .daily-trigger { background: var(--green); color: #000; border: none; padding: 8px 15px; border-radius: 4px; font-weight: 900; cursor: pointer; font-size: 0.7rem; box-shadow: 0 0 15px rgba(0,255,149,0.3); }
+        
+        .daily-trigger { 
+            background: var(--green); color: #000; border: none; padding: 10px 20px; 
+            border-radius: 4px; font-weight: 900; cursor: pointer; font-size: 0.75rem; 
+            box-shadow: 0 0 15px rgba(0,255,149,0.3); transition: 0.3s;
+        }
+        .daily-trigger:disabled { background: #333; color: #666; cursor: not-allowed; box-shadow: none; }
 
         #arena { flex-grow: 1; position: relative; display: flex; justify-content: center; align-items: center; perspective: 1200px; }
         .floor { position: absolute; bottom: 0; width: 100%; height: 40%; background: radial-gradient(ellipse at center, #161a2e 0%, #020308 80%); transform: rotateX(60deg); }
@@ -48,36 +54,32 @@
         .cup-mesh::before { content: ''; position: absolute; top: 0; width: 100%; height: 8px; background: var(--gold); }
         .ball { position: absolute; width: 40px; height: 40px; background: radial-gradient(circle at 30% 30%, #fff, #bdc3c7); border-radius: 50%; display: none; bottom: 125px; z-index: 10; }
 
-        /* --- FOOTER UI (MATCHING SCREENSHOT) --- */
+        /* --- FOOTER UI --- */
         .footer { height: 180px; background: #000; border-top: 1px solid var(--border); display: flex; align-items: center; padding: 0 40px; justify-content: space-between; position: relative; }
         .control-stack { display: flex; flex-direction: column; gap: 15px; }
-        
-        .bet-input-row { display: flex; align-items: center; gap: 0; background: #080a0f; border-radius: 4px; border: 1px solid #1a1a1a; overflow: hidden; width: fit-content;}
+        .bet-input-row { display: flex; align-items: center; background: #080a0f; border-radius: 4px; border: 1px solid #1a1a1a; overflow: hidden; }
         .adj-btn { width: 40px; height: 40px; background: #111; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; border-right: 1px solid #1a1a1a; }
-        .bet-val { width: 100px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 1.2rem; color: #fff; padding: 0 10px; }
-        
-        .risk-row { display: flex; gap: 8px; }
-        .chip { padding: 6px 14px; border-radius: 4px; background: #0d1117; border: 1px solid #222; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: #666; transition: 0.2s; }
+        .bet-val { width: 100px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 1.2rem; color: #fff; }
+        .chip { padding: 6px 14px; border-radius: 4px; background: #0d1117; border: 1px solid #222; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: #666; }
         .chip.active { border: 2px solid var(--cyan); color: var(--cyan); }
+        .go-btn { width: 110px; height: 110px; border-radius: 50%; background: #fff; color: #000; border: 12px solid #161a24; font-weight: 900; font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
 
-        .go-wrap { position: relative; }
-        .go-btn {
-            width: 110px; height: 110px; border-radius: 50%; background: #fff; color: #000; 
-            border: 12px solid #161a24; font-weight: 900; font-size: 1.5rem; cursor: pointer;
-            transition: 0.2s; position: relative; z-index: 2;
-        }
-        .go-btn:hover:not(:disabled) { transform: scale(1.05); }
-        .go-btn:disabled { opacity: 0.1; }
-
-        /* --- WHEEL UI --- */
+        /* --- WHEEL MODAL --- */
         #wheel-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 2000; }
-        .wheel-box { position: relative; width: 480px; height: 480px; border: 10px solid #111; border-radius: 50%; box-shadow: 0 0 50px rgba(0,0,0,1), 0 0 20px var(--gold); }
-        #wheel-svg { width: 100%; height: 100%; filter: drop-shadow(0 0 5px rgba(255,255,255,0.1)); }
-        .pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 30px; height: 40px; background: var(--gold); clip-path: polygon(0 0, 100% 0, 50% 100%); z-index: 10; filter: drop-shadow(0 0 10px #000); }
+        .wheel-box { position: relative; width: 500px; height: 500px; border: 10px solid #111; border-radius: 50%; box-shadow: 0 0 50px rgba(0,0,0,1), 0 0 20px var(--gold); }
+        #wheel-svg { width: 100%; height: 100%; }
+        .pointer { 
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%) rotate(0deg); 
+            width: 35px; height: 45px; background: var(--gold); 
+            clip-path: polygon(0 0, 100% 0, 50% 100%); z-index: 10; 
+            transform-origin: top center;
+        }
         
         #toast-bin { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; }
         .toast { padding: 15px 40px; border-radius: 50px; background: #000; border: 1px solid var(--gold); font-weight: 900; animation: tIn 0.3s forwards; }
         @keyframes tIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .timer-text { color: #666; font-size: 0.8rem; margin-top: 10px; font-family: 'JetBrains Mono'; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -91,8 +93,11 @@
         <header>
             <div class="logo">CUP<span>LEGENDS</span></div>
             <div style="display:flex;gap:15px;align-items:center;">
-                <button class="daily-trigger" onclick="Rewards.open()">DAILY REWARD</button>
-                <div class="balance-pill" id="balance-ui" style="background:#000;padding:10px;border:1px solid var(--gold);font-family:'JetBrains Mono';color:var(--gold);">150,191.57 FUN</div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                    <button id="daily-btn-header" class="daily-trigger" onclick="Rewards.open()">DAILY SPIN</button>
+                    <div id="countdown-header" class="timer-text"></div>
+                </div>
+                <div class="balance-pill" id="balance-ui" style="background:#000;padding:12px;border:1px solid var(--gold);font-family:'JetBrains Mono';color:var(--gold);min-width:180px;text-align:right;">150,191.57 FUN</div>
             </div>
         </header>
 
@@ -124,23 +129,19 @@
                     </div>
                 </div>
             </div>
-            
-            <div style="flex-grow:1; margin:0 40px; height:40px; background:rgba(255,255,255,0.02); border-radius:4px;"></div>
-
-            <div class="go-wrap">
-                <button class="go-btn" id="go-btn" onclick="Game.play()">GO!</button>
-            </div>
+            <button class="go-btn" id="go-btn" onclick="Game.play()">GO!</button>
         </div>
     </main>
 
     <div id="wheel-modal">
         <h1 style="color:var(--gold);font-weight:900;letter-spacing:5px;">DAILY SPIN</h1>
         <div class="wheel-box">
-            <div class="pointer"></div>
+            <div id="wheel-ticker" class="pointer"></div>
             <svg id="wheel-svg" viewBox="0 0 100 100"></svg>
         </div>
-        <button id="spin-btn" class="go-btn" style="margin-top:40px;height:70px;width:180px;border-radius:8px;" onclick="Rewards.spin()">SPIN</button>
-        <p onclick="Rewards.close()" style="color:#333;margin-top:20px;cursor:pointer;">CLOSE</p>
+        <button id="spin-btn-modal" class="go-btn" style="margin-top:40px;height:70px;width:180px;border-radius:8px;" onclick="Rewards.spin()">SPIN</button>
+        <div id="countdown-modal" class="timer-text" style="font-size:1.2rem; color:var(--red); margin-top:15px;"></div>
+        <p onclick="Rewards.close()" style="color:#444;margin-top:20px;cursor:pointer;">CLOSE</p>
     </div>
 
     <div id="toast-bin"></div>
@@ -156,13 +157,12 @@
                 o.connect(g); g.connect(this.ctx.destination);
                 o.start(); o.stop(this.ctx.currentTime + d);
             },
-            tick() { this.play(800, 'sine', 0.05); },
+            tick() { this.play(800, 'sine', 0.05, 0.05); },
             win() { this.play(523, 'sine', 0.2); setTimeout(()=>this.play(659, 'sine', 0.2), 100); }
         };
 
         const Game = (function() {
             const S = { balance: 150191.57, bet: 4.50, risk: 3, busy: false, order:[0,1,2], ball:0 };
-
             return {
                 adjBet: (v) => { if(S.busy) return; S.bet = Math.max(0.5, S.bet + v); document.getElementById('bet-ui').innerText = S.bet.toFixed(2); AudioFX.tick(); },
                 setRisk: (r, el) => { if(S.busy) return; S.risk = r; document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); AudioFX.tick(); },
@@ -170,11 +170,10 @@
                     if(S.busy || S.balance < S.bet) return;
                     S.busy = true; document.getElementById('go-btn').disabled = true;
                     S.balance -= S.bet; this.upd();
-                    const b = document.getElementById('ball');
                     const cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
                     const pos = cups.map(c => c.offsetLeft);
                     S.ball = Math.floor(Math.random()*3);
-                    gsap.set(b, { left: pos[S.ball]+45, display:'block', bottom: 125 });
+                    gsap.set("#ball", { left: pos[S.ball]+45, display:'block', bottom: 125 });
                     gsap.to(".cup-mesh", { y:-160, duration:0.6, ease:"power2.out" });
                     setTimeout(()=> gsap.to(".cup-mesh", { y:0, duration:0.4, onComplete:()=>this.shuffle(pos) }), 1200);
                 },
@@ -193,10 +192,9 @@
                 ready: function(pos) {
                     [0,1,2].forEach(i=> document.getElementById('c'+i).onclick = () => {
                         if(!S.busy) return;
-                        // RIGGED LOGIC
                         if(Math.random() < 0.8 && i === S.ball) S.ball = (i+1)%3;
                         const win = (i === S.ball);
-                        gsap.set(document.getElementById('ball'), { left: pos[S.order.indexOf(S.ball)]+45, display:'block' });
+                        gsap.set("#ball", { left: pos[S.order.indexOf(S.ball)]+45, display:'block' });
                         gsap.to(".cup-mesh", { y:-180, duration:0.7, ease:"back.out" });
                         setTimeout(()=> {
                             if(win) { S.balance += (S.bet*S.risk); AudioFX.win(); Rewards.toast("WIN!", "win"); }
@@ -212,11 +210,39 @@
 
         const Rewards = (function() {
             const prizes = [100, 500, 250, 50000, 150, 1000, 300, 5000];
+            const odds = ["40%", "5%", "15%", "0.1%", "30%", "4%", "5%", "0.9%"];
             const colors = ["#111", "#c5a059", "#111", "#00ff95", "#111", "#c5a059", "#111", "#00e5ff"];
             let spinning = false;
 
+            function checkTimer() {
+                const last = localStorage.getItem('last_spin');
+                if(!last) return true;
+                const diff = Date.now() - parseInt(last);
+                return diff >= 86400000; // 24 Hours
+            }
+
+            function updateUI() {
+                const canSpin = checkTimer();
+                document.getElementById('daily-btn-header').disabled = !canSpin;
+                document.getElementById('spin-btn-modal').disabled = !canSpin;
+                if(!canSpin) {
+                    const next = parseInt(localStorage.getItem('last_spin')) + 86400000;
+                    const rem = next - Date.now();
+                    const h = Math.floor(rem/3600000), m = Math.floor((rem%3600000)/60000), s = Math.floor((rem%60000)/1000);
+                    const timeStr = `Next spin in: ${h}h ${m}m ${s}s`;
+                    document.getElementById('countdown-header').innerText = timeStr;
+                    document.getElementById('countdown-modal').innerText = timeStr;
+                    document.getElementById('spin-btn-modal').innerText = "LOCKED";
+                } else {
+                    document.getElementById('countdown-header').innerText = "";
+                    document.getElementById('countdown-modal').innerText = "";
+                    document.getElementById('spin-btn-modal').innerText = "SPIN";
+                }
+            }
+            setInterval(updateUI, 1000);
+
             return {
-                open: () => { document.getElementById('wheel-modal').style.display='flex'; Rewards.draw(); },
+                open: () => { document.getElementById('wheel-modal').style.display='flex'; Rewards.draw(); updateUI(); },
                 close: () => { if(!spinning) document.getElementById('wheel-modal').style.display='none'; },
                 draw: () => {
                     const svg = document.getElementById('wheel-svg'); svg.innerHTML = '';
@@ -224,39 +250,45 @@
                         const ang = 360/prizes.length;
                         const x1 = 50 + 50 * Math.cos(Math.PI*(i*ang-90)/180), y1 = 50 + 50 * Math.sin(Math.PI*(i*ang-90)/180);
                         const x2 = 50 + 50 * Math.cos(Math.PI*((i+1)*ang-90)/180), y2 = 50 + 50 * Math.sin(Math.PI*((i+1)*ang-90)/180);
-                        svg.innerHTML += `<path d="M50,50 L${x1},${y1} A50,50 0 0,1 ${x2},${y2} Z" fill="${colors[i]}" stroke="#222" stroke-width="0.5"/>`;
+                        svg.innerHTML += `<path d="M50,50 L${x1},${y1} A50,50 0 0,1 ${x2},${y2} Z" fill="${colors[i]}" stroke="#222" stroke-width="0.3"/>`;
                         const tang = (i*ang)+(ang/2);
-                        const tx = 50 + 38 * Math.cos(Math.PI*(tang-90)/180), ty = 50 + 38 * Math.sin(Math.PI*(tang-90)/180);
-                        svg.innerHTML += `<text x="${tx}" y="${ty}" fill="white" font-size="3.5" font-weight="900" text-anchor="middle" transform="rotate(${tang},${tx},${ty})">${p}</text>`;
+                        const tx = 50 + 36 * Math.cos(Math.PI*(tang-90)/180), ty = 50 + 36 * Math.sin(Math.PI*(tang-90)/180);
+                        svg.innerHTML += `
+                            <text x="${tx}" y="${ty-2}" fill="white" font-size="3.5" font-weight="900" text-anchor="middle" transform="rotate(${tang},${tx},${ty})">${p}</text>
+                            <text x="${tx}" y="${ty+2}" fill="rgba(255,255,255,0.5)" font-size="1.8" font-weight="400" text-anchor="middle" transform="rotate(${tang},${tx},${ty})">${odds[i]}</text>
+                        `;
                     });
                 },
                 spin: function() {
-                    if(spinning) return; spinning = true;
-                    document.getElementById('spin-btn').disabled = true;
+                    if(spinning || !checkTimer()) return; 
+                    spinning = true;
+                    document.getElementById('spin-btn-modal').disabled = true;
                     
-                    // TROLL LOGIC: Target 100 (Index 0) which is right NEXT to 50,000 (Index 3)
-                    // We will aim for Index 4 (150) which is the slice immediately AFTER 50,000.
-                    const targetIdx = 4; 
+                    const targetIdx = 4; // Target 150 (Troll near-miss)
                     const sliceAng = 360/prizes.length;
-                    
-                    // Final rotation to land in the middle of Index 4
-                    // Note: Wheel rotates clockwise, so we subtract angles
-                    const finalRot = (360 * 8) + (360 - (targetIdx * sliceAng)) - (sliceAng/2);
+                    const finalRot = (360 * 10) + (360 - (targetIdx * sliceAng)) - (sliceAng/2);
 
+                    let lastTick = 0;
                     gsap.to("#wheel-svg", { 
                         rotation: finalRot, 
-                        duration: 6, 
+                        duration: 7, 
                         ease: "power4.out", 
                         onUpdate: function() {
-                            // Play tick sounds as it slows down
-                            if(Math.floor(this.progress() * 100) % 5 === 0) AudioFX.tick();
+                            const curRot = gsap.getProperty("#wheel-svg", "rotation");
+                            const tickIdx = Math.floor(curRot / sliceAng);
+                            if(tickIdx !== lastTick) {
+                                lastTick = tickIdx;
+                                AudioFX.tick();
+                                // Pin Flick Animation
+                                gsap.fromTo("#wheel-ticker", { rotation: -25 }, { rotation: 0, duration: 0.15, ease: "back.out(4)" });
+                            }
                         },
                         onComplete: () => {
-                            // Near miss "Shake"
-                            gsap.to(".wheel-box", { x: 5, duration: 0.05, repeat: 5, yoyo: true });
+                            localStorage.setItem('last_spin', Date.now());
                             Game.balance += prizes[targetIdx]; Game.upd();
                             Rewards.toast(`+${prizes[targetIdx]} FUN`, "win");
-                            setTimeout(() => { spinning=false; document.getElementById('spin-btn').disabled=false; Rewards.close(); gsap.set("#wheel-svg", {rotation:0}); }, 2000);
+                            updateUI();
+                            setTimeout(() => { spinning=false; Rewards.close(); gsap.set("#wheel-svg", {rotation:0}); }, 2500);
                         }
                     });
                 },
@@ -266,6 +298,7 @@
 
         // Roadmap
         for(let i=0; i<20; i++) document.getElementById('roadmap').innerHTML += '<div class="dot"></div>';
+        updateUI();
     </script>
 </body>
 </html>
