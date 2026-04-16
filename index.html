@@ -3,149 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CUP LEGENDS | SOVEREIGN RANKED</title>
+    <title>SHELL LEGENDS | ORIGINALS</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #020308;
-            --panel: #0a0c14;
+            --bg-main: #0b0e14;
+            --panel-bg: rgba(18, 22, 32, 0.95);
+            --sidebar-bg: #0d111a;
+            --accent-pink: #ff0080;
+            --accent-cyan: #00e5ff;
+            --accent-blue: #3b82f6;
             --gold: #c5a059;
-            --gold-bright: #f3d9a9;
-            --cyan: #00e5ff;
-            --red: #ff2e2e;
-            --green: #00ff95;
-            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-dim: #717b91;
+            --border: rgba(255, 255, 255, 0.05);
         }
 
         * { box-sizing: border-box; -webkit-user-select: none; user-select: none; outline: none; }
         body {
-            margin: 0; background: var(--bg); color: white;
+            margin: 0; background: var(--bg-main); color: var(--text-main);
             font-family: 'Archivo', sans-serif;
-            height: 100vh; display: grid; grid-template-columns: 320px 1fr;
+            height: 100vh; display: grid; grid-template-columns: 300px 1fr;
             overflow: hidden;
         }
 
-        /* --- SIDEBAR --- */
-        .sidebar { background: #000; border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 100; }
-        .label-gold { font-size: 0.6rem; color: var(--gold); letter-spacing: 2px; font-weight: 900; text-transform: uppercase; }
-        
-        .tab-row { display: flex; gap: 8px; margin-bottom: 10px; background: #080808; padding: 4px; border-radius: 6px; }
-        .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: #444; font-size: 0.7rem; font-weight: 900; cursor: pointer; border-radius: 4px; transition: 0.2s; }
-        .tab-btn.active { color: var(--gold); background: #111; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        /* --- SIDEBAR (LIVE CHAT STYLE) --- */
+        .sidebar { background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+        .chat-list { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
+        .chat-item { display: flex; gap: 10px; align-items: flex-start; }
+        .avatar { width: 32px; height: 32px; background: #222; border: 1px solid #444; border-radius: 4px; flex-shrink: 0; }
+        .msg-body { flex-grow: 1; }
+        .user-line { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+        .username { font-size: 0.75rem; font-weight: 700; color: var(--text-dim); }
+        .lvl { background: #3c2a6b; color: #a183ff; font-size: 0.55rem; padding: 2px 5px; border-radius: 4px; font-weight: 900; }
+        .msg-text { font-size: 0.7rem; color: #cbd5e1; line-height: 1.3; }
 
-        .list-container { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; scrollbar-width: none; }
-        .entry { background: var(--panel); padding: 12px; border-radius: 6px; font-size: 0.75rem; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #1a1a1a; transition: 0.3s; }
-        .entry.win { border-left-color: var(--green); background: rgba(0, 255, 149, 0.02); }
-        .entry.player { border-left-color: var(--cyan); background: rgba(0, 229, 255, 0.05); outline: 1px solid rgba(0, 229, 255, 0.2); }
-
-        /* --- MAIN STAGE --- */
-        .main-stage { position: relative; display: flex; flex-direction: column; background: radial-gradient(circle at 50% 120%, #0f1425 0%, #020308 100%); }
-        header { padding: 25px 40px; display: flex; justify-content: space-between; align-items: center; z-index: 50; }
-        .logo { font-weight: 900; font-size: 1.6rem; font-style: italic; letter-spacing: -1px; }
-        .logo span { color: var(--gold); }
+        /* --- MAIN AREA --- */
+        .main { position: relative; display: flex; flex-direction: column; background: radial-gradient(circle at 50% 120%, #161d2b 0%, #0b0e14 100%); }
         
-        .header-actions { display: flex; gap: 15px; align-items: center; }
-        .btn-header { background: #111; color: #fff; border: 1px solid #222; padding: 10px 16px; border-radius: 6px; font-size: 0.75rem; font-weight: 900; cursor: pointer; transition: 0.2s; }
-        
-        .balance-pill { background: #000; padding: 12px 24px; border-radius: 10px; border: 1px solid var(--gold); color: var(--gold-bright); font-family: 'JetBrains Mono'; font-size: 1.1rem; box-shadow: 0 0 20px rgba(197, 160, 89, 0.15); }
+        header { 
+            height: 75px; padding: 0 40px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); z-index: 100;
+        }
+        .logo { font-weight: 900; font-size: 1.4rem; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; }
+        .logo-icon { width: 24px; height: 24px; background: var(--accent-cyan); border-radius: 4px; box-shadow: 0 0 10px var(--accent-cyan); }
+        .logo span { color: var(--accent-pink); }
 
+        .nav-center { display: flex; gap: 10px; }
+        .nav-pill { 
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-dim);
+            padding: 8px 16px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; transition: 0.2s;
+        }
+        .nav-pill:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .balance-box { 
+            background: rgba(0,0,0,0.4); border: 1px solid var(--gold); padding: 8px 15px; 
+            border-radius: 6px; font-family: 'JetBrains Mono'; color: var(--gold); display: flex; align-items: center; gap: 10px;
+        }
+        .btn-wallet { background: var(--accent-blue); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 900; font-size: 0.8rem; cursor: pointer; }
+
+        /* --- GAME ARENA --- */
         #arena { flex-grow: 1; position: relative; display: flex; justify-content: center; align-items: center; perspective: 2000px; }
-        .floor { position: absolute; bottom: 0; width: 100%; height: 40%; background: radial-gradient(ellipse at center, rgba(22, 26, 46, 0.8) 0%, #020308 80%); transform: rotateX(65deg); border-top: 1px solid rgba(255,255,255,0.03); }
-        
-        .cup-node { position: absolute; width: 160px; bottom: 130px; z-index: 20; cursor: pointer; }
-        .cup-mesh { 
-            width: 140px; height: 185px; margin: 0 auto; 
+        .game-title { 
+            position: absolute; top: 40px; text-align: center; width: 100%; 
+            font-size: 2.2rem; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;
+        }
+        .game-title span { color: var(--accent-pink); }
+
+        .cup-node { position: absolute; width: 160px; bottom: 120px; cursor: pointer; z-index: 20; }
+        .cup-visual { 
+            width: 140px; height: 180px; margin: 0 auto; 
             background: linear-gradient(135deg, #e63946 0%, #7b0d1e 100%); 
             clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%); 
             position: relative; border-bottom: 8px solid #2b060c;
         }
-        .cup-mesh::before { content: ''; position: absolute; top: 0; width: 100%; height: 10px; background: linear-gradient(to right, var(--gold), var(--gold-bright), var(--gold)); }
-        
-        .beast-logo { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; background: url('https://upload.wikimedia.org/wikipedia/en/d/db/MrBeast_logo.svg') no-repeat center; background-size: contain; filter: brightness(0) invert(1); opacity: 0.1; pointer-events: none; }
-        .ball { position: absolute; width: 45px; height: 45px; background: radial-gradient(circle at 30% 30%, #fff 0%, #bdc3c7 50%, #2c3e50 100%); border-radius: 50%; display: none; bottom: 138px; z-index: 10; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .cup-visual::before { content: ''; position: absolute; top: 0; width: 100%; height: 10px; background: var(--gold); }
+        .shell-mark { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border: 4px solid rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 2rem; color: rgba(255,255,255,0.05); }
 
-        /* --- CONTROLS --- */
-        .footer { height: 180px; background: #000; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 200px 1fr; align-items: center; padding: 0 60px; }
-        .control-panel { display: flex; flex-direction: column; gap: 12px; }
-        .input-row { display: flex; align-items: center; background: #080a0f; border-radius: 6px; border: 1px solid #1a1a1a; overflow: hidden; width: fit-content; }
-        .btn-adjust { width: 44px; height: 44px; background: #111; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; transition: 0.15s; }
-        .btn-adjust:hover { background: #222; color: var(--gold); }
-        .val-display { width: 100px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; color: #fff; font-size: 1.1rem; }
-        
-        .go-btn { 
-            width: 130px; height: 130px; border-radius: 50%; background: #fff; color: #000; 
-            border: 12px solid #161a24; font-weight: 900; font-size: 1.6rem; cursor: pointer; 
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-top: -80px;
+        .ball { position: absolute; width: 44px; height: 44px; background: radial-gradient(circle at 30% 30%, #fff, #aab); border-radius: 50%; display: none; bottom: 128px; z-index: 10; }
+
+        /* --- FOOTER (WINGO STYLE) --- */
+        .footer { 
+            height: 160px; background: #000; border-top: 1px solid var(--border); 
+            display: grid; grid-template-columns: 1fr 180px 1fr; align-items: center; padding: 0 60px; z-index: 150;
         }
-        .go-btn:hover:not(:disabled) { transform: scale(1.1); background: var(--gold); }
-        .go-btn:disabled { opacity: 0.05; filter: grayscale(1); }
+        .bet-group { display: flex; flex-direction: column; gap: 8px; }
+        .label-sm { font-size: 0.65rem; font-weight: 900; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
+        
+        .input-row { display: flex; align-items: center; background: #080a0f; border-radius: 4px; border: 1px solid #1a1a1a; overflow: hidden; width: fit-content; }
+        .btn-adj { width: 40px; height: 40px; background: #111; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; border-right: 1px solid #1a1a1a; }
+        .val-txt { width: 100px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; color: #fff; }
+        
+        .chip-row { display: flex; gap: 8px; margin-top: 5px; }
+        .chip { padding: 8px 16px; border-radius: 4px; background: #0d1117; border: 1px solid #222; font-size: 0.7rem; font-weight: 900; color: #555; cursor: pointer; }
+        .chip.active { border-color: var(--accent-cyan); color: var(--accent-cyan); }
 
-        /* --- PROMPTS --- */
-        #gamble-prompt { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
-        .btn-gamble { padding: 18px 45px; border-radius: 10px; font-weight: 900; cursor: pointer; margin: 10px; border: none; font-size: 1.1rem; }
+        .go-btn { 
+            width: 110px; height: 110px; border-radius: 50%; background: #fff; color: #000; 
+            border: 12px solid #161a24; font-weight: 900; font-size: 1.5rem; cursor: pointer; transition: 0.2s;
+            margin-top: -60px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .go-btn:hover:not(:disabled) { transform: scale(1.05); }
 
-        #toast-bin { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); z-index: 3000; pointer-events: none; }
-        .toast { padding: 18px 50px; border-radius: 60px; background: #000; border: 1px solid var(--gold); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; animation: toastIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards; }
-        @keyframes toastIn { from { transform: translateY(-100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .toast.win { color: var(--green); border-color: var(--green); }
-        .toast.loss { color: var(--red); border-color: var(--red); }
+        /* --- TOASTS --- */
+        #toast-bin { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; }
+        .toast { padding: 15px 40px; border-radius: 50px; background: rgba(0,0,0,0.9); border: 1px solid var(--gold); font-weight: 900; animation: tIn 0.3s forwards; }
+        @keyframes tIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <aside class="sidebar">
-        <div class="tab-row">
-            <button class="tab-btn active" id="tab-feed" onclick="UI.setTab('feed')">FEED</button>
-            <button class="tab-btn" id="tab-rank" onclick="UI.setTab('rank')">RANKING</button>
+        <div class="sidebar-header">
+            <div class="chat-title">LIVE CHAT</div>
+            <div style="font-size:0.6rem; color:var(--accent-cyan);">ONLINE: 1,142</div>
         </div>
-        <div class="label-gold" id="list-title">Live Activity</div>
-        <div class="list-container" id="side-list"></div>
-        <div style="margin-top:auto; padding-top:15px; border-top:1px solid #1a1a1a;">
-            <div class="label-gold">Hash Verification</div>
-            <div id="side-hash" style="font-size:0.55rem; color:#333; font-family: 'JetBrains Mono'; margin-top:5px; word-break: break-all;">No active round...</div>
+        <div class="chat-list" id="chat-box">
+            </div>
+        <div style="padding: 15px; border-top: 1px solid var(--border);">
+            <div style="background:#080a0f; padding:10px; border-radius:4px; font-size:0.7rem; color:#444;">Write your message...</div>
         </div>
     </aside>
 
-    <main class="main-stage">
+    <main class="main-content">
         <header>
-            <div class="logo">CUP<span>LEGENDS</span></div>
-            <div class="header-actions">
-                <button class="btn-header" onclick="UI.toggleFair()">VERIFY</button>
-                <button class="btn-header" style="background: var(--green); color:#000; border:none;" onclick="Rewards.claim()">DAILY REWARD</button>
-                <div class="balance-pill" id="balance-ui">150,191.57 FUN</div>
+            <div class="logo"><div class="logo-icon"></div>SHELL<span>LEGENDS</span></div>
+            <div class="nav-center">
+                <div class="nav-pill">HOME</div>
+                <div class="nav-pill">FAIRNESS</div>
+                <div class="nav-pill" style="color:var(--gold);">DAILY RACE</div>
+            </div>
+            <div class="header-right">
+                <div class="balance-box" id="balance-ui">7.92K <span style="color:var(--green); font-weight:900;">+</span></div>
+                <button class="btn-wallet">WALLET</button>
             </div>
         </header>
 
         <div id="arena">
-            <div class="floor"></div>
-            <div id="ball" class="ball"></div>
+            <div class="game-title">THE ONLY FAIR <span>SHELL CASINO</span></div>
+            <div id="ball-obj" class="ball"></div>
             
-            <div class="cup-node" id="c0" style="left: calc(50% - 340px);"><div class="cup-mesh"><div class="beast-logo"></div></div></div>
-            <div class="cup-node" id="c1" style="left: calc(50% - 70px);"><div class="cup-mesh"><div class="beast-logo"></div></div></div>
-            <div class="cup-node" id="c2" style="left: calc(50% + 200px);"><div class="cup-mesh"><div class="beast-logo"></div></div></div>
-
-            <div id="gamble-prompt">
-                <h1 style="color:var(--green); font-size: 3.5rem; margin-bottom: 0;">DOUBLE DOWN?</h1>
-                <p style="color:#666; margin-bottom: 30px; font-weight: 700;">Risk win for 2.0x coin flip</p>
-                <div>
-                    <button class="btn-gamble" style="background:var(--green); color:#000;" onclick="Game.resolveGamble(true)">DOUBLE OR NOTHING</button>
-                    <button class="btn-gamble" style="background:#222; color:#fff;" onclick="Game.resolveGamble(false)">TAKE PROFIT</button>
-                </div>
+            <div class="cup-node" id="cup0" style="left: calc(50% - 320px);">
+                <div class="cup-visual"><div class="shell-mark">S</div></div>
+            </div>
+            <div class="cup-node" id="cup1" style="left: calc(50% - 70px);">
+                <div class="cup-visual"><div class="shell-mark">S</div></div>
+            </div>
+            <div class="cup-node" id="cup2" style="left: calc(50% + 180px);">
+                <div class="cup-visual"><div class="shell-mark">S</div></div>
             </div>
         </div>
 
         <div class="footer">
-            <div class="control-panel">
-                <div class="label-gold">Bet Amount</div>
+            <div class="bet-group">
+                <div class="label-sm">Bet Amount</div>
                 <div class="input-row">
-                    <button class="btn-adjust" onclick="Game.adjBet(-1)">-</button>
-                    <div class="val-display" id="bet-ui">4.50</div>
-                    <button class="btn-adjust" style="border-right:none;" onclick="Game.adjBet(1)">+</button>
+                    <button class="btn-adj" onclick="Game.adjBet(-1)">-</button>
+                    <div class="val-txt" id="bet-display">4.50</div>
+                    <button class="btn-adj" style="border-right:none;" onclick="Game.adjBet(1)">+</button>
                 </div>
-                <div style="display:flex; gap:8px;">
-                    <button id="turbo-btn" class="btn-header" style="font-size:0.6rem; padding:6px 12px;" onclick="Game.toggleTurbo()">TURBO: OFF</button>
-                    <button id="auto-btn" class="btn-header" style="font-size:0.6rem; padding:6px 12px;" onclick="Game.toggleAuto()">AUTO: OFF</button>
+                <div class="chip-row">
+                    <button class="chip" id="turbo-btn" onclick="Game.toggleTurbo()">TURBO: OFF</button>
+                    <button class="chip" id="auto-btn" onclick="Game.toggleAuto()">AUTO: OFF</button>
                 </div>
             </div>
 
@@ -154,9 +177,8 @@
             </div>
 
             <div style="text-align:right;">
-                <div class="label-gold">Payout Multiplier</div>
-                <div style="margin-top:8px; font-size:1.6rem; color:var(--green); font-weight:900; font-family:'JetBrains Mono';">x3.00</div>
-                <div id="payout-ui" style="font-size:0.8rem; color:#444;">13.50 Potential</div>
+                <div class="label-sm">Potential Payout</div>
+                <div id="payout-ui" style="font-size:1.8rem; color:var(--accent-cyan); font-weight:900; font-family:'JetBrains Mono';">13.50</div>
             </div>
         </div>
     </main>
@@ -164,9 +186,9 @@
     <div id="toast-bin"></div>
 
     <script>
-        const FX = {
+        const AudioFX = {
             ctx: new (window.AudioContext || window.webkitAudioContext)(),
-            play(f, t, d, v=0.04) {
+            play(f, t, d, v=0.05) {
                 const o = this.ctx.createOscillator(), g = this.ctx.createGain();
                 o.type = t; o.frequency.setValueAtTime(f, this.ctx.currentTime);
                 g.gain.setValueAtTime(v, this.ctx.currentTime);
@@ -174,213 +196,88 @@
                 o.connect(g); g.connect(this.ctx.destination);
                 o.start(); o.stop(this.ctx.currentTime + d);
             },
-            tick() { this.play(700, 'sine', 0.05); },
-            win() { [523, 659, 783].forEach((f, i) => setTimeout(() => this.play(f, 'sine', 0.2), i * 100)); },
-            loss() { this.play(110, 'sawtooth', 0.4, 0.03); }
+            tick() { this.play(800, 'sine', 0.05); },
+            win() { [523, 659, 783].forEach((f, i) => setTimeout(() => this.play(f, 'sine', 0.2), i * 100)); }
         };
 
         const Game = (function() {
-            const S = { 
-                playerName: "Alex Davitt",
-                balance: parseFloat(localStorage.getItem('balance')) || 150191.57,
-                bet: 4.50, mult: 3, busy: false, 
-                turbo: false, auto: false, ballSlot: 0, order: [0, 1, 2], winAmt: 0 
-            };
+            const S = { balance: 7920, bet: 4.50, busy: false, turbo: false, auto: false, ball: 0, order: [0, 1, 2] };
 
             return {
-                state: S,
-                adjBet: (v) => { if(S.busy) return; S.bet = Math.max(1, S.bet + v); document.getElementById('bet-ui').innerText = S.bet.toFixed(2); document.getElementById('payout-ui').innerText = (S.bet * S.mult).toFixed(2); FX.tick(); },
-                toggleTurbo: () => { S.turbo = !S.turbo; document.getElementById('turbo-btn').innerText = `TURBO: ${S.turbo?'ON':'OFF'}`; },
-                toggleAuto: () => { S.auto = !S.auto; document.getElementById('auto-btn').innerText = `AUTO: ${S.auto?'ON':'OFF'}`; if(S.auto && !S.busy) Game.play(); },
+                adjBet: (v) => { if(S.busy) return; S.bet = Math.max(1, S.bet + v); document.getElementById('bet-display').innerText = S.bet.toFixed(2); document.getElementById('payout-ui').innerText = (S.bet * 3).toFixed(2); AudioFX.tick(); },
+                toggleTurbo: () => { S.turbo = !S.turbo; document.getElementById('turbo-btn').innerText = `TURBO: ${S.turbo?'ON':'OFF'}`; document.getElementById('turbo-btn').classList.toggle('active'); },
+                toggleAuto: () => { S.auto = !S.auto; document.getElementById('auto-btn').innerText = `AUTO: ${S.auto?'ON':'OFF'}`; document.getElementById('auto-btn').classList.toggle('active'); if(S.auto && !S.busy) Game.play(); },
                 
                 play: function() {
                     if(S.busy || S.balance < S.bet) { S.auto = false; return; }
                     S.busy = true; document.getElementById('go-btn').disabled = true;
                     S.balance -= S.bet; this.upd();
                     
-                    const hash = Array(40).fill(0).map(() => Math.random().toString(36)[2]).join('');
-                    document.getElementById('side-hash').innerText = hash;
-
-                    const cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
+                    const cups = [document.getElementById('cup0'), document.getElementById('cup1'), document.getElementById('cup2')];
                     const pos = cups.map(c => c.offsetLeft);
-                    S.ballSlot = Math.floor(Math.random()*3);
-                    gsap.set("#ball", { left: pos[S.ballSlot]+48, display:'block', bottom: 138 });
+                    S.ball = Math.floor(Math.random()*3);
+                    gsap.set("#ball-obj", { left: pos[S.ball]+48, display:'block', bottom: 128 });
                     
-                    const dur = S.turbo ? 0.2 : 0.6;
-                    gsap.to(".cup-mesh", { y: -180, duration: dur, ease: "power2.out", stagger: 0.1, onComplete: () => {
-                        setTimeout(() => {
-                            gsap.to(".cup-mesh", { y: 0, duration: dur/2, ease: "power2.in", onComplete: () => this.shuffle(pos) });
-                        }, S.turbo ? 50 : 800);
+                    const d = S.turbo ? 0.2 : 0.6;
+                    gsap.to(".cup-visual", { y: -160, duration: d, ease: "power2.out", stagger: 0.1, onComplete: () => {
+                        setTimeout(() => gsap.to(".cup-visual", { y: 0, duration: d/2, onComplete: () => this.shuffle(pos) }), S.turbo ? 50 : 800);
                     }});
                 },
 
                 shuffle: async function(pos) {
-                    document.getElementById('ball').style.display='none';
+                    document.getElementById('ball-obj').style.display='none';
                     const rounds = S.turbo ? 12 : 55;
                     for(let i=0; i<rounds; i++) {
                         let a=Math.floor(Math.random()*3), b; do{ b=Math.floor(Math.random()*3); } while(a===b);
                         const spd = S.turbo ? 0.05 : Math.max(0.04, 0.22-(i*0.005));
                         const pA = pos[S.order.indexOf(a)], pB = pos[S.order.indexOf(b)];
-                        gsap.to(document.getElementById('c'+a), { left:pB, duration:spd, ease: "sine.inOut" });
-                        await gsap.to(document.getElementById('c'+b), { left:pA, duration:spd, ease: "sine.inOut" });
+                        gsap.to(document.getElementById('cup'+a), { left:pB, duration:spd });
+                        await gsap.to(document.getElementById('cup'+b), { left:pA, duration:spd });
                         const iA=S.order.indexOf(a), iB=S.order.indexOf(b); [S.order[iA], S.order[iB]]=[S.order[iB], S.order[iA]];
                     }
-                    if(S.auto) { 
-                        setTimeout(() => this.reveal(Math.floor(Math.random()*3)), S.turbo ? 100 : 500);
-                    } else {
-                        S.busy = false;
-                        document.querySelectorAll('.cup-node').forEach((el, i) => {
-                            el.onclick = () => this.reveal(i);
-                        });
-                    }
+                    if(S.auto) { setTimeout(() => this.reveal(Math.floor(Math.random()*3)), 500); }
+                    else { S.busy = false; [0,1,2].forEach(i => document.getElementById('cup'+i).onclick = () => this.reveal(i)); }
                 },
 
                 reveal: function(choice) {
                     if(document.getElementById('go-btn').disabled === false && !S.auto) return;
                     S.busy = true;
-                    
-                    const win = (choice === S.ballSlot);
-                    const pos = [document.getElementById('c0').offsetLeft, document.getElementById('c1').offsetLeft, document.getElementById('c2').offsetLeft];
-                    gsap.set("#ball", { left: pos[S.order.indexOf(S.ballSlot)]+48, display:'block' });
+                    const win = (choice === S.ball);
+                    const pos = [document.getElementById('cup0').offsetLeft, document.getElementById('cup1').offsetLeft, document.getElementById('cup2').offsetLeft];
+                    gsap.set("#ball-obj", { left: pos[S.order.indexOf(S.ball)]+48, display:'block' });
 
-                    gsap.to(".cup-mesh", { y: -190, duration: S.turbo ? 0.1 : 0.6, ease: "back.out(1.5)", stagger: S.turbo ? 0.05 : 0.2 });
+                    gsap.to(".cup-visual", { y: -180, duration: S.turbo ? 0.1 : 0.6, ease: "back.out", stagger: 0.1 });
 
                     setTimeout(() => {
-                        if(win) {
-                            S.winAmt = S.bet * S.mult;
-                            if(S.auto) {
-                                S.balance += S.winAmt;
-                                UI.toast(`SUCCESS +${S.winAmt.toFixed(2)}`, 'win');
-                                UI.addFeedEntry(S.playerName, S.winAmt, true);
-                                this.upd(); this.cleanup();
-                            } else {
-                                document.getElementById('gamble-prompt').style.display = 'flex';
-                            }
-                        } else {
-                            UI.toast("FAILED", "loss");
-                            UI.addFeedEntry(S.playerName, S.bet, false);
-                            FX.loss();
-                            this.upd(); this.cleanup();
-                        }
-                    }, S.turbo ? 200 : 1000);
+                        if(win) { S.balance += S.bet * 3; AudioFX.win(); UI.toast("ROUND WON!", "win"); }
+                        else { AudioFX.play(100, 'sawtooth', 0.4); UI.toast("ROUND LOST", "loss"); }
+                        this.upd(); this.cleanup();
+                    }, 800);
                 },
 
-                resolveGamble: function(riskIt) {
-                    document.getElementById('gamble-prompt').style.display = 'none';
-                    if(riskIt) {
-                        const success = Math.random() > 0.55; 
-                        if(success) {
-                            S.balance += (S.winAmt * 2);
-                            FX.win();
-                            UI.toast(`DOUBLE SUCCESS +${(S.winAmt * 2).toFixed(2)}`, 'win');
-                            UI.addFeedEntry(S.playerName, S.winAmt * 2, true);
-                        } else {
-                            FX.loss();
-                            UI.toast("LOSS", 'loss');
-                            UI.addFeedEntry(S.playerName, S.winAmt, false);
-                        }
-                    } else {
-                        S.balance += S.winAmt;
-                        UI.toast(`COLLECTED +${S.winAmt.toFixed(2)}`, 'win');
-                        UI.addFeedEntry(S.playerName, S.winAmt, true);
-                    }
-                    this.upd(); this.cleanup();
-                },
-
-                cleanup: () => {
-                    setTimeout(() => {
-                        gsap.to(".cup-mesh", { y: 0, duration: 0.4 });
-                        document.getElementById('ball').style.display = 'none';
-                        document.getElementById('go-btn').disabled = false;
-                        S.busy = false;
-                        if(S.auto) Game.play();
-                    }, 1000);
-                },
-
-                upd: () => {
-                    localStorage.setItem('balance', S.balance);
-                    document.getElementById('balance-ui').innerText = S.balance.toLocaleString('en-US', {minimumFractionDigits:2}) + " FUN";
-                    UI.updateLeaderboard();
-                    UI.refresh();
-                }
+                cleanup: () => setTimeout(() => { gsap.to(".cup-visual", { y:0 }); document.getElementById('ball-obj').style.display='none'; document.getElementById('go-btn').disabled=false; S.busy=false; if(S.auto) Game.play(); }, 1200),
+                upd: () => document.getElementById('balance-ui').innerHTML = `${(S.balance/1000).toFixed(2)}K <span style="color:var(--green); font-weight:900;">+</span>`
             };
         })();
 
         const UI = {
-            currentTab: 'feed',
-            feed: [],
-            leaderboard: JSON.parse(localStorage.getItem('leaderboard')) || [
-                {n: 'SlotGod', b: 2450000}, {n: 'HiddenWhale', b: 820000}, {n: 'Satoshi', b: 520000}, {n: 'BeastBot', b: 310000}
-            ],
-
-            setTab(t) {
-                this.currentTab = t;
-                document.getElementById('tab-feed').className = t === 'feed' ? 'tab-btn active' : 'tab-btn';
-                document.getElementById('tab-rank').className = t === 'rank' ? 'tab-btn active' : 'tab-btn';
-                document.getElementById('list-title').innerText = t === 'feed' ? 'Live Activity' : 'Top Hall of Fame';
-                this.refresh();
-            },
-
-            addFeedEntry(name, amount, isWin) {
-                this.feed.unshift({n: name, a: amount, w: isWin});
-                if(this.feed.length > 10) this.feed.pop();
-            },
-
-            updateLeaderboard() {
-                const player = Game.state.playerName;
-                const balance = Game.state.balance;
-                
-                let found = false;
-                this.leaderboard.forEach(entry => {
-                    if(entry.n === player) {
-                        entry.b = balance;
-                        found = true;
-                    }
-                });
-                
-                if(!found) this.leaderboard.push({n: player, b: balance});
-                
-                this.leaderboard.sort((a, b) => b.b - a.b);
-                this.leaderboard = this.leaderboard.slice(0, 15);
-                localStorage.setItem('leaderboard', JSON.stringify(this.leaderboard));
-            },
-
             toast(m, type) {
                 const b = document.getElementById('toast-bin');
-                const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = m;
-                b.appendChild(t); setTimeout(() => t.remove(), 3000);
+                const t = document.createElement('div'); t.className = `toast`; t.style.color = type==='win'?'var(--green)':'var(--red)'; t.innerText = m;
+                b.appendChild(t); setTimeout(() => t.remove(), 2500);
             },
-
-            refresh() {
-                const list = document.getElementById('side-list');
-                list.innerHTML = '';
-                
-                if(this.currentTab === 'feed') {
-                    // Show actual player feed mixed with fake activity
-                    this.feed.forEach(entry => {
-                        list.innerHTML += `<div class="entry ${entry.w?'win':''} player"><span>${entry.n}</span> <span>${entry.w?'+':'-'}${entry.a.toFixed(2)}</span></div>`;
-                    });
-                    for(let i=0; i < (8 - this.feed.length); i++) {
-                        const win = Math.random() > 0.85;
-                        list.innerHTML += `<div class="entry ${win?'win':''}"><span>User_${Math.floor(Math.random()*999)}</span> <span>${win?'+':'-'}${(Math.random()*25).toFixed(2)}</span></div>`;
-                    }
-                } else {
-                    this.leaderboard.forEach((m, i) => {
-                        const isPlayer = m.n === Game.state.playerName;
-                        list.innerHTML += `<div class="entry win ${isPlayer?'player':''}"><span>${i+1}. ${m.n}</span> <span>${m.b.toLocaleString()}</span></div>`;
-                    });
-                }
+            initChat() {
+                const box = document.getElementById('chat-box');
+                const lines = ["I just hit a massive multiplier!", "Anyone seen the daily race leader?", "Calculated move, totally won.", "Please pay me money", "Wanna vouch?", "Let's goooo"];
+                setInterval(() => {
+                    const entry = document.createElement('div'); entry.className = 'chat-item';
+                    entry.innerHTML = `<div class="avatar"></div><div class="msg-body"><div class="user-line"><span class="username">User_${Math.floor(Math.random()*999)}</span><span class="lvl">Lv.${Math.floor(Math.random()*99)}</span></div><div class="msg-text">${lines[Math.floor(Math.random()*lines.length)]}</div></div>`;
+                    box.prepend(entry); if(box.children.length > 12) box.lastChild.remove();
+                }, 4000);
             }
         };
 
-        const Rewards = {
-            claim() { UI.toast("BONUS CLAIMED +500", "win"); Game.state.balance += 500; Game.upd(); FX.win(); }
-        };
-
-        // Initial setup
-        UI.updateLeaderboard();
-        UI.refresh();
-        Game.upd();
+        UI.initChat();
     </script>
 </body>
 </html>
