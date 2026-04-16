@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHELL LEGENDS | ORIGINALS</title>
+    <title>DONUTLUCK | CUP ORIGINALS</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #0b0e14;
+            --bg-dark: #0b0e14;
             --panel-bg: rgba(18, 22, 32, 0.95);
             --sidebar-bg: #0d111a;
             --accent-pink: #ff0080;
@@ -22,95 +22,99 @@
 
         * { box-sizing: border-box; -webkit-user-select: none; user-select: none; outline: none; }
         body {
-            margin: 0; background: var(--bg-main); color: var(--text-main);
+            margin: 0; background: var(--bg-dark); color: var(--text-main);
             font-family: 'Archivo', sans-serif;
-            height: 100vh; display: grid; grid-template-columns: 300px 1fr;
+            height: 100vh; display: grid; grid-template-columns: 280px 1fr;
             overflow: hidden;
         }
 
-        /* --- SIDEBAR (LIVE CHAT STYLE) --- */
-        .sidebar { background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
-        .chat-list { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
-        .chat-item { display: flex; gap: 10px; align-items: flex-start; }
-        .avatar { width: 32px; height: 32px; background: #222; border: 1px solid #444; border-radius: 4px; flex-shrink: 0; }
-        .msg-body { flex-grow: 1; }
-        .user-line { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
-        .username { font-size: 0.75rem; font-weight: 700; color: var(--text-dim); }
-        .lvl { background: #3c2a6b; color: #a183ff; font-size: 0.55rem; padding: 2px 5px; border-radius: 4px; font-weight: 900; }
-        .msg-text { font-size: 0.7rem; color: #cbd5e1; line-height: 1.3; }
+        /* --- SIDEBAR: LIVE CHAT --- */
+        .sidebar { background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .chat-title { font-weight: 900; font-size: 0.8rem; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        .chat-title svg { width: 16px; height: 16px; fill: var(--accent-pink); }
 
-        /* --- MAIN AREA --- */
-        .main { position: relative; display: flex; flex-direction: column; background: radial-gradient(circle at 50% 120%, #161d2b 0%, #0b0e14 100%); }
-        
-        header { 
-            height: 75px; padding: 0 40px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); z-index: 100;
+        .chat-list { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scrollbar-width: none; }
+        .chat-msg { display: flex; gap: 10px; align-items: flex-start; }
+        .avatar { width: 32px; height: 32px; background: #222; border-radius: 4px; border: 1px solid #333; flex-shrink: 0; }
+        .msg-body { flex-grow: 1; }
+        .user-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+        .username { font-size: 0.75rem; font-weight: 700; color: var(--text-dim); }
+        .lvl-badge { background: #3c2a6b; color: #a183ff; font-size: 0.55rem; padding: 2px 5px; border-radius: 4px; font-weight: 900; }
+        .chat-text { font-size: 0.7rem; color: #cbd5e1; line-height: 1.3; word-break: break-all; }
+
+        .chat-input-area { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+        #chat-input { 
+            flex-grow: 1; background: #080a0f; border: 1px solid #1a1a1a; border-radius: 4px; 
+            padding: 10px; color: #fff; font-size: 0.7rem; 
         }
-        .logo { font-weight: 900; font-size: 1.4rem; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; }
-        .logo-icon { width: 24px; height: 24px; background: var(--accent-cyan); border-radius: 4px; box-shadow: 0 0 10px var(--accent-cyan); }
+        .send-btn { background: var(--accent-pink); border: none; border-radius: 4px; padding: 0 12px; cursor: pointer; display: flex; align-items: center; }
+        .send-btn svg { width: 14px; height: 14px; fill: #fff; }
+
+        /* --- HEADER --- */
+        .main-stage { position: relative; display: flex; flex-direction: column; background: radial-gradient(circle at 50% 120%, #161d2b 0%, #0b0e14 100%); }
+        header { 
+            height: 70px; padding: 0 40px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); z-index: 50;
+        }
+        .logo { font-weight: 900; font-size: 1.4rem; font-style: italic; display: flex; align-items: center; gap: 8px; }
+        .logo-box { width: 22px; height: 22px; background: var(--accent-cyan); border-radius: 4px; box-shadow: 0 0 10px var(--accent-cyan); }
         .logo span { color: var(--accent-pink); }
 
-        .nav-center { display: flex; gap: 10px; }
-        .nav-pill { 
-            background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-dim);
-            padding: 8px 16px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer;
-            display: flex; align-items: center; gap: 8px; transition: 0.2s;
-        }
-        .nav-pill:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .nav-center { display: flex; gap: 15px; }
+        .nav-item { color: var(--text-dim); font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .nav-item:hover { color: #fff; }
+        .nav-item svg { width: 14px; height: 14px; fill: currentColor; }
 
-        .header-right { display: flex; align-items: center; gap: 15px; }
-        .balance-box { 
+        .header-right { display: flex; align-items: center; gap: 12px; }
+        .balance-pill { 
             background: rgba(0,0,0,0.4); border: 1px solid var(--gold); padding: 8px 15px; 
             border-radius: 6px; font-family: 'JetBrains Mono'; color: var(--gold); display: flex; align-items: center; gap: 10px;
         }
-        .btn-wallet { background: var(--accent-blue); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 900; font-size: 0.8rem; cursor: pointer; }
+        .wallet-btn { background: var(--accent-blue); color: #fff; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 900; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 
         /* --- GAME ARENA --- */
         #arena { flex-grow: 1; position: relative; display: flex; justify-content: center; align-items: center; perspective: 2000px; }
-        .game-title { 
-            position: absolute; top: 40px; text-align: center; width: 100%; 
-            font-size: 2.2rem; font-weight: 900; letter-spacing: -1px; text-transform: uppercase;
-        }
-        .game-title span { color: var(--accent-pink); }
+        .arena-title { position: absolute; top: 40px; width: 100%; text-align: center; font-weight: 900; font-size: 2rem; letter-spacing: -1px; }
+        .arena-title span { color: var(--accent-pink); }
 
         .cup-node { position: absolute; width: 160px; bottom: 120px; cursor: pointer; z-index: 20; }
-        .cup-visual { 
-            width: 140px; height: 180px; margin: 0 auto; 
-            background: linear-gradient(135deg, #e63946 0%, #7b0d1e 100%); 
+        .cup-mesh { 
+            width: 135px; height: 175px; margin: 0 auto; 
+            background: linear-gradient(135deg, #e61919 0%, #700000 100%); 
             clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%); 
-            position: relative; border-bottom: 8px solid #2b060c;
+            position: relative; border-bottom: 8px solid #300000;
         }
-        .cup-visual::before { content: ''; position: absolute; top: 0; width: 100%; height: 10px; background: var(--gold); }
-        .shell-mark { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border: 4px solid rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 2rem; color: rgba(255,255,255,0.05); }
+        .cup-mesh::before { content: ''; position: absolute; top: 0; width: 100%; height: 10px; background: var(--gold); }
+        .beast-seal { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: url('https://upload.wikimedia.org/wikipedia/en/d/db/MrBeast_logo.svg') no-repeat center; background-size: contain; filter: brightness(0) invert(1); opacity: 0.15; }
 
-        .ball { position: absolute; width: 44px; height: 44px; background: radial-gradient(circle at 30% 30%, #fff, #aab); border-radius: 50%; display: none; bottom: 128px; z-index: 10; }
+        .ball { position: absolute; width: 44px; height: 44px; background: radial-gradient(circle at 30% 30%, #fff, #888); border-radius: 50%; display: none; bottom: 128px; z-index: 10; }
 
-        /* --- FOOTER (WINGO STYLE) --- */
+        /* --- FOOTER (MATCHING DONUTLUCK) --- */
         .footer { 
-            height: 160px; background: #000; border-top: 1px solid var(--border); 
-            display: grid; grid-template-columns: 1fr 180px 1fr; align-items: center; padding: 0 60px; z-index: 150;
+            height: 170px; background: #000; border-top: 1px solid var(--border); 
+            display: grid; grid-template-columns: 1fr 200px 1fr; align-items: center; padding: 0 50px; z-index: 100;
         }
-        .bet-group { display: flex; flex-direction: column; gap: 8px; }
-        .label-sm { font-size: 0.65rem; font-weight: 900; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
+        .control-panel { display: flex; flex-direction: column; gap: 15px; }
+        .input-stack { display: flex; flex-direction: column; gap: 5px; }
+        .label-gold { font-size: 0.65rem; color: var(--gold); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
         
-        .input-row { display: flex; align-items: center; background: #080a0f; border-radius: 4px; border: 1px solid #1a1a1a; overflow: hidden; width: fit-content; }
+        .adj-row { display: flex; align-items: center; background: #080a0f; border: 1px solid #1a1a1a; border-radius: 4px; overflow: hidden; width: fit-content; }
         .btn-adj { width: 40px; height: 40px; background: #111; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; border-right: 1px solid #1a1a1a; }
-        .val-txt { width: 100px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; color: #fff; }
+        .val-txt { width: 110px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 1.1rem; }
         
-        .chip-row { display: flex; gap: 8px; margin-top: 5px; }
-        .chip { padding: 8px 16px; border-radius: 4px; background: #0d1117; border: 1px solid #222; font-size: 0.7rem; font-weight: 900; color: #555; cursor: pointer; }
-        .chip.active { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .risk-row { display: flex; gap: 8px; }
+        .chip { padding: 8px 15px; border-radius: 4px; background: #0d1117; border: 1px solid #222; font-size: 0.75rem; font-weight: 900; color: #555; cursor: pointer; transition: 0.2s; }
+        .chip.active { border: 2px solid var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 229, 255, 0.2); }
 
         .go-btn { 
-            width: 110px; height: 110px; border-radius: 50%; background: #fff; color: #000; 
-            border: 12px solid #161a24; font-weight: 900; font-size: 1.5rem; cursor: pointer; transition: 0.2s;
-            margin-top: -60px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 120px; height: 120px; border-radius: 50%; background: #fff; color: #000; 
+            border: 12px solid #161a24; font-weight: 900; font-size: 1.5rem; cursor: pointer; 
+            transition: 0.2s; margin-top: -80px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
         .go-btn:hover:not(:disabled) { transform: scale(1.05); }
 
-        /* --- TOASTS --- */
-        #toast-bin { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; }
+        #toast-bin { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; pointer-events: none; }
         .toast { padding: 15px 40px; border-radius: 50px; background: rgba(0,0,0,0.9); border: 1px solid var(--gold); font-weight: 900; animation: tIn 0.3s forwards; }
         @keyframes tIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
@@ -119,65 +123,66 @@
 
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="chat-title">LIVE CHAT</div>
-            <div style="font-size:0.6rem; color:var(--accent-cyan);">ONLINE: 1,142</div>
-        </div>
-        <div class="chat-list" id="chat-box">
+            <div class="chat-title">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+                LIVE CHAT
             </div>
-        <div style="padding: 15px; border-top: 1px solid var(--border);">
-            <div style="background:#080a0f; padding:10px; border-radius:4px; font-size:0.7rem; color:#444;">Write your message...</div>
+            <div style="font-size: 0.6rem; color: #10b981; font-weight: 900;">1,142 ONLINE</div>
+        </div>
+        <div class="chat-list" id="chat-list">
+            </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Say something..." autocomplete="off">
+            <button class="send-btn" onclick="UI.sendMessage()">
+                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
         </div>
     </aside>
 
-    <main class="main-content">
+    <main class="main-stage">
         <header>
-            <div class="logo"><div class="logo-icon"></div>SHELL<span>LEGENDS</span></div>
+            <div class="logo"><div class="logo-box"></div>DONUT<span>LUCK</span></div>
             <div class="nav-center">
-                <div class="nav-pill">HOME</div>
-                <div class="nav-pill">FAIRNESS</div>
-                <div class="nav-pill" style="color:var(--gold);">DAILY RACE</div>
+                <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>HOME</div>
+                <div class="nav-item"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>FAIRNESS</div>
+                <div class="nav-item" style="color: var(--gold);"><svg viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V19H7v2h10v-2h-4v-3.1c2.45-.39 4.87-2.25 4.61-5.96 2.47-.31 4.39-2.39 4.39-4.94V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>DAILY RACE</div>
             </div>
             <div class="header-right">
-                <div class="balance-box" id="balance-ui">7.92K <span style="color:var(--green); font-weight:900;">+</span></div>
-                <button class="btn-wallet">WALLET</button>
+                <div class="balance-pill" id="balance-ui">7.92K <span style="color:var(--accent-cyan);">+</span></div>
+                <button class="wallet-btn"><svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#fff;"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5 .67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>WALLET</button>
             </div>
         </header>
 
         <div id="arena">
-            <div class="game-title">THE ONLY FAIR <span>SHELL CASINO</span></div>
+            <div class="arena-title">THE ONLY FAIR <span>DONUTSMP CASINO</span></div>
             <div id="ball-obj" class="ball"></div>
-            
-            <div class="cup-node" id="cup0" style="left: calc(50% - 320px);">
-                <div class="cup-visual"><div class="shell-mark">S</div></div>
-            </div>
-            <div class="cup-node" id="cup1" style="left: calc(50% - 70px);">
-                <div class="cup-visual"><div class="shell-mark">S</div></div>
-            </div>
-            <div class="cup-node" id="cup2" style="left: calc(50% + 180px);">
-                <div class="cup-visual"><div class="shell-mark">S</div></div>
-            </div>
+            <div class="cup-node" id="c0" style="left: calc(50% - 320px);"><div class="cup-mesh"><div class="beast-seal"></div></div></div>
+            <div class="cup-node" id="c1" style="left: calc(50% - 68px);"><div class="cup-mesh"><div class="beast-seal"></div></div></div>
+            <div class="cup-node" id="c2" style="left: calc(50% + 185px);"><div class="cup-mesh"><div class="beast-seal"></div></div></div>
         </div>
 
         <div class="footer">
-            <div class="bet-group">
-                <div class="label-sm">Bet Amount</div>
-                <div class="input-row">
-                    <button class="btn-adj" onclick="Game.adjBet(-1)">-</button>
-                    <div class="val-txt" id="bet-display">4.50</div>
-                    <button class="btn-adj" style="border-right:none;" onclick="Game.adjBet(1)">+</button>
+            <div class="control-panel">
+                <div class="input-stack">
+                    <div class="label-gold">Bet Amount</div>
+                    <div class="adj-row">
+                        <button class="btn-adj" onclick="Game.adjBet(-1)">-</button>
+                        <div class="val-txt" id="bet-ui">4.50</div>
+                        <button class="btn-adj" style="border-right:none;" onclick="Game.adjBet(1)">+</button>
+                    </div>
                 </div>
-                <div class="chip-row">
-                    <button class="chip" id="turbo-btn" onclick="Game.toggleTurbo()">TURBO: OFF</button>
-                    <button class="chip" id="auto-btn" onclick="Game.toggleAuto()">AUTO: OFF</button>
+                <div class="input-stack">
+                    <div class="label-gold">Risk Multiplier</div>
+                    <div class="risk-row">
+                        <div class="chip active" onclick="Game.setMult(3, this)">x3</div>
+                        <div class="chip" onclick="Game.setMult(5, this)">x5</div>
+                        <div class="chip" onclick="Game.setMult(10, this)">x10</div>
+                    </div>
                 </div>
             </div>
-
-            <div style="display:flex; justify-content:center;">
-                <button class="go-btn" id="go-btn" onclick="Game.play()">GO!</button>
-            </div>
-
+            <div style="display:flex; justify-content:center;"><button class="go-btn" id="go-btn" onclick="Game.play()">GO!</button></div>
             <div style="text-align:right;">
-                <div class="label-sm">Potential Payout</div>
+                <div class="label-gold">Potential Payout</div>
                 <div id="payout-ui" style="font-size:1.8rem; color:var(--accent-cyan); font-weight:900; font-family:'JetBrains Mono';">13.50</div>
             </div>
         </div>
@@ -186,98 +191,98 @@
     <div id="toast-bin"></div>
 
     <script>
-        const AudioFX = {
-            ctx: new (window.AudioContext || window.webkitAudioContext)(),
-            play(f, t, d, v=0.05) {
-                const o = this.ctx.createOscillator(), g = this.ctx.createGain();
-                o.type = t; o.frequency.setValueAtTime(f, this.ctx.currentTime);
-                g.gain.setValueAtTime(v, this.ctx.currentTime);
-                g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + d);
-                o.connect(g); g.connect(this.ctx.destination);
-                o.start(); o.stop(this.ctx.currentTime + d);
-            },
-            tick() { this.play(800, 'sine', 0.05); },
-            win() { [523, 659, 783].forEach((f, i) => setTimeout(() => this.play(f, 'sine', 0.2), i * 100)); }
-        };
-
         const Game = (function() {
-            const S = { balance: 7920, bet: 4.50, busy: false, turbo: false, auto: false, ball: 0, order: [0, 1, 2] };
+            const S = { balance: 7920, bet: 4.50, mult: 3, busy: false, ballSlot: 0, order: [0, 1, 2], pos: [] };
 
             return {
-                adjBet: (v) => { if(S.busy) return; S.bet = Math.max(1, S.bet + v); document.getElementById('bet-display').innerText = S.bet.toFixed(2); document.getElementById('payout-ui').innerText = (S.bet * 3).toFixed(2); AudioFX.tick(); },
-                toggleTurbo: () => { S.turbo = !S.turbo; document.getElementById('turbo-btn').innerText = `TURBO: ${S.turbo?'ON':'OFF'}`; document.getElementById('turbo-btn').classList.toggle('active'); },
-                toggleAuto: () => { S.auto = !S.auto; document.getElementById('auto-btn').innerText = `AUTO: ${S.auto?'ON':'OFF'}`; document.getElementById('auto-btn').classList.toggle('active'); if(S.auto && !S.busy) Game.play(); },
-                
+                adjBet: (v) => { if(S.busy) return; S.bet = Math.max(1, S.bet + v); document.getElementById('bet-ui').innerText = S.bet.toFixed(2); document.getElementById('payout-ui').innerText = (S.bet * S.mult).toFixed(2); },
+                setMult: (m, el) => { if(S.busy) return; S.mult = m; document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); document.getElementById('payout-ui').innerText = (S.bet * S.mult).toFixed(2); },
                 play: function() {
-                    if(S.busy || S.balance < S.bet) { S.auto = false; return; }
+                    if(S.busy || S.balance < S.bet) return;
                     S.busy = true; document.getElementById('go-btn').disabled = true;
                     S.balance -= S.bet; this.upd();
                     
-                    const cups = [document.getElementById('cup0'), document.getElementById('cup1'), document.getElementById('cup2')];
-                    const pos = cups.map(c => c.offsetLeft);
-                    S.ball = Math.floor(Math.random()*3);
-                    gsap.set("#ball-obj", { left: pos[S.ball]+48, display:'block', bottom: 128 });
+                    const ball = document.getElementById('ball-obj');
+                    const cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
+                    S.pos = cups.map(c => c.offsetLeft);
                     
-                    const d = S.turbo ? 0.2 : 0.6;
-                    gsap.to(".cup-visual", { y: -160, duration: d, ease: "power2.out", stagger: 0.1, onComplete: () => {
-                        setTimeout(() => gsap.to(".cup-visual", { y: 0, duration: d/2, onComplete: () => this.shuffle(pos) }), S.turbo ? 50 : 800);
-                    }});
-                },
-
-                shuffle: async function(pos) {
-                    document.getElementById('ball-obj').style.display='none';
-                    const rounds = S.turbo ? 12 : 55;
-                    for(let i=0; i<rounds; i++) {
-                        let a=Math.floor(Math.random()*3), b; do{ b=Math.floor(Math.random()*3); } while(a===b);
-                        const spd = S.turbo ? 0.05 : Math.max(0.04, 0.22-(i*0.005));
-                        const pA = pos[S.order.indexOf(a)], pB = pos[S.order.indexOf(b)];
-                        gsap.to(document.getElementById('cup'+a), { left:pB, duration:spd });
-                        await gsap.to(document.getElementById('cup'+b), { left:pA, duration:spd });
-                        const iA=S.order.indexOf(a), iB=S.order.indexOf(b); [S.order[iA], S.order[iB]]=[S.order[iB], S.order[iA]];
-                    }
-                    if(S.auto) { setTimeout(() => this.reveal(Math.floor(Math.random()*3)), 500); }
-                    else { S.busy = false; [0,1,2].forEach(i => document.getElementById('cup'+i).onclick = () => this.reveal(i)); }
-                },
-
-                reveal: function(choice) {
-                    if(document.getElementById('go-btn').disabled === false && !S.auto) return;
-                    S.busy = true;
-                    const win = (choice === S.ball);
-                    const pos = [document.getElementById('cup0').offsetLeft, document.getElementById('cup1').offsetLeft, document.getElementById('cup2').offsetLeft];
-                    gsap.set("#ball-obj", { left: pos[S.order.indexOf(S.ball)]+48, display:'block' });
-
-                    gsap.to(".cup-visual", { y: -180, duration: S.turbo ? 0.1 : 0.6, ease: "back.out", stagger: 0.1 });
+                    S.ballSlot = Math.floor(Math.random() * 3);
+                    gsap.set(ball, { left: S.pos[S.ballSlot] + 45, display: 'block', bottom: 128 });
+                    gsap.to(".cup-mesh", { y: -170, duration: 0.6, ease: "power2.out", stagger: 0.1 });
 
                     setTimeout(() => {
-                        if(win) { S.balance += S.bet * 3; AudioFX.win(); UI.toast("ROUND WON!", "win"); }
-                        else { AudioFX.play(100, 'sawtooth', 0.4); UI.toast("ROUND LOST", "loss"); }
-                        this.upd(); this.cleanup();
-                    }, 800);
+                        gsap.to(".cup-mesh", { y: 0, duration: 0.4, onComplete: () => this.shuffle() });
+                    }, 1400);
                 },
+                shuffle: async function() {
+                    document.getElementById('ball-obj').style.display = 'none';
+                    const cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
+                    for (let i = 0; i < 50; i++) {
+                        let a = Math.floor(Math.random() * 3), b;
+                        do { b = Math.floor(Math.random() * 3); } while (a === b);
+                        const spd = Math.max(0.04, 0.22 - (i * 0.005));
+                        const pA = S.pos[S.order.indexOf(a)], pB = S.pos[S.order.indexOf(b)];
+                        gsap.to(cups[a], { left: pB, duration: spd });
+                        await gsap.to(cups[b], { left: pA, duration: spd });
+                        const iA = S.order.indexOf(a), iB = S.order.indexOf(b);
+                        [S.order[iA], S.order[iB]] = [S.order[iB], S.order[iA]];
+                    }
+                    this.ready();
+                },
+                ready: function() {
+                    [0,1,2].forEach(i => document.getElementById('c'+i).onclick = () => this.reveal(i));
+                    S.busy = false;
+                },
+                reveal: function(choice) {
+                    if(document.getElementById('go-btn').disabled === false) return;
+                    S.busy = true;
+                    const ball = document.getElementById('ball-obj');
+                    const cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
+                    const finalX = S.pos[S.order.indexOf(S.ballSlot)] + 45;
+                    
+                    gsap.set(ball, { left: finalX, display: 'block' });
+                    gsap.to(".cup-mesh", { y: -180, duration: 0.6, ease: "back.out", stagger: 0.1 });
 
-                cleanup: () => setTimeout(() => { gsap.to(".cup-visual", { y:0 }); document.getElementById('ball-obj').style.display='none'; document.getElementById('go-btn').disabled=false; S.busy=false; if(S.auto) Game.play(); }, 1200),
-                upd: () => document.getElementById('balance-ui').innerHTML = `${(S.balance/1000).toFixed(2)}K <span style="color:var(--green); font-weight:900;">+</span>`
+                    setTimeout(() => {
+                        const win = (choice === S.ballSlot);
+                        if(win) { S.balance += S.bet * S.mult; UI.toast("ROUND WON!", "win"); }
+                        else UI.toast("ROUND LOST", "loss");
+                        this.upd(); this.cleanup();
+                    }, 1000);
+                },
+                cleanup: () => setTimeout(() => { gsap.to(".cup-mesh", { y: 0, duration: 0.5 }); document.getElementById('ball-obj').style.display='none'; document.getElementById('go-btn').disabled=false; S.busy=false; }, 1500),
+                upd: () => document.getElementById('balance-ui').innerHTML = `${(S.balance/1000).toFixed(2)}K <span style="color:var(--accent-cyan);">+</span>`
             };
         })();
 
         const UI = {
+            sendMessage() {
+                const input = document.getElementById('chat-input');
+                const text = input.value.trim();
+                if(!text) return;
+                this.addMessage("davttedkf", "73", text);
+                input.value = '';
+            },
+            addMessage(user, lvl, text) {
+                const list = document.getElementById('chat-list');
+                const msg = document.createElement('div');
+                msg.className = 'chat-msg';
+                msg.innerHTML = `<div class="avatar"></div><div class="msg-body"><div class="user-meta"><span class="username">${user}</span><span class="lvl-badge">Lv.${lvl}</span></div><div class="chat-text">${text}</div></div>`;
+                list.prepend(msg);
+                if(list.children.length > 15) list.lastChild.remove();
+            },
             toast(m, type) {
                 const b = document.getElementById('toast-bin');
-                const t = document.createElement('div'); t.className = `toast`; t.style.color = type==='win'?'var(--green)':'var(--red)'; t.innerText = m;
+                const t = document.createElement('div'); t.className = 'toast'; t.style.color = type==='win'?'#10b981':'#ef4444'; t.innerText = m;
                 b.appendChild(t); setTimeout(() => t.remove(), 2500);
-            },
-            initChat() {
-                const box = document.getElementById('chat-box');
-                const lines = ["I just hit a massive multiplier!", "Anyone seen the daily race leader?", "Calculated move, totally won.", "Please pay me money", "Wanna vouch?", "Let's goooo"];
-                setInterval(() => {
-                    const entry = document.createElement('div'); entry.className = 'chat-item';
-                    entry.innerHTML = `<div class="avatar"></div><div class="msg-body"><div class="user-line"><span class="username">User_${Math.floor(Math.random()*999)}</span><span class="lvl">Lv.${Math.floor(Math.random()*99)}</span></div><div class="msg-text">${lines[Math.floor(Math.random()*lines.length)]}</div></div>`;
-                    box.prepend(entry); if(box.children.length > 12) box.lastChild.remove();
-                }, 4000);
             }
         };
 
-        UI.initChat();
+        // Static History Mockup
+        const mockNames = ["king_...", "opait...", "Kiruki...", "spike...", "jnyn"];
+        const mockLvls = ["42", "36", "73", "31", "5"];
+        const mockTexts = ["ima just delete the vouch xd", "me", "ofc weakness", "kirk opaitaon1 vouched u", "pleas pay me money"];
+        mockNames.forEach((n, i) => UI.addMessage(n, mockLvls[i], mockTexts[i]));
     </script>
 </body>
 </html>
