@@ -53,6 +53,17 @@
         .logo { font-weight: 900; font-size: 1.8rem; font-style: italic; color: #fff; }
         .logo span { color: var(--gold); }
         
+        .header-controls { display: flex; align-items: center; gap: 20px; }
+
+        .daily-btn {
+            background: linear-gradient(135deg, var(--green), #00804b);
+            color: black; border: none; padding: 10px 20px; border-radius: 8px;
+            font-weight: 900; font-size: 0.8rem; cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 255, 149, 0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; transform: scale(1.02); } 100% { opacity: 1; } }
+
         .balance-display {
             background: #000; padding: 12px 25px; border-radius: 12px;
             border: 1px solid var(--gold); color: var(--gold-light);
@@ -67,46 +78,53 @@
         .cup-node { position: absolute; width: 160px; bottom: 140px; z-index: 20; }
         .cup-label { font-size: 4rem; font-weight: 900; color: rgba(255,255,255,0.02); text-align: center; margin-bottom: 20px; }
         
-        /* THE PRO CUP */
         .cup-mesh {
             width: 140px; height: 185px; margin: 0 auto;
             background: linear-gradient(135deg, #e63946 0%, #7b0d1e 100%);
             clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
             position: relative; border-bottom: 8px solid #2b060c;
-            cursor: pointer; transition: filter 0.2s;
+            cursor: pointer;
         }
         .cup-mesh::before { content: ''; position: absolute; top: 0; width: 100%; height: 8px; background: var(--gold); opacity: 0.8; }
-        .cup-mesh::after { content: ''; position: absolute; bottom: 0; width: 100%; height: 40px; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); }
         .beast-svg { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; background: url('https://upload.wikimedia.org/wikipedia/en/d/db/MrBeast_logo.svg') no-repeat center; background-size: contain; filter: brightness(0) invert(1); opacity: 0.15; }
 
-        .ball { position: absolute; width: 44px; height: 44px; background: radial-gradient(circle at 30% 30%, #fff 0%, #bdc3c7 50%, #2c3e50 100%); border-radius: 50%; display: none; bottom: 148px; z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.6); }
+        .ball { position: absolute; width: 44px; height: 44px; background: radial-gradient(circle at 30% 30%, #fff 0%, #bdc3c7 50%, #2c3e50 100%); border-radius: 50%; display: none; bottom: 148px; z-index: 10; }
 
-        /* --- DASHBOARD --- */
+        /* --- FOOTER / DASHBOARD --- */
         .footer { height: 180px; background: #080a0f; border-top: 1px solid var(--glass); display: grid; grid-template-columns: 1fr 200px 1fr; align-items: center; padding: 0 50px; z-index: 60; }
-        
-        .control-panel { display: flex; align-items: center; gap: 20px; }
         .val-adjuster { display: flex; align-items: center; background: #000; border-radius: 8px; border: 1px solid #222; overflow: hidden; }
-        .adj-btn { width: 45px; height: 45px; background: #111; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; transition: 0.2s; }
-        .adj-btn:hover { background: #222; color: var(--gold); }
+        .adj-btn { width: 45px; height: 45px; background: #111; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; }
         .val-display { width: 120px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; color: #fff; }
-
         .mult-chips { display: flex; gap: 10px; }
-        .chip { padding: 8px 15px; border-radius: 6px; background: #111; border: 1px solid #333; font-size: 0.8rem; font-weight: 900; cursor: pointer; transition: 0.2s; color: #666; }
+        .chip { padding: 8px 15px; border-radius: 6px; background: #111; border: 1px solid #333; font-size: 0.8rem; font-weight: 900; cursor: pointer; color: #666; }
         .chip.active { border-color: var(--cyan); color: var(--cyan); background: rgba(0, 229, 255, 0.1); }
 
-        .play-btn-wrap { display: flex; justify-content: center; }
         .master-go {
             width: 130px; height: 130px; border-radius: 50%; background: #fff; color: #000; border: 12px solid #161a24;
             font-weight: 900; font-size: 1.6rem; cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             margin-top: -80px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
-        .master-go:hover:not(:disabled) { transform: scale(1.1) rotate(5deg); background: var(--gold-bright); }
-        .master-go:active { transform: scale(0.9); }
-        .master-go:disabled { opacity: 0.1; filter: grayscale(1); cursor: not-allowed; }
 
-        /* --- NOTIFICATIONS --- */
+        /* --- DAILY WHEEL MODAL --- */
+        #wheel-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 2000;
+        }
+        .wheel-container { position: relative; width: 450px; height: 450px; }
+        #wheel-svg { width: 100%; height: 100%; transform: rotate(0deg); }
+        .wheel-pointer {
+            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            width: 40px; height: 50px; background: var(--gold);
+            clip-path: polygon(0% 0%, 100% 0%, 50% 100%); z-index: 10;
+        }
+        .wheel-center {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 60px; height: 60px; background: #fff; border-radius: 50%; border: 5px solid var(--gold);
+            display: flex; align-items: center; justify-content: center; z-index: 5;
+        }
+
         #toast-bin { position: fixed; top: 40px; left: 50%; transform: translateX(-50%); z-index: 1000; pointer-events: none; }
-        .toast { padding: 18px 50px; border-radius: 12px; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); border: 1px solid var(--glass); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; animation: toastIn 0.4s ease-out; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .toast { padding: 18px 50px; border-radius: 12px; background: rgba(0,0,0,0.95); border: 1px solid var(--glass); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; animation: toastIn 0.4s ease-out; }
         @keyframes toastIn { from { transform: translateY(-100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .toast.win { color: var(--green); border-color: var(--green); }
         .toast.loss { color: var(--red); border-color: var(--red); }
@@ -117,8 +135,7 @@
     <aside class="sidebar">
         <div>
             <div class="sidebar-label">Session Roadmap</div>
-            <div class="history-grid" id="roadmap">
-                </div>
+            <div class="history-grid" id="roadmap"></div>
         </div>
         <div class="live-feed">
             <div class="sidebar-label">Live Activity</div>
@@ -129,25 +146,19 @@
     <main class="main-stage">
         <header>
             <div class="logo">CUP<span>LEGENDS</span></div>
-            <div class="balance-display" id="balance-ui">150,191.57 FUN</div>
+            <div class="header-controls">
+                <button class="daily-btn" onclick="Rewards.open()">DAILY SPIN</button>
+                <div class="balance-display" id="balance-ui">150,191.57 FUN</div>
+            </div>
         </header>
 
         <div id="arena">
             <div class="floor"></div>
             <div id="game-ball" class="ball"></div>
             
-            <div class="cup-node" id="c0" style="left: calc(50% - 380px);">
-                <div class="cup-label">1</div>
-                <div class="cup-mesh"><div class="beast-svg"></div></div>
-            </div>
-            <div class="cup-node" id="c1" style="left: calc(50% - 80px);">
-                <div class="cup-label">2</div>
-                <div class="cup-mesh"><div class="beast-svg"></div></div>
-            </div>
-            <div class="cup-node" id="c2" style="left: calc(50% + 220px);">
-                <div class="cup-label">3</div>
-                <div class="cup-mesh"><div class="beast-svg"></div></div>
-            </div>
+            <div class="cup-node" id="c0" style="left: calc(50% - 380px);"><div class="cup-label">1</div><div class="cup-mesh"><div class="beast-svg"></div></div></div>
+            <div class="cup-node" id="c1" style="left: calc(50% - 80px);"><div class="cup-label">2</div><div class="cup-mesh"><div class="beast-svg"></div></div></div>
+            <div class="cup-node" id="c2" style="left: calc(50% + 220px);"><div class="cup-label">3</div><div class="cup-mesh"><div class="beast-svg"></div></div></div>
         </div>
 
         <div class="footer">
@@ -170,11 +181,7 @@
                     </div>
                 </div>
             </div>
-
-            <div class="play-btn-wrap">
-                <button class="master-go" id="btn-go" onclick="Game.play()">GO!</button>
-            </div>
-
+            <div class="play-btn-wrap"><button class="master-go" id="btn-go" onclick="Game.play()">GO!</button></div>
             <div class="dash-item" style="justify-self: end; text-align: right;">
                 <div class="sidebar-label">Estimated Payout</div>
                 <div class="val-display" style="color: var(--green); font-size: 1.4rem;" id="payout-ui">4.50 FUN</div>
@@ -182,10 +189,20 @@
         </div>
     </main>
 
+    <div id="wheel-overlay">
+        <h1 style="color: var(--gold); font-weight: 900; margin-bottom: 30px;">DAILY REWARD SPIN</h1>
+        <div class="wheel-container">
+            <div class="wheel-pointer"></div>
+            <div class="wheel-center">⚡</div>
+            <svg id="wheel-svg" viewBox="0 0 100 100"></svg>
+        </div>
+        <button id="spin-btn" class="master-go" style="margin-top: 40px; height: 80px; width: 200px; border-radius: 10px;" onclick="Rewards.spin()">SPIN!</button>
+        <p style="color: #444; margin-top: 20px;" onclick="Rewards.close()">CLOSE</p>
+    </div>
+
     <div id="toast-bin"></div>
 
     <script>
-        // --- PRO AUDIO ---
         const FX = {
             ctx: new (window.AudioContext || window.webkitAudioContext)(),
             play(f, t, d, v = 0.1) {
@@ -197,171 +214,116 @@
                 o.start(); o.stop(this.ctx.currentTime + d);
             },
             tick() { this.play(800, 'sine', 0.05); },
-            swipe() { this.play(200, 'triangle', 0.1, 0.03); },
             win() { [523, 659, 783].forEach((f, i) => setTimeout(() => this.play(f, 'sine', 0.2), i * 100)); },
             loss() { this.play(100, 'sawtooth', 0.4, 0.04); }
         };
 
         const Game = (function() {
-            const S = {
-                balance: 150191.57,
-                bet: 1.50,
-                mult: 3,
-                isBusy: false,
-                canPick: false,
-                ballIdx: 0,
-                order: [0, 1, 2],
-                pos: []
-            };
-
-            function msg(text, type) {
-                const b = document.getElementById('toast-bin');
-                const t = document.createElement('div');
-                t.className = `toast ${type}`;
-                t.innerText = text;
-                b.appendChild(t);
-                setTimeout(() => t.remove(), 3000);
-            }
-
-            function logActivity() {
-                const log = document.getElementById('activity-log');
-                const win = Math.random() > 0.85;
-                const e = document.createElement('div');
-                e.className = `feed-item ${win ? 'big-win' : ''}`;
-                e.innerHTML = `<span>Player_${Math.floor(Math.random()*999)}</span> <span>${win ? '+' : '-'}${(Math.random()*10).toFixed(2)}</span>`;
-                log.prepend(e);
-                if(log.children.length > 12) log.lastChild.remove();
-            }
-            setInterval(logActivity, 4000);
+            const S = { balance: 150191.57, bet: 1.50, mult: 3, isBusy: false, ballIdx: 0, order: [0, 1, 2], pos: [] };
 
             return {
-                adjBet: function(v) {
-                    if(S.isBusy) return;
-                    S.bet = Math.max(0.5, S.bet + v);
-                    document.getElementById('bet-ui').innerText = S.bet.toFixed(2);
-                    this.updatePayout();
-                    FX.tick();
-                },
-                setMult: function(m, el) {
-                    if(S.isBusy) return;
-                    S.mult = m;
-                    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-                    el.classList.add('active');
-                    this.updatePayout();
-                    FX.tick();
-                },
-                updatePayout: function() {
-                    document.getElementById('payout-ui').innerText = (S.bet * S.mult).toFixed(2) + " FUN";
-                },
+                adjBet: (v) => { if(S.isBusy) return; S.bet = Math.max(0.5, S.bet + v); document.getElementById('bet-ui').innerText = S.bet.toFixed(2); Game.updatePayout(); FX.tick(); },
+                setMult: (m, el) => { if(S.isBusy) return; S.mult = m; document.querySelectorAll('.chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); Game.updatePayout(); FX.tick(); },
+                updatePayout: () => { document.getElementById('payout-ui').innerText = (S.bet * S.mult).toFixed(2) + " FUN"; },
+                updBalance: () => { document.getElementById('balance-ui').innerText = S.balance.toLocaleString('en-US', {minimumFractionDigits: 2}) + " FUN"; },
                 play: function() {
                     if(S.isBusy || S.balance < S.bet) return;
-                    S.isBusy = true;
-                    S.canPick = false;
-                    document.getElementById('btn-go').disabled = true;
-
-                    S.balance -= S.bet;
-                    this.updBalance();
-
+                    S.isBusy = true; document.getElementById('btn-go').disabled = true;
+                    S.balance -= S.bet; this.updBalance();
                     const ball = document.getElementById('game-ball');
                     const cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
                     S.pos = cups.map(c => c.offsetLeft);
-
                     S.ballIdx = Math.floor(Math.random() * 3);
                     gsap.set(ball, { left: S.pos[S.ballIdx] + 58, display: 'block', bottom: 148 });
-                    
                     gsap.to(".cup-mesh", { y: -190, duration: 0.6, ease: "power2.out", stagger: 0.1 });
-                    
-                    setTimeout(() => {
-                        gsap.to(".cup-mesh", { y: 0, duration: 0.5, ease: "power2.in", onComplete: () => this.shuffle() });
-                    }, 1400);
+                    setTimeout(() => gsap.to(".cup-mesh", { y: 0, duration: 0.5, onComplete: () => this.shuffle() }), 1400);
                 },
                 shuffle: async function() {
                     document.getElementById('game-ball').style.display = 'none';
-                    const cups = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
-                    
-                    for (let i = 0; i < 60; i++) {
-                        let a = Math.floor(Math.random() * 3), b;
-                        do { b = Math.floor(Math.random() * 3); } while (a === b);
-                        
-                        const speed = Math.max(0.03, 0.22 - (i * 0.005));
-                        if(i % 3 === 0) FX.swipe();
-                        
+                    for (let i = 0; i < 50; i++) {
+                        let a = Math.floor(Math.random() * 3), b; do { b = Math.floor(Math.random() * 3); } while (a === b);
+                        const speed = Math.max(0.04, 0.2 - (i * 0.005));
                         const pA = S.pos[S.order.indexOf(a)], pB = S.pos[S.order.indexOf(b)];
-                        gsap.to(cups[a], { left: pB, duration: speed });
-                        await gsap.to(cups[b], { left: pA, duration: speed });
-
-                        const iA = S.order.indexOf(a), iB = S.order.indexOf(b);
-                        [S.order[iA], S.order[iB]] = [S.order[iB], S.order[iA]];
+                        gsap.to(document.getElementById('c'+a), { left: pB, duration: speed });
+                        await gsap.to(document.getElementById('c'+b), { left: pA, duration: speed });
+                        const iA = S.order.indexOf(a), iB = S.order.indexOf(b); [S.order[iA], S.order[iB]] = [S.order[iB], S.order[iA]];
                     }
                     this.ready();
                 },
                 ready: function() {
-                    S.canPick = true;
                     gsap.to(".cup-label", { opacity: 1, color: "var(--cyan)" });
-                    [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')].forEach((a, i) => {
-                        a.onclick = () => this.reveal(i);
-                    });
+                    [0,1,2].forEach(i => document.getElementById('c'+i).onclick = () => this.reveal(i));
                 },
                 reveal: function(choice) {
-                    if(!S.canPick) return;
-                    S.canPick = false;
-
-                    // THE RIG: Chance of win decreases as multiplier increases
-                    const rigThreshold = 1 - (1 / (S.mult * 1.5)); // e.g., x10 has tiny win chance
-                    if (Math.random() < rigThreshold && choice === S.ballIdx) {
-                        S.ballIdx = (choice + 1) % 3;
-                    }
-
+                    if(document.getElementById('btn-go').disabled === false) return;
+                    const rigThreshold = 1 - (1 / (S.mult * 1.5));
+                    if (Math.random() < rigThreshold && choice === S.ballIdx) S.ballIdx = (choice + 1) % 3;
                     const win = (choice === S.ballIdx);
-                    const ball = document.getElementById('game-ball');
-                    const finalX = S.pos[S.order.indexOf(S.ballIdx)] + 58;
-                    
-                    gsap.set(ball, { left: finalX, display: 'block' });
-                    gsap.to(".cup-mesh", { y: -200, duration: 0.8, ease: "back.out", stagger: 0.05 });
-                    gsap.to(".cup-label", { opacity: 0 });
-
+                    gsap.set(document.getElementById('game-ball'), { left: S.pos[S.order.indexOf(S.ballIdx)] + 58, display: 'block' });
+                    gsap.to(".cup-mesh", { y: -200, duration: 0.8, ease: "back.out" });
                     setTimeout(() => {
-                        if (win) {
-                            FX.win();
-                            S.balance += (S.bet * S.mult);
-                            msg(`WINNER! +${(S.bet * S.mult).toFixed(2)}`, "win");
-                        } else {
-                            FX.loss();
-                            msg("BET FAILED", "loss");
-                        }
-                        this.updBalance();
-                        this.updRoadmap(win);
-                        this.cleanup();
+                        if (win) { FX.win(); S.balance += (S.bet * S.mult); Rewards.toast(`WINNER! +${(S.bet * S.mult).toFixed(2)}`, "win"); }
+                        else { FX.loss(); Rewards.toast("BET FAILED", "loss"); }
+                        this.updBalance(); this.cleanup();
                     }, 1000);
                 },
-                updBalance: function() {
-                    document.getElementById('balance-ui').innerText = S.balance.toLocaleString('en-US', {minimumFractionDigits: 2}) + " FUN";
+                cleanup: () => { setTimeout(() => { gsap.to(".cup-mesh", { y: 0, duration: 0.5 }); document.getElementById('game-ball').style.display = 'none'; document.getElementById('btn-go').disabled = false; S.isBusy = false; }, 1500); },
+                addFun: (amt) => { S.balance += amt; Game.updBalance(); }
+            };
+        })();
+
+        const Rewards = (function() {
+            const prizes = [100, 500, 250, 5000, 150, 1000, 300, 50000];
+            const colors = ["#1a1a1a", "#c5a059", "#1a1a1a", "#00ff95", "#1a1a1a", "#c5a059", "#1a1a1a", "#00e5ff"];
+            let spinning = false;
+
+            return {
+                open: () => { document.getElementById('wheel-overlay').style.display = 'flex'; Rewards.draw(); },
+                close: () => { if(!spinning) document.getElementById('wheel-overlay').style.display = 'none'; },
+                draw: () => {
+                    const svg = document.getElementById('wheel-svg');
+                    svg.innerHTML = '';
+                    prizes.forEach((p, i) => {
+                        const ang = 360 / prizes.length;
+                        const x1 = 50 + 50 * Math.cos(Math.PI * (i * ang - 90) / 180);
+                        const y1 = 50 + 50 * Math.sin(Math.PI * (i * ang - 90) / 180);
+                        const x2 = 50 + 50 * Math.cos(Math.PI * ((i + 1) * ang - 90) / 180);
+                        const y2 = 50 + 50 * Math.sin(Math.PI * ((i + 1) * ang - 90) / 180);
+                        const path = `<path d="M50,50 L${x1},${y1} A50,50 0 0,1 ${x2},${y2} Z" fill="${colors[i]}" stroke="#000" stroke-width="0.5"/>`;
+                        const textAng = (i * ang) + (ang / 2);
+                        const tx = 50 + 35 * Math.cos(Math.PI * (textAng - 90) / 180);
+                        const ty = 50 + 35 * Math.sin(Math.PI * (textAng - 90) / 180);
+                        const txt = `<text x="${tx}" y="${ty}" fill="white" font-size="3" font-weight="900" text-anchor="middle" transform="rotate(${textAng}, ${tx}, ${ty})">${p}</text>`;
+                        svg.innerHTML += path + txt;
+                    });
                 },
-                updRoadmap: function(win) {
-                    const r = document.getElementById('roadmap');
-                    const d = document.createElement('div');
-                    d.className = `dot ${win ? 'win' : 'loss'}`;
-                    d.innerText = win ? 'W' : 'L';
-                    r.prepend(d);
-                    if(r.children.length > 20) r.lastChild.remove();
+                spin: function() {
+                    if(spinning) return;
+                    spinning = true;
+                    document.getElementById('spin-btn').disabled = true;
+                    // Rigged: 70% chance to land on 100 or 150
+                    const rand = Math.random();
+                    let targetIdx = Math.floor(Math.random() * prizes.length);
+                    if(rand < 0.7) targetIdx = Math.random() > 0.5 ? 0 : 4; 
+                    
+                    const rotation = (360 * 5) + (360 - (targetIdx * (360/prizes.length))) - (360/prizes.length/2);
+                    gsap.to("#wheel-svg", { rotation: rotation, duration: 4, ease: "power4.out", onComplete: () => {
+                        Game.addFun(prizes[targetIdx]);
+                        Rewards.toast(`DAILY REWARD: +${prizes[targetIdx]} FUN`, "win");
+                        FX.win();
+                        setTimeout(() => { spinning = false; document.getElementById('spin-btn').disabled = false; Rewards.close(); gsap.set("#wheel-svg", {rotation:0}); }, 2000);
+                    }});
                 },
-                cleanup: function() {
-                    setTimeout(() => {
-                        gsap.to(".cup-mesh", { y: 0, duration: 0.5 });
-                        document.getElementById('game-ball').style.display = 'none';
-                        document.getElementById('btn-go').disabled = false;
-                        S.isBusy = false;
-                    }, 1500);
+                toast: (t, type) => {
+                    const b = document.getElementById('toast-bin');
+                    const el = document.createElement('div'); el.className = `toast ${type}`; el.innerText = t;
+                    b.appendChild(el); setTimeout(() => el.remove(), 3000);
                 }
             };
         })();
 
-        // Initial Roadmap padding
-        for(let i=0; i<20; i++) {
-            const d = document.createElement('div');
-            d.className = 'dot';
-            document.getElementById('roadmap').appendChild(d);
-        }
+        // Roadmap Init
+        for(let i=0; i<20; i++) { const d = document.createElement('div'); d.className = 'dot'; document.getElementById('roadmap').appendChild(d); }
     </script>
 </body>
 </html>
