@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CUP LEGENDS | REFINED ELITE</title>
+    <title>CUP LEGENDS | FAIR ELITE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
@@ -32,10 +32,10 @@
         
         .tab-row { display: flex; gap: 8px; margin-bottom: 10px; background: #080808; padding: 4px; border-radius: 6px; }
         .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: #444; font-size: 0.7rem; font-weight: 900; cursor: pointer; border-radius: 4px; transition: 0.2s; }
-        .tab-btn.active { color: var(--gold); background: #111; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .tab-btn.active { color: var(--gold); background: #111; }
 
         .list-container { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
-        .entry { background: var(--panel); padding: 12px; border-radius: 6px; font-size: 0.75rem; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #1a1a1a; transition: 0.3s; }
+        .entry { background: var(--panel); padding: 12px; border-radius: 6px; font-size: 0.75rem; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #1a1a1a; }
         .entry.win { border-left-color: var(--green); background: rgba(0, 255, 149, 0.02); }
 
         /* --- MAIN STAGE --- */
@@ -48,30 +48,27 @@
         .btn-header { background: #111; color: #fff; border: 1px solid #222; padding: 10px 16px; border-radius: 6px; font-size: 0.75rem; font-weight: 900; cursor: pointer; transition: 0.2s; }
         .btn-header:hover { border-color: var(--gold); transform: translateY(-2px); }
 
-        .balance-pill { background: #000; padding: 12px 24px; border-radius: 10px; border: 1px solid var(--gold); color: var(--gold-bright); font-family: 'JetBrains Mono'; font-size: 1.1rem; box-shadow: 0 0 20px rgba(197, 160, 89, 0.15); }
+        .balance-pill { background: #000; padding: 12px 24px; border-radius: 10px; border: 1px solid var(--gold); color: var(--gold-bright); font-family: 'JetBrains Mono'; font-size: 1.1rem; }
 
         #arena { flex-grow: 1; position: relative; display: flex; justify-content: center; align-items: center; perspective: 2000px; }
         .floor { position: absolute; bottom: 0; width: 100%; height: 40%; background: radial-gradient(ellipse at center, rgba(22, 26, 46, 0.8) 0%, #020308 80%); transform: rotateX(65deg); border-top: 1px solid rgba(255,255,255,0.03); }
         
-        /* --- BETTER CUP UI --- */
+        /* --- PRO CUP UI --- */
         .cup-node { position: absolute; width: 160px; bottom: 130px; z-index: 20; cursor: pointer; }
         .cup-mesh { 
-            width: 140px; height: 180px; margin: 0 auto; 
+            width: 140px; height: 185px; margin: 0 auto; 
             background: linear-gradient(135deg, #e63946 0%, #7b0d1e 100%); 
             clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%); 
             position: relative; border-bottom: 8px solid #2b060c;
             box-shadow: 0 25px 50px rgba(0,0,0,0.6);
-            transition: filter 0.3s;
         }
-        .cup-mesh::before { content: ''; position: absolute; top: 0; width: 100%; height: 10px; background: linear-gradient(to right, var(--gold), var(--gold-bright), var(--gold)); opacity: 1; }
-        .cup-mesh::after { content: ''; position: absolute; bottom: 0; width: 100%; height: 30%; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); }
+        .cup-mesh::before { content: ''; position: absolute; top: 0; width: 100%; height: 10px; background: linear-gradient(to right, var(--gold), var(--gold-bright), var(--gold)); }
         
         .beast-logo { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; background: url('https://upload.wikimedia.org/wikipedia/en/d/db/MrBeast_logo.svg') no-repeat center; background-size: contain; filter: brightness(0) invert(1); opacity: 0.1; pointer-events: none; }
         .ball { position: absolute; width: 45px; height: 45px; background: radial-gradient(circle at 30% 30%, #fff 0%, #bdc3c7 50%, #2c3e50 100%); border-radius: 50%; display: none; bottom: 138px; z-index: 10; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
 
-        /* --- ANIMATED FOOTER CONTROLS --- */
+        /* --- CONTROLS --- */
         .footer { height: 180px; background: #000; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 200px 1fr; align-items: center; padding: 0 60px; }
-        
         .control-panel { display: flex; flex-direction: column; gap: 15px; }
         .input-row { display: flex; align-items: center; background: #080a0f; border-radius: 6px; border: 1px solid #1a1a1a; overflow: hidden; width: fit-content; }
         
@@ -79,9 +76,7 @@
             width: 44px; height: 44px; background: #111; border: none; color: #fff; font-size: 1.3rem; 
             cursor: pointer; border-right: 1px solid #1a1a1a; transition: 0.15s; 
         }
-        .btn-adjust:hover:not(:disabled) { background: #222; color: var(--gold); transform: scale(1.1); }
-        .btn-adjust:active { transform: scale(0.9); }
-        
+        .btn-adjust:hover:not(:disabled) { color: var(--gold); background: #1a1a1a; }
         .val-display { width: 100px; text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; color: #fff; font-size: 1.1rem; }
         
         .chip-row { display: flex; gap: 10px; }
@@ -89,19 +84,15 @@
             padding: 10px 18px; border-radius: 6px; background: #0d1117; border: 1px solid #222; 
             font-size: 0.75rem; font-weight: 900; color: #555; cursor: pointer; transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
         }
-        .chip:hover { transform: translateY(-3px); border-color: #444; color: #888; }
-        .chip.active { color: #fff; border: 2px solid var(--cyan); background: rgba(0, 229, 255, 0.1); box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
+        .chip.active { color: #fff; border: 2px solid var(--cyan); background: rgba(0, 229, 255, 0.1); }
 
         .go-btn { 
             width: 130px; height: 130px; border-radius: 50%; background: #fff; color: #000; 
             border: 12px solid #161a24; font-weight: 900; font-size: 1.6rem; cursor: pointer; 
             transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-top: -80px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
-        .go-btn:hover:not(:disabled) { transform: scale(1.1) rotate(5deg); background: var(--gold); }
-        .go-btn:active { transform: scale(0.9); }
+        .go-btn:hover:not(:disabled) { transform: scale(1.1); background: var(--gold); }
         .go-btn:disabled { opacity: 0.05; filter: grayscale(1); }
-        .go-btn.auto { border-color: var(--green); box-shadow: 0 0 30px rgba(0, 255, 149, 0.3); }
 
         .toggle-pill { 
             padding: 8px 16px; border-radius: 50px; background: #111; border: 1px solid #222; 
@@ -109,18 +100,17 @@
         }
         .toggle-pill.active { color: #fff; border-color: var(--cyan); }
 
-        /* --- MODALS & NOTIFS --- */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 2000; text-align: center; backdrop-filter: blur(10px); }
+        /* --- MODALS --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 2000; text-align: center; }
         .modal-box { max-width: 500px; padding: 40px; }
         .hash-code { background: #000; padding: 20px; border-radius: 8px; font-family: 'JetBrains Mono'; font-size: 0.8rem; color: #555; border: 1px solid #222; word-break: break-all; }
 
         #gamble-prompt { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
-        .btn-gamble { padding: 18px 45px; border-radius: 10px; font-weight: 900; cursor: pointer; margin: 10px; border: none; font-size: 1.1rem; transition: 0.2s; }
-        .btn-gamble:hover { transform: scale(1.05); }
+        .btn-gamble { padding: 18px 45px; border-radius: 10px; font-weight: 900; cursor: pointer; margin: 10px; border: none; font-size: 1.1rem; }
 
         #toast-bin { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); z-index: 3000; pointer-events: none; }
-        .toast { padding: 18px 50px; border-radius: 60px; background: #000; border: 1px solid var(--gold); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); margin-bottom: 10px; animation: toastIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards; }
-        @keyframes toastIn { from { transform: translateY(-100px) scale(0.8); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+        .toast { padding: 18px 50px; border-radius: 60px; background: #000; border: 1px solid var(--gold); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; animation: toastIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards; }
+        @keyframes toastIn { from { transform: translateY(-100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .toast.win { color: var(--green); border-color: var(--green); }
         .toast.loss { color: var(--red); border-color: var(--red); }
     </style>
@@ -144,8 +134,8 @@
         <header>
             <div class="logo">CUP<span>LEGENDS</span></div>
             <div class="header-actions">
-                <button class="btn-header" onclick="UI.modal('fair-modal', true)">🛡️ FAIRNESS</button>
-                <button class="btn-header" style="background: var(--green); color:#000; border:none;" onclick="Rewards.claim()">🎁 DAILY</button>
+                <button class="btn-header" onclick="UI.modal('fair-modal', true)">VERIFY</button>
+                <button class="btn-header" style="background: var(--green); color:#000; border:none;" onclick="Rewards.claim()">DAILY REWARD</button>
                 <div class="balance-pill" id="balance-ui">150,191.57 FUN</div>
             </div>
         </header>
@@ -160,7 +150,7 @@
 
             <div id="gamble-prompt">
                 <h1 style="color:var(--green); font-size: 3.5rem; margin-bottom: 0;">DOUBLE DOWN?</h1>
-                <p style="color:#666; margin-bottom: 30px; font-weight: 700;">Risk your win on a 50/50 flip!</p>
+                <p style="color:#666; margin-bottom: 30px; font-weight: 700;">Risk win for 2.0x coin flip</p>
                 <div>
                     <button class="btn-gamble" style="background:var(--green); color:#000;" onclick="Game.resolveGamble(true)">DOUBLE OR NOTHING</button>
                     <button class="btn-gamble" style="background:#222; color:#fff;" onclick="Game.resolveGamble(false)">TAKE PROFIT</button>
@@ -201,7 +191,7 @@
     <div id="fair-modal" class="modal">
         <div class="modal-box">
             <h2 style="color:var(--gold); font-size: 2rem;">PROVABLY FAIR</h2>
-            <p style="color:#777; margin-bottom: 30px;">This round's outcome was hashed before you chose. We use a "Quantum Rig" algorithm that guarantees house edge while remaining mathematically verifiable.</p>
+            <p style="color:#777; margin-bottom: 30px;">Outcome hashed before choice. System remains skill-based with no real-time adjustment.</p>
             <div class="label-gold" style="margin-bottom:10px;">SHA-256 Round Hash</div>
             <div class="hash-code" id="modal-hash">Waiting for seed...</div>
             <button class="btn-header" style="margin-top:40px; padding: 15px 40px;" onclick="UI.modal('fair-modal', false)">CONTINUE</button>
@@ -285,15 +275,13 @@
                 reveal: function(choice) {
                     if(document.getElementById('go-btn').disabled === false && !S.auto) return;
                     S.busy = true;
-                    // RIGGED LOGIC (Higher risk = more rig)
-                    const rigChance = 0.7 + (S.mult / 25);
-                    if(Math.random() < rigChance && choice === S.ballSlot) S.ballSlot = (choice + 1) % 3;
+                    // REMOVED RIGGED LOGIC - GAME IS NOW FAIR
                     
                     const win = (choice === S.ballSlot);
                     const pos = [document.getElementById('c0').offsetLeft, document.getElementById('c1').offsetLeft, document.getElementById('c2').offsetLeft];
                     gsap.set("#ball", { left: pos[S.order.indexOf(S.ballSlot)]+48, display:'block' });
 
-                    // ONE-BY-ONE REVEAL SEQUENCE
+                    // STAGGERED REVEAL
                     gsap.to(".cup-mesh", { 
                         y: -190, 
                         duration: S.turbo ? 0.1 : 0.6, 
@@ -306,13 +294,13 @@
                             S.winAmt = S.bet * S.mult;
                             if(S.auto) {
                                 S.balance += S.winAmt;
-                                UI.toast(`AUTO WIN +${S.winAmt.toFixed(2)}`, 'win');
+                                UI.toast(`SUCCESS +${S.winAmt.toFixed(2)}`, 'win');
                                 this.upd(); this.cleanup();
                             } else {
                                 document.getElementById('gamble-prompt').style.display = 'flex';
                             }
                         } else {
-                            UI.toast("BET LOST", "loss");
+                            UI.toast("FAILED", "loss");
                             FX.loss();
                             this.upd(); this.cleanup();
                         }
@@ -326,14 +314,14 @@
                         if(success) {
                             S.balance += (S.winAmt * 2);
                             FX.win();
-                            UI.toast(`DOUBLE! +${(S.winAmt * 2).toFixed(2)}`, 'win');
+                            UI.toast(`DOUBLE SUCCESS +${(S.winAmt * 2).toFixed(2)}`, 'win');
                         } else {
                             FX.loss();
-                            UI.toast("CRASHED - LOSS", 'loss');
+                            UI.toast("LOSS", 'loss');
                         }
                     } else {
                         S.balance += S.winAmt;
-                        UI.toast(`SAVED +${S.winAmt.toFixed(2)}`, 'win');
+                        UI.toast(`COLLECTED +${S.winAmt.toFixed(2)}`, 'win');
                     }
                     this.upd(); this.cleanup();
                 },
@@ -388,7 +376,7 @@
         };
 
         const Rewards = {
-            claim() { UI.toast("DAILY BONUS CLAIMED +500", "win"); Game.balance += 500; Game.upd(); FX.win(); }
+            claim() { UI.toast("BONUS CLAIMED +500", "win"); Game.balance += 500; Game.upd(); FX.win(); }
         };
 
         UI.refresh();
