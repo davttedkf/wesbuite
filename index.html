@@ -6,160 +6,195 @@
 <title>Mission Control</title>
 
 <style>
+* { box-sizing: border-box; }
+
 body {
-  margin:0;
+  margin: 0;
   font-family: system-ui, sans-serif;
   background: radial-gradient(circle at center, #0e1117, #0b0f14);
-  color:#9da7b3;
+  color: #9da7b3;
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* GRID */
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
   background-image:
-  linear-gradient(rgba(59,130,246,0.08) 1px, transparent 1px),
-  linear-gradient(90deg, rgba(59,130,246,0.08) 1px, transparent 1px);
-  background-size:40px 40px;
+    linear-gradient(rgba(59,130,246,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.08) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* LOGIN */
-#login{
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+#login {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 10;
 }
 
-.box{
-  background:#11161c;
-  padding:30px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,0.05);
-  text-align:center;
+.box {
+  background: #11161c;
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  text-align: center;
+  width: 300px;
 }
 
-.box h2{color:#e6edf3;}
-.warn{color:#ef4444;font-size:12px;margin:10px 0;}
+.box h2 { color: #e6edf3; margin: 0 0 8px; }
+.warn { color: #ef4444; font-size: 12px; margin: 10px 0; }
+.login-error { color: #ef4444; font-size: 12px; margin: 8px 0 0; min-height: 16px; }
 
-input{
-  width:100%;
-  margin:8px 0;
-  padding:10px;
-  background:#0b0f14;
-  border:1px solid #222;
-  color:#e6edf3;
+input {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  background: #0b0f14;
+  border: 1px solid #222;
+  color: #e6edf3;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
 }
 
-button{
-  width:100%;
-  padding:10px;
-  background:#d4a54a;
-  border:none;
-  cursor:pointer;
+input:focus { border-color: #d4a54a; }
+
+button {
+  width: 100%;
+  padding: 10px;
+  background: #d4a54a;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  color: #0b0f14;
+  margin-top: 4px;
+  transition: background 0.2s, transform 0.1s;
 }
 
-/* DASHBOARD */
-#dash{display:none;height:100vh;display:flex;}
+button:hover { background: #e6b85a; }
+button:active { transform: scale(0.98); }
 
-.side{
-  width:250px;
-  background:#11161c;
-  padding:15px;
-  border-right:1px solid rgba(255,255,255,0.05);
+/* DASHBOARD — hidden by default, shown as flex after login */
+#dash {
+  display: none;
+  height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
-.main{flex:1;position:relative;}
-
-.header{
-  font-size:12px;
-  padding:10px;
-  border-bottom:1px solid rgba(255,255,255,0.05);
+#dash.visible {
+  display: flex;
 }
 
-.map{
-  position:relative;
-  height:100%;
+.side {
+  width: 250px;
+  background: #11161c;
+  padding: 15px;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  overflow-y: auto;
+  flex-shrink: 0;
 }
 
-/* SVG */
-svg{width:100%;height:100%;}
+.side h3 { color: #e6edf3; margin: 0 0 10px; font-size: 13px; letter-spacing: 0.08em; }
 
-/* WORLD */
-.world{
-  fill:#1f2937;
-  opacity:0.4;
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+.header {
+  font-size: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-/* NODES */
-.node{
-  fill:#22c55e;
-  filter:drop-shadow(0 0 6px #22c55e);
+.map {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
 }
 
-/* PULSE RINGS */
-.ring{
-  fill:none;
-  stroke:#22c55e;
-  stroke-width:1;
-  opacity:0.5;
-  animation:ring 2s infinite;
+svg { width: 100%; height: 100%; display: block; }
+
+.node {
+  fill: #22c55e;
+  filter: drop-shadow(0 0 6px #22c55e);
+  cursor: pointer;
 }
 
-@keyframes ring{
-  0%{r:5;opacity:0.6;}
-  100%{r:30;opacity:0;}
+.ring {
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 1;
+  opacity: 0.5;
+  animation: ring 2s infinite;
 }
 
-/* LINES */
-.path{
-  fill:none;
-  stroke:#3b82f6;
-  stroke-width:1.5;
-  opacity:0.4;
+@keyframes ring {
+  0%   { r: 5;  opacity: 0.6; }
+  100% { r: 30; opacity: 0; }
 }
 
-/* MOVING SIGNAL */
-.signal{
-  fill:#3b82f6;
-  filter:drop-shadow(0 0 6px #3b82f6);
+.path {
+  fill: none;
+  stroke: #3b82f6;
+  stroke-width: 1.5;
+  opacity: 0.4;
 }
 
-/* SCAN LINE */
-.map::after{
-  content:"";
-  position:absolute;
-  width:100%;
-  height:2px;
-  background:rgba(59,130,246,0.2);
-  animation:scan 5s linear infinite;
+.signal {
+  fill: #3b82f6;
+  filter: drop-shadow(0 0 6px #3b82f6);
 }
 
-@keyframes scan{
-  0%{top:0;}
-  100%{top:100%;}
+/* Scan line — z-index above SVG, pointer-events off so nodes stay clickable */
+.map::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(59,130,246,0.2);
+  animation: scan 5s linear infinite;
+  z-index: 2;
+  pointer-events: none;
 }
 
-/* PANEL */
-.panel{
-  position:absolute;
-  right:20px;
-  top:60px;
-  width:260px;
-  background:#161b22;
-  padding:15px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,0.05);
+@keyframes scan {
+  0%   { top: 0; }
+  100% { top: 100%; }
 }
 
-.panel h4{color:#e6edf3;}
+.panel {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 260px;
+  background: #161b22;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.05);
+  z-index: 3;
+}
 
-/* LOG */
-.log{font-size:12px;margin-top:10px;}
+.panel h4 { color: #e6edf3; margin: 0 0 8px; font-size: 14px; }
+.panel p  { margin: 4px 0; font-size: 13px; }
+
+.log { font-size: 12px; margin-top: 10px; }
+.log div { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
 </style>
 </head>
-
 <body>
 
 <!-- LOGIN -->
@@ -167,104 +202,134 @@ svg{width:100%;height:100%;}
   <div class="box">
     <h2>SECURE ACCESS</h2>
     <div class="warn">AUTHORIZED PERSONNEL ONLY</div>
-    <input placeholder="Username">
-    <input type="password" placeholder="Password">
+    <input id="uname" placeholder="Username" onkeydown="if(event.key==='Enter')enter()">
+    <input id="upass" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')enter()">
     <button onclick="enter()">ENTER</button>
+    <div class="login-error" id="login-err"></div>
   </div>
 </div>
 
-<!-- DASH -->
+<!-- DASHBOARD -->
 <div id="dash">
 
-<div class="side">
-  <h3>Logs</h3>
-  <div id="logs" class="log"></div>
-</div>
-
-<div class="main">
-  <div class="header">
-    NODE: GLOBAL-01 | STATUS: ACTIVE | UTC: <span id="time"></span>
+  <div class="side">
+    <h3>// LOGS</h3>
+    <div id="logs" class="log"></div>
   </div>
 
-  <div class="map">
-<svg viewBox="0 0 1000 500">
+  <div class="main">
+    <div class="header">
+      NODE: GLOBAL-01 &nbsp;|&nbsp; STATUS: ACTIVE &nbsp;|&nbsp; UTC: <span id="time"></span>
+    </div>
 
-<!-- WORLD MAP -->
-<image href="https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg"
-width="1000" height="500" opacity="0.3"/>
+    <div class="map">
+      <svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid slice">
 
-<!-- PATHS -->
-<path id="p1" d="M300 200 Q450 100 600 250" class="path"/>
-<path id="p2" d="M600 250 Q700 200 800 350" class="path"/>
+        <image href="https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg"
+          width="1000" height="500" opacity="0.3"/>
 
-<!-- SIGNALS -->
-<circle r="4" class="signal">
-  <animateMotion dur="3s" repeatCount="indefinite">
-    <mpath href="#p1"/>
-  </animateMotion>
-</circle>
+        <path id="p1" d="M300 200 Q450 100 600 250" class="path"/>
+        <path id="p2" d="M600 250 Q700 200 800 350" class="path"/>
 
-<circle r="4" class="signal">
-  <animateMotion dur="2.5s" repeatCount="indefinite">
-    <mpath href="#p2"/>
-  </animateMotion>
-</circle>
+        <circle r="4" class="signal">
+          <animateMotion dur="3s" repeatCount="indefinite">
+            <mpath href="#p1"/>
+          </animateMotion>
+        </circle>
 
-<!-- NODES -->
-<circle cx="300" cy="200" r="6" class="node" onclick="data('US NODE')"/>
-<circle cx="600" cy="250" r="6" class="node" onclick="data('EU NODE')"/>
-<circle cx="800" cy="350" r="6" class="node" onclick="data('ASIA NODE')"/>
+        <circle r="4" class="signal">
+          <animateMotion dur="2.5s" repeatCount="indefinite">
+            <mpath href="#p2"/>
+          </animateMotion>
+        </circle>
 
-<!-- RINGS -->
-<circle cx="300" cy="200" class="ring"/>
-<circle cx="600" cy="250" class="ring"/>
-<circle cx="800" cy="350" class="ring"/>
+        <circle cx="300" cy="200" r="6" class="node" onclick="showNode('US NODE')"/>
+        <circle cx="600" cy="250" r="6" class="node" onclick="showNode('EU NODE')"/>
+        <circle cx="800" cy="350" r="6" class="node" onclick="showNode('ASIA NODE')"/>
 
-</svg>
+        <circle cx="300" cy="200" class="ring"/>
+        <circle cx="600" cy="250" class="ring"/>
+        <circle cx="800" cy="350" class="ring"/>
 
-<div class="panel" id="panel">
-<h4>Node Info</h4>
-<p>Select node</p>
-</div>
+      </svg>
 
-</div>
-</div>
+      <div class="panel" id="panel">
+        <h4>Node Info</h4>
+        <p>Select a node</p>
+      </div>
+    </div>
+  </div>
 
 </div>
 
 <script>
+/* ---- LOGIN ---- */
+/* Simple credential check — replace USER/PASS as needed */
+var VALID_USER = "admin";
+var VALID_PASS = "admin";
 
-/* LOGIN */
-function enter(){
-  document.getElementById("login").style.display="none";
-  document.getElementById("dash").style.display="flex";
-  logs();
+function enter() {
+  var u = document.getElementById("uname").value.trim();
+  var p = document.getElementById("upass").value;
+  var err = document.getElementById("login-err");
+
+  if (!u || !p) {
+    err.textContent = "Please enter username and password.";
+    return;
+  }
+
+  if (u !== VALID_USER || p !== VALID_PASS) {
+    err.textContent = "Invalid credentials. Access denied.";
+    document.getElementById("upass").value = "";
+    return;
+  }
+
+  err.textContent = "";
+  document.getElementById("login").style.display = "none";
+  document.getElementById("dash").classList.add("visible");
+  startClock();
+  startLogs();
 }
 
-/* CLOCK */
-setInterval(()=>{
-  document.getElementById("time").innerText=new Date().toUTCString();
-},1000);
-
-/* LOGS */
-function logs(){
-  setInterval(()=>{
-    let el=document.createElement("div");
-    el.textContent="[SYS] "+new Date().toLocaleTimeString()+" signal routed...";
-    document.getElementById("logs").prepend(el);
-  },2000);
+/* ---- CLOCK (starts only after login) ---- */
+function startClock() {
+  function tick() { document.getElementById("time").textContent = new Date().toUTCString(); }
+  tick();
+  setInterval(tick, 1000);
 }
 
-/* DATA PANEL */
-function data(name){
-  document.getElementById("panel").innerHTML=
-  `<h4>${name}</h4>
-  <p>Status: ACTIVE</p>
-  <p>Signal: ${Math.floor(Math.random()*40+60)}%</p>
-  <p>Last Ping: ${new Date().toLocaleTimeString()}</p>
-  <p>ID: ${Math.random().toString(36).substring(2,8).toUpperCase()}</p>`;
+/* ---- LOGS ---- */
+var messages = [
+  "signal routed via relay",
+  "packet acknowledged",
+  "handshake complete",
+  "node sync OK",
+  "encryption verified",
+  "uplink established",
+  "beacon pulse sent"
+];
+
+function startLogs() {
+  setInterval(function() {
+    var el = document.createElement("div");
+    var msg = messages[Math.floor(Math.random() * messages.length)];
+    el.textContent = "[SYS] " + new Date().toLocaleTimeString() + " — " + msg;
+    var logs = document.getElementById("logs");
+    logs.insertBefore(el, logs.firstChild);
+    /* Keep log from growing forever */
+    if (logs.children.length > 40) logs.removeChild(logs.lastChild);
+  }, 2000);
 }
 
+/* ---- NODE PANEL ---- */
+function showNode(name) {
+  document.getElementById("panel").innerHTML =
+    "<h4>" + name + "</h4>" +
+    "<p>Status: <span style='color:#22c55e'>ACTIVE</span></p>" +
+    "<p>Signal: " + (Math.floor(Math.random() * 40) + 60) + "%</p>" +
+    "<p>Last Ping: " + new Date().toLocaleTimeString() + "</p>" +
+    "<p>ID: " + Math.random().toString(36).substring(2, 8).toUpperCase() + "</p>";
+}
 </script>
 
 </body>
