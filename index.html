@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mission Control</title>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
-* { box-sizing: border-box; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-  background: radial-gradient(circle at center, #0e1117, #0b0f14);
-  color: #9da7b3;
+  font-family: 'Courier New', monospace;
+  background: #060a0f;
+  color: #7a9bb5;
   height: 100vh;
   overflow: hidden;
 }
@@ -22,14 +22,14 @@ body::before {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(59,130,246,0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59,130,246,0.08) 1px, transparent 1px);
+    linear-gradient(rgba(59,130,246,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.05) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
 }
 
-/* LOGIN */
+/* ── LOGIN ── */
 #login {
   height: 100vh;
   display: flex;
@@ -39,298 +39,807 @@ body::before {
   z-index: 10;
 }
 
-.box {
-  background: #11161c;
-  padding: 30px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.05);
+.login-box {
+  background: #0c1219;
+  border: 1px solid #1e3a5f;
+  border-radius: 4px;
+  padding: 36px 32px;
+  width: 320px;
   text-align: center;
-  width: 300px;
 }
 
-.box h2 { color: #e6edf3; margin: 0 0 8px; }
-.warn { color: #ef4444; font-size: 12px; margin: 10px 0; }
-.login-error { color: #ef4444; font-size: 12px; margin: 8px 0 0; min-height: 16px; }
+.login-box h2 {
+  color: #e0eaf5;
+  font-size: 15px;
+  letter-spacing: 0.25em;
+  margin-bottom: 4px;
+}
 
-input {
+.login-box .sub {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #ef4444;
+  margin-bottom: 24px;
+}
+
+.login-box input {
   width: 100%;
-  margin: 8px 0;
-  padding: 10px;
-  background: #0b0f14;
-  border: 1px solid #222;
-  color: #e6edf3;
-  border-radius: 4px;
-  font-size: 14px;
+  margin: 6px 0;
+  padding: 10px 12px;
+  background: #060a0f;
+  border: 1px solid #1e3a5f;
+  color: #c8ddef;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  border-radius: 2px;
   outline: none;
   transition: border-color 0.2s;
 }
 
-input:focus { border-color: #d4a54a; }
+.login-box input:focus { border-color: #3b82f6; }
 
-button {
+.login-btn {
   width: 100%;
-  padding: 10px;
+  margin-top: 12px;
+  padding: 11px;
   background: #d4a54a;
   border: none;
   cursor: pointer;
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 14px;
-  letter-spacing: 0.05em;
-  color: #0b0f14;
-  margin-top: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #060a0f;
+  border-radius: 2px;
   transition: background 0.2s, transform 0.1s;
 }
 
-button:hover { background: #e6b85a; }
-button:active { transform: scale(0.98); }
+.login-btn:hover { background: #e6b85a; }
+.login-btn:active { transform: scale(0.98); }
+.login-err { color: #ef4444; font-size: 11px; margin-top: 10px; min-height: 14px; letter-spacing: 0.05em; }
 
-/* DASHBOARD — hidden by default, shown as flex after login */
+/* ── DASH ── */
 #dash {
   display: none;
   height: 100vh;
+  flex-direction: column;
   position: relative;
   z-index: 1;
 }
 
-#dash.visible {
+#dash.visible { display: flex; }
+
+.topbar {
   display: flex;
-}
-
-.side {
-  width: 250px;
-  background: #11161c;
-  padding: 15px;
-  border-right: 1px solid rgba(255,255,255,0.05);
-  overflow-y: auto;
+  align-items: center;
+  gap: 24px;
+  padding: 8px 16px;
+  background: #0c1219;
+  border-bottom: 1px solid #1a2a3a;
+  font-size: 11px;
+  letter-spacing: 0.12em;
   flex-shrink: 0;
+  z-index: 5;
 }
 
-.side h3 { color: #e6edf3; margin: 0 0 10px; font-size: 13px; letter-spacing: 0.08em; }
+.topbar .logo { color: #d4a54a; font-weight: 700; font-size: 13px; letter-spacing: 0.3em; }
+.topbar .stat { color: #4a7a9b; }
+.topbar .stat span { color: #22c55e; }
+.topbar #clock { color: #7a9bb5; margin-left: auto; }
 
-.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.content { display: flex; flex: 1; min-height: 0; }
 
-.header {
-  font-size: 12px;
-  padding: 10px 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  white-space: nowrap;
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 240px;
+  background: #0c1219;
+  border-right: 1px solid #1a2a3a;
+  display: flex;
+  flex-direction: column;
   flex-shrink: 0;
-}
-
-.map {
-  position: relative;
-  flex: 1;
   overflow: hidden;
 }
 
-svg { width: 100%; height: 100%; display: block; }
+.sidebar-title {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #4a7a9b;
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid #1a2a3a;
+}
 
-.node {
-  fill: #22c55e;
-  filter: drop-shadow(0 0 6px #22c55e);
+#info-panel {
+  padding: 14px;
+  border-bottom: 1px solid #1a2a3a;
+  min-height: 160px;
+}
+
+#info-panel .no-select { color: #2a4a6a; font-size: 11px; font-style: italic; margin-top: 8px; }
+#info-panel h3 { color: #e0eaf5; font-size: 13px; letter-spacing: 0.15em; margin-bottom: 10px; }
+#info-panel .row { display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid #0f1e2e; }
+#info-panel .row .label { color: #4a7a9b; }
+#info-panel .row .val { color: #c8ddef; }
+
+.log-section { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.log-title { font-size: 10px; letter-spacing: 0.2em; color: #4a7a9b; padding: 10px 14px 6px; }
+#logs { flex: 1; overflow-y: auto; padding: 0 14px 10px; }
+#logs::-webkit-scrollbar { width: 3px; }
+#logs::-webkit-scrollbar-track { background: transparent; }
+#logs::-webkit-scrollbar-thumb { background: #1e3a5f; }
+.log-entry { font-size: 10px; padding: 3px 0; border-bottom: 1px solid #0f1e2e; line-height: 1.5; }
+.log-entry .ts { color: #2a5a7a; }
+.log-entry .msg { color: #5a8aaa; margin-left: 4px; }
+.log-entry.alert .msg { color: #d4a54a; }
+.log-entry.warn .msg  { color: #ef4444; }
+
+/* ── MAP ── */
+.map-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #060a0f;
+}
+
+#map-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Countries */
+.country {
+  fill: #0f1e2e;
+  stroke: #1a3550;
+  stroke-width: 0.4;
   cursor: pointer;
+  transition: fill 0.2s;
 }
 
-.ring {
-  fill: none;
-  stroke: #22c55e;
-  stroke-width: 1;
-  opacity: 0.5;
-  animation: ring 2s infinite;
-}
+.country:hover { fill: #162a40; }
 
-@keyframes ring {
-  0%   { r: 5;  opacity: 0.6; }
-  100% { r: 30; opacity: 0; }
-}
-
-.path {
-  fill: none;
+.country.selected {
+  fill: #0d2a45;
   stroke: #3b82f6;
   stroke-width: 1.5;
-  opacity: 0.4;
 }
 
-.signal {
-  fill: #3b82f6;
-  filter: drop-shadow(0 0 6px #3b82f6);
+.country-glow {
+  fill: none;
+  stroke: #3b82f6;
+  stroke-width: 3;
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* Scan line — z-index above SVG, pointer-events off so nodes stay clickable */
-.map::after {
+.country-glow.active {
+  opacity: 1;
+  animation: countryPulse 2s ease-in-out infinite;
+}
+
+@keyframes countryPulse {
+  0%, 100% { opacity: 0.8; stroke-width: 3; filter: drop-shadow(0 0 4px #3b82f6); }
+  50%       { opacity: 0.3; stroke-width: 5; filter: drop-shadow(0 0 12px #3b82f6); }
+}
+
+/* Ocean routes */
+.ocean-route {
+  fill: none;
+  stroke: #1a3a5a;
+  stroke-width: 0.8;
+  stroke-dasharray: 4 6;
+  opacity: 0.5;
+}
+
+/* Flight paths */
+.flight-path {
+  fill: none;
+  stroke: #d4a54a;
+  stroke-width: 0.7;
+  opacity: 0.25;
+  stroke-dasharray: 3 5;
+}
+
+/* Boats */
+.boat {
+  font-size: 12px;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(0 0 3px #3b82f6);
+}
+
+/* Planes */
+.plane {
+  font-size: 11px;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(0 0 3px #d4a54a);
+}
+
+/* City nodes */
+.city-dot {
+  fill: #22c55e;
+  filter: drop-shadow(0 0 4px #22c55e);
+}
+
+.city-ring {
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 0.8;
+  animation: cityPulse 2.5s infinite;
+}
+
+@keyframes cityPulse {
+  0%   { r: 4;  opacity: 0.6; }
+  100% { r: 18; opacity: 0; }
+}
+
+/* Scan line */
+.map-wrap::after {
   content: "";
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
   height: 2px;
-  background: rgba(59,130,246,0.2);
-  animation: scan 5s linear infinite;
-  z-index: 2;
+  background: linear-gradient(90deg, transparent, rgba(59,130,246,0.3), transparent);
+  animation: scan 6s linear infinite;
+  z-index: 4;
   pointer-events: none;
 }
 
 @keyframes scan {
-  0%   { top: 0; }
+  0%   { top: 0%; }
   100% { top: 100%; }
 }
 
-.panel {
+/* Legend */
+.legend {
   position: absolute;
-  right: 20px;
-  top: 20px;
-  width: 260px;
-  background: #161b22;
-  padding: 15px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.05);
+  bottom: 16px;
+  left: 16px;
+  background: rgba(12,18,25,0.85);
+  border: 1px solid #1a2a3a;
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
   z-index: 3;
 }
 
-.panel h4 { color: #e6edf3; margin: 0 0 8px; font-size: 14px; }
-.panel p  { margin: 4px 0; font-size: 13px; }
+.legend-item { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-.log { font-size: 12px; margin-top: 10px; }
-.log div { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+/* Corner brackets aesthetic */
+.corner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: #d4a54a;
+  border-style: solid;
+  opacity: 0.5;
+  z-index: 3;
+  pointer-events: none;
+}
+.corner.tl { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
+.corner.tr { top: 8px; right: 8px; border-width: 1px 1px 0 0; }
+.corner.bl { bottom: 8px; left: 8px; border-width: 0 0 1px 1px; }
+.corner.br { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
+
+/* Tracker count badges */
+.badge {
+  display: inline-block;
+  background: #1a3a5a;
+  color: #3b82f6;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 2px;
+  margin-left: 6px;
+}
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
 <div id="login">
-  <div class="box">
-    <h2>SECURE ACCESS</h2>
-    <div class="warn">AUTHORIZED PERSONNEL ONLY</div>
-    <input id="uname" placeholder="Username" onkeydown="if(event.key==='Enter')enter()">
-    <input id="upass" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')enter()">
-    <button onclick="enter()">ENTER</button>
-    <div class="login-error" id="login-err"></div>
+  <div class="login-box">
+    <h2>⬡ MISSION CONTROL</h2>
+    <div class="sub">AUTHORIZED PERSONNEL ONLY</div>
+    <input id="uname" placeholder="USERNAME" onkeydown="if(event.key==='Enter')tryLogin()">
+    <input id="upass" type="password" placeholder="PASSWORD" onkeydown="if(event.key==='Enter')tryLogin()">
+    <button class="login-btn" onclick="tryLogin()">ACCESS SYSTEM</button>
+    <div class="login-err" id="lerr"></div>
   </div>
 </div>
 
 <!-- DASHBOARD -->
 <div id="dash">
 
-  <div class="side">
-    <h3>// LOGS</h3>
-    <div id="logs" class="log"></div>
+  <div class="topbar">
+    <span class="logo">⬡ MISSION CONTROL</span>
+    <span class="stat">STATUS <span>ONLINE</span></span>
+    <span class="stat">VESSELS <span id="vessel-count">0</span></span>
+    <span class="stat">FLIGHTS <span id="flight-count">0</span></span>
+    <span class="stat">ALERTS <span id="alert-count" style="color:#d4a54a">0</span></span>
+    <span id="clock">--:--:-- UTC</span>
   </div>
 
-  <div class="main">
-    <div class="header">
-      NODE: GLOBAL-01 &nbsp;|&nbsp; STATUS: ACTIVE &nbsp;|&nbsp; UTC: <span id="time"></span>
-    </div>
+  <div class="content">
 
-    <div class="map">
-      <svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid slice">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-title">// SELECTED REGION</div>
+      <div id="info-panel">
+        <div class="no-select">Click a country to inspect</div>
+      </div>
 
-        <image href="https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg"
-          width="1000" height="500" opacity="0.3"/>
-
-        <path id="p1" d="M300 200 Q450 100 600 250" class="path"/>
-        <path id="p2" d="M600 250 Q700 200 800 350" class="path"/>
-
-        <circle r="4" class="signal">
-          <animateMotion dur="3s" repeatCount="indefinite">
-            <mpath href="#p1"/>
-          </animateMotion>
-        </circle>
-
-        <circle r="4" class="signal">
-          <animateMotion dur="2.5s" repeatCount="indefinite">
-            <mpath href="#p2"/>
-          </animateMotion>
-        </circle>
-
-        <circle cx="300" cy="200" r="6" class="node" onclick="showNode('US NODE')"/>
-        <circle cx="600" cy="250" r="6" class="node" onclick="showNode('EU NODE')"/>
-        <circle cx="800" cy="350" r="6" class="node" onclick="showNode('ASIA NODE')"/>
-
-        <circle cx="300" cy="200" class="ring"/>
-        <circle cx="600" cy="250" class="ring"/>
-        <circle cx="800" cy="350" class="ring"/>
-
-      </svg>
-
-      <div class="panel" id="panel">
-        <h4>Node Info</h4>
-        <p>Select a node</p>
+      <div class="log-section">
+        <div class="log-title">// ACTIVITY LOG</div>
+        <div id="logs"></div>
       </div>
     </div>
-  </div>
 
+    <!-- MAP -->
+    <div class="map-wrap" id="map-wrap">
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+
+      <svg id="map-svg"></svg>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> <span style="color:#5a8aaa">NODE / CITY</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> <span style="color:#5a8aaa">VESSEL ROUTE</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d4a54a"></div> <span style="color:#5a8aaa">FLIGHT PATH</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ef4444; border-radius:0; width:12px; height:2px; margin: 3px 0;"></div> <span style="color:#5a8aaa">SELECTED BORDER</span></div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-/* ---- LOGIN ---- */
-/* Simple credential check — replace USER/PASS as needed */
-var VALID_USER = "admin";
-var VALID_PASS = "admin";
+/* ─────────────────────────────────────────
+   LOGIN
+───────────────────────────────────────── */
+var VALID_USER = "admin", VALID_PASS = "admin";
 
-function enter() {
+function tryLogin() {
   var u = document.getElementById("uname").value.trim();
   var p = document.getElementById("upass").value;
-  var err = document.getElementById("login-err");
-
-  if (!u || !p) {
-    err.textContent = "Please enter username and password.";
-    return;
-  }
-
+  var err = document.getElementById("lerr");
+  if (!u || !p) { err.textContent = "Enter username and password."; return; }
   if (u !== VALID_USER || p !== VALID_PASS) {
     err.textContent = "Invalid credentials. Access denied.";
     document.getElementById("upass").value = "";
     return;
   }
-
-  err.textContent = "";
   document.getElementById("login").style.display = "none";
   document.getElementById("dash").classList.add("visible");
-  startClock();
-  startLogs();
+  initDash();
 }
 
-/* ---- CLOCK (starts only after login) ---- */
+/* ─────────────────────────────────────────
+   CLOCK
+───────────────────────────────────────── */
 function startClock() {
-  function tick() { document.getElementById("time").textContent = new Date().toUTCString(); }
-  tick();
-  setInterval(tick, 1000);
+  function tick() {
+    var now = new Date();
+    document.getElementById("clock").textContent =
+      now.toUTCString().split(' ').slice(4,5)[0] + " UTC";
+  }
+  tick(); setInterval(tick, 1000);
 }
 
-/* ---- LOGS ---- */
-var messages = [
-  "signal routed via relay",
-  "packet acknowledged",
-  "handshake complete",
-  "node sync OK",
-  "encryption verified",
-  "uplink established",
-  "beacon pulse sent"
+/* ─────────────────────────────────────────
+   DATA
+───────────────────────────────────────── */
+var CITIES = [
+  { name:"New York",     cc:"USA", x:230, y:185 },
+  { name:"London",       cc:"GBR", x:470, y:148 },
+  { name:"Shanghai",     cc:"CHN", x:760, y:195 },
+  { name:"Tokyo",        cc:"JPN", x:810, y:188 },
+  { name:"Sydney",       cc:"AUS", x:820, y:360 },
+  { name:"São Paulo",    cc:"BRA", x:290, y:330 },
+  { name:"Dubai",        cc:"UAE", x:620, y:225 },
+  { name:"Singapore",    cc:"SGP", x:762, y:285 },
+  { name:"Los Angeles",  cc:"USA", x:150, y:205 },
+  { name:"Mumbai",       cc:"IND", x:670, y:240 },
+  { name:"Cairo",        cc:"EGY", x:563, y:220 },
+  { name:"Lagos",        cc:"NGA", x:490, y:280 },
+  { name:"Johannesburg", cc:"ZAF", x:555, y:345 },
+  { name:"Buenos Aires", cc:"ARG", x:275, y:375 },
 ];
+
+/* Ocean boat routes: [from city index, to city index] */
+var BOAT_ROUTES = [
+  [0, 1],   // NY → London
+  [1, 6],   // London → Dubai
+  [2, 7],   // Shanghai → Singapore
+  [3, 4],   // Tokyo → Sydney
+  [5, 13],  // São Paulo → Buenos Aires
+  [8, 5],   // LA → São Paulo
+  [11, 12], // Lagos → Johannesburg
+  [10, 6],  // Cairo → Dubai
+  [9, 7],   // Mumbai → Singapore
+  [0, 5],   // NY → São Paulo
+];
+
+/* Flight arc routes */
+var FLIGHT_ROUTES = [
+  [0, 1],   // NY ↔ London
+  [1, 2],   // London ↔ Shanghai
+  [2, 3],   // Shanghai ↔ Tokyo
+  [3, 4],   // Tokyo ↔ Sydney
+  [0, 8],   // NY ↔ LA
+  [8, 2],   // LA ↔ Shanghai
+  [6, 9],   // Dubai ↔ Mumbai
+  [1, 10],  // London ↔ Cairo
+  [10, 11], // Cairo ↔ Lagos
+  [6, 7],   // Dubai ↔ Singapore
+  [1, 6],   // London ↔ Dubai
+  [0, 6],   // NY ↔ Dubai
+  [4, 7],   // Sydney ↔ Singapore
+  [9, 10],  // Mumbai ↔ Cairo
+  [5, 1],   // São Paulo ↔ London
+];
+
+var COUNTRY_DATA = {
+  "United States of America": { pop:"331M", gdp:"$23T", capital:"Washington D.C.", status:"MONITORED", region:"N. America" },
+  "United Kingdom":           { pop:"68M",  gdp:"$3.1T", capital:"London", status:"MONITORED", region:"Europe" },
+  "China":                    { pop:"1.4B", gdp:"$17.7T", capital:"Beijing", status:"ACTIVE", region:"Asia" },
+  "Japan":                    { pop:"125M", gdp:"$4.9T", capital:"Tokyo", status:"ACTIVE", region:"Asia" },
+  "Australia":                { pop:"26M",  gdp:"$1.7T", capital:"Canberra", status:"MONITORED", region:"Oceania" },
+  "Brazil":                   { pop:"215M", gdp:"$1.9T", capital:"Brasília", status:"TRACKED", region:"S. America" },
+  "Russia":                   { pop:"144M", gdp:"$1.8T", capital:"Moscow", status:"ALERT", region:"Europe/Asia" },
+  "India":                    { pop:"1.4B", gdp:"$3.5T", capital:"New Delhi", status:"ACTIVE", region:"Asia" },
+  "Germany":                  { pop:"84M",  gdp:"$4.2T", capital:"Berlin", status:"MONITORED", region:"Europe" },
+  "France":                   { pop:"68M",  gdp:"$2.9T", capital:"Paris", status:"MONITORED", region:"Europe" },
+  "Canada":                   { pop:"38M",  gdp:"$2.2T", capital:"Ottawa", status:"MONITORED", region:"N. America" },
+  "South Africa":             { pop:"60M",  gdp:"$419B", capital:"Pretoria", status:"TRACKED", region:"Africa" },
+  "Nigeria":                  { pop:"218M", gdp:"$477B", capital:"Abuja", status:"TRACKED", region:"Africa" },
+  "Argentina":                { pop:"46M",  gdp:"$487B", capital:"Buenos Aires", status:"TRACKED", region:"S. America" },
+  "Saudi Arabia":             { pop:"35M",  gdp:"$1T",   capital:"Riyadh", status:"ACTIVE", region:"Middle East" },
+  "South Korea":              { pop:"52M",  gdp:"$1.8T", capital:"Seoul", status:"MONITORED", region:"Asia" },
+  "Indonesia":                { pop:"275M", gdp:"$1.2T", capital:"Jakarta", status:"TRACKED", region:"Asia" },
+  "Mexico":                   { pop:"130M", gdp:"$1.3T", capital:"Mexico City", status:"TRACKED", region:"N. America" },
+  "Egypt":                    { pop:"104M", gdp:"$476B", capital:"Cairo", status:"TRACKED", region:"Africa" },
+  "Turkey":                   { pop:"85M",  gdp:"$907B", capital:"Ankara", status:"ACTIVE", region:"Europe/Asia" },
+};
+
+/* ─────────────────────────────────────────
+   LOG SYSTEM
+───────────────────────────────────────── */
+var alertCount = 0;
+var logMessages = [
+  ["info",  "Vessel signal acquired"],
+  ["info",  "Flight path updated"],
+  ["info",  "Node sync complete"],
+  ["info",  "Packet acknowledged"],
+  ["alert", "Unidentified vessel detected"],
+  ["info",  "Uplink established"],
+  ["info",  "Beacon pulse sent"],
+  ["alert", "Flight path deviation"],
+  ["info",  "Encryption verified"],
+  ["warn",  "Signal interference"],
+  ["info",  "Handshake complete"],
+  ["info",  "Route recalculated"],
+];
+
+function addLog(type, msg) {
+  var el = document.createElement("div");
+  el.className = "log-entry " + (type === "alert" ? "alert" : type === "warn" ? "warn" : "");
+  var now = new Date();
+  var ts = now.toTimeString().split(' ')[0];
+  el.innerHTML = '<span class="ts">' + ts + '</span><span class="msg">' + msg + '</span>';
+  var logs = document.getElementById("logs");
+  logs.insertBefore(el, logs.firstChild);
+  if (logs.children.length > 60) logs.removeChild(logs.lastChild);
+  if (type === "alert" || type === "warn") {
+    alertCount++;
+    document.getElementById("alert-count").textContent = alertCount;
+  }
+}
 
 function startLogs() {
   setInterval(function() {
-    var el = document.createElement("div");
-    var msg = messages[Math.floor(Math.random() * messages.length)];
-    el.textContent = "[SYS] " + new Date().toLocaleTimeString() + " — " + msg;
-    var logs = document.getElementById("logs");
-    logs.insertBefore(el, logs.firstChild);
-    /* Keep log from growing forever */
-    if (logs.children.length > 40) logs.removeChild(logs.lastChild);
-  }, 2000);
+    var entry = logMessages[Math.floor(Math.random() * logMessages.length)];
+    addLog(entry[0], entry[1]);
+  }, 2200);
 }
 
-/* ---- NODE PANEL ---- */
-function showNode(name) {
-  document.getElementById("panel").innerHTML =
-    "<h4>" + name + "</h4>" +
-    "<p>Status: <span style='color:#22c55e'>ACTIVE</span></p>" +
-    "<p>Signal: " + (Math.floor(Math.random() * 40) + 60) + "%</p>" +
-    "<p>Last Ping: " + new Date().toLocaleTimeString() + "</p>" +
-    "<p>ID: " + Math.random().toString(36).substring(2, 8).toUpperCase() + "</p>";
+/* ─────────────────────────────────────────
+   MAP WITH D3
+───────────────────────────────────────── */
+var selectedCountry = null;
+var projection, path, svgEl, mapW, mapH;
+
+function initMap() {
+  var wrap = document.getElementById("map-wrap");
+  mapW = wrap.clientWidth;
+  mapH = wrap.clientHeight;
+
+  svgEl = d3.select("#map-svg")
+    .attr("viewBox", "0 0 " + mapW + " " + mapH);
+
+  projection = d3.geoNaturalEarth1()
+    .scale(mapW / 6.5)
+    .translate([mapW / 2, mapH / 2]);
+
+  path = d3.geoPath().projection(projection);
+
+  fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
+    .then(function(r){ return r.json(); })
+    .then(function(world){
+      var countries = topojson.feature(world, world.objects.countries);
+      var names = getCountryNames();
+
+      /* Glow layer (drawn under countries) */
+      var glowLayer = svgEl.append("g").attr("class","glow-layer");
+      /* Country layer */
+      var countryLayer = svgEl.append("g").attr("class","country-layer");
+      /* Routes layer */
+      var routeLayer = svgEl.append("g").attr("class","route-layer");
+      /* Moving objects layer */
+      var moveLayer = svgEl.append("g").attr("class","move-layer");
+      /* City layer */
+      var cityLayer = svgEl.append("g").attr("class","city-layer");
+
+      /* Draw countries */
+      countryLayer.selectAll("path.country")
+        .data(countries.features)
+        .enter().append("path")
+        .attr("class","country")
+        .attr("id", function(d){ return "c"+d.id; })
+        .attr("d", path)
+        .attr("data-name", function(d){ return names[d.id] || "Unknown"; })
+        .on("click", function(event, d){
+          var name = names[d.id] || "Unknown";
+          selectCountry(d, name, glowLayer, countryLayer);
+        });
+
+      /* Draw glow duplicates */
+      glowLayer.selectAll("path.country-glow")
+        .data(countries.features)
+        .enter().append("path")
+        .attr("class","country-glow")
+        .attr("id", function(d){ return "g"+d.id; })
+        .attr("d", path);
+
+      /* Draw ocean routes */
+      BOAT_ROUTES.forEach(function(r, i){
+        var a = projectCity(CITIES[r[0]]);
+        var b = projectCity(CITIES[r[1]]);
+        var mx = (a[0]+b[0])/2, my = (a[1]+b[1])/2 + 30;
+        routeLayer.append("path")
+          .attr("class","ocean-route")
+          .attr("d","M"+a[0]+","+a[1]+" Q"+mx+","+my+" "+b[0]+","+b[1]);
+      });
+
+      /* Draw flight arcs */
+      FLIGHT_ROUTES.forEach(function(r){
+        var a = projectCity(CITIES[r[0]]);
+        var b = projectCity(CITIES[r[1]]);
+        var mx = (a[0]+b[0])/2, my = (a[1]+b[1])/2 - 60;
+        routeLayer.append("path")
+          .attr("class","flight-path")
+          .attr("d","M"+a[0]+","+a[1]+" Q"+mx+","+my+" "+b[0]+","+b[1]);
+      });
+
+      /* City pulses */
+      CITIES.forEach(function(c){
+        var pt = projectCity(c);
+        cityLayer.append("circle")
+          .attr("class","city-ring")
+          .attr("cx", pt[0]).attr("cy", pt[1])
+          .attr("r", 4)
+          .style("animation-delay", Math.random()*2.5+"s");
+        cityLayer.append("circle")
+          .attr("class","city-dot")
+          .attr("cx", pt[0]).attr("cy", pt[1])
+          .attr("r", 2.5);
+      });
+
+      /* Spawn movers */
+      spawnBoats(moveLayer);
+      spawnPlanes(moveLayer);
+      updateCounts();
+    });
+}
+
+function projectCity(c) {
+  /* Cities defined in 1000x500 space — scale to actual map */
+  return projection([
+    (c.x / 1000) * 360 - 180,
+    90 - (c.y / 500) * 180
+  ]);
+}
+
+/* ─── BOATS ─── */
+var boats = [];
+
+function spawnBoats(layer) {
+  BOAT_ROUTES.forEach(function(r, i){
+    var boat = {
+      from: CITIES[r[0]],
+      to:   CITIES[r[1]],
+      t: Math.random(),
+      speed: 0.0008 + Math.random() * 0.0006,
+      id: "boat-"+i
+    };
+    boats.push(boat);
+
+    var el = layer.append("text")
+      .attr("class","boat")
+      .attr("id", boat.id)
+      .attr("text-anchor","middle")
+      .text("⛵");
+    boat.el = el;
+  });
+
+  animateBoats();
+}
+
+function animateBoats() {
+  boats.forEach(function(b){
+    b.t += b.speed;
+    if (b.t > 1) {
+      b.t = 0;
+      var tmp = b.from; b.from = b.to; b.to = tmp;
+      addLog("info", "Vessel arrived at " + b.to.name);
+    }
+    var a = projectCity(b.from);
+    var c2 = projectCity(b.to);
+    var mx = (a[0]+c2[0])/2, my = (a[1]+c2[1])/2 + 30;
+    var pt = quadBezier(a, [mx,my], c2, b.t);
+    b.el.attr("x", pt[0]).attr("y", pt[1]);
+  });
+  requestAnimationFrame(animateBoats);
+}
+
+/* ─── PLANES ─── */
+var planes = [];
+
+function spawnPlanes(layer) {
+  FLIGHT_ROUTES.forEach(function(r, i){
+    var plane = {
+      from: CITIES[r[0]],
+      to:   CITIES[r[1]],
+      t: Math.random(),
+      speed: 0.0018 + Math.random() * 0.001,
+      id: "plane-"+i
+    };
+    planes.push(plane);
+
+    var el = layer.append("text")
+      .attr("class","plane")
+      .attr("id", plane.id)
+      .attr("text-anchor","middle")
+      .text("✈");
+    plane.el = el;
+  });
+
+  animatePlanes();
+}
+
+function animatePlanes() {
+  planes.forEach(function(p){
+    p.t += p.speed;
+    if (p.t > 1) {
+      p.t = 0;
+      var tmp = p.from; p.from = p.to; p.to = tmp;
+      addLog("info", "Flight landed at " + p.to.name);
+    }
+    var a = projectCity(p.from);
+    var c2 = projectCity(p.to);
+    var mx = (a[0]+c2[0])/2, my = (a[1]+c2[1])/2 - 60;
+    var pt = quadBezier(a, [mx,my], c2, p.t);
+
+    /* Rotate plane toward direction */
+    var pt2 = quadBezier(a, [mx,my], c2, Math.min(p.t+0.01,1));
+    var angle = Math.atan2(pt2[1]-pt[1], pt2[0]-pt[0]) * 180/Math.PI;
+    p.el.attr("x", pt[0]).attr("y", pt[1])
+      .attr("transform","rotate("+angle+","+pt[0]+","+pt[1]+")");
+  });
+  requestAnimationFrame(animatePlanes);
+}
+
+/* ─── COUNTRY SELECT ─── */
+function selectCountry(d, name, glowLayer, countryLayer) {
+  /* Clear previous */
+  countryLayer.selectAll(".country").classed("selected", false);
+  glowLayer.selectAll(".country-glow").classed("active", false);
+
+  /* Select new */
+  countryLayer.select("#c"+d.id).classed("selected", true);
+  glowLayer.select("#g"+d.id).classed("active", true);
+
+  selectedCountry = name;
+  showCountryInfo(name);
+  addLog("info", "Region selected: " + name);
+}
+
+function showCountryInfo(name) {
+  var panel = document.getElementById("info-panel");
+  var data = COUNTRY_DATA[name];
+
+  var statusColor = {
+    "MONITORED": "#3b82f6",
+    "ACTIVE":    "#22c55e",
+    "TRACKED":   "#d4a54a",
+    "ALERT":     "#ef4444"
+  };
+
+  if (!data) {
+    panel.innerHTML = '<h3>' + name.toUpperCase() + '</h3>' +
+      '<div class="row"><span class="label">STATUS</span><span class="val" style="color:#5a8aaa">NO DATA</span></div>';
+    return;
+  }
+
+  var col = statusColor[data.status] || "#7a9bb5";
+  panel.innerHTML =
+    '<h3>' + name.toUpperCase() + '</h3>' +
+    '<div class="row"><span class="label">STATUS</span><span class="val" style="color:'+col+'">'+data.status+'</span></div>' +
+    '<div class="row"><span class="label">REGION</span><span class="val">'+data.region+'</span></div>' +
+    '<div class="row"><span class="label">CAPITAL</span><span class="val">'+data.capital+'</span></div>' +
+    '<div class="row"><span class="label">POPULATION</span><span class="val">'+data.pop+'</span></div>' +
+    '<div class="row"><span class="label">GDP</span><span class="val">'+data.gdp+'</span></div>' +
+    '<div class="row"><span class="label">ID</span><span class="val" style="color:#2a5a7a">'+Math.random().toString(36).substring(2,8).toUpperCase()+'</span></div>';
+}
+
+/* ─── HELPERS ─── */
+function quadBezier(p0, p1, p2, t) {
+  var x = (1-t)*(1-t)*p0[0] + 2*(1-t)*t*p1[0] + t*t*p2[0];
+  var y = (1-t)*(1-t)*p0[1] + 2*(1-t)*t*p1[1] + t*t*p2[1];
+  return [x, y];
+}
+
+function updateCounts() {
+  document.getElementById("vessel-count").textContent = boats.length;
+  document.getElementById("flight-count").textContent = planes.length;
+}
+
+/* ISO numeric → country name (partial list) */
+function getCountryNames() {
+  return {
+    4:"Afghanistan",8:"Albania",12:"Algeria",24:"Angola",32:"Argentina",
+    36:"Australia",40:"Austria",50:"Bangladesh",56:"Belgium",64:"Bhutan",
+    68:"Bolivia",76:"Brazil",100:"Bulgaria",116:"Cambodia",120:"Cameroon",
+    124:"Canada",144:"Sri Lanka",152:"Chile",156:"China",170:"Colombia",
+    180:"Democratic Republic of the Congo",188:"Costa Rica",192:"Cuba",
+    204:"Benin",208:"Denmark",218:"Ecuador",818:"Egypt",222:"El Salvador",
+    231:"Ethiopia",246:"Finland",250:"France",276:"Germany",288:"Ghana",
+    300:"Greece",320:"Guatemala",332:"Haiti",340:"Honduras",356:"India",
+    360:"Indonesia",364:"Iran",368:"Iraq",372:"Ireland",376:"Israel",
+    380:"Italy",388:"Jamaica",392:"Japan",400:"Jordan",398:"Kazakhstan",
+    404:"Kenya",410:"South Korea",408:"North Korea",414:"Kuwait",
+    418:"Laos",422:"Lebanon",430:"Liberia",434:"Libya",442:"Luxembourg",
+    484:"Mexico",504:"Morocco",508:"Mozambique",516:"Namibia",
+    524:"Nepal",528:"Netherlands",554:"New Zealand",558:"Nicaragua",
+    562:"Niger",566:"Nigeria",578:"Norway",586:"Pakistan",591:"Panama",
+    604:"Peru",608:"Philippines",616:"Poland",620:"Portugal",630:"Puerto Rico",
+    634:"Qatar",642:"Romania",643:"Russia",646:"Rwanda",682:"Saudi Arabia",
+    686:"Senegal",694:"Sierra Leone",706:"Somalia",710:"South Africa",
+    724:"Spain",729:"Sudan",752:"Sweden",756:"Switzerland",760:"Syria",
+    158:"Taiwan",762:"Tajikistan",764:"Thailand",768:"Togo",788:"Tunisia",
+    792:"Turkey",800:"Uganda",804:"Ukraine",784:"United Arab Emirates",
+    826:"United Kingdom",840:"United States of America",858:"Uruguay",
+    860:"Uzbekistan",862:"Venezuela",704:"Vietnam",887:"Yemen",
+    894:"Zambia",716:"Zimbabwe",
+  };
+}
+
+/* ─────────────────────────────────────────
+   INIT
+───────────────────────────────────────── */
+function initDash() {
+  startClock();
+  startLogs();
+  initMap();
+  addLog("info", "System initialized. All nodes online.");
+  addLog("alert", "Tracking " + BOAT_ROUTES.length + " vessels, " + FLIGHT_ROUTES.length + " flights");
 }
 </script>
-
 </body>
 </html>
+
