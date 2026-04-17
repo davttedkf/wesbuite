@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mission Control - Registry Audit v3</title>
+<title>Mission Control - Registry Audit v4</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
@@ -87,12 +87,12 @@ body::before {
     <div class="sidebar">
       <div id="info-panel">
         <div class="sidebar-title" style="padding:0; margin-bottom:10px;">// INTEL REPORT</div>
-        <div id="report-content">Ready for scan...</div>
+        <div id="report-content">Select signal...</div>
       </div>
       
       <div class="audit-section">
         <div class="sidebar-title">// UNIDENTIFIED SIGNALS</div>
-        <div id="missing-list">Syncing signals...</div>
+        <div id="missing-list">Syncing...</div>
       </div>
     </div>
 
@@ -128,8 +128,7 @@ function initDash() {
     .then(world => {
       var countries = topojson.feature(world, world.objects.countries);
       ALL_FEATURES = countries.features;
-      var names = getCountryNames();
-
+      
       glowLayer = svgEl.append("g");
       countryLayer = svgEl.append("g");
 
@@ -159,27 +158,25 @@ function runAudit() {
   var missingCount = 0;
 
   ALL_FEATURES.forEach(f => {
-    // Robust check: matches number OR string with padding
-    var idStr = String(f.id);
     var idNum = parseInt(f.id);
-    if (!names[idStr] && !names[idNum] && f.id !== "-99" && f.id !== 0) {
+    if (!names[idNum] && f.id !== "-99" && f.id !== 0) {
       missingCount++;
       var div = document.createElement("div");
       div.className = "missing-item";
-      div.innerText = `SIGNAL_ID: ${f.id.toString().padStart(3, '0')} (Click to locate)`;
+      div.innerText = `SIGNAL_ID: ${idNum.toString().padStart(3, '0')} (Click to locate)`;
       div.onclick = () => triggerScan(f.id);
       missingContainer.appendChild(div);
     }
   });
 
   document.getElementById("audit-status").innerText = missingCount === 0 ? "REGISTRY CLEAN" : `${missingCount} DISCREPANCIES`;
-  if(missingCount === 0) missingContainer.innerHTML = "<div style='color:#22c55e; padding:10px;'>Grid Secured. All nodes identified.</div>";
+  if(missingCount === 0) missingContainer.innerHTML = "<div style='color:#22c55e; padding:10px;'>Grid Fully Verified.</div>";
 }
 
 function triggerScan(id) {
   var names = getCountryNames();
   var idNum = parseInt(id);
-  var name = names[id] || names[idNum] || "UNIDENTIFIED SECTOR";
+  var name = names[idNum] || "UNIDENTIFIED SECTOR";
   
   countryLayer.selectAll(".country").classed("selected", false);
   glowLayer.selectAll(".country-glow").classed("active", false);
@@ -189,77 +186,192 @@ function triggerScan(id) {
 
   document.getElementById("report-content").innerHTML = `
     <h3>${name.toUpperCase()}</h3>
-    <div class="row"><span class="label">REGISTRY_ID</span><span class="val">${id.toString().padStart(3, '0')}</span></div>
-    <div class="row"><span class="label">STATUS</span><span class="val" style="color:${(names[id] || names[idNum]) ? '#22c55e' : '#ef4444'}">${(names[id] || names[idNum]) ? "VERIFIED" : "UNKNOWN"}</span></div>
+    <div class="row"><span class="label">REGISTRY_ID</span><span class="val">${idNum.toString().padStart(3, '0')}</span></div>
+    <div class="row"><span class="label">STATUS</span><span class="val" style="color:${names[idNum] ? '#22c55e' : '#ef4444'}">${names[idNum] ? "VERIFIED" : "UNKNOWN"}</span></div>
   `;
 }
 
 function getCountryNames() {
+  // Mapping all verified IDs as Integers for robust lookup
   return {
-    /* YOUR NEWEST CATCHES */
-    124: "Canada",
-    32: "Argentina",
-    180: "Dem. Rep. of Congo",
-    44: "Bahamas",
-    76: "Brazil",
-    68: "Bolivia",
-    84: "Belize",
-    72: "Botswana",
-    466: "Mali",
-    204: "Benin",
-    120: "Cameroon",
-    454: "Malawi",
-    24: "Angola",
-    108: "Burundi",
-    12: "Algeria",
-    116: "Cambodia",
-    104: "Myanmar",
-    50: "Bangladesh",
-    64: "Bhutan",
     4: "Afghanistan",
-    51: "Armenia",
-    112: "Belarus",
-    40: "Austria",
-    100: "Bulgaria",
     8: "Albania",
-    56: "Belgium",
-    90: "Solomon Islands",
-    36: "Australia",
-    31: "Azerbaijan",
-    96: "Brunei",
     10: "Antarctica",
+    12: "Algeria",
+    24: "Angola",
+    31: "Azerbaijan",
+    32: "Argentina",
+    36: "Australia",
+    40: "Austria",
+    44: "Bahamas",
+    50: "Bangladesh",
+    51: "Armenia",
+    56: "Belgium",
+    64: "Bhutan",
+    68: "Bolivia",
     70: "Bosnia and Herzegovina",
-
-    /* PREVIOUSLY VERIFIED */
-    214: "Dominican Republic",
-    238: "Falkland Islands",
-    260: "French Southern Territories",
-    626: "Timor-Leste",
-    320: "Guatemala",
-    630: "Puerto Rico",
-    624: "Guinea-Bissau",
+    72: "Botswana",
+    76: "Brazil",
+    84: "Belize",
+    90: "Solomon Islands",
+    96: "Brunei",
+    100: "Bulgaria",
+    104: "Myanmar",
+    108: "Burundi",
+    112: "Belarus",
+    116: "Cambodia",
+    120: "Cameroon",
+    124: "Canada",
+    140: "Central African Republic",
+    144: "Sri Lanka",
+    148: "Chad",
+    152: "Chile",
+    156: "China",
+    158: "Taiwan",
+    170: "Colombia",
     178: "Republic of the Congo",
+    180: "Dem. Rep. of Congo",
+    188: "Costa Rica",
+    191: "Croatia",
+    192: "Cuba",
+    196: "Cyprus",
+    203: "Czechia",
+    204: "Benin",
+    208: "Denmark",
+    214: "Dominican Republic",
+    218: "Ecuador",
+    222: "El Salvador",
     226: "Equatorial Guinea",
+    231: "Ethiopia",
+    232: "Eritrea", // UPDATED: ERITREA VERIFIED
+    233: "Estonia",
+    238: "Falkland Islands",
+    242: "Fiji",
+    246: "Finland",
+    250: "France",
+    260: "French Southern Territories",
+    262: "Djibouti",
+    266: "Gabon",
+    268: "Georgia",
+    270: "Gambia",
     275: "Palestine",
+    276: "Germany",
+    288: "Ghana",
+    300: "Greece",
+    304: "Greenland",
+    320: "Guatemala",
+    324: "Guinea",
+    328: "Guyana",
+    332: "Haiti",
+    340: "Honduras",
+    348: "Hungary",
+    352: "Iceland",
+    356: "India",
+    360: "Indonesia",
+    364: "Iran",
+    368: "Iraq",
+    372: "Ireland",
+    376: "Israel",
+    380: "Italy",
+    384: "Ivory Coast",
+    388: "Jamaica",
+    392: "Japan",
+    398: "Kazakhstan",
+    400: "Jordan",
+    404: "Kenya",
+    408: "North Korea",
+    410: "South Korea",
+    414: "Kuwait",
+    417: "Kyrgyzstan",
+    418: "Laos",
     422: "Lebanon",
-    540: "New Caledonia",
+    426: "Lesotho",
+    428: "Latvia",
+    430: "Liberia",
+    434: "Libya",
+    438: "Madagascar",
+    440: "Lithuania",
+    442: "Luxembourg",
+    450: "Malawi",
+    454: "Malaysia",
     458: "Malaysia",
-    140:"Central African Republic", 144:"Sri Lanka", 148:"Chad", 152:"Chile", 156:"China", 158:"Taiwan", 170:"Colombia", 188:"Costa Rica", 
-    191:"Croatia", 192:"Cuba", 196:"Cyprus", 203:"Czechia", 208:"Denmark", 218:"Ecuador", 222:"El Salvador", 231:"Ethiopia", 233:"Estonia", 
-    242:"Fiji", 246:"Finland", 250:"France", 262:"Djibouti", 266:"Gabon", 268:"Georgia", 270:"Gambia", 276:"Germany", 288:"Ghana", 300:"Greece", 
-    304:"Greenland", 324:"Guinea", 328:"Guyana", 332:"Haiti", 340:"Honduras", 348:"Hungary", 352:"Iceland", 356:"India", 
-    360:"Indonesia", 364:"Iran", 368:"Iraq", 372:"Ireland", 376:"Israel", 380:"Italy", 384:"Ivory Coast", 388:"Jamaica", 392:"Japan", 
-    398:"Kazakhstan", 400:"Jordan", 404:"Kenya", 408:"North Korea", 410:"South Korea", 414:"Kuwait", 417:"Kyrgyzstan", 418:"Laos", 
-    426:"Lesotho", 428:"Latvia", 430:"Liberia", 434:"Libya", 438:"Madagascar", 440:"Lithuania", 442:"Luxembourg", 450:"Malawi", 
-    478:"Mauritania", 480:"Mauritius", 484:"Mexico", 496:"Mongolia", 498:"Moldova", 499:"Montenegro", 504:"Morocco", 508:"Mozambique", 
-    512:"Oman", 516:"Namibia", 524:"Nepal", 528:"Netherlands", 548:"Vanuatu", 554:"New Zealand", 558:"Nicaragua", 562:"Niger", 566:"Nigeria", 
-    578:"Norway", 586:"Pakistan", 591:"Panama", 598:"Papua New Guinea", 600:"Paraguay", 604:"Peru", 608:"Philippines", 616:"Poland", 
-    620:"Portugal", 634:"Qatar", 642:"Romania", 643:"Russia", 646:"Rwanda", 682:"Saudi Arabia", 686:"Senegal", 688:"Serbia", 694:"Sierra Leone", 
-    702:"Singapore", 703:"Slovakia", 704:"Vietnam", 705:"Slovenia", 706:"Somalia", 710:"South Africa", 716:"Zimbabwe", 724:"Spain", 
-    728:"South Sudan", 729:"Sudan", 732:"Western Sahara", 740:"Suriname", 748:"Eswatini", 752:"Sweden", 756:"Switzerland", 760:"Syria", 
-    762:"Tajikistan", 764:"Thailand", 768:"Togo", 780:"Trinidad and Tobago", 784:"UAE", 788:"Tunisia", 792:"Turkey", 795:"Turkmenistan", 
-    800:"Uganda", 804:"Ukraine", 807:"North Macedonia", 818:"Egypt", 826:"United Kingdom", 834:"Tanzania", 840:"United States of America", 
-    854:"Burkina Faso", 858:"Uruguay", 860:"Uzbekistan", 862:"Venezuela", 882:"Samoa", 887:"Yemen", 894:"Zambia"
+    466: "Mali",
+    478: "Mauritania",
+    480: "Mauritius",
+    484: "Mexico",
+    496: "Mongolia",
+    498: "Moldova",
+    499: "Montenegro",
+    504: "Morocco",
+    508: "Mozambique",
+    512: "Oman",
+    516: "Namibia",
+    524: "Nepal",
+    528: "Netherlands",
+    540: "New Caledonia",
+    548: "Vanuatu",
+    554: "New Zealand",
+    558: "Nicaragua",
+    562: "Niger",
+    566: "Nigeria",
+    578: "Norway",
+    586: "Pakistan",
+    591: "Panama",
+    598: "Papua New Guinea",
+    600: "Paraguay",
+    604: "Peru",
+    608: "Philippines",
+    616: "Poland",
+    620: "Portugal",
+    624: "Guinea-Bissau",
+    626: "Timor-Leste",
+    630: "Puerto Rico",
+    634: "Qatar",
+    642: "Romania",
+    643: "Russia",
+    646: "Rwanda",
+    682: "Saudi Arabia",
+    686: "Senegal",
+    688: "Serbia",
+    694: "Sierra Leone",
+    702: "Singapore",
+    703: "Slovakia",
+    704: "Vietnam",
+    705: "Slovenia",
+    706: "Somalia",
+    710: "South Africa",
+    716: "Zimbabwe",
+    724: "Spain",
+    728: "South Sudan",
+    729: "Sudan",
+    732: "Western Sahara",
+    740: "Suriname",
+    748: "Eswatini",
+    752: "Sweden",
+    756: "Switzerland",
+    760: "Syria",
+    762: "Tajikistan",
+    764: "Thailand",
+    768: "Togo",
+    780: "Trinidad and Tobago",
+    784: "UAE",
+    788: "Tunisia",
+    792: "Turkey",
+    795: "Turkmenistan",
+    800: "Uganda",
+    804: "Ukraine",
+    807: "North Macedonia",
+    818: "Egypt",
+    826: "United Kingdom",
+    834: "Tanzania",
+    840: "United States of America",
+    854: "Burkina Faso",
+    858: "Uruguay",
+    860: "Uzbekistan",
+    862: "Venezuela",
+    882: "Samoa",
+    887: "Yemen",
+    894: "Zambia"
   };
 }
 </script>
