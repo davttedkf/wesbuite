@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mission Control - Global Registry</title>
+<title>Mission Control - Registry Audit v3</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
@@ -87,12 +87,12 @@ body::before {
     <div class="sidebar">
       <div id="info-panel">
         <div class="sidebar-title" style="padding:0; margin-bottom:10px;">// INTEL REPORT</div>
-        <div id="report-content">Select a territory...</div>
+        <div id="report-content">Ready for scan...</div>
       </div>
       
       <div class="audit-section">
-        <div class="sidebar-title">// UNIDENTIFIED SIGNALS (MISSING IDS)</div>
-        <div id="missing-list">Running global trace...</div>
+        <div class="sidebar-title">// UNIDENTIFIED SIGNALS</div>
+        <div id="missing-list">Syncing signals...</div>
       </div>
     </div>
 
@@ -148,33 +148,38 @@ function initDash() {
         .attr("id", d => "g"+d.id)
         .attr("d", path);
 
-      runAudit(names);
+      runAudit();
     });
 }
 
-function runAudit(names) {
+function runAudit() {
+  var names = getCountryNames();
   var missingContainer = document.getElementById("missing-list");
   missingContainer.innerHTML = "";
   var missingCount = 0;
 
   ALL_FEATURES.forEach(f => {
-    if (!names[f.id] && f.id !== "-99") {
+    // Robust check: matches number OR string with padding
+    var idStr = String(f.id);
+    var idNum = parseInt(f.id);
+    if (!names[idStr] && !names[idNum] && f.id !== "-99" && f.id !== 0) {
       missingCount++;
       var div = document.createElement("div");
       div.className = "missing-item";
-      div.innerText = `SIGNAL_ID: ${f.id} (Click to locate)`;
+      div.innerText = `SIGNAL_ID: ${f.id.toString().padStart(3, '0')} (Click to locate)`;
       div.onclick = () => triggerScan(f.id);
       missingContainer.appendChild(div);
     }
   });
 
   document.getElementById("audit-status").innerText = missingCount === 0 ? "REGISTRY CLEAN" : `${missingCount} DISCREPANCIES`;
-  if(missingCount === 0) missingContainer.innerHTML = "<div style='color:#22c55e; padding:10px;'>All global IDs identified.</div>";
+  if(missingCount === 0) missingContainer.innerHTML = "<div style='color:#22c55e; padding:10px;'>Grid Secured. All nodes identified.</div>";
 }
 
 function triggerScan(id) {
   var names = getCountryNames();
-  var name = names[id] || "UNIDENTIFIED SECTOR";
+  var idNum = parseInt(id);
+  var name = names[id] || names[idNum] || "UNIDENTIFIED SECTOR";
   
   countryLayer.selectAll(".country").classed("selected", false);
   glowLayer.selectAll(".country-glow").classed("active", false);
@@ -184,51 +189,61 @@ function triggerScan(id) {
 
   document.getElementById("report-content").innerHTML = `
     <h3>${name.toUpperCase()}</h3>
-    <div class="row"><span class="label">REGISTRY_ID</span><span class="val">${id}</span></div>
-    <div class="row"><span class="label">STATUS</span><span class="val" style="color:${names[id] ? '#22c55e' : '#ef4444'}">${names[id] ? "VERIFIED" : "UNKNOWN"}</span></div>
+    <div class="row"><span class="label">REGISTRY_ID</span><span class="val">${id.toString().padStart(3, '0')}</span></div>
+    <div class="row"><span class="label">STATUS</span><span class="val" style="color:${(names[id] || names[idNum]) ? '#22c55e' : '#ef4444'}">${(names[id] || names[idNum]) ? "VERIFIED" : "UNKNOWN"}</span></div>
   `;
 }
 
 function getCountryNames() {
   return {
-    /* YOUR RECENT UPDATES */
+    /* YOUR NEWEST CATCHES */
+    124: "Canada",
     32: "Argentina",
-    214: "Dominican Republic",
+    180: "Dem. Rep. of Congo",
     44: "Bahamas",
-    238: "Falkland Islands",
-    260: "French Southern Territories",
-    626: "Timor-Leste",
     76: "Brazil",
     68: "Bolivia",
     84: "Belize",
-    320: "Guatemala", // Added to match 084 correction
-    630: "Puerto Rico",
     72: "Botswana",
-    624: "Guinea-Bissau",
-    178: "Republic of the Congo",
-    226: "Equatorial Guinea",
+    466: "Mali",
+    204: "Benin",
+    120: "Cameroon",
+    454: "Malawi",
     24: "Angola",
-    275: "Palestine",
-    422: "Lebanon", // Added to match 275 correction
+    108: "Burundi",
     12: "Algeria",
+    116: "Cambodia",
+    104: "Myanmar",
     50: "Bangladesh",
     64: "Bhutan",
     4: "Afghanistan",
     51: "Armenia",
+    112: "Belarus",
     40: "Austria",
+    100: "Bulgaria",
     8: "Albania",
     56: "Belgium",
-    540: "New Caledonia",
     90: "Solomon Islands",
     36: "Australia",
     31: "Azerbaijan",
-    458: "Malaysia",
     96: "Brunei",
-    232: "Eritrea",
     10: "Antarctica",
     70: "Bosnia and Herzegovina",
 
-    /* PREVIOUS REGISTRY DATA */
+    /* PREVIOUSLY VERIFIED */
+    214: "Dominican Republic",
+    238: "Falkland Islands",
+    260: "French Southern Territories",
+    626: "Timor-Leste",
+    320: "Guatemala",
+    630: "Puerto Rico",
+    624: "Guinea-Bissau",
+    178: "Republic of the Congo",
+    226: "Equatorial Guinea",
+    275: "Palestine",
+    422: "Lebanon",
+    540: "New Caledonia",
+    458: "Malaysia",
     140:"Central African Republic", 144:"Sri Lanka", 148:"Chad", 152:"Chile", 156:"China", 158:"Taiwan", 170:"Colombia", 188:"Costa Rica", 
     191:"Croatia", 192:"Cuba", 196:"Cyprus", 203:"Czechia", 208:"Denmark", 218:"Ecuador", 222:"El Salvador", 231:"Ethiopia", 233:"Estonia", 
     242:"Fiji", 246:"Finland", 250:"France", 262:"Djibouti", 266:"Gabon", 268:"Georgia", 270:"Gambia", 276:"Germany", 288:"Ghana", 300:"Greece", 
