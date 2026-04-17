@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mission Control</title>
+<title>Mission Control - Global Grid</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
@@ -98,7 +98,7 @@ body::before {
 .login-btn:active { transform: scale(0.98); }
 .login-err { color: #ef4444; font-size: 11px; margin-top: 10px; min-height: 14px; letter-spacing: 0.05em; }
 
-/* ── DASH ── */
+/* ── DASHBOARD ── */
 #dash {
   display: none;
   height: 100vh;
@@ -131,7 +131,7 @@ body::before {
 
 /* ── SIDEBAR ── */
 .sidebar {
-  width: 240px;
+  width: 260px;
   background: #0c1219;
   border-right: 1px solid #1a2a3a;
   display: flex;
@@ -151,13 +151,13 @@ body::before {
 #info-panel {
   padding: 14px;
   border-bottom: 1px solid #1a2a3a;
-  min-height: 160px;
+  min-height: 180px;
 }
 
 #info-panel .no-select { color: #2a4a6a; font-size: 11px; font-style: italic; margin-top: 8px; }
-#info-panel h3 { color: #e0eaf5; font-size: 13px; letter-spacing: 0.15em; margin-bottom: 10px; }
-#info-panel .row { display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid #0f1e2e; }
-#info-panel .row .label { color: #4a7a9b; }
+#info-panel h3 { color: #e0eaf5; font-size: 13px; letter-spacing: 0.15em; margin-bottom: 10px; border-left: 2px solid #d4a54a; padding-left: 8px; }
+#info-panel .row { display: flex; justify-content: space-between; font-size: 11px; padding: 4px 0; border-bottom: 1px solid #0f1e2e; }
+#info-panel .row .label { color: #4a7a9b; font-size: 9px; }
 #info-panel .row .val { color: #c8ddef; }
 
 .log-section { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
@@ -169,8 +169,6 @@ body::before {
 .log-entry { font-size: 10px; padding: 3px 0; border-bottom: 1px solid #0f1e2e; line-height: 1.5; }
 .log-entry .ts { color: #2a5a7a; }
 .log-entry .msg { color: #5a8aaa; margin-left: 4px; }
-.log-entry.alert .msg { color: #d4a54a; }
-.log-entry.warn .msg  { color: #ef4444; }
 
 /* ── MAP ── */
 .map-wrap {
@@ -189,17 +187,20 @@ body::before {
 .country {
   fill: #0f1e2e;
   stroke: #1a3550;
-  stroke-width: 0.4;
+  stroke-width: 0.5;
   cursor: pointer;
-  transition: fill 0.2s;
+  transition: fill 0.2s, stroke 0.2s;
 }
 
-.country:hover { fill: #162a40; }
+.country:hover { 
+  fill: #162a40; 
+  stroke: #3b82f6;
+}
 
 .country.selected {
   fill: #0d2a45;
   stroke: #3b82f6;
-  stroke-width: 1.5;
+  stroke-width: 1.2;
 }
 
 .country-glow {
@@ -216,54 +217,17 @@ body::before {
 }
 
 @keyframes countryPulse {
-  0%, 100% { opacity: 0.8; stroke-width: 3; filter: drop-shadow(0 0 4px #3b82f6); }
-  50%        { opacity: 0.3; stroke-width: 5; filter: drop-shadow(0 0 12px #3b82f6); }
+  0%, 100% { opacity: 0.6; stroke-width: 2; filter: drop-shadow(0 0 4px #3b82f6); }
+  50%        { opacity: 0.2; stroke-width: 4; filter: drop-shadow(0 0 10px #3b82f6); }
 }
 
-/* Scan line */
-.map-wrap::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(59,130,246,0.3), transparent);
-  animation: scan 6s linear infinite;
-  z-index: 4;
-  pointer-events: none;
-}
-
-@keyframes scan {
-  0%   { top: 0%; }
-  100% { top: 100%; }
-}
-
-/* Legend */
-.legend {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
-  background: rgba(12,18,25,0.85);
-  border: 1px solid #1a2a3a;
-  border-radius: 4px;
-  padding: 10px 14px;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  z-index: 3;
-}
-
-.legend-item { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
-.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
-/* Corner brackets */
 .corner {
   position: absolute;
   width: 16px;
   height: 16px;
   border-color: #d4a54a;
   border-style: solid;
-  opacity: 0.5;
+  opacity: 0.4;
   z-index: 3;
   pointer-events: none;
 }
@@ -289,141 +253,80 @@ body::before {
 <div id="dash">
   <div class="topbar">
     <span class="logo">⬡ MISSION CONTROL</span>
-    <span class="stat">STATUS <span>ONLINE</span></span>
-    <span class="stat">ALERTS <span id="alert-count" style="color:#d4a54a">0</span></span>
+    <span class="stat">GRID <span>ACTIVE</span></span>
+    <span class="stat">SECURE_LINK <span>ENCRYPTED</span></span>
     <span id="clock">--:--:-- UTC</span>
   </div>
 
   <div class="content">
     <div class="sidebar">
-      <div class="sidebar-title">// SELECTED REGION</div>
+      <div class="sidebar-title">// INTEL REPORT</div>
       <div id="info-panel">
-        <div class="no-select">Click a country to inspect</div>
+        <div class="no-select">Select a sovereign territory to initialize scan...</div>
       </div>
       <div class="log-section">
-        <div class="log-title">// ACTIVITY LOG</div>
+        <div class="log-title">// SYSTEM UPLINK</div>
         <div id="logs"></div>
       </div>
     </div>
 
     <div class="map-wrap" id="map-wrap">
-      <div class="corner tl"></div>
-      <div class="corner tr"></div>
-      <div class="corner bl"></div>
-      <div class="corner br"></div>
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
       <svg id="map-svg"></svg>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#ef4444; border-radius:0; width:12px; height:2px; margin: 3px 0;"></div> <span style="color:#5a8aaa">SELECTED BORDER</span></div>
-      </div>
     </div>
   </div>
 </div>
 
 <script>
-/* ─────────────────────────────────────────
-   LOGIN
-───────────────────────────────────────── */
 var VALID_USER = "admin", VALID_PASS = "admin";
 
 function tryLogin() {
   var u = document.getElementById("uname").value.trim();
   var p = document.getElementById("upass").value;
   var err = document.getElementById("lerr");
-  if (!u || !p) { err.textContent = "Enter username and password."; return; }
-  if (u !== VALID_USER || p !== VALID_PASS) {
-    err.textContent = "Invalid credentials. Access denied.";
-    document.getElementById("upass").value = "";
-    return;
+  if (u === VALID_USER && p === VALID_PASS) {
+    document.getElementById("login").style.display = "none";
+    document.getElementById("dash").classList.add("visible");
+    initDash();
+  } else {
+    err.textContent = "ACCESS DENIED";
   }
-  document.getElementById("login").style.display = "none";
-  document.getElementById("dash").classList.add("visible");
-  initDash();
 }
 
-/* ─────────────────────────────────────────
-   CLOCK
-───────────────────────────────────────── */
 function startClock() {
-  function tick() {
-    var now = new Date();
-    document.getElementById("clock").textContent =
-      now.toUTCString().split(' ').slice(4,5)[0] + " UTC";
-  }
-  tick(); setInterval(tick, 1000);
+  setInterval(() => {
+    document.getElementById("clock").textContent = new Date().toUTCString().split(' ')[4] + " UTC";
+  }, 1000);
 }
 
-/* ─────────────────────────────────────────
-   DATA
-───────────────────────────────────────── */
+/* ── PRE-LOADED INTEL DATA ── */
 var COUNTRY_DATA = {
-  "United States of America": { pop:"331M", gdp:"$23T", capital:"Washington D.C.", status:"MONITORED", region:"N. America" },
-  "United Kingdom":            { pop:"68M",  gdp:"$3.1T", capital:"London", status:"MONITORED", region:"Europe" },
-  "China":                     { pop:"1.4B", gdp:"$17.7T", capital:"Beijing", status:"ACTIVE", region:"Asia" },
-  "Japan":                     { pop:"125M", gdp:"$4.9T", capital:"Tokyo", status:"ACTIVE", region:"Asia" },
-  "Australia":                 { pop:"26M",  gdp:"$1.7T", capital:"Canberra", status:"MONITORED", region:"Oceania" },
-  "Brazil":                    { pop:"215M", gdp:"$1.9T", capital:"Brasília", status:"TRACKED", region:"S. America" },
-  "Russia":                    { pop:"144M", gdp:"$1.8T", capital:"Moscow", status:"ALERT", region:"Europe/Asia" },
-  "India":                     { pop:"1.4B", gdp:"$3.5T", capital:"New Delhi", status:"ACTIVE", region:"Asia" },
-  "Germany":                   { pop:"84M",  gdp:"$4.2T", capital:"Berlin", status:"MONITORED", region:"Europe" },
-  "France":                    { pop:"68M",  gdp:"$2.9T", capital:"Paris", status:"MONITORED", region:"Europe" },
-  "Canada":                    { pop:"38M",  gdp:"$2.2T", capital:"Ottawa", status:"MONITORED", region:"N. America" },
-  "South Africa":              { pop:"60M",  gdp:"$419B", capital:"Pretoria", status:"TRACKED", region:"Africa" },
-  "Nigeria":                   { pop:"218M", gdp:"$477B", capital:"Abuja", status:"TRACKED", region:"Africa" },
-  "Argentina":                 { pop:"46M",  gdp:"$487B", capital:"Buenos Aires", status:"TRACKED", region:"S. America" },
-  "Saudi Arabia":              { pop:"35M",  gdp:"$1T",   capital:"Riyadh", status:"ACTIVE", region:"Middle East" },
-  "South Korea":               { pop:"52M",  gdp:"$1.8T", capital:"Seoul", status:"MONITORED", region:"Asia" },
-  "Indonesia":                 { pop:"275M", gdp:"$1.2T", capital:"Jakarta", status:"TRACKED", region:"Asia" },
-  "Mexico":                    { pop:"130M", gdp:"$1.3T", capital:"Mexico City", status:"TRACKED", region:"N. America" },
-  "Egypt":                     { pop:"104M", gdp:"$476B", capital:"Cairo", status:"TRACKED", region:"Africa" },
-  "Turkey":                    { pop:"85M",  gdp:"$907B", capital:"Ankara", status:"ACTIVE", region:"Europe/Asia" },
+  "United States of America": { pop:"331M", gdp:"$23T", cap:"Washington D.C.", status:"MONITORED" },
+  "China": { pop:"1.4B", gdp:"$17.7T", cap:"Beijing", status:"ACTIVE" },
+  "Russia": { pop:"144M", gdp:"$1.8T", cap:"Moscow", status:"ALERT" },
+  "United Kingdom": { pop:"68M", gdp:"$3.1T", cap:"London", status:"SECURE" },
+  "Brazil": { pop:"215M", gdp:"$1.9T", cap:"Brasília", status:"TRACKED" },
+  "Australia": { pop:"26M", gdp:"$1.7T", cap:"Canberra", status:"MONITORED" },
+  "Germany": { pop:"84M", gdp:"$4.2T", cap:"Berlin", status:"MONITORED" },
+  "India": { pop:"1.4B", gdp:"$3.5T", cap:"New Delhi", status:"ACTIVE" },
+  "South Africa": { pop:"60M", gdp:"$419B", cap:"Pretoria", status:"TRACKED" }
 };
 
-/* ─────────────────────────────────────────
-   LOG SYSTEM
-───────────────────────────────────────── */
-var alertCount = 0;
-var logMessages = [
-  ["info",  "Uplink heartbeat stable"],
-  ["info",  "Global node sync established"],
-  ["info",  "Packet distribution optimal"],
-  ["info",  "Security handshake verified"],
-  ["warn",  "High traffic in selected sector"],
-];
-
-function addLog(type, msg) {
-  var el = document.createElement("div");
-  el.className = "log-entry " + (type === "alert" ? "alert" : type === "warn" ? "warn" : "");
-  var now = new Date();
-  var ts = now.toTimeString().split(' ')[0];
-  el.innerHTML = '<span class="ts">' + ts + '</span><span class="msg">' + msg + '</span>';
+function addLog(msg) {
   var logs = document.getElementById("logs");
-  logs.insertBefore(el, logs.firstChild);
-  if (logs.children.length > 60) logs.removeChild(logs.lastChild);
-  if (type === "alert" || type === "warn") {
-    alertCount++;
-    document.getElementById("alert-count").textContent = alertCount;
-  }
+  var entry = document.createElement("div");
+  entry.className = "log-entry";
+  entry.innerHTML = `<span class="ts">[${new Date().toLocaleTimeString()}]</span> <span class="msg">${msg}</span>`;
+  logs.insertBefore(entry, logs.firstChild);
 }
 
-function startLogs() {
-  setInterval(function() {
-    var entry = logMessages[Math.floor(Math.random() * logMessages.length)];
-    addLog(entry[0], entry[1]);
-  }, 3500);
-}
-
-/* ─────────────────────────────────────────
-   MAP
-───────────────────────────────────────── */
-var projection, path, svgEl, mapW, mapH;
+var projection, path, svgEl;
 
 function initMap() {
   var wrap = document.getElementById("map-wrap");
-  mapW = wrap.clientWidth;
-  mapH = wrap.clientHeight;
-
-  svgEl = d3.select("#map-svg").attr("viewBox", "0 0 " + mapW + " " + mapH);
-  projection = d3.geoNaturalEarth1().scale(mapW / 6.5).translate([mapW / 2, mapH / 2]);
+  svgEl = d3.select("#map-svg").attr("viewBox", `0 0 ${wrap.clientWidth} ${wrap.clientHeight}`);
+  projection = d3.geoNaturalEarth1().scale(wrap.clientWidth / 6.5).translate([wrap.clientWidth / 2, wrap.clientHeight / 2]);
   path = d3.geoPath().projection(projection);
 
   fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
@@ -441,9 +344,16 @@ function initMap() {
         .attr("class","country")
         .attr("id", d => "c"+d.id)
         .attr("d", path)
-        .on("click", (event, d) => {
-          var name = names[d.id] || "Restricted Territory";
-          selectCountry(d, name, glowLayer, countryLayer);
+        .on("click", (e, d) => {
+          var name = names[d.id] || "Unknown Territory (" + d.id + ")";
+          
+          countryLayer.selectAll(".country").classed("selected", false);
+          glowLayer.selectAll(".country-glow").classed("active", false);
+          countryLayer.select("#c"+d.id).classed("selected", true);
+          glowLayer.select("#g"+d.id).classed("active", true);
+
+          showIntel(name, d.id);
+          addLog("SCAN_COMPLETE: " + name.toUpperCase());
         });
 
       glowLayer.selectAll("path.country-glow")
@@ -455,69 +365,60 @@ function initMap() {
     });
 }
 
-function selectCountry(d, name, glowLayer, countryLayer) {
-  countryLayer.selectAll(".country").classed("selected", false);
-  glowLayer.selectAll(".country-glow").classed("active", false);
-
-  countryLayer.select("#c"+d.id).classed("selected", true);
-  glowLayer.select("#g"+d.id).classed("active", true);
-
-  showCountryInfo(name);
-  addLog("info", "Registry Access: " + name);
-}
-
-function showCountryInfo(name) {
+function showIntel(name, id) {
   var panel = document.getElementById("info-panel");
-  var data = COUNTRY_DATA[name];
-
-  if (!data) {
-    panel.innerHTML = '<h3>' + name.toUpperCase() + '</h3>' +
-      '<div class="row"><span class="label">STATUS</span><span class="val" style="color:#5a8aaa">SECURED / UNLISTED</span></div>';
-    return;
-  }
-
-  var statusColor = { "MONITORED": "#3b82f6", "ACTIVE": "#22c55e", "TRACKED": "#d4a54a", "ALERT": "#ef4444" };
-  var col = statusColor[data.status] || "#7a9bb5";
+  var data = COUNTRY_DATA[name] || { pop:"DATA_LOST", gdp:"DATA_LOST", cap:"UNKNOWN", status:"UNIDENTIFIED" };
   
-  panel.innerHTML =
-    '<h3>' + name.toUpperCase() + '</h3>' +
-    '<div class="row"><span class="label">STATUS</span><span class="val" style="color:'+col+'">'+data.status+'</span></div>' +
-    '<div class="row"><span class="label">REGION</span><span class="val">'+data.region+'</span></div>' +
-    '<div class="row"><span class="label">CAPITAL</span><span class="val">'+data.capital+'</span></div>' +
-    '<div class="row"><span class="label">POPULATION</span><span class="val">'+data.pop+'</span></div>' +
-    '<div class="row"><span class="label">GDP</span><span class="val">'+data.gdp+'</span></div>';
+  panel.innerHTML = `
+    <h3>${name.toUpperCase()}</h3>
+    <div class="row"><span class="label">REGISTRY_ID</span><span class="val">${id}</span></div>
+    <div class="row"><span class="label">INTEL_STATUS</span><span class="val" style="color:#d4a54a">${data.status}</span></div>
+    <div class="row"><span class="label">CAPITAL_NODE</span><span class="val">${data.cap}</span></div>
+    <div class="row"><span class="label">POP_INDEX</span><span class="val">${data.pop}</span></div>
+    <div class="row"><span class="label">ECON_VAL</span><span class="val">${data.gdp}</span></div>
+  `;
 }
 
 function getCountryNames() {
   return {
-    4:"Afghanistan",8:"Albania",12:"Algeria",24:"Angola",32:"Argentina",36:"Australia",40:"Austria",50:"Bangladesh",56:"Belgium",64:"Bhutan",
-    68:"Bolivia",76:"Brazil",100:"Bulgaria",116:"Cambodia",120:"Cameroon",124:"Canada",144:"Sri Lanka",152:"Chile",156:"China",170:"Colombia",
-    180:"Dem. Rep. Congo",188:"Costa Rica",192:"Cuba",204:"Benin",208:"Denmark",218:"Ecuador",818:"Egypt",222:"El Salvador",231:"Ethiopia",
-    246:"Finland",250:"France",276:"Germany",288:"Ghana",300:"Greece",320:"Guatemala",332:"Haiti",340:"Honduras",356:"India",360:"Indonesia",
-    364:"Iran",368:"Iraq",372:"Ireland",376:"Israel",380:"Italy",388:"Jamaica",392:"Japan",400:"Jordan",398:"Kazakhstan",404:"Kenya",
-    410:"South Korea",408:"North Korea",414:"Kuwait",418:"Laos",422:"Lebanon",430:"Liberia",434:"Libya",442:"Luxembourg",484:"Mexico",
-    504:"Morocco",508:"Mozambique",516:"Namibia",524:"Nepal",528:"Netherlands",554:"New Zealand",558:"Nicaragua",562:"Niger",566:"Nigeria",
-    578:"Norway",586:"Pakistan",591:"Panama",604:"Peru",608:"Philippines",616:"Poland",620:"Portugal",634:"Qatar",642:"Romania",643:"Russia",
-    646:"Rwanda",682:"Saudi Arabia",686:"Senegal",694:"Sierra Leone",706:"Somalia",710:"South Africa",724:"Spain",729:"Sudan",752:"Sweden",
-    756:"Switzerland",760:"Syria",158:"Taiwan",762:"Tajikistan",764:"Thailand",788:"Tunisia",792:"Turkey",800:"Uganda",804:"Ukraine",
-    784:"UAE",826:"United Kingdom",840:"United States of America",858:"Uruguay",860:"Uzbekistan",862:"Venezuela",704:"Vietnam",887:"Yemen",
-    894:"Zambia",716:"Zimbabwe",140:"Central African Republic",148:"Chad",262:"Djibouti",266:"Gabon",270:"Gambia",324:"Guinea",
-    328:"Guyana",352:"Iceland",384:"Ivory Coast",426:"Lesotho",438:"Madagascar",450:"Malawi",454:"Malaysia",466:"Mali",478:"Mauritania",
-    496:"Mongolia",512:"Oman",548:"Papua New Guinea",558:"Nicaragua",562:"Niger",566:"Nigeria",586:"Pakistan",598:"Papua New Guinea",
-    600:"Paraguay",646:"Rwanda",748:"Eswatini",834:"Tanzania",104:"Myanmar",203:"Czechia",703:"Slovakia",705:"Slovenia",191:"Croatia",
-    70:"Bosnia and Herz.",688:"Serbia",807:"North Macedonia",51:"Armenia",31:"Azerbaijan",268:"Georgia",498:"Moldova",233:"Estonia",
-    428:"Latvia",440:"Lithuania",112:"Belarus",417:"Kyrgyzstan",795:"Turkmenistan"
+    4:"Afghanistan",8:"Albania",10:"Antarctica",12:"Algeria",16:"American Samoa",20:"Andorra",24:"Angola",28:"Antigua and Barbuda",
+    31:"Azerbaijan",32:"Argentina",36:"Australia",40:"Austria",44:"Bahamas",48:"Bahrain",50:"Bangladesh",51:"Armenia",52:"Barbados",
+    56:"Belgium",60:"Bermuda",64:"Bhutan",68:"Bolivia",70:"Bosnia and Herz.",72:"Botswana",74:"Bouvet Island",76:"Brazil",
+    84:"Belize",90:"Solomon Islands",92:"British Virgin Islands",96:"Brunei",100:"Bulgaria",104:"Myanmar",108:"Burundi",112:"Belarus",
+    116:"Cambodia",120:"Cameroon",124:"Canada",132:"Cape Verde",136:"Cayman Islands",140:"Central African Republic",144:"Sri Lanka",
+    148:"Chad",152:"Chile",156:"China",158:"Taiwan",162:"Christmas Island",166:"Cocos Islands",170:"Colombia",174:"Comoros",
+    175:"Mayotte",178:"Congo",180:"Dem. Rep. Congo",184:"Cook Islands",188:"Costa Rica",191:"Croatia",192:"Cuba",196:"Cyprus",
+    203:"Czechia",204:"Benin",208:"Denmark",212:"Dominica",214:"Dominican Republic",218:"Ecuador",222:"El Salvador",226:"Equatorial Guinea",
+    231:"Ethiopia",232:"Eritrea",233:"Estonia",234:"Faroe Islands",238:"Falkland Islands",239:"South Georgia",242:"Fiji",246:"Finland",
+    248:"Åland Islands",250:"France",254:"French Guiana",258:"French Polynesia",260:"French Southern Territories",262:"Djibouti",266:"Gabon",268:"Georgia",
+    270:"Gambia",275:"Palestine",276:"Germany",288:"Ghana",292:"Gibraltar",296:"Kiribati",300:"Greece",304:"Greenland",308:"Grenada",
+    312:"Guadeloupe",316:"Guam",320:"Guatemala",324:"Guinea",328:"Guyana",332:"Haiti",334:"Heard and McDonald Islands",336:"Holy See",
+    340:"Honduras",344:"Hong Kong",348:"Hungary",352:"Iceland",356:"India",360:"Indonesia",364:"Iran",368:"Iraq",372:"Ireland",
+    376:"Israel",380:"Italy",384:"Ivory Coast",388:"Jamaica",392:"Japan",398:"Kazakhstan",400:"Jordan",404:"Kenya",408:"North Korea",
+    410:"South Korea",414:"Kuwait",417:"Kyrgyzstan",418:"Laos",422:"Lebanon",426:"Lesotho",428:"Latvia",430:"Liberia",434:"Libya",
+    438:"Madagascar",440:"Lithuania",442:"Luxembourg",446:"Macao",450:"Malawi",454:"Malaysia",458:"Maldives",462:"Martinique",466:"Mali",
+    470:"Malta",474:"Montserrat",478:"Mauritania",480:"Mauritius",484:"Mexico",492:"Monaco",496:"Mongolia",498:"Moldova",499:"Montenegro",
+    500:"Montserrat",504:"Morocco",508:"Mozambique",512:"Oman",516:"Namibia",520:"Nauru",524:"Nepal",528:"Netherlands",531:"Curaçao",
+    533:"Aruba",534:"Sint Maarten",535:"Bonaire",540:"New Caledonia",548:"Vanuatu",554:"New Zealand",558:"Nicaragua",562:"Niger",
+    566:"Nigeria",570:"Niue",574:"Norfolk Island",578:"Norway",580:"Northern Mariana Islands",583:"Micronesia",584:"Marshall Islands",585:"Palau",
+    586:"Pakistan",591:"Panama",598:"Papua New Guinea",600:"Paraguay",604:"Peru",608:"Philippines",612:"Pitcairn",616:"Poland",
+    620:"Portugal",624:"Guinea-Bissau",626:"Timor-Leste",630:"Puerto Rico",634:"Qatar",638:"Réunion",642:"Romania",643:"Russia",
+    646:"Rwanda",652:"Saint Barthélemy",654:"Saint Helena",659:"Saint Kitts and Nevis",660:"Anguilla",662:"Saint Lucia",663:"Saint Martin",
+    666:"Saint Pierre and Miquelon",670:"Saint Vincent and the Grenadines",674:"San Marino",678:"Sao Tome and Principe",682:"Saudi Arabia",
+    686:"Senegal",688:"Serbia",690:"Seychelles",694:"Sierra Leone",702:"Singapore",703:"Slovakia",704:"Vietnam",705:"Slovenia",
+    706:"Somalia",710:"South Africa",716:"Zimbabwe",724:"Spain",728:"South Sudan",729:"Sudan",732:"Western Sahara",740:"Suriname",
+    744:"Svalbard",748:"Eswatini",752:"Sweden",756:"Switzerland",760:"Syria",762:"Tajikistan",764:"Thailand",768:"Togo",772:"Tokelau",
+    776:"Tonga",780:"Trinidad and Tobago",784:"UAE",788:"Tunisia",792:"Turkey",795:"Turkmenistan",796:"Turks and Caicos",798:"Tuvalu",
+    800:"Uganda",804:"Ukraine",807:"North Macedonia",818:"Egypt",826:"United Kingdom",834:"Tanzania",840:"United States of America",
+    850:"U.S. Virgin Islands",854:"Burkina Faso",858:"Uruguay",860:"Uzbekistan",862:"Venezuela",876:"Wallis and Futuna",882:"Samoa",887:"Yemen",
+    894:"Zambia"
   };
 }
 
-/* ─────────────────────────────────────────
-   INIT
-───────────────────────────────────────── */
 function initDash() {
   startClock();
-  startLogs();
   initMap();
-  addLog("info", "Mission Control Grid Updated.");
+  addLog("GRID_STABILIZED // WELCOME COMMANDER");
 }
 </script>
 </body>
