@@ -186,7 +186,6 @@ body::before {
   display: block;
 }
 
-/* Countries */
 .country {
   fill: #0f1e2e;
   stroke: #1a3550;
@@ -219,24 +218,6 @@ body::before {
 @keyframes countryPulse {
   0%, 100% { opacity: 0.8; stroke-width: 3; filter: drop-shadow(0 0 4px #3b82f6); }
   50%        { opacity: 0.3; stroke-width: 5; filter: drop-shadow(0 0 12px #3b82f6); }
-}
-
-/* City nodes */
-.city-dot {
-  fill: #22c55e;
-  filter: drop-shadow(0 0 4px #22c55e);
-}
-
-.city-ring {
-  fill: none;
-  stroke: #22c55e;
-  stroke-width: 0.8;
-  animation: cityPulse 2.5s infinite;
-}
-
-@keyframes cityPulse {
-  0%   { r: 4;  opacity: 0.6; }
-  100% { r: 18; opacity: 0; }
 }
 
 /* Scan line */
@@ -275,7 +256,7 @@ body::before {
 .legend-item { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
 .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-/* Corner brackets aesthetic */
+/* Corner brackets */
 .corner {
   position: absolute;
   width: 16px;
@@ -306,7 +287,6 @@ body::before {
 </div>
 
 <div id="dash">
-
   <div class="topbar">
     <span class="logo">⬡ MISSION CONTROL</span>
     <span class="stat">STATUS <span>ONLINE</span></span>
@@ -315,13 +295,11 @@ body::before {
   </div>
 
   <div class="content">
-
     <div class="sidebar">
       <div class="sidebar-title">// SELECTED REGION</div>
       <div id="info-panel">
         <div class="no-select">Click a country to inspect</div>
       </div>
-
       <div class="log-section">
         <div class="log-title">// ACTIVITY LOG</div>
         <div id="logs"></div>
@@ -333,15 +311,11 @@ body::before {
       <div class="corner tr"></div>
       <div class="corner bl"></div>
       <div class="corner br"></div>
-
       <svg id="map-svg"></svg>
-
       <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> <span style="color:#5a8aaa">NODE / CITY</span></div>
         <div class="legend-item"><div class="legend-dot" style="background:#ef4444; border-radius:0; width:12px; height:2px; margin: 3px 0;"></div> <span style="color:#5a8aaa">SELECTED BORDER</span></div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -381,23 +355,6 @@ function startClock() {
 /* ─────────────────────────────────────────
    DATA
 ───────────────────────────────────────── */
-var CITIES = [
-  { name:"New York",      cc:"USA", x:230, y:185 },
-  { name:"London",        cc:"GBR", x:470, y:148 },
-  { name:"Shanghai",      cc:"CHN", x:760, y:195 },
-  { name:"Tokyo",         cc:"JPN", x:810, y:188 },
-  { name:"Sydney",        cc:"AUS", x:820, y:360 },
-  { name:"São Paulo",     cc:"BRA", x:290, y:330 },
-  { name:"Dubai",         cc:"UAE", x:620, y:225 },
-  { name:"Singapore",     cc:"SGP", x:762, y:285 },
-  { name:"Los Angeles",   cc:"USA", x:150, y:205 },
-  { name:"Mumbai",        cc:"IND", x:670, y:240 },
-  { name:"Cairo",         cc:"EGY", x:563, y:220 },
-  { name:"Lagos",         cc:"NGA", x:490, y:280 },
-  { name:"Johannesburg", cc:"ZAF", x:555, y:345 },
-  { name:"Buenos Aires", cc:"ARG", x:275, y:375 },
-];
-
 var COUNTRY_DATA = {
   "United States of America": { pop:"331M", gdp:"$23T", capital:"Washington D.C.", status:"MONITORED", region:"N. America" },
   "United Kingdom":            { pop:"68M",  gdp:"$3.1T", capital:"London", status:"MONITORED", region:"Europe" },
@@ -426,13 +383,11 @@ var COUNTRY_DATA = {
 ───────────────────────────────────────── */
 var alertCount = 0;
 var logMessages = [
-  ["info",  "Node sync complete"],
-  ["info",  "Packet acknowledged"],
-  ["info",  "Uplink established"],
-  ["info",  "Beacon pulse sent"],
-  ["info",  "Encryption verified"],
-  ["warn",  "Signal interference"],
-  ["info",  "Handshake complete"],
+  ["info",  "Uplink heartbeat stable"],
+  ["info",  "Global node sync established"],
+  ["info",  "Packet distribution optimal"],
+  ["info",  "Security handshake verified"],
+  ["warn",  "High traffic in selected sector"],
 ];
 
 function addLog(type, msg) {
@@ -454,13 +409,12 @@ function startLogs() {
   setInterval(function() {
     var entry = logMessages[Math.floor(Math.random() * logMessages.length)];
     addLog(entry[0], entry[1]);
-  }, 2200);
+  }, 3500);
 }
 
 /* ─────────────────────────────────────────
-   MAP WITH D3
+   MAP
 ───────────────────────────────────────── */
-var selectedCountry = null;
 var projection, path, svgEl, mapW, mapH;
 
 function initMap() {
@@ -468,73 +422,39 @@ function initMap() {
   mapW = wrap.clientWidth;
   mapH = wrap.clientHeight;
 
-  svgEl = d3.select("#map-svg")
-    .attr("viewBox", "0 0 " + mapW + " " + mapH);
-
-  projection = d3.geoNaturalEarth1()
-    .scale(mapW / 6.5)
-    .translate([mapW / 2, mapH / 2]);
-
+  svgEl = d3.select("#map-svg").attr("viewBox", "0 0 " + mapW + " " + mapH);
+  projection = d3.geoNaturalEarth1().scale(mapW / 6.5).translate([mapW / 2, mapH / 2]);
   path = d3.geoPath().projection(projection);
 
   fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
-    .then(function(r){ return r.json(); })
-    .then(function(world){
+    .then(r => r.json())
+    .then(world => {
       var countries = topojson.feature(world, world.objects.countries);
       var names = getCountryNames();
 
-      /* Glow layer (drawn under countries) */
-      var glowLayer = svgEl.append("g").attr("class","glow-layer");
-      /* Country layer */
-      var countryLayer = svgEl.append("g").attr("class","country-layer");
-      /* City layer */
-      var cityLayer = svgEl.append("g").attr("class","city-layer");
+      var glowLayer = svgEl.append("g");
+      var countryLayer = svgEl.append("g");
 
-      /* Draw countries */
       countryLayer.selectAll("path.country")
         .data(countries.features)
         .enter().append("path")
         .attr("class","country")
-        .attr("id", function(d){ return "c"+d.id; })
+        .attr("id", d => "c"+d.id)
         .attr("d", path)
-        .attr("data-name", function(d){ return names[d.id] || "Unknown"; })
-        .on("click", function(event, d){
-          var name = names[d.id] || "Unknown";
+        .on("click", (event, d) => {
+          var name = names[d.id] || "Restricted Territory";
           selectCountry(d, name, glowLayer, countryLayer);
         });
 
-      /* Draw glow duplicates */
       glowLayer.selectAll("path.country-glow")
         .data(countries.features)
         .enter().append("path")
         .attr("class","country-glow")
-        .attr("id", function(d){ return "g"+d.id; })
+        .attr("id", d => "g"+d.id)
         .attr("d", path);
-
-      /* City pulses */
-      CITIES.forEach(function(c){
-        var pt = projectCity(c);
-        cityLayer.append("circle")
-          .attr("class","city-ring")
-          .attr("cx", pt[0]).attr("cy", pt[1])
-          .attr("r", 4)
-          .style("animation-delay", Math.random()*2.5+"s");
-        cityLayer.append("circle")
-          .attr("class","city-dot")
-          .attr("cx", pt[0]).attr("cy", pt[1])
-          .attr("r", 2.5);
-      });
     });
 }
 
-function projectCity(c) {
-  return projection([
-    (c.x / 1000) * 360 - 180,
-    90 - (c.y / 500) * 180
-  ]);
-}
-
-/* ─── COUNTRY SELECT ─── */
 function selectCountry(d, name, glowLayer, countryLayer) {
   countryLayer.selectAll(".country").classed("selected", false);
   glowLayer.selectAll(".country-glow").classed("active", false);
@@ -542,66 +462,51 @@ function selectCountry(d, name, glowLayer, countryLayer) {
   countryLayer.select("#c"+d.id).classed("selected", true);
   glowLayer.select("#g"+d.id).classed("active", true);
 
-  selectedCountry = name;
   showCountryInfo(name);
-  addLog("info", "Region selected: " + name);
+  addLog("info", "Registry Access: " + name);
 }
 
 function showCountryInfo(name) {
   var panel = document.getElementById("info-panel");
   var data = COUNTRY_DATA[name];
 
-  var statusColor = {
-    "MONITORED": "#3b82f6",
-    "ACTIVE":    "#22c55e",
-    "TRACKED":    "#d4a54a",
-    "ALERT":     "#ef4444"
-  };
-
   if (!data) {
     panel.innerHTML = '<h3>' + name.toUpperCase() + '</h3>' +
-      '<div class="row"><span class="label">STATUS</span><span class="val" style="color:#5a8aaa">NO DATA</span></div>';
+      '<div class="row"><span class="label">STATUS</span><span class="val" style="color:#5a8aaa">SECURED / UNLISTED</span></div>';
     return;
   }
 
+  var statusColor = { "MONITORED": "#3b82f6", "ACTIVE": "#22c55e", "TRACKED": "#d4a54a", "ALERT": "#ef4444" };
   var col = statusColor[data.status] || "#7a9bb5";
+  
   panel.innerHTML =
     '<h3>' + name.toUpperCase() + '</h3>' +
     '<div class="row"><span class="label">STATUS</span><span class="val" style="color:'+col+'">'+data.status+'</span></div>' +
     '<div class="row"><span class="label">REGION</span><span class="val">'+data.region+'</span></div>' +
     '<div class="row"><span class="label">CAPITAL</span><span class="val">'+data.capital+'</span></div>' +
     '<div class="row"><span class="label">POPULATION</span><span class="val">'+data.pop+'</span></div>' +
-    '<div class="row"><span class="label">GDP</span><span class="val">'+data.gdp+'</span></div>' +
-    '<div class="row"><span class="label">ID</span><span class="val" style="color:#2a5a7a">'+Math.random().toString(36).substring(2,8).toUpperCase()+'</span></div>';
+    '<div class="row"><span class="label">GDP</span><span class="val">'+data.gdp+'</span></div>';
 }
 
-/* ─── HELPERS ─── */
 function getCountryNames() {
   return {
-    4:"Afghanistan",8:"Albania",12:"Algeria",24:"Angola",32:"Argentina",
-    36:"Australia",40:"Austria",50:"Bangladesh",56:"Belgium",64:"Bhutan",
-    68:"Bolivia",76:"Brazil",100:"Bulgaria",116:"Cambodia",120:"Cameroon",
-    124:"Canada",144:"Sri Lanka",152:"Chile",156:"China",170:"Colombia",
-    180:"Democratic Republic of the Congo",188:"Costa Rica",192:"Cuba",
-    204:"Benin",208:"Denmark",218:"Ecuador",818:"Egypt",222:"El Salvador",
-    231:"Ethiopia",246:"Finland",250:"France",276:"Germany",288:"Ghana",
-    300:"Greece",320:"Guatemala",332:"Haiti",340:"Honduras",356:"India",
-    360:"Indonesia",364:"Iran",368:"Iraq",372:"Ireland",376:"Israel",
-    380:"Italy",388:"Jamaica",392:"Japan",400:"Jordan",398:"Kazakhstan",
-    404:"Kenya",410:"South Korea",408:"North Korea",414:"Kuwait",
-    418:"Laos",422:"Lebanon",430:"Liberia",434:"Libya",442:"Luxembourg",
-    484:"Mexico",504:"Morocco",508:"Mozambique",516:"Namibia",
-    524:"Nepal",528:"Netherlands",554:"New Zealand",558:"Nicaragua",
-    562:"Niger",566:"Nigeria",578:"Norway",586:"Pakistan",591:"Panama",
-    604:"Peru",608:"Philippines",616:"Poland",620:"Portugal",630:"Puerto Rico",
-    634:"Qatar",642:"Romania",643:"Russia",646:"Rwanda",682:"Saudi Arabia",
-    686:"Senegal",694:"Sierra Leone",706:"Somalia",710:"South Africa",
-    724:"Spain",729:"Sudan",752:"Sweden",756:"Switzerland",760:"Syria",
-    158:"Taiwan",762:"Tajikistan",764:"Thailand",768:"Togo",788:"Tunisia",
-    792:"Turkey",800:"Uganda",804:"Ukraine",784:"United Arab Emirates",
-    826:"United Kingdom",840:"United States of America",858:"Uruguay",
-    860:"Uzbekistan",862:"Venezuela",704:"Vietnam",887:"Yemen",
-    894:"Zambia",716:"Zimbabwe",
+    4:"Afghanistan",8:"Albania",12:"Algeria",24:"Angola",32:"Argentina",36:"Australia",40:"Austria",50:"Bangladesh",56:"Belgium",64:"Bhutan",
+    68:"Bolivia",76:"Brazil",100:"Bulgaria",116:"Cambodia",120:"Cameroon",124:"Canada",144:"Sri Lanka",152:"Chile",156:"China",170:"Colombia",
+    180:"Dem. Rep. Congo",188:"Costa Rica",192:"Cuba",204:"Benin",208:"Denmark",218:"Ecuador",818:"Egypt",222:"El Salvador",231:"Ethiopia",
+    246:"Finland",250:"France",276:"Germany",288:"Ghana",300:"Greece",320:"Guatemala",332:"Haiti",340:"Honduras",356:"India",360:"Indonesia",
+    364:"Iran",368:"Iraq",372:"Ireland",376:"Israel",380:"Italy",388:"Jamaica",392:"Japan",400:"Jordan",398:"Kazakhstan",404:"Kenya",
+    410:"South Korea",408:"North Korea",414:"Kuwait",418:"Laos",422:"Lebanon",430:"Liberia",434:"Libya",442:"Luxembourg",484:"Mexico",
+    504:"Morocco",508:"Mozambique",516:"Namibia",524:"Nepal",528:"Netherlands",554:"New Zealand",558:"Nicaragua",562:"Niger",566:"Nigeria",
+    578:"Norway",586:"Pakistan",591:"Panama",604:"Peru",608:"Philippines",616:"Poland",620:"Portugal",634:"Qatar",642:"Romania",643:"Russia",
+    646:"Rwanda",682:"Saudi Arabia",686:"Senegal",694:"Sierra Leone",706:"Somalia",710:"South Africa",724:"Spain",729:"Sudan",752:"Sweden",
+    756:"Switzerland",760:"Syria",158:"Taiwan",762:"Tajikistan",764:"Thailand",788:"Tunisia",792:"Turkey",800:"Uganda",804:"Ukraine",
+    784:"UAE",826:"United Kingdom",840:"United States of America",858:"Uruguay",860:"Uzbekistan",862:"Venezuela",704:"Vietnam",887:"Yemen",
+    894:"Zambia",716:"Zimbabwe",140:"Central African Republic",148:"Chad",262:"Djibouti",266:"Gabon",270:"Gambia",324:"Guinea",
+    328:"Guyana",352:"Iceland",384:"Ivory Coast",426:"Lesotho",438:"Madagascar",450:"Malawi",454:"Malaysia",466:"Mali",478:"Mauritania",
+    496:"Mongolia",512:"Oman",548:"Papua New Guinea",558:"Nicaragua",562:"Niger",566:"Nigeria",586:"Pakistan",598:"Papua New Guinea",
+    600:"Paraguay",646:"Rwanda",748:"Eswatini",834:"Tanzania",104:"Myanmar",203:"Czechia",703:"Slovakia",705:"Slovenia",191:"Croatia",
+    70:"Bosnia and Herz.",688:"Serbia",807:"North Macedonia",51:"Armenia",31:"Azerbaijan",268:"Georgia",498:"Moldova",233:"Estonia",
+    428:"Latvia",440:"Lithuania",112:"Belarus",417:"Kyrgyzstan",795:"Turkmenistan"
   };
 }
 
@@ -612,7 +517,7 @@ function initDash() {
   startClock();
   startLogs();
   initMap();
-  addLog("info", "System initialized. All nodes online.");
+  addLog("info", "Mission Control Grid Updated.");
 }
 </script>
 </body>
