@@ -218,41 +218,7 @@ body::before {
 
 @keyframes countryPulse {
   0%, 100% { opacity: 0.8; stroke-width: 3; filter: drop-shadow(0 0 4px #3b82f6); }
-  50%       { opacity: 0.3; stroke-width: 5; filter: drop-shadow(0 0 12px #3b82f6); }
-}
-
-/* Ocean routes */
-.ocean-route {
-  fill: none;
-  stroke: #1a3a5a;
-  stroke-width: 0.8;
-  stroke-dasharray: 4 6;
-  opacity: 0.5;
-}
-
-/* Flight paths */
-.flight-path {
-  fill: none;
-  stroke: #d4a54a;
-  stroke-width: 0.7;
-  opacity: 0.25;
-  stroke-dasharray: 3 5;
-}
-
-/* Boats */
-.boat {
-  font-size: 12px;
-  user-select: none;
-  pointer-events: none;
-  filter: drop-shadow(0 0 3px #3b82f6);
-}
-
-/* Planes */
-.plane {
-  font-size: 11px;
-  user-select: none;
-  pointer-events: none;
-  filter: drop-shadow(0 0 3px #d4a54a);
+  50%        { opacity: 0.3; stroke-width: 5; filter: drop-shadow(0 0 12px #3b82f6); }
 }
 
 /* City nodes */
@@ -324,22 +290,10 @@ body::before {
 .corner.tr { top: 8px; right: 8px; border-width: 1px 1px 0 0; }
 .corner.bl { bottom: 8px; left: 8px; border-width: 0 0 1px 1px; }
 .corner.br { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
-
-/* Tracker count badges */
-.badge {
-  display: inline-block;
-  background: #1a3a5a;
-  color: #3b82f6;
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: 2px;
-  margin-left: 6px;
-}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login">
   <div class="login-box">
     <h2>⬡ MISSION CONTROL</h2>
@@ -351,21 +305,17 @@ body::before {
   </div>
 </div>
 
-<!-- DASHBOARD -->
 <div id="dash">
 
   <div class="topbar">
     <span class="logo">⬡ MISSION CONTROL</span>
     <span class="stat">STATUS <span>ONLINE</span></span>
-    <span class="stat">VESSELS <span id="vessel-count">0</span></span>
-    <span class="stat">FLIGHTS <span id="flight-count">0</span></span>
     <span class="stat">ALERTS <span id="alert-count" style="color:#d4a54a">0</span></span>
     <span id="clock">--:--:-- UTC</span>
   </div>
 
   <div class="content">
 
-    <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="sidebar-title">// SELECTED REGION</div>
       <div id="info-panel">
@@ -378,7 +328,6 @@ body::before {
       </div>
     </div>
 
-    <!-- MAP -->
     <div class="map-wrap" id="map-wrap">
       <div class="corner tl"></div>
       <div class="corner tr"></div>
@@ -389,8 +338,6 @@ body::before {
 
       <div class="legend">
         <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> <span style="color:#5a8aaa">NODE / CITY</span></div>
-        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> <span style="color:#5a8aaa">VESSEL ROUTE</span></div>
-        <div class="legend-item"><div class="legend-dot" style="background:#d4a54a"></div> <span style="color:#5a8aaa">FLIGHT PATH</span></div>
         <div class="legend-item"><div class="legend-dot" style="background:#ef4444; border-radius:0; width:12px; height:2px; margin: 3px 0;"></div> <span style="color:#5a8aaa">SELECTED BORDER</span></div>
       </div>
     </div>
@@ -435,76 +382,43 @@ function startClock() {
    DATA
 ───────────────────────────────────────── */
 var CITIES = [
-  { name:"New York",     cc:"USA", x:230, y:185 },
-  { name:"London",       cc:"GBR", x:470, y:148 },
-  { name:"Shanghai",     cc:"CHN", x:760, y:195 },
-  { name:"Tokyo",        cc:"JPN", x:810, y:188 },
-  { name:"Sydney",       cc:"AUS", x:820, y:360 },
-  { name:"São Paulo",    cc:"BRA", x:290, y:330 },
-  { name:"Dubai",        cc:"UAE", x:620, y:225 },
-  { name:"Singapore",    cc:"SGP", x:762, y:285 },
-  { name:"Los Angeles",  cc:"USA", x:150, y:205 },
-  { name:"Mumbai",       cc:"IND", x:670, y:240 },
-  { name:"Cairo",        cc:"EGY", x:563, y:220 },
-  { name:"Lagos",        cc:"NGA", x:490, y:280 },
+  { name:"New York",      cc:"USA", x:230, y:185 },
+  { name:"London",        cc:"GBR", x:470, y:148 },
+  { name:"Shanghai",      cc:"CHN", x:760, y:195 },
+  { name:"Tokyo",         cc:"JPN", x:810, y:188 },
+  { name:"Sydney",        cc:"AUS", x:820, y:360 },
+  { name:"São Paulo",     cc:"BRA", x:290, y:330 },
+  { name:"Dubai",         cc:"UAE", x:620, y:225 },
+  { name:"Singapore",     cc:"SGP", x:762, y:285 },
+  { name:"Los Angeles",   cc:"USA", x:150, y:205 },
+  { name:"Mumbai",        cc:"IND", x:670, y:240 },
+  { name:"Cairo",         cc:"EGY", x:563, y:220 },
+  { name:"Lagos",         cc:"NGA", x:490, y:280 },
   { name:"Johannesburg", cc:"ZAF", x:555, y:345 },
   { name:"Buenos Aires", cc:"ARG", x:275, y:375 },
 ];
 
-/* Ocean boat routes: [from city index, to city index] */
-var BOAT_ROUTES = [
-  [0, 1],   // NY → London
-  [1, 6],   // London → Dubai
-  [2, 7],   // Shanghai → Singapore
-  [3, 4],   // Tokyo → Sydney
-  [5, 13],  // São Paulo → Buenos Aires
-  [8, 5],   // LA → São Paulo
-  [11, 12], // Lagos → Johannesburg
-  [10, 6],  // Cairo → Dubai
-  [9, 7],   // Mumbai → Singapore
-  [0, 5],   // NY → São Paulo
-];
-
-/* Flight arc routes */
-var FLIGHT_ROUTES = [
-  [0, 1],   // NY ↔ London
-  [1, 2],   // London ↔ Shanghai
-  [2, 3],   // Shanghai ↔ Tokyo
-  [3, 4],   // Tokyo ↔ Sydney
-  [0, 8],   // NY ↔ LA
-  [8, 2],   // LA ↔ Shanghai
-  [6, 9],   // Dubai ↔ Mumbai
-  [1, 10],  // London ↔ Cairo
-  [10, 11], // Cairo ↔ Lagos
-  [6, 7],   // Dubai ↔ Singapore
-  [1, 6],   // London ↔ Dubai
-  [0, 6],   // NY ↔ Dubai
-  [4, 7],   // Sydney ↔ Singapore
-  [9, 10],  // Mumbai ↔ Cairo
-  [5, 1],   // São Paulo ↔ London
-];
-
 var COUNTRY_DATA = {
   "United States of America": { pop:"331M", gdp:"$23T", capital:"Washington D.C.", status:"MONITORED", region:"N. America" },
-  "United Kingdom":           { pop:"68M",  gdp:"$3.1T", capital:"London", status:"MONITORED", region:"Europe" },
-  "China":                    { pop:"1.4B", gdp:"$17.7T", capital:"Beijing", status:"ACTIVE", region:"Asia" },
-  "Japan":                    { pop:"125M", gdp:"$4.9T", capital:"Tokyo", status:"ACTIVE", region:"Asia" },
-  "Australia":                { pop:"26M",  gdp:"$1.7T", capital:"Canberra", status:"MONITORED", region:"Oceania" },
-  "Brazil":                   { pop:"215M", gdp:"$1.9T", capital:"Brasília", status:"TRACKED", region:"S. America" },
-  "Russia":                   { pop:"144M", gdp:"$1.8T", capital:"Moscow", status:"ALERT", region:"Europe/Asia" },
-  "India":                    { pop:"1.4B", gdp:"$3.5T", capital:"New Delhi", status:"ACTIVE", region:"Asia" },
-  "Germany":                  { pop:"84M",  gdp:"$4.2T", capital:"Berlin", status:"MONITORED", region:"Europe" },
-  "France":                   { pop:"68M",  gdp:"$2.9T", capital:"Paris", status:"MONITORED", region:"Europe" },
-  "Canada":                   { pop:"38M",  gdp:"$2.2T", capital:"Ottawa", status:"MONITORED", region:"N. America" },
-  "South Africa":             { pop:"60M",  gdp:"$419B", capital:"Pretoria", status:"TRACKED", region:"Africa" },
-  "Nigeria":                  { pop:"218M", gdp:"$477B", capital:"Abuja", status:"TRACKED", region:"Africa" },
-  "Argentina":                { pop:"46M",  gdp:"$487B", capital:"Buenos Aires", status:"TRACKED", region:"S. America" },
-  "Saudi Arabia":             { pop:"35M",  gdp:"$1T",   capital:"Riyadh", status:"ACTIVE", region:"Middle East" },
-  "South Korea":              { pop:"52M",  gdp:"$1.8T", capital:"Seoul", status:"MONITORED", region:"Asia" },
-  "Indonesia":                { pop:"275M", gdp:"$1.2T", capital:"Jakarta", status:"TRACKED", region:"Asia" },
-  "Mexico":                   { pop:"130M", gdp:"$1.3T", capital:"Mexico City", status:"TRACKED", region:"N. America" },
-  "Egypt":                    { pop:"104M", gdp:"$476B", capital:"Cairo", status:"TRACKED", region:"Africa" },
-  "Turkey":                   { pop:"85M",  gdp:"$907B", capital:"Ankara", status:"ACTIVE", region:"Europe/Asia" },
+  "United Kingdom":            { pop:"68M",  gdp:"$3.1T", capital:"London", status:"MONITORED", region:"Europe" },
+  "China":                     { pop:"1.4B", gdp:"$17.7T", capital:"Beijing", status:"ACTIVE", region:"Asia" },
+  "Japan":                     { pop:"125M", gdp:"$4.9T", capital:"Tokyo", status:"ACTIVE", region:"Asia" },
+  "Australia":                 { pop:"26M",  gdp:"$1.7T", capital:"Canberra", status:"MONITORED", region:"Oceania" },
+  "Brazil":                    { pop:"215M", gdp:"$1.9T", capital:"Brasília", status:"TRACKED", region:"S. America" },
+  "Russia":                    { pop:"144M", gdp:"$1.8T", capital:"Moscow", status:"ALERT", region:"Europe/Asia" },
+  "India":                     { pop:"1.4B", gdp:"$3.5T", capital:"New Delhi", status:"ACTIVE", region:"Asia" },
+  "Germany":                   { pop:"84M",  gdp:"$4.2T", capital:"Berlin", status:"MONITORED", region:"Europe" },
+  "France":                    { pop:"68M",  gdp:"$2.9T", capital:"Paris", status:"MONITORED", region:"Europe" },
+  "Canada":                    { pop:"38M",  gdp:"$2.2T", capital:"Ottawa", status:"MONITORED", region:"N. America" },
+  "South Africa":              { pop:"60M",  gdp:"$419B", capital:"Pretoria", status:"TRACKED", region:"Africa" },
+  "Nigeria":                   { pop:"218M", gdp:"$477B", capital:"Abuja", status:"TRACKED", region:"Africa" },
+  "Argentina":                 { pop:"46M",  gdp:"$487B", capital:"Buenos Aires", status:"TRACKED", region:"S. America" },
+  "Saudi Arabia":              { pop:"35M",  gdp:"$1T",   capital:"Riyadh", status:"ACTIVE", region:"Middle East" },
+  "South Korea":               { pop:"52M",  gdp:"$1.8T", capital:"Seoul", status:"MONITORED", region:"Asia" },
+  "Indonesia":                 { pop:"275M", gdp:"$1.2T", capital:"Jakarta", status:"TRACKED", region:"Asia" },
+  "Mexico":                    { pop:"130M", gdp:"$1.3T", capital:"Mexico City", status:"TRACKED", region:"N. America" },
+  "Egypt":                     { pop:"104M", gdp:"$476B", capital:"Cairo", status:"TRACKED", region:"Africa" },
+  "Turkey":                    { pop:"85M",  gdp:"$907B", capital:"Ankara", status:"ACTIVE", region:"Europe/Asia" },
 };
 
 /* ─────────────────────────────────────────
@@ -512,18 +426,13 @@ var COUNTRY_DATA = {
 ───────────────────────────────────────── */
 var alertCount = 0;
 var logMessages = [
-  ["info",  "Vessel signal acquired"],
-  ["info",  "Flight path updated"],
   ["info",  "Node sync complete"],
   ["info",  "Packet acknowledged"],
-  ["alert", "Unidentified vessel detected"],
   ["info",  "Uplink established"],
   ["info",  "Beacon pulse sent"],
-  ["alert", "Flight path deviation"],
   ["info",  "Encryption verified"],
   ["warn",  "Signal interference"],
   ["info",  "Handshake complete"],
-  ["info",  "Route recalculated"],
 ];
 
 function addLog(type, msg) {
@@ -578,10 +487,6 @@ function initMap() {
       var glowLayer = svgEl.append("g").attr("class","glow-layer");
       /* Country layer */
       var countryLayer = svgEl.append("g").attr("class","country-layer");
-      /* Routes layer */
-      var routeLayer = svgEl.append("g").attr("class","route-layer");
-      /* Moving objects layer */
-      var moveLayer = svgEl.append("g").attr("class","move-layer");
       /* City layer */
       var cityLayer = svgEl.append("g").attr("class","city-layer");
 
@@ -606,26 +511,6 @@ function initMap() {
         .attr("id", function(d){ return "g"+d.id; })
         .attr("d", path);
 
-      /* Draw ocean routes */
-      BOAT_ROUTES.forEach(function(r, i){
-        var a = projectCity(CITIES[r[0]]);
-        var b = projectCity(CITIES[r[1]]);
-        var mx = (a[0]+b[0])/2, my = (a[1]+b[1])/2 + 30;
-        routeLayer.append("path")
-          .attr("class","ocean-route")
-          .attr("d","M"+a[0]+","+a[1]+" Q"+mx+","+my+" "+b[0]+","+b[1]);
-      });
-
-      /* Draw flight arcs */
-      FLIGHT_ROUTES.forEach(function(r){
-        var a = projectCity(CITIES[r[0]]);
-        var b = projectCity(CITIES[r[1]]);
-        var mx = (a[0]+b[0])/2, my = (a[1]+b[1])/2 - 60;
-        routeLayer.append("path")
-          .attr("class","flight-path")
-          .attr("d","M"+a[0]+","+a[1]+" Q"+mx+","+my+" "+b[0]+","+b[1]);
-      });
-
       /* City pulses */
       CITIES.forEach(function(c){
         var pt = projectCity(c);
@@ -639,118 +524,21 @@ function initMap() {
           .attr("cx", pt[0]).attr("cy", pt[1])
           .attr("r", 2.5);
       });
-
-      /* Spawn movers */
-      spawnBoats(moveLayer);
-      spawnPlanes(moveLayer);
-      updateCounts();
     });
 }
 
 function projectCity(c) {
-  /* Cities defined in 1000x500 space — scale to actual map */
   return projection([
     (c.x / 1000) * 360 - 180,
     90 - (c.y / 500) * 180
   ]);
 }
 
-/* ─── BOATS ─── */
-var boats = [];
-
-function spawnBoats(layer) {
-  BOAT_ROUTES.forEach(function(r, i){
-    var boat = {
-      from: CITIES[r[0]],
-      to:   CITIES[r[1]],
-      t: Math.random(),
-      speed: 0.0008 + Math.random() * 0.0006,
-      id: "boat-"+i
-    };
-    boats.push(boat);
-
-    var el = layer.append("text")
-      .attr("class","boat")
-      .attr("id", boat.id)
-      .attr("text-anchor","middle")
-      .text("⛵");
-    boat.el = el;
-  });
-
-  animateBoats();
-}
-
-function animateBoats() {
-  boats.forEach(function(b){
-    b.t += b.speed;
-    if (b.t > 1) {
-      b.t = 0;
-      var tmp = b.from; b.from = b.to; b.to = tmp;
-      addLog("info", "Vessel arrived at " + b.to.name);
-    }
-    var a = projectCity(b.from);
-    var c2 = projectCity(b.to);
-    var mx = (a[0]+c2[0])/2, my = (a[1]+c2[1])/2 + 30;
-    var pt = quadBezier(a, [mx,my], c2, b.t);
-    b.el.attr("x", pt[0]).attr("y", pt[1]);
-  });
-  requestAnimationFrame(animateBoats);
-}
-
-/* ─── PLANES ─── */
-var planes = [];
-
-function spawnPlanes(layer) {
-  FLIGHT_ROUTES.forEach(function(r, i){
-    var plane = {
-      from: CITIES[r[0]],
-      to:   CITIES[r[1]],
-      t: Math.random(),
-      speed: 0.0018 + Math.random() * 0.001,
-      id: "plane-"+i
-    };
-    planes.push(plane);
-
-    var el = layer.append("text")
-      .attr("class","plane")
-      .attr("id", plane.id)
-      .attr("text-anchor","middle")
-      .text("✈");
-    plane.el = el;
-  });
-
-  animatePlanes();
-}
-
-function animatePlanes() {
-  planes.forEach(function(p){
-    p.t += p.speed;
-    if (p.t > 1) {
-      p.t = 0;
-      var tmp = p.from; p.from = p.to; p.to = tmp;
-      addLog("info", "Flight landed at " + p.to.name);
-    }
-    var a = projectCity(p.from);
-    var c2 = projectCity(p.to);
-    var mx = (a[0]+c2[0])/2, my = (a[1]+c2[1])/2 - 60;
-    var pt = quadBezier(a, [mx,my], c2, p.t);
-
-    /* Rotate plane toward direction */
-    var pt2 = quadBezier(a, [mx,my], c2, Math.min(p.t+0.01,1));
-    var angle = Math.atan2(pt2[1]-pt[1], pt2[0]-pt[0]) * 180/Math.PI;
-    p.el.attr("x", pt[0]).attr("y", pt[1])
-      .attr("transform","rotate("+angle+","+pt[0]+","+pt[1]+")");
-  });
-  requestAnimationFrame(animatePlanes);
-}
-
 /* ─── COUNTRY SELECT ─── */
 function selectCountry(d, name, glowLayer, countryLayer) {
-  /* Clear previous */
   countryLayer.selectAll(".country").classed("selected", false);
   glowLayer.selectAll(".country-glow").classed("active", false);
 
-  /* Select new */
   countryLayer.select("#c"+d.id).classed("selected", true);
   glowLayer.select("#g"+d.id).classed("active", true);
 
@@ -766,7 +554,7 @@ function showCountryInfo(name) {
   var statusColor = {
     "MONITORED": "#3b82f6",
     "ACTIVE":    "#22c55e",
-    "TRACKED":   "#d4a54a",
+    "TRACKED":    "#d4a54a",
     "ALERT":     "#ef4444"
   };
 
@@ -788,18 +576,6 @@ function showCountryInfo(name) {
 }
 
 /* ─── HELPERS ─── */
-function quadBezier(p0, p1, p2, t) {
-  var x = (1-t)*(1-t)*p0[0] + 2*(1-t)*t*p1[0] + t*t*p2[0];
-  var y = (1-t)*(1-t)*p0[1] + 2*(1-t)*t*p1[1] + t*t*p2[1];
-  return [x, y];
-}
-
-function updateCounts() {
-  document.getElementById("vessel-count").textContent = boats.length;
-  document.getElementById("flight-count").textContent = planes.length;
-}
-
-/* ISO numeric → country name (partial list) */
 function getCountryNames() {
   return {
     4:"Afghanistan",8:"Albania",12:"Algeria",24:"Angola",32:"Argentina",
@@ -837,9 +613,7 @@ function initDash() {
   startLogs();
   initMap();
   addLog("info", "System initialized. All nodes online.");
-  addLog("alert", "Tracking " + BOAT_ROUTES.length + " vessels, " + FLIGHT_ROUTES.length + " flights");
 }
 </script>
 </body>
 </html>
-
