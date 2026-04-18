@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mission Control - Recon Trainer v5</title>
+<title>Mission Control - Recon Trainer v6</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
@@ -77,9 +77,7 @@ body::before {
     font-family: inherit;
     font-size: 10px;
     cursor: pointer;
-    transition: all 0.2s;
 }
-.reset-btn:hover { background: #3b82f6; color: #060a0f; }
 
 .history-section { flex: 1; overflow: hidden; display: flex; flex-direction: column; background: #080d14; }
 #history-log { flex: 1; overflow-y: auto; padding: 10px 14px; font-size: 10px; }
@@ -91,19 +89,13 @@ body::before {
 .map-wrap { flex: 1; position: relative; overflow: hidden; background: #060a0f; cursor: crosshair; }
 #map-svg { width: 100%; height: 100%; display: block; }
 
-/* Countries */
-.country { 
-    fill: #0f1e2e; 
-    stroke: #1a3550; 
-    stroke-width: 0.5px; 
-    cursor: pointer; 
-}
+.country { fill: #0f1e2e; stroke: #1a3550; stroke-width: 0.5px; cursor: pointer; }
 .country:hover { fill: #162a40; }
 
 .flash-correct { fill: #22c55e !important; }
 .flash-wrong { fill: #ef4444 !important; }
 
-/* Blue Outline / Hint */
+/* The Hint Outline */
 .country-glow { 
     fill: none; 
     stroke: #3b82f6; 
@@ -113,12 +105,12 @@ body::before {
 }
 .country-glow.active { 
     opacity: 1; 
-    animation: countryPulse 1.5s ease-in-out infinite; 
+    animation: glowPulse 1.5s infinite; 
 }
-@keyframes countryPulse { 
-    0% { opacity: 0.2; stroke-width: 2px; } 
+@keyframes glowPulse { 
+    0% { opacity: 0.3; stroke-width: 2px; } 
     50% { opacity: 1; stroke-width: 5px; } 
-    100% { opacity: 0.2; stroke-width: 2px; } 
+    100% { opacity: 0.3; stroke-width: 2px; } 
 }
 
 .zoom-hint { position: absolute; bottom: 10px; right: 10px; font-size: 9px; color: #2a4a6a; pointer-events: none; }
@@ -129,14 +121,14 @@ body::before {
 <div id="login">
   <div class="login-box">
     <h2>⬡ MISSION CONTROL</h2>
-    <div class="sub">GLOBAL RECON TRAINING v5.0</div>
+    <div class="sub">GLOBAL RECON TRAINING v6.0</div>
     <button class="login-btn" onclick="tryLogin()">START SESSION</button>
   </div>
 </div>
 
 <div id="dash">
   <div class="topbar">
-    <div class="target-display" id="target-display">LOCATING TARGET...</div>
+    <div class="target-display" id="target-display">INITIALIZING SENSORS...</div>
     <div style="margin-left: auto; display: flex; gap: 20px;">
         <div class="stat">HITS: <span id="score-hits" style="color:#22c55e">0</span></div>
         <div class="stat">MISSES: <span id="score-misses" style="color:#ef4444">0</span></div>
@@ -153,7 +145,7 @@ body::before {
             <span class="val" id="diff-label">NOOB</span>
         </div>
         <input type="range" min="0" max="3" value="0" id="diff-slider" oninput="updateDifficulty()">
-        <button class="reset-btn" onclick="resetView()">RESET ORBITAL VIEW</button>
+        <button class="reset-btn" onclick="resetView()">RESET VIEWPORT</button>
       </div>
 
       <div class="panel-section">
@@ -171,7 +163,7 @@ body::before {
 
     <div class="map-wrap" id="map-wrap">
       <svg id="map-svg"></svg>
-      <div class="zoom-hint">[SCROLL TO ZOOM | DRAG TO PAN]</div>
+      <div class="zoom-hint">[SCROLL: ZOOM | DRAG: PAN]</div>
     </div>
   </div>
 </div>
@@ -185,18 +177,18 @@ var verifiedIds = [];
 var difficulty = 0;
 
 const DIFF_LEVELS = ["NOOB", "NORMAL", "PRO", "EXPERT"];
-const HINT_THRESHOLDS = [3, 50, 100, 9999]; // NOOB is now 3 for quick testing
+const HINT_THRESHOLDS = [3, 50, 100, 9999];
 
 function tryLogin() {
   document.getElementById("login").style.display = "none";
   document.getElementById("dash").classList.add("visible");
-  initDash();
+  // Small timeout ensures the container has dimensions before D3 starts
+  setTimeout(initDash, 100);
 }
 
 function updateDifficulty() {
     difficulty = parseInt(document.getElementById("diff-slider").value);
     document.getElementById("diff-label").innerText = DIFF_LEVELS[difficulty];
-    addLog(`System calibrated to ${DIFF_LEVELS[difficulty]} mode.`);
 }
 
 function startClock() {
@@ -208,28 +200,30 @@ var projection, path, svgEl, mapContent, countryLayer, glowLayer, zoomBehavior;
 function initDash() {
   startClock();
   var wrap = document.getElementById("map-wrap");
-  
+  var w = wrap.clientWidth;
+  var h = wrap.clientHeight;
+
+  if (w === 0 || h === 0) { w = 800; h = 500; } // Fallback
+
   zoomBehavior = d3.zoom()
-    .scaleExtent([1, 15])
+    .scaleExtent([1, 20])
     .on("zoom", (event) => {
       mapContent.attr("transform", event.transform);
     })
     .on("end", (event) => {
-      // Auto-snap to center if zoomed all the way out
-      if (event.transform.k === 1) {
-        resetView();
-      }
+      if (event.transform.k <= 1.1) resetView();
     });
 
   svgEl = d3.select("#map-svg")
-    .attr("viewBox", `0 0 ${wrap.clientWidth} ${wrap.clientHeight}`)
+    .attr("width", w)
+    .attr("height", h)
     .call(zoomBehavior);
 
   mapContent = svgEl.append("g");
 
   projection = d3.geoNaturalEarth1()
-    .scale(wrap.clientWidth / 6.5)
-    .translate([wrap.clientWidth / 2, wrap.clientHeight / 2]);
+    .scale(w / 6.5)
+    .translate([w / 2, h / 2]);
     
   path = d3.geoPath().projection(projection);
 
@@ -240,8 +234,8 @@ function initDash() {
       var names = getCountryNames();
       
       verifiedIds = countries.features
-        .filter(f => names[parseInt(f.id)])
-        .map(f => parseInt(f.id));
+        .map(f => parseInt(f.id))
+        .filter(id => names[id]);
 
       glowLayer = mapContent.append("g");
       countryLayer = mapContent.append("g");
@@ -250,7 +244,7 @@ function initDash() {
         .data(countries.features)
         .enter().append("path")
         .attr("class","country")
-        .attr("id", d => "c" + d.id.toString().padStart(3, '0'))
+        .attr("id", d => "c" + Number(d.id).toString().padStart(3, '0'))
         .attr("d", path)
         .on("click", (e, d) => handleMapClick(d.id));
 
@@ -258,7 +252,7 @@ function initDash() {
         .data(countries.features)
         .enter().append("path")
         .attr("class","country-glow")
-        .attr("id", d => "g" + d.id.toString().padStart(3, '0'))
+        .attr("id", d => "g" + Number(d.id).toString().padStart(3, '0'))
         .attr("d", path);
 
       nextTarget();
@@ -266,9 +260,7 @@ function initDash() {
 }
 
 function resetView() {
-    svgEl.transition()
-        .duration(750)
-        .call(zoomBehavior.transform, d3.zoomIdentity);
+    svgEl.transition().duration(500).call(zoomBehavior.transform, d3.zoomIdentity);
 }
 
 function nextTarget() {
@@ -277,7 +269,7 @@ function nextTarget() {
   document.getElementById("target-display").innerHTML = `LOCATE_TARGET: <span style="color:#e0eaf5">${names[currentTargetId].toUpperCase()}</span>`;
   currentStrikes = 0;
   document.getElementById("stat-strikes").innerText = "0";
-  glowLayer.selectAll(".country-glow").classed("active", false); // Clear old hints
+  glowLayer.selectAll(".country-glow").classed("active", false);
 }
 
 function handleMapClick(clickedId) {
@@ -285,28 +277,27 @@ function handleMapClick(clickedId) {
   var idInt = parseInt(clickedId);
   var targetName = names[currentTargetId];
   
-  // Format the ID for selector string (e.g., 32 -> "032")
-  var targetSelectorId = currentTargetId.toString().padStart(3, '0');
-  var clickedSelectorId = idInt.toString().padStart(3, '0');
+  var targetPad = currentTargetId.toString().padStart(3, '0');
+  var clickedPad = idInt.toString().padStart(3, '0');
 
   if (idInt === currentTargetId) {
     hits++;
     addLog(`[OK] ${targetName.toUpperCase()} SECURED.`, "hit");
-    flashCountry(clickedSelectorId, "flash-correct");
+    flashCountry(clickedPad, "flash-correct");
     nextTarget();
   } else {
     misses++;
     currentStrikes++;
     document.getElementById("stat-strikes").innerText = currentStrikes;
     
-    var clickedName = names[idInt] || `ID: ${clickedSelectorId}`;
+    var clickedName = names[idInt] || `SECTOR ${clickedPad}`;
     addLog(`[!] TARGET: ${targetName.toUpperCase()} | IMPACT: ${clickedName.toUpperCase()}`, "miss");
-    flashCountry(clickedSelectorId, "flash-wrong");
+    flashCountry(clickedPad, "flash-wrong");
     
-    // HINT TRIGGER (BLUE OUTLINE)
+    // BLUE HINT TRIGGER
     if (currentStrikes >= HINT_THRESHOLDS[difficulty]) {
-        addLog("HINT_UPLINK: Broadcasting target location...");
-        glowLayer.select("#g" + targetSelectorId).classed("active", true);
+        addLog("HINT: Orbital signal located. Look for blue highlights.");
+        glowLayer.select("#g" + targetPad).classed("active", true);
     }
   }
   updateStats();
@@ -321,9 +312,8 @@ function addLog(msg, type = "") {
 }
 
 function flashCountry(paddedId, className) {
-    var el = countryLayer.select("#c" + paddedId);
-    el.classed(className, true);
-    setTimeout(() => el.classed(className, false), 400);
+    countryLayer.select("#c" + paddedId).classed(className, true);
+    setTimeout(() => countryLayer.select("#c" + paddedId).classed(className, false), 400);
 }
 
 function updateStats() {
@@ -336,7 +326,7 @@ function updateStats() {
     var rank = "RECRUIT";
     if (hits > 10) rank = "FIELD AGENT";
     if (hits > 25 && acc > 85) rank = "COMMANDER";
-    if (hits > 50 && acc > 95) rank = "GLOBAL OVERSEER";
+    if (hits > 50 && acc > 95) rank = "OVERSEER";
     document.getElementById("stat-rank").innerText = rank;
 }
 
