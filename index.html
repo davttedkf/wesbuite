@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mission Control - Registry Audit v5</title>
+<title>Mission Control - Recon Trainer</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
@@ -25,43 +25,65 @@ body::before {
 #login { height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; z-index: 10; }
 .login-box { background: #0c1219; border: 1px solid #1e3a5f; border-radius: 4px; padding: 36px 32px; width: 320px; text-align: center; }
 .login-box h2 { color: #e0eaf5; font-size: 15px; letter-spacing: 0.25em; margin-bottom: 4px; }
-.login-box .sub { font-size: 10px; letter-spacing: 0.2em; color: #ef4444; margin-bottom: 24px; }
-.login-box input { width: 100%; margin: 6px 0; padding: 10px 12px; background: #060a0f; border: 1px solid #1e3a5f; color: #c8ddef; font-family: 'Courier New', monospace; font-size: 13px; border-radius: 2px; outline: none; }
+.login-box .sub { font-size: 10px; letter-spacing: 0.2em; color: #d4a54a; margin-bottom: 24px; }
 .login-btn { width: 100%; margin-top: 12px; padding: 11px; background: #d4a54a; border: none; cursor: pointer; font-family: 'Courier New', monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.2em; color: #060a0f; border-radius: 2px; }
 
 /* ── DASHBOARD ── */
 #dash { display: none; height: 100vh; flex-direction: column; position: relative; z-index: 1; }
 #dash.visible { display: flex; }
-.topbar { display: flex; align-items: center; gap: 24px; padding: 8px 16px; background: #0c1219; border-bottom: 1px solid #1a2a3a; font-size: 11px; letter-spacing: 0.12em; flex-shrink: 0; z-index: 5; }
-.topbar .logo { color: #d4a54a; font-weight: 700; font-size: 13px; letter-spacing: 0.3em; }
-.topbar .stat { color: #4a7a9b; }
-.topbar .stat span { color: #22c55e; }
-.topbar #clock { color: #7a9bb5; margin-left: auto; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 20px;
+  background: #0c1219;
+  border-bottom: 1px solid #1a2a3a;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  flex-shrink: 0;
+  z-index: 5;
+}
+.topbar .target-display { 
+    background: rgba(212, 165, 74, 0.1);
+    padding: 8px 15px;
+    border: 1px solid #d4a54a;
+    color: #e0eaf5;
+    font-weight: bold;
+    font-size: 14px;
+}
+.topbar .target-display span { color: #d4a54a; margin-right: 10px; font-size: 10px; }
 
 .content { display: flex; flex: 1; min-height: 0; }
 
 /* ── SIDEBAR ── */
-.sidebar { width: 280px; background: #0c1219; border-right: 1px solid #1a2a3a; display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden; }
+.sidebar { width: 280px; background: #0c1219; border-right: 1px solid #1a2a3a; display: flex; flex-direction: column; flex-shrink: 0; }
 .sidebar-title { font-size: 10px; letter-spacing: 0.2em; color: #4a7a9b; padding: 12px 14px 8px; border-bottom: 1px solid #1a2a3a; }
-#info-panel { padding: 14px; border-bottom: 1px solid #1a2a3a; min-height: 160px; }
-#info-panel h3 { color: #e0eaf5; font-size: 13px; letter-spacing: 0.15em; margin-bottom: 10px; border-left: 2px solid #d4a54a; padding-left: 8px; }
-#info-panel .row { display: flex; justify-content: space-between; font-size: 11px; padding: 4px 0; border-bottom: 1px solid #0f1e2e; }
-#info-panel .row .label { color: #4a7a9b; font-size: 9px; }
 
-.audit-section { flex: 1; overflow: hidden; display: flex; flex-direction: column; background: #080d14; }
-#missing-list { flex: 1; overflow-y: auto; padding: 10px 14px; font-size: 10px; }
-.missing-item { color: #ef4444; padding: 4px 8px; cursor: pointer; border: 1px solid transparent; margin-bottom: 2px; }
-.missing-item:hover { background: #1a1a2e; border-color: #ef4444; color: #fff; }
+#stats-panel { padding: 14px; border-bottom: 1px solid #1a2a3a; }
+.stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; }
+.stat-row .label { color: #4a7a9b; }
+.stat-row .val { color: #e0eaf5; font-weight: bold; }
+
+.history-section { flex: 1; overflow: hidden; display: flex; flex-direction: column; background: #080d14; }
+#history-log { flex: 1; overflow-y: auto; padding: 10px 14px; font-size: 10px; }
+.log-item { padding: 4px 0; border-bottom: 1px solid #0f1e2e; }
+.log-item.hit { color: #22c55e; }
+.log-item.miss { color: #ef4444; }
 
 /* ── MAP ── */
 .map-wrap { flex: 1; position: relative; overflow: hidden; background: #060a0f; }
 #map-svg { width: 100%; height: 100%; display: block; }
-.country { fill: #0f1e2e; stroke: #1a3550; stroke-width: 0.5; cursor: pointer; transition: fill 0.2s; }
-.country:hover { fill: #162a40; stroke: #3b82f6; }
-.country.selected { fill: #0d2a45; stroke: #3b82f6; stroke-width: 1.2; }
+.country { fill: #0f1e2e; stroke: #1a3550; stroke-width: 0.5; cursor: pointer; }
+.country:hover { fill: #162a40; }
+
+/* Animation Classes */
+.flash-correct { fill: #22c55e !important; transition: fill 0.1s; }
+.flash-wrong { fill: #ef4444 !important; transition: fill 0.1s; }
+
 .country-glow { fill: none; stroke: #3b82f6; stroke-width: 3; opacity: 0; pointer-events: none; }
-.country-glow.active { opacity: 1; animation: countryPulse 2s ease-in-out infinite; }
-@keyframes countryPulse { 0%, 100% { opacity: 0.6; stroke-width: 2; } 50% { opacity: 0.2; stroke-width: 4; } }
+.country-glow.active { opacity: 1; animation: countryPulse 1.5s ease-in-out; }
+@keyframes countryPulse { 0% { opacity: 0; stroke-width: 2; } 50% { opacity: 0.8; stroke-width: 5; } 100% { opacity: 0; stroke-width: 2; } }
 </style>
 </head>
 <body>
@@ -69,30 +91,32 @@ body::before {
 <div id="login">
   <div class="login-box">
     <h2>⬡ MISSION CONTROL</h2>
-    <div class="sub">REGISTRY AUDIT MODE</div>
-    <input id="uname" placeholder="USERNAME" value="admin">
-    <input id="upass" type="password" placeholder="PASSWORD" value="admin">
-    <button class="login-btn" onclick="tryLogin()">INITIALIZE</button>
+    <div class="sub">RECONNAISSANCE TRAINING MODULE</div>
+    <button class="login-btn" onclick="tryLogin()">START SESSION</button>
   </div>
 </div>
 
 <div id="dash">
   <div class="topbar">
-    <span class="logo">⬡ MISSION CONTROL</span>
-    <span class="stat">AUDIT_STATUS <span id="audit-status">SCANNING...</span></span>
-    <span id="clock">--:--:-- UTC</span>
+    <div class="target-display"><span>LOCATE_TARGET:</span> <span id="target-name">INITIALIZING...</span></div>
+    <div style="margin-left: auto; display: flex; gap: 20px;">
+        <div class="stat">SUCCESS: <span id="score-hits">0</span></div>
+        <div class="stat">FAILURES: <span id="score-misses">0</span></div>
+        <div id="clock">--:--:-- UTC</div>
+    </div>
   </div>
 
   <div class="content">
     <div class="sidebar">
-      <div id="info-panel">
-        <div class="sidebar-title" style="padding:0; margin-bottom:10px;">// INTEL REPORT</div>
-        <div id="report-content">Select signal...</div>
+      <div id="stats-panel">
+        <div class="sidebar-title" style="padding:0; margin-bottom:10px;">// PERFORMANCE</div>
+        <div class="stat-row"><span class="label">ACCURACY:</span><span class="val" id="stat-accuracy">0%</span></div>
+        <div class="stat-row"><span class="label">RANK:</span><span class="val" id="stat-rank">RECRUIT</span></div>
       </div>
       
-      <div class="audit-section">
-        <div class="sidebar-title">// UNIDENTIFIED SIGNALS</div>
-        <div id="missing-list">Syncing...</div>
+      <div class="history-section">
+        <div class="sidebar-title">// MISSION LOG</div>
+        <div id="history-log"></div>
       </div>
     </div>
 
@@ -103,6 +127,11 @@ body::before {
 </div>
 
 <script>
+var hits = 0;
+var misses = 0;
+var currentTargetId = null;
+var verifiedIds = [];
+
 function tryLogin() {
   document.getElementById("login").style.display = "none";
   document.getElementById("dash").classList.add("visible");
@@ -114,7 +143,6 @@ function startClock() {
 }
 
 var projection, path, svgEl, countryLayer, glowLayer;
-var ALL_FEATURES = [];
 
 function initDash() {
   startClock();
@@ -127,8 +155,13 @@ function initDash() {
     .then(r => r.json())
     .then(world => {
       var countries = topojson.feature(world, world.objects.countries);
-      ALL_FEATURES = countries.features;
+      var names = getCountryNames();
       
+      // Filter for countries we actually have names for
+      verifiedIds = countries.features
+        .filter(f => names[parseInt(f.id)])
+        .map(f => parseInt(f.id));
+
       glowLayer = svgEl.append("g");
       countryLayer = svgEl.append("g");
 
@@ -138,7 +171,7 @@ function initDash() {
         .attr("class","country")
         .attr("id", d => "c"+d.id)
         .attr("d", path)
-        .on("click", (e, d) => triggerScan(d.id));
+        .on("click", (e, d) => handleMapClick(d.id));
 
       glowLayer.selectAll("path.country-glow")
         .data(countries.features)
@@ -147,124 +180,85 @@ function initDash() {
         .attr("id", d => "g"+d.id)
         .attr("d", path);
 
-      runAudit();
+      nextTarget();
     });
 }
 
-function runAudit() {
+function nextTarget() {
   var names = getCountryNames();
-  var missingContainer = document.getElementById("missing-list");
-  missingContainer.innerHTML = "";
-  var missingCount = 0;
-
-  ALL_FEATURES.forEach(f => {
-    var idNum = parseInt(f.id);
-    // If idNum is NaN or not in our registry, flag it
-    if (isNaN(idNum)) return; 
-
-    if (!names[idNum] && f.id !== "-99" && f.id !== 0) {
-      missingCount++;
-      var div = document.createElement("div");
-      div.className = "missing-item";
-      div.innerText = `SIGNAL_ID: ${idNum.toString().padStart(3, '0')} (Click to locate)`;
-      div.onclick = () => triggerScan(f.id);
-      missingContainer.appendChild(div);
-    }
-  });
-
-  document.getElementById("audit-status").innerText = missingCount === 0 ? "REGISTRY CLEAN" : `${missingCount} DISCREPANCIES`;
-  if(missingCount === 0) missingContainer.innerHTML = "<div style='color:#22c55e; padding:10px;'>Grid Fully Verified.</div>";
+  currentTargetId = verifiedIds[Math.floor(Math.random() * verifiedIds.length)];
+  document.getElementById("target-name").innerText = names[currentTargetId].toUpperCase();
 }
 
-function triggerScan(id) {
+function handleMapClick(clickedId) {
   var names = getCountryNames();
-  var idNum = parseInt(id);
+  var idInt = parseInt(clickedId);
+  var targetName = names[currentTargetId];
+  var clickedName = names[idInt] || "Unknown Territory";
   
-  // Safe string formatting for display to prevent NaN issues
-  var displayId = isNaN(idNum) ? "???" : idNum.toString().padStart(3, '0');
-  var name = names[idNum] || "UNIDENTIFIED SECTOR";
-  
-  countryLayer.selectAll(".country").classed("selected", false);
-  glowLayer.selectAll(".country-glow").classed("active", false);
-  
-  countryLayer.select("#c"+id).classed("selected", true);
-  glowLayer.select("#g"+id).classed("active", true);
+  var log = document.getElementById("history-log");
+  var entry = document.createElement("div");
+  entry.className = "log-item";
 
-  document.getElementById("report-content").innerHTML = `
-    <h3>${name.toUpperCase()}</h3>
-    <div class="row"><span class="label">REGISTRY_ID</span><span class="val">${displayId}</span></div>
-    <div class="row"><span class="label">STATUS</span><span class="val" style="color:${names[idNum] ? '#22c55e' : '#ef4444'}">${names[idNum] ? "VERIFIED" : "UNKNOWN"}</span></div>
-  `;
+  if (idInt === currentTargetId) {
+    // CORRECT
+    hits++;
+    entry.className += " hit";
+    entry.innerText = `[SUCCESS] Correctly identified ${targetName}`;
+    flashCountry(clickedId, "flash-correct");
+    nextTarget();
+  } else {
+    // WRONG
+    misses++;
+    entry.className += " miss";
+    entry.innerText = `[FAILED] Expected ${targetName}, but selected ${clickedName}`;
+    flashCountry(clickedId, "flash-wrong");
+    // Show correct location glow briefly
+    glowLayer.select("#g"+currentTargetId).classed("active", true);
+    setTimeout(() => {
+        glowLayer.select("#g"+currentTargetId).classed("active", false);
+    }, 1500);
+  }
+
+  log.insertBefore(entry, log.firstChild);
+  updateStats();
+}
+
+function flashCountry(id, className) {
+    var el = countryLayer.select("#c"+id);
+    el.classed(className, true);
+    setTimeout(() => el.classed(className, false), 500);
+}
+
+function updateStats() {
+    document.getElementById("score-hits").innerText = hits;
+    document.getElementById("score-misses").innerText = misses;
+    
+    var total = hits + misses;
+    var acc = total === 0 ? 0 : Math.round((hits / total) * 100);
+    document.getElementById("stat-accuracy").innerText = acc + "%";
+    
+    var rank = "RECRUIT";
+    if (hits > 5) rank = "OPERATIVE";
+    if (hits > 15 && acc > 80) rank = "SPECIALIST";
+    if (hits > 30 && acc > 95) rank = "ELITE GHOST";
+    document.getElementById("stat-rank").innerText = rank;
 }
 
 function getCountryNames() {
   return {
-    /* RECENT CORRECTIONS */
-    196: "Cyprus",
-    232: "Eritrea",
-    124: "Canada",
-    32: "Argentina",
-    180: "Dem. Rep. of Congo",
-    44: "Bahamas",
-    76: "Brazil",
-    68: "Bolivia",
-    84: "Belize",
-    72: "Botswana",
-    466: "Mali",
-    204: "Benin",
-    120: "Cameroon",
-    454: "Malawi",
-    24: "Angola",
-    108: "Burundi",
-    12: "Algeria",
-    116: "Cambodia",
-    104: "Myanmar",
-    50: "Bangladesh",
-    64: "Bhutan",
-    4: "Afghanistan",
-    51: "Armenia",
-    112: "Belarus",
-    40: "Austria",
-    100: "Bulgaria",
-    8: "Albania",
-    56: "Belgium",
-    90: "Solomon Islands",
-    36: "Australia",
-    31: "Azerbaijan",
-    96: "Brunei",
-    10: "Antarctica",
-    70: "Bosnia and Herzegovina",
-
-    /* GLOBAL REGISTRY */
-    214: "Dominican Republic",
-    238: "Falkland Islands",
-    260: "French Southern Territories",
-    626: "Timor-Leste",
-    320: "Guatemala",
-    630: "Puerto Rico",
-    624: "Guinea-Bissau",
-    178: "Republic of the Congo",
-    226: "Equatorial Guinea",
-    275: "Palestine",
-    422: "Lebanon",
-    540: "New Caledonia",
-    458: "Malaysia",
-    140:"Central African Republic", 144:"Sri Lanka", 148:"Chad", 152:"Chile", 156:"China", 158:"Taiwan", 170:"Colombia", 188:"Costa Rica", 
-    191:"Croatia", 192:"Cuba", 203:"Czechia", 208:"Denmark", 218:"Ecuador", 222:"El Salvador", 231:"Ethiopia", 233:"Estonia", 
-    242:"Fiji", 246:"Finland", 250:"France", 262:"Djibouti", 266:"Gabon", 268:"Georgia", 270:"Gambia", 276:"Germany", 288:"Ghana", 300:"Greece", 
-    304:"Greenland", 324:"Guinea", 328:"Guyana", 332:"Haiti", 340:"Honduras", 348:"Hungary", 352:"Iceland", 356:"India", 
-    360:"Indonesia", 364:"Iran", 368:"Iraq", 372:"Ireland", 376:"Israel", 380:"Italy", 384:"Ivory Coast", 388:"Jamaica", 392:"Japan", 
-    398:"Kazakhstan", 400:"Jordan", 404:"Kenya", 408:"North Korea", 410:"South Korea", 414:"Kuwait", 417:"Kyrgyzstan", 418:"Laos", 
-    426:"Lesotho", 428:"Latvia", 430:"Liberia", 434:"Libya", 438:"Madagascar", 440:"Lithuania", 442:"Luxembourg", 450:"Malawi", 
-    478:"Mauritania", 480:"Mauritius", 484:"Mexico", 496:"Mongolia", 498:"Moldova", 499:"Montenegro", 504:"Morocco", 508:"Mozambique", 
-    512:"Oman", 516:"Namibia", 524:"Nepal", 528:"Netherlands", 548:"Vanuatu", 554:"New Zealand", 558:"Nicaragua", 562:"Niger", 566:"Nigeria", 
-    578:"Norway", 586:"Pakistan", 591:"Panama", 598:"Papua New Guinea", 600:"Paraguay", 604:"Peru", 608:"Philippines", 616:"Poland", 
-    620:"Portugal", 634:"Qatar", 642:"Romania", 643:"Russia", 646:"Rwanda", 682:"Saudi Arabia", 686:"Senegal", 688:"Serbia", 694:"Sierra Leone", 
-    702:"Singapore", 703:"Slovakia", 704:"Vietnam", 705:"Slovenia", 706:"Somalia", 710:"South Africa", 716:"Zimbabwe", 724:"Spain", 
-    728:"South Sudan", 729:"Sudan", 732:"Western Sahara", 740:"Suriname", 748:"Eswatini", 752:"Sweden", 756:"Switzerland", 760:"Syria", 
-    762:"Tajikistan", 764:"Thailand", 768:"Togo", 780:"Trinidad and Tobago", 784:"UAE", 788:"Tunisia", 792:"Turkey", 795:"Turkmenistan", 
-    800:"Uganda", 804:"Ukraine", 807:"North Macedonia", 818:"Egypt", 826:"United Kingdom", 834:"Tanzania", 840:"United States of America", 
-    854:"Burkina Faso", 858:"Uruguay", 860:"Uzbekistan", 862:"Venezuela", 882:"Samoa", 887:"Yemen", 894:"Zambia"
+    196: "Cyprus", 232: "Eritrea", 124: "Canada", 32: "Argentina", 180: "Dem. Rep. of Congo", 44: "Bahamas",
+    76: "Brazil", 68: "Bolivia", 84: "Belize", 72: "Botswana", 466: "Mali", 204: "Benin", 120: "Cameroon",
+    454: "Malawi", 24: "Angola", 108: "Burundi", 12: "Algeria", 116: "Cambodia", 104: "Myanmar",
+    50: "Bangladesh", 64: "Bhutan", 4: "Afghanistan", 51: "Armenia", 112: "Belarus", 40: "Austria",
+    100: "Bulgaria", 8: "Albania", 56: "Belgium", 90: "Solomon Islands", 36: "Australia", 31: "Azerbaijan",
+    96: "Brunei", 10: "Antarctica", 70: "Bosnia and Herzegovina", 214: "Dominican Republic",
+    238: "Falkland Islands", 260: "French Southern Territories", 626: "Timor-Leste", 320: "Guatemala",
+    630: "Puerto Rico", 624: "Guinea-Bissau", 178: "Republic of the Congo", 226: "Equatorial Guinea",
+    275: "Palestine", 422: "Lebanon", 540: "New Caledonia", 458: "Malaysia", 156: "China", 643: "Russia",
+    840: "United States", 250: "France", 276: "Germany", 356: "India", 392: "Japan", 710: "South Africa",
+    826: "United Kingdom", 484: "Mexico", 724: "Spain", 380: "Italy", 528: "Netherlands", 752: "Sweden",
+    578: "Norway", 304: "Greenland", 348: "Hungary", 616: "Poland", 818: "Egypt", 792: "Turkey", 682: "Saudi Arabia"
   };
 }
 </script>
