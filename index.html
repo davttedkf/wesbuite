@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mission Control - Recon Trainer v4</title>
+<title>Mission Control - Recon Trainer v5</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
@@ -67,6 +67,20 @@ body::before {
 #diff-slider { width: 100%; margin: 10px 0; accent-color: #d4a54a; cursor: pointer; }
 #diff-label { color: #d4a54a; font-weight: bold; letter-spacing: 1px; }
 
+.reset-btn {
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+    background: #1a2a3a;
+    border: 1px solid #3b82f6;
+    color: #3b82f6;
+    font-family: inherit;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.reset-btn:hover { background: #3b82f6; color: #060a0f; }
+
 .history-section { flex: 1; overflow: hidden; display: flex; flex-direction: column; background: #080d14; }
 #history-log { flex: 1; overflow-y: auto; padding: 10px 14px; font-size: 10px; }
 .log-item { padding: 4px 0; border-bottom: 1px solid #0f1e2e; }
@@ -76,17 +90,37 @@ body::before {
 /* ── MAP ── */
 .map-wrap { flex: 1; position: relative; overflow: hidden; background: #060a0f; cursor: crosshair; }
 #map-svg { width: 100%; height: 100%; display: block; }
-.country { fill: #0f1e2e; stroke: #1a3550; stroke-width: 0.5; cursor: pointer; transition: fill 0.2s; }
+
+/* Countries */
+.country { 
+    fill: #0f1e2e; 
+    stroke: #1a3550; 
+    stroke-width: 0.5px; 
+    cursor: pointer; 
+}
 .country:hover { fill: #162a40; }
 
 .flash-correct { fill: #22c55e !important; }
 .flash-wrong { fill: #ef4444 !important; }
 
-.country-glow { fill: none; stroke: #3b82f6; stroke-width: 3; opacity: 0; pointer-events: none; }
-.country-glow.active { opacity: 1; animation: countryPulse 1.5s ease-in-out; }
-@keyframes countryPulse { 0% { opacity: 0; stroke-width: 2; } 50% { opacity: 0.8; stroke-width: 5; } 100% { opacity: 0; stroke-width: 2; } }
+/* Blue Outline / Hint */
+.country-glow { 
+    fill: none; 
+    stroke: #3b82f6; 
+    stroke-width: 3px; 
+    opacity: 0; 
+    pointer-events: none; 
+}
+.country-glow.active { 
+    opacity: 1; 
+    animation: countryPulse 1.5s ease-in-out infinite; 
+}
+@keyframes countryPulse { 
+    0% { opacity: 0.2; stroke-width: 2px; } 
+    50% { opacity: 1; stroke-width: 5px; } 
+    100% { opacity: 0.2; stroke-width: 2px; } 
+}
 
-/* Zoom Hint */
 .zoom-hint { position: absolute; bottom: 10px; right: 10px; font-size: 9px; color: #2a4a6a; pointer-events: none; }
 </style>
 </head>
@@ -95,7 +129,7 @@ body::before {
 <div id="login">
   <div class="login-box">
     <h2>⬡ MISSION CONTROL</h2>
-    <div class="sub">GLOBAL RECON TRAINING v4.0</div>
+    <div class="sub">GLOBAL RECON TRAINING v5.0</div>
     <button class="login-btn" onclick="tryLogin()">START SESSION</button>
   </div>
 </div>
@@ -119,6 +153,7 @@ body::before {
             <span class="val" id="diff-label">NOOB</span>
         </div>
         <input type="range" min="0" max="3" value="0" id="diff-slider" oninput="updateDifficulty()">
+        <button class="reset-btn" onclick="resetView()">RESET ORBITAL VIEW</button>
       </div>
 
       <div class="panel-section">
@@ -150,7 +185,7 @@ var verifiedIds = [];
 var difficulty = 0;
 
 const DIFF_LEVELS = ["NOOB", "NORMAL", "PRO", "EXPERT"];
-const HINT_THRESHOLDS = [10, 50, 100, 99999];
+const HINT_THRESHOLDS = [3, 50, 100, 9999]; // NOOB is now 3 for quick testing
 
 function tryLogin() {
   document.getElementById("login").style.display = "none";
@@ -168,25 +203,29 @@ function startClock() {
   setInterval(() => { document.getElementById("clock").textContent = new Date().toUTCString().split(' ')[4] + " UTC"; }, 1000);
 }
 
-var projection, path, svgEl, mapContent, countryLayer, glowLayer;
+var projection, path, svgEl, mapContent, countryLayer, glowLayer, zoomBehavior;
 
 function initDash() {
   startClock();
   var wrap = document.getElementById("map-wrap");
   
-  // Setup Zoom
-  const zoom = d3.zoom()
-    .scaleExtent([1, 15]) // Max zoom level 15x
+  zoomBehavior = d3.zoom()
+    .scaleExtent([1, 15])
     .on("zoom", (event) => {
       mapContent.attr("transform", event.transform);
+    })
+    .on("end", (event) => {
+      // Auto-snap to center if zoomed all the way out
+      if (event.transform.k === 1) {
+        resetView();
+      }
     });
 
   svgEl = d3.select("#map-svg")
     .attr("viewBox", `0 0 ${wrap.clientWidth} ${wrap.clientHeight}`)
-    .call(zoom);
+    .call(zoomBehavior);
 
-  // Wrapper group for all map elements to zoom together
-  mapContent = svgEl.append("g").attr("class", "map-content");
+  mapContent = svgEl.append("g");
 
   projection = d3.geoNaturalEarth1()
     .scale(wrap.clientWidth / 6.5)
@@ -211,7 +250,7 @@ function initDash() {
         .data(countries.features)
         .enter().append("path")
         .attr("class","country")
-        .attr("id", d => "c"+d.id)
+        .attr("id", d => "c" + d.id.toString().padStart(3, '0'))
         .attr("d", path)
         .on("click", (e, d) => handleMapClick(d.id));
 
@@ -219,11 +258,17 @@ function initDash() {
         .data(countries.features)
         .enter().append("path")
         .attr("class","country-glow")
-        .attr("id", d => "g"+d.id)
+        .attr("id", d => "g" + d.id.toString().padStart(3, '0'))
         .attr("d", path);
 
       nextTarget();
     });
+}
+
+function resetView() {
+    svgEl.transition()
+        .duration(750)
+        .call(zoomBehavior.transform, d3.zoomIdentity);
 }
 
 function nextTarget() {
@@ -232,32 +277,36 @@ function nextTarget() {
   document.getElementById("target-display").innerHTML = `LOCATE_TARGET: <span style="color:#e0eaf5">${names[currentTargetId].toUpperCase()}</span>`;
   currentStrikes = 0;
   document.getElementById("stat-strikes").innerText = "0";
+  glowLayer.selectAll(".country-glow").classed("active", false); // Clear old hints
 }
 
 function handleMapClick(clickedId) {
   var names = getCountryNames();
   var idInt = parseInt(clickedId);
   var targetName = names[currentTargetId];
-  var clickedName = names[idInt] || `ID: ${idInt}`;
   
+  // Format the ID for selector string (e.g., 32 -> "032")
+  var targetSelectorId = currentTargetId.toString().padStart(3, '0');
+  var clickedSelectorId = idInt.toString().padStart(3, '0');
+
   if (idInt === currentTargetId) {
     hits++;
     addLog(`[OK] ${targetName.toUpperCase()} SECURED.`, "hit");
-    flashCountry(clickedId, "flash-correct");
+    flashCountry(clickedSelectorId, "flash-correct");
     nextTarget();
   } else {
     misses++;
     currentStrikes++;
     document.getElementById("stat-strikes").innerText = currentStrikes;
-    addLog(`[!] TARGET: ${targetName.toUpperCase()} | IMPACT: ${clickedName.toUpperCase()}`, "miss");
-    flashCountry(clickedId, "flash-wrong");
     
+    var clickedName = names[idInt] || `ID: ${clickedSelectorId}`;
+    addLog(`[!] TARGET: ${targetName.toUpperCase()} | IMPACT: ${clickedName.toUpperCase()}`, "miss");
+    flashCountry(clickedSelectorId, "flash-wrong");
+    
+    // HINT TRIGGER (BLUE OUTLINE)
     if (currentStrikes >= HINT_THRESHOLDS[difficulty]) {
-        addLog("HINT_UPLINK: Correct location broadcasting...");
-        glowLayer.select("#g"+currentTargetId).classed("active", true);
-        setTimeout(() => {
-            glowLayer.select("#g"+currentTargetId).classed("active", false);
-        }, 1200);
+        addLog("HINT_UPLINK: Broadcasting target location...");
+        glowLayer.select("#g" + targetSelectorId).classed("active", true);
     }
   }
   updateStats();
@@ -271,8 +320,8 @@ function addLog(msg, type = "") {
     log.insertBefore(entry, log.firstChild);
 }
 
-function flashCountry(id, className) {
-    var el = countryLayer.select("#c"+id);
+function flashCountry(paddedId, className) {
+    var el = countryLayer.select("#c" + paddedId);
     el.classed(className, true);
     setTimeout(() => el.classed(className, false), 400);
 }
