@@ -1,42 +1,46 @@
-import os
-
-# Define the HTML content
-html_content = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Surprise!</title>
     <style>
+        /* This makes everything look nice and centered */
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .container {
             text-align: center;
         }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
         button {
-            padding: 20px 40px;
-            font-size: 24px;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: bold;
             cursor: pointer;
-            background-color: #007bff;
+            background-color: #4285f4;
             color: white;
             border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.2s, background-color 0.2s;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
         }
         button:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
+            background-color: #357ae8;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
         button:active {
-            transform: scale(0.95);
+            transform: translateY(1px);
         }
     </style>
 </head>
@@ -49,18 +53,10 @@ html_content = """<!DOCTYPE html>
 
 <script>
     function rickRoll() {
-        // The famous Rickroll URL
+        // This is the magic line that redirects the user
         window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
     }
 </script>
 
 </body>
 </html>
-"""
-
-# Save to a file
-file_path = "surprise.html"
-with open(file_path, "w") as f:
-    f.write(html_content)
-
-print(f"File saved as {file_path}")
