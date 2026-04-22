@@ -1,62 +1,1040 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surprise!</title>
-    <style>
-        /* This makes everything look nice and centered */
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .container {
-            text-align: center;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 15px 30px;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            background-color: #4285f4;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-        }
-        button:hover {
-            background-color: #357ae8;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        }
-        button:active {
-            transform: translateY(1px);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LITHOS | #1 Pet Rock Provider</title>
+  <link rel="icon" href="favicon.ico?v=29">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <style>
+    :root { --primary: #121212; --accent: #a38a6d; --bg: #ffffff; --light-bg: #f8f8f6; --border: #e8e8e6; --success: #2d5a27; --error: #c62828; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--primary); overflow-x: hidden; position: relative; }
+    
+    .tectonic-bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; opacity: 0.4; pointer-events: none; }
+    .plate { position: absolute; background: radial-gradient(circle, #f0f0f0 0%, rgba(255,255,255,0) 70%); border-radius: 50%; filter: blur(60px); animation: shift 30s infinite alternate ease-in-out; }
+    .plate-1 { width: 800px; height: 800px; top: -200px; left: -200px; }
+    .plate-2 { width: 600px; height: 600px; bottom: -100px; right: -100px; animation-duration: 45s; }
+    @keyframes shift { from { transform: translate(0, 0); } to { transform: translate(100px, 50px); } }
+    #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: 0.3s; z-index: 1500; }
+    #overlay.active { opacity: 1; visibility: visible; }
+    #loader { position: fixed; inset: 0; background: #fff; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+    .spinner { width: 40px; height: 40px; border: 3px solid #eee; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    #social-toast { position: fixed; bottom: 30px; left: 30px; background: #fff; border: 1px solid var(--border); padding: 15px 20px; border-radius: 12px; display: none; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); z-index: 5000; animation: slideUp 0.5s ease; }
+    @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 2000; }
+    .logo { font-weight: 800; letter-spacing: 6px; text-transform: uppercase; cursor: pointer; font-size: 1.1rem; }
+    .nav-icons { display: flex; gap: 25px; align-items: center; font-size: 1.1rem; position: relative; }
+    .dropdown-container { position: relative; display: inline-block; }
+    .dropdown-content { display: none; position: absolute; right: 0; top: 35px; background: #fff; min-width: 200px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--border); z-index: 2100; overflow: hidden; }
+    .dropdown-content.show { display: block; }
+    .drop-item { padding: 15px 20px; font-size: 0.85rem; color: #666; cursor: pointer; border-bottom: 1px solid #f9f9f9; }
+    .drop-item:hover { background: var(--light-bg); color: var(--primary); }
+    .screen { display: none; width: 100%; min-height: 100vh; }
+    .screen.active { display: block; }
+    /* FIX: detail-grid was missing CSS */
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+    @media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; } }
+    .shop-container { display: flex; max-width: 1400px; margin: 0 auto; padding: 60px 5%; gap: 60px; }
+    .sidebar { width: 220px; flex-shrink: 0; position: sticky; top: 120px; }
+    .sidebar-list { list-style: none; margin-bottom: 40px; }
+    .sidebar-list li { padding: 10px 0; font-size: 0.9rem; color: #666; cursor: pointer; transition: 0.2s; }
+    .sidebar-list li.active { color: var(--primary); font-weight: 700; border-left: 2px solid var(--primary); padding-left: 15px; margin-left: -17px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; flex: 1; }
+    .product-card { border: 2px solid var(--border); border-radius: 20px; padding: 20px; cursor: pointer; transition: 0.4s; position: relative; background: #fff; }
+    .product-card:hover { border-color: var(--accent); transform: translateY(-8px); }
+    .img-box { width: 100%; aspect-ratio: 1; background: #fafafa; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .img-box img { width: 75%; height: 75%; object-fit: contain; }
+    .flash-sale-banner { background: #fffcf0; border: 1px solid #f9e8a0; padding: 15px; border-radius: 12px; margin: 20px 0; font-size: 0.85rem; display: flex; align-items: center; gap: 12px; }
+    .flash-timer { font-weight: 800; color: #856404; font-family: monospace; font-size: 1.1rem; }
+    .fact-sheet { width: 100%; margin-top: 30px; border-collapse: collapse; font-size: 0.85rem; }
+    .fact-sheet td { padding: 12px 0; border-bottom: 1px solid #f0f0f0; color: #777; }
+    .fact-sheet td:first-child { font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; width: 40%; }
+    .checkout-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+    .checkout-left { background: var(--light-bg); padding: 60px 10%; border-right: 1px solid var(--border); }
+    .checkout-right { padding: 60px 10%; background: #fff; }
+    .promo-group { display: flex; gap: 10px; margin-bottom: 20px; }
+    .promo-group input { margin-bottom: 0; }
+    .promo-btn { width: 100px; font-size: 0.7rem; letter-spacing: 1px; padding: 0; }
+    .orders-wrapper { max-width: 800px; margin: 0 auto; padding: 60px 5%; }
+    .order-card { border: 1px solid var(--border); border-radius: 15px; padding: 30px; margin-bottom: 30px; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+    .track-visual { height: 6px; background: #eee; border-radius: 10px; margin: 25px 0; position: relative; overflow: hidden; }
+    .track-fill { height: 100%; background: var(--success); transition: width 1s ease; }
+    .cancel-btn { background: none; border: 1px solid #ddd; color: #999; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; transition: 0.3s; }
+    .cancel-btn:hover { background: var(--error); border-color: var(--error); color: #fff; }
+    /* FIX: auth error state */
+    .input-error { border-color: var(--error) !important; }
+    .auth-error { color: var(--error); font-size: 0.8rem; margin-bottom: 12px; display: none; }
+    input { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 12px; font-family: inherit; margin-bottom: 12px; outline: none; transition: border-color 0.2s; }
+    input:focus { border-color: var(--accent); }
+    .btn { width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; }
+    .btn:hover { opacity: 0.85; }
+    .adopt-btn { width: 100%; padding: 20px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; margin-top: 30px; transition: 0.3s; }
+    .adopt-btn:hover { opacity: 0.85; }
+    .drawer { position: fixed; top: 0; right: -450px; width: 450px; height: 100%; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); z-index: 3000; transition: 0.5s; display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(0,0,0,0.1); }
+    .drawer.active { right: 0; }
+    @media (max-width: 900px) { .checkout-layout { grid-template-columns: 1fr; } .shop-container { flex-direction: column; } .drawer { width: 100%; right: -100%; } }
+    /* Admin */
+    .admin-wrapper { max-width: 1100px; margin: 0 auto; padding: 60px 5%; }
+    .admin-stat { background: var(--light-bg); border-radius: 14px; padding: 24px 28px; }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 30px; }
+    .admin-table th { text-align: left; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: #aaa; padding: 0 16px 14px; border-bottom: 2px solid var(--border); }
+    .admin-table td { padding: 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: #fafaf8; }
+    .status-pill { display: inline-block; padding: 4px 10px; border-radius: 50px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .pill-received  { background: #e8f4fd; color: #1565c0; }
+    .pill-nesting   { background: #fff8e1; color: #f57f17; }
+    .pill-shipped   { background: #f3e5f5; color: #6a1b9a; }
+    .pill-delivered  { background: #e8f5e9; color: var(--success); }
+    .pill-cancelled  { background: #fdecea; color: #c62828; }
+    .admin-badge { background: #c62828; color: #fff; font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; margin-left: 8px; vertical-align: middle; }
+    
+    .status-dropdown { padding: 6px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.75rem; background: #fff; cursor: pointer; }
+  </style>
 </head>
 <body>
-
-<div class="container">
-    <h1>Click the button for a surprise!</h1>
-    <button onclick="rickRoll()">Click Me</button>
+<div class="tectonic-bg"><div class="plate plate-1"></div><div class="plate plate-2"></div></div>
+<div id="loader" style="display:none; flex-direction:column; align-items:center; justify-content:center;">
+    <div class="spinner"></div>
+    <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; font-weight: 700;">Validating Membership...</p>
 </div>
-
+<div id="social-toast">
+    <div style="width:10px; height:10px; border-radius:50%; background:var(--accent); flex-shrink:0;"></div>
+    <div id="toast-text" style="font-size: 0.8rem; font-weight: 600;"></div>
+</div>
+<div id="overlay" onclick="closeAll()"></div>
+<nav>
+  <div class="logo" onclick="handleLogoClick()">LITHOS</div>
+  <div class="nav-icons" id="main-nav-icons" style="display: none;">
+    <div class="dropdown-container">
+        <i class="fa-regular fa-circle-user" style="cursor: pointer;" onclick="toggleDropdown(event)"></i>
+        <div id="account-dropdown" class="dropdown-content">
+            <div class="drop-item" id="nav-orders" onclick="showScreen('orders-screen')">My Orders</div>
+            <div class="drop-item" id="nav-admin" style="display:none;" onclick="showScreen('admin-screen')">Admin Panel <span style="background:#c62828;color:#fff;font-size:0.55rem;font-weight:800;padding:2px 6px;border-radius:3px;margin-left:4px;">ADMIN</span></div>
+            <div class="drop-item" style="color: var(--error);" onclick="logout()">Logout</div>
+        </div>
+    </div>
+    <div style="position: relative; cursor: pointer;" onclick="toggleCart()">
+      <i class="fa-solid fa-bag-shopping"></i>
+      <span id="badge-count" style="position: absolute; top: -10px; right: -12px; background: var(--primary); color: #fff; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800;">0</span>
+    </div>
+  </div>
+</nav>
+<section id="auth-screen" class="screen active">
+    <div style="max-width: 400px; margin: 100px auto; padding: 40px; border: 1px solid var(--border); border-radius: 20px; text-align: center; background: #fff;">
+        <h2 style="font-weight: 800; margin-bottom: 10px;">LITHOS COLLECTIVE</h2>
+        <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 30px;">Sign in to continue.</p>
+        <p class="auth-error" id="auth-error">Please enter your email and password.</p>
+        <input type="email" id="login-email" placeholder="Email Address">
+        <input type="password" id="login-password" placeholder="Password">
+        <button class="btn" onclick="login()">Enter Collective</button>
+    </div>
+</section>
+<section id="shop-screen" class="screen">
+  <div class="shop-container">
+    <aside class="sidebar">
+      <h4 style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; color: #aaa;">Collection</h4>
+      <ul class="sidebar-list">
+        <li class="active" onclick="filterItems('all', this)">All Friends</li>
+        <li onclick="filterItems('volcanic', this)">Volcanic</li>
+        <li onclick="filterItems('metamorphic', this)">Metamorphic</li>
+        <li onclick="filterItems('smooth', this)">Smooth Stones</li>
+      </ul>
+    </aside>
+    <div class="grid" id="product-grid"></div>
+  </div>
+</section>
+<section id="detail-screen" class="screen">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 60px 5%;">
+    <div style="cursor: pointer; margin-bottom: 40px; font-weight: 700; font-size: 0.7rem; color: #aaa; display:inline-flex; align-items:center; gap:8px;" onclick="showScreen('shop-screen')">
+        <i class="fa-solid fa-arrow-left"></i> BACK
+    </div>
+    <div class="detail-grid">
+      <div style="background: #fcfcfc; border-radius: 30px; padding: 60px; text-align: center;">
+        <img id="detail-img" src="" style="width: 100%; max-height: 500px; object-fit: contain;">
+      </div>
+      <div>
+        <h1 id="detail-title" style="font-size: 3rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -1px;"></h1>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+            <span id="detail-rating" style="color:var(--accent); font-weight:700;"></span>
+            <span style="font-size:0.8rem; color:#aaa; cursor:pointer; text-decoration:underline;" onclick="toggleReviews()">View Reviews</span>
+        </div>
+        <p id="detail-price" style="font-size: 2rem; margin-bottom: 10px; font-weight: 300;"></p>
+        
+        <div class="flash-sale-banner">
+            <i class="fa-solid fa-bolt" style="color:#856404;"></i>
+            <span>Order before <span id="timer-val" class="flash-timer">--:--:--</span> for <strong>20% OFF</strong>.</span>
+        </div>
+        <p id="detail-desc" style="line-height: 1.8; color: #666; margin-bottom: 40px;"></p>
+        <button class="btn" onclick="addCurrentToCart()">Add to Bag</button>
+        <table class="fact-sheet">
+            <tr><td>Hardness</td><td id="fact-hard"></td></tr>
+            <tr><td>Origin</td><td id="fact-origin"></td></tr>
+            <tr><td>Mineral</td><td id="fact-mineral"></td></tr>
+        </table>
+      </div>
+    </div>
+    <div id="reviews-section" style="display:none; margin-top:60px; border-top:1px solid var(--border); padding-top:40px;">
+        <h3 id="review-header-text" style="margin-bottom: 20px;"></h3>
+        <div id="reviews-container" style="display:grid; gap:20px;"></div>
+    </div>
+  </div>
+</section>
+<section id="orders-screen" class="screen">
+    <div class="orders-wrapper">
+        <h1 style="font-weight: 800; margin-bottom: 10px; letter-spacing: -1px;">ORDER HISTORY</h1>
+        <p style="color: #aaa; margin-bottom: 40px;">Review your Manifested Companions.</p>
+        <div id="orders-list"></div>
+    </div>
+</section>
+<section id="checkout-screen" class="screen">
+  <div class="checkout-layout">
+    <div class="checkout-left">
+      <h2 id="ch-total-hero" style="font-size: 3rem; font-weight: 800; margin-bottom: 40px;"></h2>
+      <div id="ch-list" style="flex:1; margin-bottom:30px;"></div>
+      
+      <div class="promo-group">
+          <input type="text" id="promo-input" placeholder="Promo Code (try GEOLOGIC10)" style="margin-bottom:0;">
+          <button class="btn promo-btn" onclick="applyPromo()">Apply</button>
+      </div>
+      <p id="promo-msg" style="font-size:0.8rem; margin-bottom:16px; min-height:1.2em;"></p>
+      <div style="border-top: 1px solid #ddd; padding-top: 20px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.9rem;">Subtotal <span id="ch-sub"></span></div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.9rem;">Shipping <span>$5.00</span></div>
+          <div id="promo-row" style="display:none; justify-content:space-between; margin-bottom:8px; color:var(--success); font-size:0.9rem;">Discount <span id="ch-disc"></span></div>
+          <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.4rem; margin-top:12px; padding-top:12px; border-top:1px solid #ddd;">Total <span id="ch-final"></span></div>
+      </div>
+    </div>
+    <div class="checkout-right">
+        <h4 style="margin-bottom:30px; letter-spacing:1px; font-size:0.8rem; text-transform:uppercase;">Secure Checkout</h4>
+        <input type="text" id="ship-name" placeholder="Full Name">
+        <input type="text" id="ship-addr" placeholder="Street Address">
+        <div style="border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:12px;">
+            <input id="card-num" type="text" style="border:none; border-bottom:1px solid var(--border); border-radius:0; width:100%; padding:16px; margin-bottom:0;" placeholder="Card Number" maxlength="19">
+            <div style="display:flex;">
+                <input type="text" id="exp-mm" style="border:none; border-radius:0; width:80px; text-align:center; margin-bottom:0;" placeholder="MM" maxlength="2">
+                <span style="display:flex; align-items:center; color:#ccc;">/</span>
+                <input type="text" id="exp-yy" style="border:none; border-radius:0; width:80px; text-align:center; margin-bottom:0;" placeholder="YY" maxlength="2">
+                <input type="text" id="cvc" placeholder="CVC" style="border:none; border-radius:0; flex:1; text-align:right; padding-right:20px; margin-bottom:0;" maxlength="3">
+            </div>
+        </div>
+        <button class="adopt-btn" onclick="processAdoption()">Complete Adoption</button>
+    </div>
+  </div>
+</section>
+<section id="tracking-screen" class="screen">
+    <div style="text-align: center; padding: 150px 5%;">
+      <i class="fa-solid fa-circle-check fa-5x" style="color: var(--success); margin-bottom: 30px;"></i>
+      <h1 style="font-size:2.5rem; font-weight:800; letter-spacing:-1px; margin-bottom:10px;">ADOPTION CONFIRMED.</h1>
+      <p style="color:#aaa; margin-bottom:40px;">Your stone is nesting. We'll be in touch.</p>
+      <div id="track-id-box" style="margin: 0 auto 40px; font-family: monospace; font-size: 1.4rem; background: #f8f8f8; padding: 25px; border-radius:12px; max-width:400px;"></div>
+      <button class="btn" style="width: 250px;" onclick="showScreen('orders-screen')">View Order History</button>
+    </div>
+</section>
+<section id="admin-screen" class="screen">
+  <div class="admin-wrapper">
+    <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:6px;">
+      <h1 style="font-weight:800; letter-spacing:-1px;">ADMIN PANEL</h1>
+      <span class="admin-badge">Staff Only</span>
+    </div>
+    <div style="display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:40px; margin-top:24px;">
+      <button id="tab-orders-btn" onclick="switchAdminTab('orders')" style="background:none; border:none; border-bottom:2px solid var(--primary); margin-bottom:-2px; padding:12px 28px; font-family:inherit; font-size:0.8rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; cursor:pointer; color:var(--primary);">Orders</button>
+      <button id="tab-discounts-btn" onclick="switchAdminTab('discounts')" style="background:none; border:none; border-bottom:2px solid transparent; margin-bottom:-2px; padding:12px 28px; font-family:inherit; font-size:0.8rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; cursor:pointer; color:#aaa;">Discount Codes</button>
+    </div>
+    <div id="tab-orders">
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-bottom:40px;" id="admin-stats"></div>
+      <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:20px;">
+        <input type="text" id="admin-search" placeholder="Search by name, order ID or item..." style="max-width:320px; margin-bottom:0; padding:12px 16px; font-size:0.85rem;" oninput="renderAdminTable(cachedAdminOrders)">
+        <select id="admin-filter" onchange="renderAdminTable(cachedAdminOrders)" style="padding:12px 16px; border:1px solid var(--border); border-radius:12px; font-family:inherit; font-size:0.85rem; background:#fff; cursor:pointer;">
+          <option value="all">All Statuses</option>
+          <option value="received">Order Received</option>
+          <option value="nesting">Nesting Complete</option>
+          <option value="shipped">Shipped</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <span id="admin-count" style="font-size:0.8rem; color:#aaa; margin-left:auto;"></span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead><tr>
+            <th>Order ID</th><th>Customer</th><th>Ship To</th><th>Items</th><th>Total</th><th>Date</th><th>Status</th><th>Set Status</th>
+          </tr></thead>
+          <tbody id="admin-tbody"></tbody>
+        </table>
+      </div>
+      <div id="admin-empty" style="display:none; text-align:center; padding:80px 0; color:#ccc;">
+        <i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom:16px; display:block;"></i>
+        No orders match your search.
+      </div>
+    </div>
+    <div id="tab-discounts" style="display:none;">
+      <p style="color:#aaa; font-size:0.85rem; margin-bottom:32px;">Create and manage promo codes. Customers enter these at checkout.</p>
+      <div style="background:var(--light-bg); border-radius:16px; padding:28px; margin-bottom:36px;">
+        <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; font-weight:700; color:#aaa; margin-bottom:20px;">New Discount Code</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:12px; align-items:end; flex-wrap:wrap;">
+          <div>
+            <div style="font-size:0.75rem; font-weight:700; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px; color:#888;">Code</div>
+            <input type="text" id="dc-code" placeholder="e.g. SUMMER20" style="margin-bottom:0; text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
+          </div>
+          <div>
+            <div style="font-size:0.75rem; font-weight:700; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px; color:#888;">Discount Type</div>
+            <select id="dc-type" style="width:100%; padding:16px; border:1px solid var(--border); border-radius:12px; font-family:inherit; font-size:0.9rem; background:#fff;">
+              <option value="percent">Percentage (%)</option>
+              <option value="fixed">Fixed Amount ($)</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:0.75rem; font-weight:700; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px; color:#888;">Amount</div>
+            <input type="number" id="dc-amount" placeholder="e.g. 15" min="1" max="100" style="margin-bottom:0;">
+          </div>
+          <button class="btn" style="width:auto; padding:16px 24px; white-space:nowrap;" onclick="createDiscountCode()">Add Code</button>
+        </div>
+        <p id="dc-msg" style="margin-top:12px; font-size:0.8rem; min-height:1.2em;"></p>
+      </div>
+      <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; font-weight:700; color:#aaa; margin-bottom:16px;">Active Codes</div>
+      <div id="dc-list">
+        <div style="text-align:center; padding:60px 0; color:#ccc;"><i class="fa-solid fa-tag fa-2x" style="margin-bottom:16px; display:block;"></i>No discount codes yet.</div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer id="site-footer" style="background: #fafaf8; border-top: 1px solid var(--border); margin-top: 0; padding: 60px 5% 30px;">
+  <div style="max-width: 1400px; margin: 0 auto;">
+    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 50px;">
+      <div>
+        <div style="font-weight: 800; letter-spacing: 6px; font-size: 1rem; margin-bottom: 16px;">LITHOS</div>
+        <p style="font-size: 0.82rem; color: #888; line-height: 1.8; max-width: 280px;">The #1 pet rock provider, ethically sourced from tectonic formations worldwide. Every stone ships with a certificate of authenticity.</p>
+        <div style="display:flex; gap: 14px; margin-top: 20px;">
+          <a href="#" style="color: #aaa; text-decoration:none; font-size: 0.9rem;" onclick="return false;"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" style="color: #aaa; text-decoration:none; font-size: 0.9rem;" onclick="return false;"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="#" style="color: #aaa; text-decoration:none; font-size: 0.9rem;" onclick="return false;"><i class="fa-brands fa-pinterest"></i></a>
+          <a href="#" style="color: #aaa; text-decoration:none; font-size: 0.9rem;" onclick="return false;"><i class="fa-brands fa-x-twitter"></i></a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: #bbb; margin-bottom: 16px;">Shop</div>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:10px;">
+          <li><a href="#" onclick="filterItems('all', document.querySelector('.sidebar-list li')); showScreen('shop-screen'); return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">All Collections</a></li>
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Volcanic Series</a></li>
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Metamorphic Series</a></li>
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Smooth Stones</a></li>
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Gift Bundles</a></li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: #bbb; margin-bottom: 16px;">Support</div>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:10px;">
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">FAQ</a></li>
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Shipping & Returns</a></li>
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Stone Care Guide</a></li>
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Track My Order</a></li>
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: #bbb; margin-bottom: 16px;">Company</div>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:10px;">
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Our Story</a></li>
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Ethical Sourcing</a></li>
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Press & Media</a></li>
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Wholesale</a></li>
+          <li><a href="#" onclick="return false;" style="font-size:0.82rem; color:#666; text-decoration:none;">Careers</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:30px; flex-wrap:wrap;">
+      <span style="font-size:0.65rem; text-transform:uppercase; letter-spacing:1.5px; color:#ccc; margin-right:6px;">We Accept</span>
+      <span style="background:#fff; border:1px solid #e0e0e0; border-radius:5px; padding:4px 10px; font-size:0.7rem; font-weight:700; color:#555; letter-spacing:1px;">VISA</span>
+      <span style="background:#fff; border:1px solid #e0e0e0; border-radius:5px; padding:4px 10px; font-size:0.7rem; font-weight:700; color:#555; letter-spacing:1px;">MC</span>
+      <span style="background:#fff; border:1px solid #e0e0e0; border-radius:5px; padding:4px 10px; font-size:0.7rem; font-weight:700; color:#555; letter-spacing:1px;">AMEX</span>
+      <span style="background:#fff; border:1px solid #e0e0e0; border-radius:5px; padding:4px 10px; font-size:0.7rem; font-weight:700; color:#007ee5; letter-spacing:1px;">PayPal</span>
+      <span style="background:#fff; border:1px solid #e0e0e0; border-radius:5px; padding:4px 10px; font-size:0.7rem; font-weight:700; color:#555; letter-spacing:1px;">Apple Pay</span>
+    </div>
+    <div style="border-top: 1px solid var(--border); padding-top: 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <p style="font-size: 0.75rem; color: #bbb;">
+        &copy; <span id="footer-year"></span> Lithos Collective, Inc. All rights reserved. Registered in Delaware, USA.
+      </p>
+      <div style="display:flex; gap:20px; flex-wrap:wrap;">
+        <a href="#" onclick="return false;" style="font-size:0.75rem; color:#bbb; text-decoration:none;">Privacy Policy</a>
+        <a href="#" onclick="return false;" style="font-size:0.75rem; color:#bbb; text-decoration:none;">Terms of Service</a>
+        <a href="#" onclick="return false;" style="font-size:0.75rem; color:#bbb; text-decoration:none;">Cookie Settings</a>
+        <a href="#" onclick="return false;" style="font-size:0.75rem; color:#bbb; text-decoration:none;">Accessibility</a>
+      </div>
+    </div>
+  </div>
+</footer>
 <script>
-    function rickRoll() {
-        // This is the magic line that redirects the user
-        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-    }
+  document.getElementById('footer-year').innerText = new Date().getFullYear();
+  // Hide footer on auth/checkout/tracking screens to keep them clean
+  function updateFooterVisibility() {
+    var hide = ['auth-screen','checkout-screen','tracking-screen'];
+    var active = document.querySelector('.screen.active');
+    var footer = document.getElementById('site-footer');
+    if (!footer || !active) return;
+    footer.style.display = hide.indexOf(active.id) !== -1 ? 'none' : 'block';
+  }
+  var _origShow = showScreen;
+  showScreen = function(id) { _origShow(id); updateFooterVisibility(); };
+  document.addEventListener('DOMContentLoaded', updateFooterVisibility);
 </script>
+<div id="drawer" class="drawer">
+  <div style="padding: 30px; border-bottom: 1px solid var(--border); font-weight: 800; display:flex; justify-content:space-between; align-items:center;">
+    YOUR BAG
+    <i class="fa-solid fa-xmark" style="cursor:pointer; font-weight:400;" onclick="closeAll()"></i>
+  </div>
+  <div id="cart-content" style="flex:1; padding:30px; overflow-y:auto;"></div>
+  <div style="padding:30px; border-top:1px solid var(--border); background:rgba(0,0,0,0.02);">
+    <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:20px; font-size: 1.2rem;">
+        <span>SUBTOTAL</span>
+        <span id="subtotal">$0.00</span>
+    </div>
+    <button class="btn" onclick="goToCheckout()">CHECKOUT</button>
+  </div>
+</div>
+<script>
+  // ── Firebase ───────────────────────────────────────────────────────────
+  var firebaseConfig = {
+    apiKey: "AIzaSyDECWS725cgFvaRV9i44ExNBPHxejocnMs",
+    authDomain: "lithos-shop.firebaseapp.com",
+    projectId: "lithos-shop",
+    storageBucket: "lithos-shop.firebasestorage.app",
+    messagingSenderId: "517806088096",
+    appId: "1:517806088096:web:cfc26c91d65244db034ec5"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var db = firebase.firestore();
+  // ── State ──────────────────────────────────────────────────────────────
+  var cart = [];
+  var orders = [];
+  var isLoggedIn = false;
+  var isAdmin = false;
+  var activeProduct = null;
+  var appliedDiscount = 0;
+  var flashInterval = null;
+  var socialInterval = null;
+  var cachedAdminOrders = [];
+  // Safe localStorage reads
+  try { orders = JSON.parse(localStorage.getItem('lithos_orders') || '[]'); } catch(e) { orders = []; }
+  try { isLoggedIn = localStorage.getItem('lithos_logged_in') === 'true'; } catch(e) {}
+  try { isAdmin = localStorage.getItem('lithos_is_admin') === 'true'; } catch(e) {}
+  // ── Products ───────────────────────────────────────────────────────────
+  var products = [
+    { id: 1, type: 'volcanic',    name: 'Volcanic Basalt',  price: 49, img: 'basalt.png',   badge: 'BEST SELLER',  count: 128, rating: 4.9, hardness: "6.0",    origin: "Oceanic",  mineral: "Plagioclase" },
+    { id: 2, type: 'metamorphic', name: 'Highland Slate',   price: 34, img: 'slate.png',    badge: 'NEW',          count: 42,  rating: 4.7, hardness: "2.5",    origin: "Highlands",mineral: "Quartz" },
+    { id: 3, type: 'smooth',      name: 'River Bed Stone',  price: 28, img: 'river.png',    badge: '',             count: 85,  rating: 4.8, hardness: "5.5",    origin: "Alpine",   mineral: "Feldspar" },
+    { id: 4, type: 'volcanic',    name: 'Obsidian Shard',   price: 55, img: 'obsidian.png', badge: 'SHARP',        count: 31,  rating: 4.6, hardness: "5.0",    origin: "Felsic",   mineral: "Silica" },
+    { id: 5, type: 'bundle',      name: 'Family Pack',      price: 95, img: 'family.png',   badge: 'BUNDLE',       count: 18,  rating: 5.0, hardness: "Varies", origin: "Global",   mineral: "Mixed" },
+    { id: 6, type: 'smooth',      name: 'Smooth Stone',     price: 42, img: 'adopt.png',    badge: 'FAN FAVORITE', count: 212, rating: 4.9, hardness: "4.0",    origin: "Eroded",   mineral: "Calcite" },
+    { id: 7, type: 'metamorphic', name: 'Imperial Marble',  price: 65, img: 'marble.png',   badge: 'PREMIUM',      count: 56,  rating: 4.8, hardness: "3.0",    origin: "Tectonic", mineral: "Calcite" }
+  ];
+  // ── Init ───────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function() {
+    renderGrid();
+    renderOrders();
+    renderCart();
+    startFlashTimer();
+    startSocialProof();
+    if (isLoggedIn) {
+      document.getElementById('main-nav-icons').style.display = 'flex';
+      if (isAdmin) {
+        document.getElementById('nav-admin').style.display = 'block';
+        document.getElementById('nav-orders').style.display = 'none';
+        showScreen('admin-screen');
+      } else {
+        showScreen('shop-screen');
+      }
+    }
+  });
+  // ── Auth ───────────────────────────────────────────────────────────────
+  function login() {
+    var email = document.getElementById('login-email').value.trim();
+    var pass  = document.getElementById('login-password').value.trim();
+    var errEl = document.getElementById('auth-error');
+    var emailEl = document.getElementById('login-email');
+    var passEl  = document.getElementById('login-password');
+    emailEl.classList.remove('input-error');
+    passEl.classList.remove('input-error');
+    errEl.style.display = 'none';
+    if (!email || !pass) {
+      errEl.innerText = 'Please enter your email and password.';
+      errEl.style.display = 'block';
+      if (!email) emailEl.classList.add('input-error');
+      if (!pass)  passEl.classList.add('input-error');
+      return;
+    }
+    var isAdmin = (email.toLowerCase() === 'admin' && pass === 'alex');
+    isLoggedIn = true;
+    try { localStorage.setItem('lithos_logged_in', 'true'); } catch(e) {}
+    try { localStorage.setItem('lithos_is_admin', isAdmin ? 'true' : 'false'); } catch(e) {}
+    document.getElementById('main-nav-icons').style.display = 'flex';
+    document.getElementById('nav-admin').style.display = isAdmin ? 'block' : 'none';
+    document.getElementById('nav-orders').style.display = isAdmin ? 'none' : 'block';
+    if (isAdmin) { showScreen('admin-screen'); } else { showScreen('shop-screen'); }
+  }
+  function logout() {
+    isLoggedIn = false;
+    try { localStorage.removeItem('lithos_logged_in'); } catch(e) {}
+    try { localStorage.removeItem('lithos_is_admin'); } catch(e) {}
+    document.getElementById('nav-admin').style.display = 'none';
+    document.getElementById('nav-orders').style.display = 'block';
+    document.getElementById('main-nav-icons').style.display = 'none';
+    closeAll();
+    showScreen('auth-screen');
+  }
+  // ── Shop ───────────────────────────────────────────────────────────────
+  function renderGrid(items) {
+    if (!items) items = products;
+    document.getElementById('product-grid').innerHTML = items.map(function(p) {
+      return '<div class="product-card" onclick="openProduct(' + p.id + ')">' +
+        (p.badge ? '<span style="position:absolute; top:15px; left:15px; padding:5px 12px; border-radius:50px; font-size:0.6rem; font-weight:800; background:#121212; color:#fff;">' + p.badge + '</span>' : '') +
+        '<div class="img-box"><img src="' + p.img + '" onerror="this.style.display=\'none\'"></div>' +
+        '<h3 style="font-size: 0.9rem; text-transform:uppercase; font-weight: 700;">' + p.name + '</h3>' +
+        '<div style="display:flex; justify-content:space-between; margin-top:10px;">' +
+          '<span style="color:#888;">$' + p.price + '.00</span>' +
+          '<span style="font-size:0.7rem; color:var(--accent); font-weight:700;"><i class="fa-solid fa-star"></i> ' + p.rating + ' (' + p.count + ')</span>' +
+        '</div></div>';
+    }).join('');
+  }
+  // FIX: filterItems — 'all' now just passes the full list rather than filtering by type
+  function filterItems(type, el) {
+    document.querySelectorAll('.sidebar-list li').forEach(function(li) { li.classList.remove('active'); });
+    el.classList.add('active');
+    renderGrid(type === 'all' ? products : products.filter(function(p) { return p.type === type; }));
+  }
+  // ── Product Detail ─────────────────────────────────────────────────────
+  function openProduct(id) {
+    activeProduct = products.find(function(p) { return p.id === id; });
+    if (!activeProduct) return;
+    document.getElementById('detail-title').innerText = activeProduct.name;
+    document.getElementById('detail-price').innerText = '$' + activeProduct.price + '.00';
+    document.getElementById('detail-desc').innerText = 'Hand-selected biologic companion. Rare ' + activeProduct.mineral + ' specimen.';
+    document.getElementById('detail-img').src = activeProduct.img;
+    document.getElementById('detail-rating').innerText = '★ ' + activeProduct.rating + ' / 5.0';
+    document.getElementById('review-header-text').innerText = activeProduct.count + ' Verified Feedback Entries';
+    document.getElementById('fact-hard').innerText = activeProduct.hardness + ' Mohs';
+    document.getElementById('fact-origin').innerText = activeProduct.origin;
+    document.getElementById('fact-mineral').innerText = activeProduct.mineral;
+    var revs = '';
+    var reviewTexts = [
+      'Very grounded energy. Great desk friend.',
+      'Arrived quickly. My cat is also a fan.',
+      'Heavier than expected. In a good way.',
+      'Beautiful specimen. Will manifest again.',
+      'Solid investment. Literally.',
+      'Surprisingly therapeutic. 10/10.'
+    ];
+    var count = Math.min(activeProduct.count, 6);
+    for (var i = 0; i < count; i++) {
+      revs += '<div style="border-bottom:1px solid #f0f0f0; padding-bottom:15px;">' +
+        '<p style="font-weight:600;">"' + reviewTexts[i % reviewTexts.length] + '"</p>' +
+        '<p style="font-size:0.7rem; color:#aaa; margin-top:5px;">Verified Collector #' + (i + 1) + '</p>' +
+        '</div>';
+    }
+    document.getElementById('reviews-container').innerHTML = revs;
+    document.getElementById('reviews-section').style.display = 'none';
+    showScreen('detail-screen');
+  }
+  function toggleReviews() {
+    var s = document.getElementById('reviews-section');
+    s.style.display = s.style.display === 'block' ? 'none' : 'block';
+  }
+  // ── Cart ───────────────────────────────────────────────────────────────
+  function addCurrentToCart() {
+    if (!activeProduct) return;
+    cart.push(Object.assign({}, activeProduct));
+    renderCart();
+    closeAll();
+    toggleCart();
+  }
+  function renderCart() {
+    var sub = cart.reduce(function(a, b) { return a + b.price; }, 0);
+    var total = sub + 5 - appliedDiscount;
+    if (total < 0) total = 0;
+    document.getElementById('badge-count').innerText = cart.length;
+    document.getElementById('subtotal').innerText = '$' + sub.toFixed(2);
+    // Checkout summary
+    document.getElementById('ch-sub').innerText   = '$' + sub.toFixed(2);
+    document.getElementById('ch-final').innerText = '$' + total.toFixed(2);
+    document.getElementById('ch-total-hero').innerText = '$' + total.toFixed(2);
+    document.getElementById('ch-list').innerHTML = cart.map(function(item) {
+      return '<div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:0.9rem;">' +
+        '<span>' + item.name + '</span>' +
+        '<span style="font-weight:700;">$' + item.price + '.00</span></div>';
+    }).join('');
+    // Drawer content
+    var drawerHtml = '';
+    if (cart.length === 0) {
+      drawerHtml = '<div style="text-align:center; padding:60px 0; color:#ccc;"><i class="fa-solid fa-bag-shopping fa-2x" style="margin-bottom:15px; display:block;"></i>Your bag is empty.</div>';
+    } else {
+      drawerHtml = cart.map(function(item, idx) {
+        return '<div style="display:flex; gap:12px; margin-bottom:15px; align-items:center;">' +
+          '<img src="' + item.img + '" style="width:44px; height:44px; background:#f5f5f5; border-radius:8px; padding:4px; object-fit:contain;" onerror="this.style.display=\'none\'">' +
+          '<div style="flex:1;">' +
+            '<div style="font-weight:700; font-size:0.85rem;">' + item.name + '</div>' +
+            '<div style="color:var(--accent); font-weight:700; font-size:0.85rem;">$' + item.price + '.00</div>' +
+          '</div>' +
+          '<span onclick="removeFromCart(' + idx + ')" style="cursor:pointer; color:#bbb; font-size:1.2rem; padding:4px;">&times;</span>' +
+          '</div>';
+      }).join('');
+    }
+    document.getElementById('cart-content').innerHTML = drawerHtml;
+  }
+  function removeFromCart(idx) {
+    cart.splice(idx, 1);
+    // Recalculate discount if applied
+    if (appliedDiscount > 0) {
+      var sub = cart.reduce(function(a, b) { return a + b.price; }, 0);
+      appliedDiscount = sub * 0.10;
+      document.getElementById('ch-disc').innerText = '-$' + appliedDiscount.toFixed(2);
+    }
+    renderCart();
+  }
+  function toggleCart() {
+    document.getElementById('drawer').classList.toggle('active');
+    document.getElementById('overlay').classList.toggle('active');
+  }
+  function goToCheckout() {
+    if (!cart.length) { alert('Your bag is empty.'); return; }
+    closeAll();
+    renderCart();
+    // Reset promo UI on each checkout visit
+    document.getElementById('promo-input').value = '';
+    document.getElementById('promo-msg').innerText = '';
+    document.getElementById('promo-msg').style.color = '';
+    document.getElementById('promo-row').style.display = 'none';
+    showScreen('checkout-screen');
+  }
+  // ── Promo ──────────────────────────────────────────────────────────────
+  function applyPromo() {
+    var code = document.getElementById('promo-input').value.trim().toUpperCase();
+    var msgEl = document.getElementById('promo-msg');
+    if (!cart.length) {
+      msgEl.innerText = 'Add items to your bag first.';
+      msgEl.style.color = 'var(--error)';
+      return;
+    }
+    // Look up code in Firebase
+    db.collection('discounts').doc(code).get().then(function(doc) {
+      if (!doc.exists || doc.data().active === false) {
+        appliedDiscount = 0;
+        renderCart();
+        document.getElementById('promo-row').style.display = 'none';
+        msgEl.innerText = 'Invalid or expired promo code.';
+        msgEl.style.color = 'var(--error)';
+        return;
+      }
+      var d = doc.data();
+      var sub = cart.reduce(function(a, b) { return a + b.price; }, 0);
+      if (d.type === 'percent') {
+        appliedDiscount = parseFloat((sub * (d.amount / 100)).toFixed(2));
+        msgEl.innerText = d.amount + '% discount applied!';
+      } else {
+        appliedDiscount = Math.min(parseFloat(d.amount), sub);
+        msgEl.innerText = '$' + d.amount + ' discount applied!';
+      }
+      renderCart();
+      document.getElementById('promo-row').style.display = 'flex';
+      document.getElementById('ch-disc').innerText = '-$' + appliedDiscount.toFixed(2);
+      msgEl.style.color = 'var(--success)';
+    }).catch(function() {
+      msgEl.innerText = 'Could not verify code. Try again.';
+      msgEl.style.color = 'var(--error)';
+    });
+  }
+  // ── Checkout ───────────────────────────────────────────────────────────
+  function processAdoption() {
+    var addr = document.getElementById('ship-addr').value.trim();
+    var cardNum = document.getElementById('card-num').value.replace(/\s/g,'');
+    var mm = document.getElementById('exp-mm').value.trim();
+    var yy = document.getElementById('exp-yy').value.trim();
+    var cvc = document.getElementById('cvc').value.trim();
+    if (!addr) { alert('Please enter a shipping address.'); return; }
+    if (cardNum.length < 16) { alert('Please enter a valid 16-digit card number.'); return; }
+    if (!mm || !yy) { alert('Please enter card expiry.'); return; }
+    if (!cvc) { alert('Please enter CVC.'); return; }
+    var loaderEl = document.getElementById('loader');
+    loaderEl.style.display = 'flex';
+    setTimeout(function() {
+      loaderEl.style.display = 'none';
+      var tid = 'LITH-' + Math.floor(Math.random() * 90000000);
+      var sub = cart.reduce(function(a, b) { return a + b.price; }, 0);
+      var finalTotal = parseFloat((sub + 5 - appliedDiscount).toFixed(2));
+      // Store items with purchase price snapshot
+      var customerName = document.getElementById('ship-name').value.trim();
+      var customerAddr = document.getElementById('ship-addr').value.trim();
+      var itemSnapshot = cart.map(function(item) {
+        return { id: item.id, name: item.name, purchasePrice: item.price, img: item.img };
+      });
+      var order = {
+        id: tid,
+        date: new Date().toLocaleDateString(),
+        timestamp: Date.now(),
+        items: itemSnapshot,
+        total: finalTotal,
+        customerName: customerName,
+        customerAddr: customerAddr,
+        overrideStatus: "" // Initialized empty for admin use
+      };
+      // Save to Firebase
+      db.collection('orders').doc(tid).set(order).catch(function(e) {
+        console.warn('Firebase save failed:', e);
+      });
+      // Also save locally for "My Orders" page
+      orders.unshift(order);
+      try { localStorage.setItem('lithos_orders', JSON.stringify(orders)); } catch(e) {}
+      renderOrders();
+      // Reset checkout state
+      cart = [];
+      appliedDiscount = 0;
+      renderCart();
+      document.getElementById('ship-name').value = '';
+      document.getElementById('ship-addr').value = '';
+      document.getElementById('card-num').value = '';
+      document.getElementById('exp-mm').value = '';
+      document.getElementById('exp-yy').value = '';
+      document.getElementById('cvc').value = '';
+      document.getElementById('promo-input').value = '';
+      document.getElementById('promo-msg').innerText = '';
+      document.getElementById('promo-row').style.display = 'none';
+      document.getElementById('track-id-box').innerText = tid;
+      showScreen('tracking-screen');
+    }, 2000);
+  }
+  // ── Orders ─────────────────────────────────────────────────────────────
+  function renderOrders() {
+    var list = document.getElementById('orders-list');
+    if (!list) return;
+    if (!orders || !orders.length) {
+      list.innerHTML = '<div style="text-align:center; padding:100px 0; color:#ccc;"><i class="fa-solid fa-box-open fa-2x" style="margin-bottom:15px; display:block;"></i>No adoptions manifested yet.</div>';
+      return;
+    }
+    var now = Date.now();
+    list.innerHTML = orders.map(function(o) {
+      var ts = o.timestamp || now;
+      var diff = (now - ts) / 3600000;
+      var status = 'Order Received';
+      var w = '15%';
+      var canCancel = true;
+      var isCancelled = o.cancelled === true;
 
+      // PRIORITY: Use admin override status if it exists
+      if (o.overrideStatus === "packaging") { status = "Packaging Stone"; w = "30%"; }
+      else if (o.overrideStatus === "shipped") { status = "Shipped / In Transit"; w = "75%"; canCancel = false; }
+      else if (o.overrideStatus === "complete") { status = "Delivered & Complete"; w = "100%"; canCancel = false; }
+      else {
+          // Fallback to time-based logic
+          if (isCancelled) { status = 'Cancelled'; w = '0%'; canCancel = false; }
+          else if (diff > 24) { status = 'Delivered'; w = '100%'; canCancel = false; }
+          else if (diff > 10) { status = 'Shipped / In Transit'; w = '75%'; canCancel = false; }
+          else if (diff > 2)  { status = 'Nesting Complete'; w = '45%'; }
+      }
+
+      var items = Array.isArray(o.items) ? o.items : [];
+      var itemsHtml = items.length
+        ? items.map(function(i) {
+            var price = i.purchasePrice || i.price || '?';
+            return '<div>' + (i.name || 'Unknown item') + ' — <span style="font-weight:700; color:var(--primary);">$' + price + '.00</span></div>';
+          }).join('')
+        : '<div style="color:#bbb;">Item details unavailable.</div>';
+      
+      var total = (typeof o.total === 'number') ? o.total.toFixed(2) : '—';
+      var orderId = o.id || 'UNKNOWN';
+      var shortId = orderId.length > 6 ? orderId.substring(5, 13) : orderId;
+      
+      return '<div class="order-card">' +
+        '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">' +
+          '<div>' +
+            '<div style="font-weight:800;">Manifest #' + shortId + '</div>' +
+            '<div style="color:#aaa; font-size:0.7rem; margin-top:4px;">' + (o.date || '') + '</div>' +
+          '</div>' +
+          '<span style="font-size:0.7rem; font-weight:700; color:' + (isCancelled ? 'var(--error)' : 'var(--accent)') + '; text-align:right;">' + status + '</span>' +
+        '</div>' +
+        '<div style="font-size:0.85rem; color:#666; margin-bottom:15px;">' + itemsHtml + '</div>' +
+        '<div class="track-visual"><div class="track-fill" style="width:' + w + '"></div></div>' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">' +
+          '<div style="font-weight:800; font-size:1rem;">Total: $' + total + '</div>' +
+          (canCancel ? '<button class="cancel-btn" onclick="cancelOrder(\'' + orderId + '\')">Cancel Manifest</button>' : '') +
+        '</div>' +
+        '</div>';
+    }).join('');
+  }
+  function cancelOrder(id) {
+    if (!confirm('Are you sure you want to cancel this manifest?')) return;
+    db.collection('orders').doc(id).update({ cancelled: true }).catch(function(e) {
+      console.warn('Firebase cancel failed:', e);
+    });
+    orders = orders.map(function(o) {
+      if (o.id === id) return Object.assign({}, o, { cancelled: true });
+      return o;
+    });
+    try { localStorage.setItem('lithos_orders', JSON.stringify(orders)); } catch(e) {}
+    renderOrders();
+  }
+  // ── Admin Override Logic ────────────────────────────────────────────────
+  function updateOrderOverride(orderId, newStatus) {
+    db.collection('orders').doc(orderId).update({ overrideStatus: newStatus }).then(function() {
+        // Find in cache and update locally so it shows on user page immediately if they are the same person
+        orders = orders.map(function(o) {
+            if (o.id === orderId) return Object.assign({}, o, { overrideStatus: newStatus });
+            return o;
+        });
+        try { localStorage.setItem('lithos_orders', JSON.stringify(orders)); } catch(e) {}
+        renderAdminOrders();
+    }).catch(function(e) {
+        alert("Error updating status: " + e.message);
+    });
+  }
+  // ── Admin Order Rendering ─────────────────────────────────────────────
+  function getOrderStatus(o) {
+    if (o.cancelled) return { label: 'Cancelled', cls: 'pill-cancelled', key: 'cancelled' };
+    
+    // Check override status first
+    if (o.overrideStatus === "packaging") return { label: 'Packaging', cls: 'pill-nesting', key: 'packaging' };
+    if (o.overrideStatus === "shipped")   return { label: 'Shipped',   cls: 'pill-shipped',   key: 'shipped' };
+    if (o.overrideStatus === "complete")  return { label: 'Complete',  cls: 'pill-delivered', key: 'complete' };
+
+    var ts = o.timestamp || Date.now();
+    var diff = (Date.now() - ts) / 3600000;
+    if (diff > 24) return { label: 'Delivered', cls: 'pill-delivered', key: 'delivered' };
+    if (diff > 10) return { label: 'Shipped',   cls: 'pill-shipped',   key: 'shipped' };
+    if (diff > 2)  return { label: 'Nesting',   cls: 'pill-nesting',   key: 'nesting' };
+    return               { label: 'Received',  cls: 'pill-received',  key: 'received' };
+  }
+  function renderAdminOrders() {
+    var tbodyEl = document.getElementById('admin-tbody');
+    if (!tbodyEl) return;
+    tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:#aaa;"><i class="fa-solid fa-spinner fa-spin"></i> Loading orders...</td></tr>';
+    db.collection('orders').orderBy('timestamp', 'desc').get().then(function(snapshot) {
+      var allOrders = [];
+      snapshot.forEach(function(doc) { allOrders.push(doc.data()); });
+      cachedAdminOrders = allOrders;
+      renderAdminTable(allOrders);
+    }).catch(function(err) {
+      tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:var(--error);">Could not load orders: ' + err.message + '</td></tr>';
+    });
+  }
+  function renderAdminTable(allOrders) {
+    var search = (document.getElementById('admin-search').value || '').toLowerCase();
+    var filter = document.getElementById('admin-filter').value;
+    // Stats
+    var revenue = allOrders.reduce(function(a, o) { return a + (o.total || 0); }, 0);
+    var items   = allOrders.reduce(function(a, o) { return a + (Array.isArray(o.items) ? o.items.length : 0); }, 0);
+    document.getElementById('admin-stats').innerHTML =
+      stat('Total Orders',   allOrders.length) +
+      stat('Total Revenue',  '$' + revenue.toFixed(2)) +
+      stat('Items Sold',     items) +
+      stat('Avg Order Value', allOrders.length ? '$' + (revenue / allOrders.length).toFixed(2) : '$0.00');
+    // Filter + search
+    var filtered = allOrders.filter(function(o) {
+      var st = getOrderStatus(o);
+      if (filter !== 'all' && st.key !== filter) return false;
+      if (!search) return true;
+      var haystack = [
+        o.id, o.customerName, o.customerAddr,
+        (Array.isArray(o.items) ? o.items.map(function(i){ return i.name; }).join(' ') : '')
+      ].join(' ').toLowerCase();
+      return haystack.indexOf(search) !== -1;
+    });
+    document.getElementById('admin-count').innerText = filtered.length + ' order' + (filtered.length !== 1 ? 's' : '');
+    if (!filtered.length) {
+      document.getElementById('admin-tbody').innerHTML = '';
+      document.getElementById('admin-empty').style.display = 'block';
+      return;
+    }
+    document.getElementById('admin-empty').style.display = 'none';
+    document.getElementById('admin-tbody').innerHTML = filtered.map(function(o) {
+      var st = getOrderStatus(o);
+      var items = Array.isArray(o.items) ? o.items : [];
+      var itemList = items.map(function(i) {
+        return '<div style="white-space:nowrap;">• ' + (i.name || '?') + ' <span style="color:#aaa;">$' + (i.purchasePrice || i.price || '?') + '</span></div>';
+      }).join('');
+      var shortId = (o.id || '').replace('LITH-','');
+      var name = o.customerName || '<span style="color:#ccc;">—</span>';
+      var addr = o.customerAddr || '<span style="color:#ccc;">—</span>';
+      
+      // DROP DOWN HTML FOR ADMIN
+      var currentOver = o.overrideStatus || "";
+      var dropdownHtml = '<select class="status-dropdown" onchange="updateOrderOverride(\'' + o.id + '\', this.value)">' +
+          '<option value="" ' + (currentOver === "" ? "selected" : "") + '>Natural Progression</option>' +
+          '<option value="packaging" ' + (currentOver === "packaging" ? "selected" : "") + '>Packaging</option>' +
+          '<option value="shipped" ' + (currentOver === "shipped" ? "selected" : "") + '>Shipped</option>' +
+          '<option value="complete" ' + (currentOver === "complete" ? "selected" : "") + '>Complete</option>' +
+        '</select>';
+
+      return '<tr>' +
+        '<td><span style="font-family:monospace; font-size:0.8rem; font-weight:700;">' + shortId + '</span></td>' +
+        '<td style="font-weight:600;">' + name + '</td>' +
+        '<td style="color:#666; font-size:0.82rem; max-width:180px;">' + addr + '</td>' +
+        '<td>' + (itemList || '<span style="color:#ccc;">—</span>') + '</td>' +
+        '<td style="font-weight:800;">$' + (typeof o.total === 'number' ? o.total.toFixed(2) : '—') + '</td>' +
+        '<td style="color:#aaa; white-space:nowrap; font-size:0.82rem;">' + (o.date || '') + '</td>' +
+        '<td><span class="status-pill ' + st.cls + '">' + st.label + '</span></td>' +
+        '<td>' + dropdownHtml + '</td>' +
+        '</tr>';
+    }).join('');
+  }
+  // ── Flash Timer ────────────────────────────────────────────────────────
+  function startFlashTimer() {
+    if (flashInterval) clearInterval(flashInterval);
+    function tick() {
+      var el = document.getElementById('timer-val');
+      if (!el) return;
+      var now = new Date();
+      var tenHours = 10 * 60 * 60 * 1000;
+      var ms = tenHours - (now.getTime() % tenHours);
+      var h = Math.floor(ms / 3600000);
+      var m = Math.floor((ms % 3600000) / 60000);
+      var s = Math.floor((ms % 60000) / 1000);
+      el.innerText = pad(h) + ':' + pad(m) + ':' + pad(s);
+    }
+    tick();
+    flashInterval = setInterval(tick, 1000);
+  }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  // ── Social Proof ───────────────────────────────────────────────────────
+  function startSocialProof() {
+    if (socialInterval) clearInterval(socialInterval);
+    var names = ['Arthur', 'Lydia', 'Marcus', 'Elena', 'Sven', 'Mira'];
+    function showToast() {
+      var toast = document.getElementById('social-toast');
+      var name = names[Math.floor(Math.random() * names.length)];
+      document.getElementById('toast-text').innerText = name + ' just manifested a stone!';
+      toast.style.display = 'flex';
+      setTimeout(function() { toast.style.display = 'none'; }, 4000);
+    }
+    setTimeout(function() {
+      showToast();
+      socialInterval = setInterval(showToast, 20000);
+    }, 5000);
+  }
+  // ── Navigation ─────────────────────────────────────────────────────────
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+    var el = document.getElementById(id);
+    if (el) el.classList.add('active');
+    closeAll();
+    window.scrollTo(0, 0);
+    if (id === 'orders-screen') renderOrders();
+    if (id === 'admin-screen') renderAdminOrders();
+  }
+  function handleLogoClick() {
+    isLoggedIn ? showScreen('shop-screen') : showScreen('auth-screen');
+  }
+  function closeAll() {
+    document.getElementById('drawer').classList.remove('active');
+    document.getElementById('overlay').classList.remove('active');
+    document.getElementById('account-dropdown').classList.remove('show');
+  }
+  function toggleDropdown(event) {
+    if (event) event.stopPropagation();
+    document.getElementById('account-dropdown').classList.toggle('show');
+  }
+  function switchAdminTab(tab) {
+    document.getElementById('tab-orders').style.display    = tab === 'orders'    ? 'block' : 'none';
+    document.getElementById('tab-discounts').style.display = tab === 'discounts' ? 'block' : 'none';
+    document.getElementById('tab-orders-btn').style.borderBottomColor    = tab === 'orders'    ? 'var(--primary)' : 'transparent';
+    document.getElementById('tab-discounts-btn').style.borderBottomColor = tab === 'discounts' ? 'var(--primary)' : 'transparent';
+    document.getElementById('tab-orders-btn').style.color    = tab === 'orders'    ? 'var(--primary)' : '#aaa';
+    document.getElementById('tab-discounts-btn').style.color = tab === 'discounts' ? 'var(--primary)' : '#aaa';
+    if (tab === 'discounts') loadDiscountCodes();
+  }
+  function loadDiscountCodes() {
+    var listEl = document.getElementById('dc-list');
+    if (!listEl) return;
+    listEl.innerHTML = '<div style="text-align:center; padding:40px; color:#aaa;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>';
+    db.collection('discounts').orderBy('createdAt', 'desc').get().then(function(snap) {
+      if (snap.empty) {
+        listEl.innerHTML = '<div style="text-align:center; padding:60px 0; color:#ccc;"><i class="fa-solid fa-tag fa-2x" style="margin-bottom:16px; display:block;"></i>No discount codes yet. Create one above.</div>';
+        return;
+      }
+      var codes = [];
+      snap.forEach(function(doc) { codes.push(Object.assign({ _id: doc.id }, doc.data())); });
+      listEl.innerHTML = '<table class="admin-table"><thead><tr>' +
+        '<th>Code</th><th>Type</th><th>Value</th><th>Status</th><th style="text-align:right;">Actions</th>' +
+        '</tr></thead><tbody>' +
+        codes.map(function(c) {
+          var active = c.active !== false;
+          var valueLabel = c.type === 'percent' ? c.amount + '% off' : '$' + c.amount + ' off';
+          var toggleLabel = active ? 'Disable' : 'Enable';
+          var btnStyle = 'background:none; border:1px solid #ddd; border-radius:8px; padding:6px 14px; font-size:0.7rem; font-weight:700; cursor:pointer; text-transform:uppercase; letter-spacing:1px; margin-right:8px;';
+          var delStyle  = 'background:none; border:1px solid #ddd; border-radius:8px; padding:6px 14px; font-size:0.7rem; font-weight:700; cursor:pointer; text-transform:uppercase; letter-spacing:1px; color:#c62828;';
+          return '<tr>' +
+            '<td><span style="font-family:monospace; font-weight:800; font-size:0.95rem; letter-spacing:2px;">' + c._id + '</span></td>' +
+            '<td style="color:#666;">' + (c.type === 'percent' ? 'Percentage' : 'Fixed $') + '</td>' +
+            '<td style="font-weight:700; color:var(--success);">' + valueLabel + '</td>' +
+            '<td><span class="status-pill ' + (active ? 'pill-delivered' : 'pill-cancelled') + '">' + (active ? 'Active' : 'Disabled') + '</span></td>' +
+            '<td style="text-align:right;">' +
+              '<button style="' + btnStyle + '" onclick="toggleDiscountCode(' + JSON.stringify(c._id) + ',' + active + ')">' + toggleLabel + '</button>' +
+              '<button style="' + delStyle  + '" onclick="deleteDiscountCode(' + JSON.stringify(c._id) + ')">Delete</button>' +
+            '</td></tr>';
+        }).join('') + '</tbody></table>';
+    }).catch(function(e) {
+      listEl.innerHTML = '<div style="color:var(--error); padding:20px;">Error: ' + e.message + '</div>';
+    });
+  }
+  function createDiscountCode() {
+    var code   = document.getElementById('dc-code').value.trim().toUpperCase();
+    var type   = document.getElementById('dc-type').value;
+    var amount = parseFloat(document.getElementById('dc-amount').value);
+    var msgEl  = document.getElementById('dc-msg');
+    if (!code)                              { msgEl.innerText = 'Enter a code name.';           msgEl.style.color = 'var(--error)'; return; }
+    if (!amount || amount <= 0)             { msgEl.innerText = 'Enter a valid amount.';         msgEl.style.color = 'var(--error)'; return; }
+    if (type === 'percent' && amount > 100) { msgEl.innerText = 'Percentage cannot exceed 100.'; msgEl.style.color = 'var(--error)'; return; }
+    msgEl.innerText = 'Saving...'; msgEl.style.color = '#aaa';
+    db.collection('discounts').doc(code).set({ type: type, amount: amount, active: true, createdAt: Date.now() })
+      .then(function() {
+        msgEl.innerText = code + ' created successfully!'; msgEl.style.color = 'var(--success)';
+        document.getElementById('dc-code').value = '';
+        document.getElementById('dc-amount').value = '';
+        loadDiscountCodes();
+      }).catch(function(e) { msgEl.innerText = 'Error: ' + e.message; msgEl.style.color = 'var(--error)'; });
+  }
+  function toggleDiscountCode(code, currentlyActive) {
+    db.collection('discounts').doc(code).update({ active: !currentlyActive })
+      .then(loadDiscountCodes).catch(function(e) { alert('Error: ' + e.message); });
+  }
+  function deleteDiscountCode(code) {
+    if (!confirm('Delete code ' + code + '? This cannot be undone.')) return;
+    db.collection('discounts').doc(code).delete()
+      .then(loadDiscountCodes).catch(function(e) { alert('Error: ' + e.message); });
+  }
+  function stat(label, val) {
+    return '<div class="admin-stat"><div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:2px; color:#aaa; margin-bottom:8px;">' + label + '</div>' +
+      '<div style="font-size:1.6rem; font-weight:800;">' + val + '</div></div>';
+  }
+  document.addEventListener('click', function(e) {
+    var dd = document.getElementById('account-dropdown');
+    if (dd && dd.classList.contains('show') && !e.target.closest('.dropdown-container')) {
+      dd.classList.remove('show');
+    }
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    var cardInput = document.getElementById('card-num');
+    if (cardInput) {
+      cardInput.addEventListener('input', function() {
+        var val = this.value.replace(/\D/g, '').substring(0, 16);
+        var out = '';
+        for (var i = 0; i < val.length; i++) {
+          if (i > 0 && i % 4 === 0) out += ' ';
+          out += val[i];
+        }
+        this.value = out;
+      });
+    }
+    ['exp-mm','exp-yy','cvc'].forEach(function(fid) {
+      var el = document.getElementById(fid);
+      if (el) el.addEventListener('input', function() { this.value = this.value.replace(/\D/g,''); });
+    });
+    document.getElementById('login-password').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') login();
+    });
+  });
+</script>
 </body>
 </html>
