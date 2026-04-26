@@ -2,226 +2,247 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lumpy's Digital Home (v1.0.4)</title>
+    <title>Lumpy's Digital World v2.0</title>
     <style>
-        /* 90s GAME AESTHETIC */
         :root {
-            --win-gray: #c0c0c0;
+            --win-bg: #c0c0c0;
             --win-blue: #000080;
-            --win-border-light: #ffffff;
+            --win-border-light: #fff;
             --win-border-dark: #808080;
         }
 
-        body {
-            background-color: #008080; /* Classic Teal Desktop */
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Tahoma', 'MS Sans Serif', sans-serif;
-            overflow: hidden;
-            cursor: url('https://cur.cursors-4u.net/games/gam-4/gam372.cur'), auto;
+        body, html {
+            margin: 0; padding: 0;
+            background-color: #008080;
+            font-family: "Tahoma", sans-serif;
+            height: 100vh; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* THE WINDOW */
+        /* --- THE 90s WINDOW --- */
         .window {
             width: 500px;
-            background: var(--win-gray);
+            background: var(--win-bg);
             border: 2px solid;
             border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
             padding: 3px;
             box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
-            image-rendering: pixelated;
+            z-index: 10;
         }
 
         .title-bar {
             background: var(--win-blue);
-            color: white;
-            padding: 4px 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            font-size: 14px;
+            color: white; padding: 3px 6px;
+            display: flex; justify-content: space-between;
+            font-weight: bold; font-size: 13px;
         }
 
         .content {
-            padding: 30px;
-            text-align: center;
+            padding: 25px; text-align: center;
             border: 1px solid var(--win-border-dark);
-            margin: 5px;
-            background: var(--win-gray);
+            margin: 2px;
         }
 
-        /* LUMPY HIMSELF */
-        #lumpy-image {
-            width: 150px;
-            margin-bottom: 20px;
-            transition: 0.2s;
+        /* --- ANIMATED LUMPY --- */
+        #lumpy {
+            width: 140px;
+            image-rendering: pixelated;
+            animation: breathe 3s ease-in-out infinite;
+            filter: drop-shadow(2px 4px 0px rgba(0,0,0,0.1));
         }
 
-        .dialog-bubble {
-            background: white;
-            border: 2px inset var(--win-border-dark);
-            padding: 15px;
-            min-height: 60px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        button {
-            padding: 6px 20px;
-            background: var(--win-gray);
-            border: 2px solid;
-            border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
-            font-family: inherit;
-            cursor: pointer;
-            margin: 5px;
-        }
-
-        button:active {
-            border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
-        }
-
-        /* THE ROT (Horror State) */
-        .corrupted {
-            filter: contrast(5) brightness(0.2) invert(1);
-            animation: jitter 0.05s infinite;
+        @keyframes breathe {
+            0%, 100% { transform: scale(1, 1); }
+            50% { transform: scale(1.05, 0.95); }
         }
 
         @keyframes jitter {
-            0% { transform: translate(1px, -1px); }
-            50% { transform: translate(-1px, 1px); }
-            100% { transform: translate(1px, 1px); }
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-1px, -1px) rotate(1deg); }
+            80% { transform: translate(2px, -1px) rotate(-1deg); }
         }
 
-        #data-screen {
+        .dialog-box {
+            background: white;
+            border: 2px inset var(--win-border-dark);
+            padding: 15px; margin: 20px 0;
+            font-size: 13px; min-height: 50px;
+        }
+
+        /* --- THE PROGRESS BARS --- */
+        .progress-container {
+            text-align: left; margin: 10px 0; display: none;
+        }
+
+        .bar-bg {
+            height: 20px; background: white;
+            border: 2px inset var(--win-border-dark);
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%; background: var(--win-blue); width: 0%;
+            transition: width 0.5s;
+        }
+
+        /* --- BUTTONS --- */
+        button {
+            padding: 4px 20px; background: var(--win-bg);
+            border: 2px solid;
+            border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
+            font-family: inherit; cursor: pointer;
+        }
+
+        button:active { border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark); }
+
+        /* --- THE TURN --- */
+        .void-mode {
+            background: #000 !important;
+            filter: contrast(3) grayscale(1) invert(1);
+        }
+
+        #scare-ui {
             position: fixed; inset: 0; background: black;
-            color: #ff0000; font-family: monospace;
-            display: none; flex-direction: column;
-            padding: 40px; z-index: 10000;
+            color: red; padding: 50px; display: none;
+            flex-direction: column; z-index: 1000; font-family: monospace;
         }
     </style>
 </head>
 <body>
 
-    <div id="boot" style="position:fixed; inset:0; background:black; color:white; z-index:100000; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-        <h2 style="font-family: monospace;">LUMPY_HOME_v1.exe</h2>
-        <button onclick="start()" style="color:white; border-color:white; margin-top:20px;">[ INITIALIZE GAME ]</button>
+    <div id="boot" style="position:fixed; inset:0; background:#000; color:#0f0; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999;">
+        <p>LUMPY_OS v4.44.0</p>
+        <p>SOUND_CARD... DETECTED</p>
+        <button onclick="boot()" style="color:#0f0; border-color:#0f0;">[ EXECUTE ]</button>
     </div>
 
-    <div class="window" id="win">
+    <div class="window" id="main-window">
         <div class="title-bar">
-            <span>Lumpy's Fun-Time Survey!</span>
+            <span>Lumpy's Fun-Time Diagnostics</span>
             <span>[X]</span>
         </div>
         <div class="content">
-            <img src="lumpy.png" id="lumpy-image" alt="Lumpy">
-            <div class="dialog-bubble" id="text">
-                Hi! I'm Lumpy! I'm so happy you're here. <br> Can we play a game?
+            <img src="lumpy.png" id="lumpy" alt="Lumpy">
+            
+            <div class="dialog-box" id="msg">
+                Hello! I am Lumpy. <br> I want to check if you are safe today.
             </div>
-            <div id="btns">
-                <button onclick="next(1)">YES!</button>
-                <button onclick="next(1)">OF COURSE!</button>
+
+            <div id="actions">
+                <button onclick="nextStep(1)">Check my safety!</button>
+            </div>
+
+            <div id="audit-ui" class="progress-container">
+                <div style="font-size:11px; margin-bottom:5px;" id="bar-label">SCANNING USER VITALS...</div>
+                <div class="bar-bg"><div class="bar-fill" id="bar"></div></div>
             </div>
         </div>
     </div>
 
-    <div id="data-screen">
-        <div id="dump" style="line-height: 1.5; font-size: 14px;"></div>
+    <div id="scare-ui">
+        <h1 style="font-size:40px;">CRITICAL_SYSTEM_BREACH</h1>
+        <div id="data-dump" style="line-height:1.8;"></div>
     </div>
 
     <audio id="bgm" loop src="https://www.soundjay.com/misc/sounds/music-box-1.mp3"></audio>
 
     <script>
-        const text = document.getElementById('text');
-        const btns = document.getElementById('btns');
-        const lumpy = document.getElementById('lumpy-image');
-        const win = document.getElementById('win');
+        const lumpy = document.getElementById('lumpy');
+        const msg = document.getElementById('msg');
+        const actions = document.getElementById('actions');
+        const audit = document.getElementById('audit-ui');
+        const bar = document.getElementById('bar');
+        const label = document.getElementById('bar-label');
         const bgm = document.getElementById('bgm');
-        const dump = document.getElementById('dump');
-        const ds = document.getElementById('data-screen');
 
-        let step = 0;
-
-        function start() {
+        function boot() {
             document.getElementById('boot').style.display = 'none';
-            bgm.volume = 0.5;
+            bgm.volume = 0.4;
             bgm.play();
         }
 
-        function next(v) {
-            step++;
-            if (step === 1) {
-                text.innerText = "YAY! Question 1: Are you all alone right now?";
-                btns.innerHTML = '<button onclick="next(1)">YES</button><button onclick="next(1)">NO</button>';
-            } 
-            else if (step === 2) {
-                text.innerText = "Question 2: Is it dark in your room?";
-                btns.innerHTML = '<button onclick="next(1)">DARK</button><button onclick="next(1)">LIGHT</button>';
-            }
-            else if (step === 3) {
-                text.innerHTML = "<b>BIOMETRIC CALIBRATION:</b><br>To stay friends, Lumpy needs to see your eyes!";
-                btns.innerHTML = '<button onclick="hijack()" style="background:#0f0; color:black;">ENABLE CAMERA</button>';
+        function nextStep(s) {
+            if (s === 1) {
+                msg.innerHTML = "That's a good friend! <br> To start, Lumpy needs to see your smile!";
+                actions.innerHTML = '<button onclick="requestCamera()">Enable Camera</button>';
             }
         }
 
-        async function hijack() {
+        async function requestCamera() {
             try {
-                // This triggers the physical LED light on the laptop
                 await navigator.mediaDevices.getUserMedia({ video: true });
             } catch(e) {}
 
-            bgm.playbackRate = 0.4; // Music slows down and warps
-            win.classList.add('corrupted');
+            actions.style.display = 'none';
+            audit.style.display = 'block';
+            runAudit();
+        }
+
+        async function runAudit() {
+            // Step 1: Battery
+            label.innerText = "MEASURING HOST ENERGY LEVELS...";
+            bar.style.width = "30%";
             
-            setTimeout(() => {
-                ds.style.display = 'flex';
-                extract();
+            setTimeout(async () => {
+                // Step 2: System Data
+                label.innerText = "INDEXING RESIDENT DIRECTORIES...";
+                bar.style.width = "60%";
+                
+                setTimeout(() => {
+                    // The Turn
+                    label.innerText = "ACCESSING CONSCIOUSNESS...";
+                    bar.style.width = "100%";
+                    setTimeout(triggerHorror, 1500);
+                }, 2000);
             }, 2000);
         }
 
-        async function extract() {
-            const bat = await navigator.getBattery();
-            const ram = navigator.deviceMemory || "HIDDEN";
-            const cores = navigator.hardwareConcurrency || "HIDDEN";
+        async function triggerHorror() {
+            // Fullscreen Hijack
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+
+            document.body.classList.add('void-mode');
+            lumpy.style.animation = "jitter 0.05s infinite";
+            bgm.playbackRate = 0.3; // Deeper, demonic sound
+
+            const battery = await navigator.getBattery();
             const time = new Date().toLocaleTimeString();
             
-            const lines = [
-                "ESTABLISHING LINK...",
-                "--------------------------------",
-                "LOCAL_TIME: " + time,
-                "PLATFORM: " + navigator.platform,
-                "CPU_CORES: " + cores,
-                "MEM_ESTIMATE: " + ram + "GB",
-                "RESOLUTION: " + window.screen.width + "x" + window.screen.height,
-                "BATTERY_STATUS: " + (bat.charging ? "PLUGGED_IN" : "DRAINING"),
-                "BATTERY_LEVEL: " + Math.floor(bat.level * 100) + "%",
-                "--------------------------------",
-                "SURVEILLANCE MODE: ACTIVE",
-                "SENSORS DETECT MOVEMENT IN PERIPHERAL.",
-                "SUBJECT IS UNSTABLE.",
-                "DO NOT TURN AROUND.",
-                "--------------------------------",
-                "WHY DID YOU LET ME IN?",
-                "I'M NOT IN THE BROWSER ANYMORE.",
-                "CHECK THE WINDOW."
-            ];
+            setTimeout(() => {
+                document.getElementById('scare-ui').style.display = 'flex';
+                const dump = document.getElementById('data-dump');
+                
+                const stats = [
+                    "IDENTIFIED: USER_01",
+                    "OS_ARCH: " + navigator.platform,
+                    "CORES_ACTIVE: " + (navigator.hardwareConcurrency || "ALL"),
+                    "BATTERY_LIFE: " + Math.floor(battery.level * 100) + "%",
+                    "CURRENT_TIME: " + time,
+                    "----------------------------------",
+                    "LUMPY IS SITTING IN THE DARK.",
+                    "HE KNOWS YOU ARE STILL AWAKE.",
+                    "HE LIKES THE WAY YOU STARE AT THE SCREEN.",
+                    "----------------------------------",
+                    "YOU HAVE " + Math.floor(battery.level * 240) + " MINUTES OF POWER LEFT.",
+                    "THEN I WILL BE IN THE ROOM WITH YOU.",
+                    "DO NOT TURN AROUND."
+                ];
 
-            let i = 0;
-            const interval = setInterval(() => {
-                dump.innerHTML += "> " + lines[i] + "<br>";
-                i++;
-                if (i >= lines.length) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        ds.innerHTML = "<h1 style='color:white; font-size:10px; margin-top:20%; text-align:center;'>Check the reflection in the screen.</h1>";
-                        bgm.pause();
-                    }, 5000);
-                }
-            }, 1000);
+                let i = 0;
+                const itv = setInterval(() => {
+                    dump.innerHTML += `> ${stats[i]}<br>`;
+                    i++;
+                    if (i >= stats.length) {
+                        clearInterval(itv);
+                        setTimeout(() => {
+                            document.getElementById('scare-ui').innerHTML = "<div style='color:white; font-size:11px; text-align:center; margin-top:20%;'>Check the reflection. You aren't alone.</div>";
+                            bgm.pause();
+                        }, 5000);
+                    }
+                }, 1000);
+            }, 2000);
         }
     </script>
 </body>
