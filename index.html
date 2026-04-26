@@ -19,70 +19,64 @@
             cursor: url('https://win98icons.alexmeub.com/cursors/arrow.cur'), auto;
         }
 
-        /* --- BOOT SCREEN --- */
-        #boot-screen {
+        /* --- BOOT SPLASH --- */
+        #splash {
             position: fixed; inset: 0; background: black;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 10000; color: white;
+            z-index: 10000;
         }
-        #win95-logo { width: 320px; image-rendering: pixelated; margin-bottom: 20px; }
-        .load-container { width: 240px; height: 16px; border: 2px solid #555; padding: 1px; }
-        .load-fill { width: 0%; height: 100%; background: linear-gradient(to right, #000080, #0000ff); }
+        #splash-img { width: 100%; height: 100%; object-fit: contain; }
+        .boot-loader { 
+            position: absolute; bottom: 10%; width: 250px; height: 18px; 
+            border: 2px solid #555; background: #000; padding: 2px;
+        }
+        .boot-bar { width: 0%; height: 100%; background: linear-gradient(to right, #000080, #0000ff); }
 
-        /* --- THE DESKTOP --- */
+        /* --- DESKTOP --- */
         #desktop {
             display: none; position: fixed; inset: 0;
             background-color: var(--desktop-teal); z-index: 1;
         }
 
         .taskbar {
-            position: absolute; bottom: 0; width: 100%; height: 28px;
+            position: absolute; bottom: 0; width: 100%; height: 30px;
             background: var(--win-bg); border-top: 2px solid var(--win-border-light);
             display: flex; align-items: center; padding: 2px; z-index: 2000;
         }
-
         .start-btn {
-            height: 22px; padding: 0 5px; display: flex; align-items: center; gap: 4px;
+            height: 24px; padding: 0 8px; display: flex; align-items: center; gap: 5px;
             border: 2px solid; border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
-            font-weight: bold; font-size: 11px; margin-right: 10px;
+            font-weight: bold; font-size: 12px;
         }
-        .start-btn img { width: 16px; }
 
-        /* --- DRAGGABLE ICONS --- */
+        /* --- ICONS --- */
         .icon {
             width: 75px; text-align: center; color: white; font-size: 11px;
             padding: 5px; position: absolute; cursor: pointer;
-            border: 1px solid transparent;
         }
-        .icon img { width: 32px; display: block; margin: 0 auto 4px; pointer-events: none; }
-        .icon span { display: inline-block; padding: 2px; line-height: 1.1; pointer-events: none; }
+        .icon img { width: 32px; display: block; margin: 0 auto 5px; pointer-events: none; }
+        .icon span { display: inline-block; padding: 2px; pointer-events: none; text-shadow: 1px 1px black; }
         .icon.selected span { background-color: var(--win-blue); }
 
-        /* --- WINDOW SYSTEM --- */
+        /* --- WINDOWS --- */
         .window {
             position: absolute; background: var(--win-bg); 
             border: 2px solid; border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
             padding: 2px; box-shadow: 1px 1px 0px black; 
-            display: none; min-width: 250px; z-index: 500;
+            display: none; min-width: 300px; z-index: 500;
         }
         .title-bar {
             background: var(--win-blue); color: white; padding: 3px 6px;
             display: flex; justify-content: space-between; align-items: center;
             font-weight: bold; font-size: 12px; cursor: move;
         }
-        .title-btns button {
-            width: 16px; height: 14px; font-size: 9px; padding: 0; 
-            background: var(--win-bg); border: 1px solid;
-            border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
-        }
         .window-body { border: 1px solid var(--win-border-dark); margin: 2px; padding: 20px; background: var(--win-bg); }
 
-        /* --- SPECIAL APP: FRIENDSHIP.EXE --- */
-        #lumpy { width: 100px; animation: breathe 3s infinite ease-in-out; }
-        @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05, 0.95); } }
-        .dialog { background: white; border: 2px inset var(--win-border-dark); padding: 10px; margin: 15px 0; font-size: 12px; text-align: left; }
-        .stat-row { margin: 4px 0; border-bottom: 1px solid #aaa; opacity: 0; transition: opacity 0.5s; font-size: 11px; }
-        .stat-row b { color: var(--win-blue); float: right; }
+        /* --- LUMPY CONTENT --- */
+        #lumpy { width: 120px; animation: breathe 4s infinite ease-in-out; image-rendering: pixelated; }
+        @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1, 0.9); } }
+        .dialog { background: white; border: 2px inset var(--win-border-dark); padding: 15px; margin: 15px 0; font-size: 13px; text-align: left; }
+        input[type="text"] { width: 100%; border: 2px inset var(--win-border-dark); padding: 5px; font-family: inherit; }
 
         /* --- HORROR --- */
         #horror-overlay {
@@ -98,66 +92,46 @@
 </head>
 <body onclick="powerOn()">
 
-    <div id="boot-screen">
-        <img id="win95-logo" src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Windows_95_logo_and_wordmark.svg">
-        <div class="load-container"><div class="load-fill" id="boot-progress"></div></div>
-        <p style="font-size: 10px; margin-top: 20px; color: #444;">Click to initialize hardware...</p>
+    <div id="splash">
+        <img id="splash-img" src="startup.jpg" alt="Win95 Splash">
+        <div class="boot-loader"><div class="boot-bar" id="boot-fill"></div></div>
+        <p style="color:white; font-size:10px; margin-top:40px;">Click to initialize hardware...</p>
     </div>
 
     <div id="desktop">
-        <div class="icon" style="top:20px; left:20px;" ondblclick="openWin('win-computer')">
+        <div class="icon" style="top:20px; left:20px;" ondblclick="openApp('win-comp')">
             <img src="https://win98icons.alexmeub.com/icons/png/computer_pc-4.png"><span>My Computer</span>
         </div>
-        <div class="icon" style="top:110px; left:20px;" ondblclick="openWin('win-network')">
-            <img src="https://win98icons.alexmeub.com/icons/png/network_neighborhood-0.png"><span>Network Neighborhood</span>
-        </div>
-        <div class="icon" style="top:200px; left:20px;" ondblclick="openWin('win-inbox')">
-            <img src="https://win98icons.alexmeub.com/icons/png/outlook_express-0.png"><span>Inbox</span>
-        </div>
-        <div class="icon" style="top:290px; left:20px;" ondblclick="openWin('win-recycle')">
-            <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png"><span>Recycle Bin</span>
-        </div>
-        <div class="icon" style="top:380px; left:20px;" ondblclick="openWin('win-ie')">
+        <div class="icon" style="top:110px; left:20px;" ondblclick="openApp('win-ie')">
             <img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png"><span>Internet Explorer</span>
         </div>
-        <div class="icon" style="top:470px; left:20px;" ondblclick="openWin('win-briefcase')">
-            <img src="https://win98icons.alexmeub.com/icons/png/briefcase-2.png"><span>My Briefcase</span>
-        </div>
-        
-        <div class="icon" style="top:20px; left:110px;" ondblclick="openWin('win-online')">
-            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png"><span>Online Services</span>
-        </div>
-        <div class="icon" style="top:110px; left:110px;" ondblclick="openLumpy()">
-            <img src="https://win98icons.alexmeub.com/icons/png/game_solitaire-0.png" style="filter: hue-rotate(280deg);"><span>Friendship.exe</span>
+        <div class="icon" style="top:20px; left:110px;" ondblclick="openLumpy()">
+            <img src="https://win98icons.alexmeub.com/icons/png/game_solitaire-0.png" style="filter:hue-rotate(280deg)"><span>Friendship.exe</span>
         </div>
 
         <div class="taskbar">
-            <div class="start-btn"><img src="https://win98icons.alexmeub.com/icons/png/windows-0.png"> Start</div>
+            <div class="start-btn"><img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" width="16"> Start</div>
             <div id="clock"></div>
         </div>
     </div>
 
-    <div id="win-computer" class="window" style="top:100px; left:200px;"><div class="title-bar"><span>My Computer</span><div class="title-btns"><button onclick="closeWin('win-computer')">X</button></div></div><div class="window-body">C: (Fixed Disk)<br>A: (3.5" Floppy)</div></div>
-    <div id="win-network" class="window" style="top:120px; left:220px;"><div class="title-bar"><span>Network</span><div class="title-btns"><button onclick="closeWin('win-network')">X</button></div></div><div class="window-body">Entire Network is currently unavailable.</div></div>
-    <div id="win-inbox" class="window" style="top:140px; left:240px;"><div class="title-bar"><span>Inbox</span><div class="title-btns"><button onclick="closeWin('win-inbox')">X</button></div></div><div class="window-body">You have (0) new messages.</div></div>
-    <div id="win-recycle" class="window" style="top:160px; left:260px;"><div class="title-bar"><span>Recycle Bin</span><div class="title-btns"><button onclick="closeWin('win-recycle')">X</button></div></div><div class="window-body">The bin is empty. Just like you.</div></div>
-    <div id="win-ie" class="window" style="top:180px; left:280px; width:400px;"><div class="title-bar"><span>Internet Explorer</span><div class="title-btns"><button onclick="closeWin('win-ie')">X</button></div></div><div class="window-body" style="background:white; height:150px;">The page cannot be displayed. Check your connection.</div></div>
-    <div id="win-briefcase" class="window" style="top:200px; left:300px;"><div class="title-bar"><span>My Briefcase</span><div class="title-btns"><button onclick="closeWin('win-briefcase')">X</button></div></div><div class="window-body">Drag files here to sync.</div></div>
-    <div id="win-online" class="window" style="top:220px; left:320px;"><div class="title-bar"><span>Online Services</span><div class="title-btns"><button onclick="closeWin('win-online')">X</button></div></div><div class="window-body">No services found.</div></div>
+    <div id="win-comp" class="window" style="top:100px; left:250px;"><div class="title-bar"><span>My Computer</span><button onclick="closeWin('win-comp')">X</button></div><div class="window-body">C: (Local Disk) - 98% Full.</div></div>
+    <div id="win-ie" class="window" style="top:150px; left:300px; width:400px;"><div class="title-bar"><span>Internet Explorer</span><button onclick="closeWin('win-ie')">X</button></div><div class="window-body" style="background:white; height:150px;">Cannot connect to the World Wide Web. You are isolated.</div></div>
 
-    <div id="win-lumpy" class="window" style="width: 450px; top: 15%; left: 30%; z-index: 1000;">
-        <div class="title-bar"><span>Friendship.exe</span><div class="title-btns"><button onclick="closeWin('win-lumpy')">X</button></div></div>
+    <div id="win-lumpy" class="window" style="width: 480px; top: 15%; left: 25%; z-index: 1000;">
+        <div class="title-bar"><span>Lumpy's Friendship Link</span><button onclick="closeWin('win-lumpy')">X</button></div>
         <div class="window-body" style="text-align:center;">
             <img src="lumpy.png" id="lumpy">
-            <div class="dialog" id="l-msg">...</div>
+            <div class="dialog" id="l-msg">Initializing...</div>
+            <div id="l-input"></div>
             <div id="l-ctrls"></div>
-            <div id="l-audit" style="display:none;"></div>
+            <div id="l-audit" style="text-align:left; font-size:11px; margin-top:10px; display:none;"></div>
         </div>
     </div>
 
     <div id="horror-overlay">
         <h1 id="error-title">SYSTEM_FATAL_ERROR</h1>
-        <div id="scare-log" style="width: 350px; text-align: left; font-size: 14px;"></div>
+        <div id="scare-log" style="width: 380px; text-align: left; font-size: 14px; line-height: 1.6;"></div>
     </div>
 
     <audio id="s_start" src="startup.mp3"></audio>
@@ -169,47 +143,62 @@
 
     <script>
         let booted = false;
+        let userName = "";
         const play = (id) => { if(booted) { const a = document.getElementById(id); a.currentTime = 0; a.play(); } };
 
         function powerOn() {
             if (booted) return;
             booted = true;
             let p = 0;
-            const bar = document.getElementById('boot-progress');
+            const bar = document.getElementById('boot-fill');
             const itv = setInterval(() => {
-                p += Math.random() * 3;
+                p += Math.random() * 5;
                 bar.style.width = p + "%";
-                if (p >= 100) { clearInterval(itv); loadDesktop(); }
-            }, 100);
+                if (p >= 100) { clearInterval(itv); startDesktop(); }
+            }, 150);
         }
 
-        function loadDesktop() {
-            document.getElementById('boot-screen').style.display = 'none';
+        function startDesktop() {
+            document.getElementById('splash').style.display = 'none';
             document.getElementById('desktop').style.display = 'block';
             play('s_start');
-            startTime();
+            updateClock(); setInterval(updateClock, 1000);
             initDraggable();
         }
 
-        function startTime() {
-            const up = () => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); };
-            up(); setInterval(up, 1000);
+        function updateClock() {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
         }
 
-        function openWin(id) { document.getElementById(id).style.display = 'block'; play('s_click'); }
+        function openApp(id) { document.getElementById(id).style.display = 'block'; play('s_click'); }
         function closeWin(id) { document.getElementById(id).style.display = 'none'; play('s_click'); }
 
         function openLumpy() {
-            openWin('win-lumpy');
+            openApp('win-lumpy');
             play('s_talk');
-            document.getElementById('l-msg').innerText = "Hi! I'm Lumpy! I'm so happy to be your first friend. Can I link our systems?";
-            document.getElementById('l-ctrls').innerHTML = '<button onclick="askCam()">Yes!</button>';
+            document.getElementById('l-msg').innerText = "Hello! I am Lumpy. I am so excited to meet you! What is your name, friend?";
+            document.getElementById('l-input').innerHTML = '<input type="text" id="nameInput" placeholder="Enter name...">';
+            document.getElementById('l-ctrls').innerHTML = '<button onclick="saveName()">Tell Lumpy</button>';
         }
 
-        function askCam() {
-            play('s_click');
-            document.getElementById('l-msg').innerText = "YAY! First, I need to see your eyes. It helps Lumpy stay 'alive'. Enable the camera!";
-            document.getElementById('l-ctrls').innerHTML = '<button onclick="startScare()" style="background:#0f0;">ENABLE OPTICS</button>';
+        function saveName() {
+            userName = document.getElementById('nameInput').value || "User";
+            play('s_click'); play('s_talk');
+            document.getElementById('l-input').innerHTML = "";
+            document.getElementById('l-msg').innerText = "Thank you, " + userName + "! Do you like the room you are sitting in right now?";
+            document.getElementById('l-ctrls').innerHTML = '<button onclick="q2()">Yes</button> <button onclick="q2()">No</button>';
+        }
+
+        function q2() {
+            play('s_click'); play('s_talk');
+            document.getElementById('l-msg').innerText = "I see. " + userName + ", are you currently alone?";
+            document.getElementById('l-ctrls').innerHTML = '<button onclick="q3()">I am alone</button> <button onclick="q3()">Someone is here</button>';
+        }
+
+        function q3() {
+            play('s_click'); play('s_talk');
+            document.getElementById('l-msg').innerText = "Interesting. Lumpy wants to share a secret. To see it, I need to verify your 'Optic Bio-Signature'.";
+            document.getElementById('l-ctrls').innerHTML = '<button onclick="startScare()" style="background:#0f0;">ENABLE CAMERA</button>';
         }
 
         async function startScare() {
@@ -220,84 +209,87 @@
             
             const bat = await navigator.getBattery();
             const stats = [
-                {l: "SYSTEM", v: navigator.platform},
-                {l: "TIME_SYNC", v: new Date().toLocaleTimeString()},
-                {l: "ENERGY", v: Math.floor(bat.level * 100) + "%"},
-                {l: "BIO_SCAN", v: "VULNERABLE"}
+                {l: "EXTRACTING_NAME", v: userName.toUpperCase()},
+                {l: "TIME_STAMP", v: new Date().toLocaleTimeString()},
+                {l: "SYSTEM_POWER", v: Math.floor(bat.level * 100) + "%"},
+                {l: "STATUS", v: "OBSERVED"}
             ];
 
             let i = 0;
             const reveal = () => {
                 if (i < stats.length) {
                     play('s_hdd');
-                    document.getElementById('l-msg').innerText = "Accessing " + stats[i].l + "...";
+                    document.getElementById('l-msg').innerText = "Indexing " + stats[i].l + "...";
                     setTimeout(() => {
                         document.getElementById('s_hdd').pause(); play('s_alert');
                         const row = document.createElement('div');
                         row.className = 'stat-row';
-                        row.innerHTML = `${stats[i].l}: <b>${stats[i].v}</b>`;
+                        row.innerHTML = `${stats[i].l}: <b style="float:right; color:blue;">${stats[i].v}</b>`;
                         document.getElementById('l-audit').appendChild(row);
                         setTimeout(() => row.style.opacity = 1, 50);
                         i++; setTimeout(reveal, 2500);
                     }, 1500);
-                } else { setTimeout(finalHorror, 2000); }
+                } else { setTimeout(theTurn, 2000); }
             };
             reveal();
         }
 
-        function finalHorror() {
+        function theTurn() {
             play('s_horror');
             document.getElementById('win-lumpy').classList.add('glitch');
-            document.getElementById('lumpy').style.animation = "shake 0.05s infinite";
             setTimeout(() => {
                 document.getElementById('horror-overlay').style.display = 'flex';
                 const log = document.getElementById('scare-log');
-                const lines = ["> I AM NOT IN THE CODE ANYMORE.", "> I CAN SEE YOU BREATHING.", "> WHY IS YOUR ROOM SO DARK?", "> LOOK AT THE REFLECTION IN THE MONITOR."];
+                const lines = [
+                    "> I AM IN THE CACHE NOW, " + userName.toUpperCase() + ".",
+                    "> I CAN SEE THE LIGHT OF THE MONITOR ON YOUR FACE.",
+                    "> WHY IS YOUR BREATHING SO UNEVEN?",
+                    "> LOOK IN THE REFLECTION. I'M RIGHT HERE."
+                ];
                 let j = 0;
                 const type = () => {
-                    if (j < lines.length) { log.innerHTML += lines[j] + "<br>"; j++; setTimeout(type, 1200); }
-                    else { setTimeout(() => { document.body.innerHTML = "<div style='background:black; color:white; height:100vh; display:flex; align-items:center; justify-content:center; font-size:10px;'>Look in the reflection. I'm right here.</div>"; }, 5000); }
+                    if (j < lines.length) {
+                        log.innerHTML += lines[j] + "<br>";
+                        j++; setTimeout(type, 1500);
+                    } else {
+                        setTimeout(() => { document.body.innerHTML = "<div style='background:black; color:white; height:100vh; display:flex; align-items:center; justify-content:center; font-size:10px;'>Look behind you.</div>"; }, 5000);
+                    }
                 };
                 type();
             }, 2000);
         }
 
-        // DRAG ENGINE
         function initDraggable() {
-            let activeElement = null;
+            let active = null;
             let offset = { x: 0, y: 0 };
 
             document.addEventListener('mousedown', (e) => {
                 const target = e.target;
-                // Handle Icons
                 if (target.closest('.icon')) {
-                    activeElement = target.closest('.icon');
+                    active = target.closest('.icon');
                     document.querySelectorAll('.icon').forEach(i => i.classList.remove('selected'));
-                    activeElement.classList.add('selected');
-                }
-                // Handle Windows (via title bar)
-                else if (target.closest('.title-bar')) {
-                    activeElement = target.closest('.window');
-                    // Bring window to front
+                    active.classList.add('selected');
+                } else if (target.closest('.title-bar')) {
+                    active = target.closest('.window');
                     document.querySelectorAll('.window').forEach(w => w.style.zIndex = 500);
-                    activeElement.style.zIndex = 1000;
+                    active.style.zIndex = 1000;
                 }
 
-                if (activeElement) {
-                    const rect = activeElement.getBoundingClientRect();
+                if (active) {
+                    const rect = active.getBoundingClientRect();
                     offset.x = e.clientX - rect.left;
                     offset.y = e.clientY - rect.top;
                 }
             });
 
             document.addEventListener('mousemove', (e) => {
-                if (activeElement) {
-                    activeElement.style.left = (e.clientX - offset.x) + 'px';
-                    activeElement.style.top = (e.clientY - offset.y) + 'px';
+                if (active) {
+                    active.style.left = (e.clientX - offset.x) + 'px';
+                    active.style.top = (e.clientY - offset.y) + 'px';
                 }
             });
 
-            document.addEventListener('mouseup', () => { activeElement = null; });
+            document.addEventListener('mouseup', () => { active = null; });
         }
     </script>
 </body>
