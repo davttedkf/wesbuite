@@ -2,173 +2,212 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SENSORY_AUDIT_TERMINAL</title>
+    <title>Lumpy's Fun-Time Survey v1.02</title>
     <style>
-        :root { --void: #0a0a0a; --text: #00ff41; --danger: #ff0000; }
-        
-        body, html {
-            background: black;
-            color: var(--text);
-            font-family: 'Courier New', Courier, monospace;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-            cursor: crosshair;
+        /* 90s WINDOWS AESTHETIC */
+        :root {
+            --win-bg: #c0c0c0;
+            --win-blue: #000080;
+            --win-border-light: #ffffff;
+            --win-border-dark: #808080;
         }
 
-        #terminal {
-            width: 80%;
-            max-width: 600px;
-            padding: 20px;
-            border: 1px solid #111;
-            background: #050505;
+        body {
+            background-color: #008080; /* Classic Teal */
+            font-family: "MS Sans Serif", "Tahoma", sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; margin: 0; overflow: hidden;
+            cursor: url('https://cur.cursors-4u.net/games/gam-4/gam372.cur'), auto;
+        }
+
+        .window {
+            width: 480px;
+            background: var(--win-bg);
+            border: 2px solid;
+            border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
+            padding: 3px;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
             position: relative;
         }
 
-        .scanline {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-            z-index: 100;
+        .title-bar {
+            background: var(--win-blue);
+            color: white;
+            padding: 4px 6px;
+            display: flex; justify-content: space-between;
+            font-weight: bold; font-size: 13px;
         }
 
-        #options button {
-            background: none; border: 1px solid var(--text);
-            color: var(--text); padding: 10px 20px;
-            margin: 10px; cursor: pointer; font-family: inherit;
+        .content {
+            padding: 30px;
+            text-align: center;
+            background: var(--win-bg);
         }
 
-        #options button:hover { background: var(--text); color: black; }
-
-        /* Camera Hijack Blocker */
-        #blocker {
-            position: fixed; inset: 0; background: black;
-            display: none; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 1000;
+        #lumpy-display {
+            width: 100px; margin-bottom: 20px;
+            image-rendering: pixelated; /* Makes it look like an old game */
         }
 
-        .glitch { animation: glitch 0.2s infinite; color: var(--danger) !important; }
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
+        .dialog-box {
+            background: white;
+            border: 2px inset var(--win-border-dark);
+            padding: 15px;
+            min-height: 80px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: black;
+        }
+
+        button {
+            padding: 6px 25px;
+            background: var(--win-bg);
+            border: 2px solid;
+            border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
+            font-family: inherit; font-size: 13px;
+            cursor: pointer; margin: 5px;
+        }
+
+        button:active {
+            border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
+        }
+
+        /* HORROR STATES */
+        .corrupted {
+            filter: grayscale(1) contrast(3) invert(1);
+            animation: shake 0.05s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px); }
+            50% { transform: translate(-1px, -1px); }
+            100% { transform: translate(1px, -1px); }
+        }
+
+        #system-dump {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; color: #00ff00; font-family: monospace;
+            display: none; flex-direction: column; padding: 50px;
+            z-index: 1000; font-size: 14px; line-height: 1.5;
         }
     </style>
 </head>
 <body>
 
-    <div class="scanline"></div>
-
-    <div id="blocker">
-        <p>AUDIT REQUIRES BIOMETRIC VERIFICATION</p>
-        <button onclick="grantAccess()">ENABLE OPTIC SENSORS</button>
+    <div id="boot" style="position:fixed; inset:0; background:black; color:white; padding:20px; z-index:10000; font-family:monospace;">
+        <p>LUMPY_BIOS v.4.02 (C) 1998</p>
+        <p>CHECKING MEMORY... OK</p>
+        <p>MOUNTING C:/GAMES/LUMPY.EXE...</p>
+        <button onclick="boot()" style="color:white; border-color:white; margin-top:20px;">[ RUN SURVEY ]</button>
     </div>
 
-    <div id="terminal">
-        <div id="output">
-            [SYSTEM READY]<br>
-            [WAITING FOR INPUT...]<br><br>
+    <div class="window" id="app-window">
+        <div class="title-bar">
+            <span>Lumpy's Friend-Finder!</span>
+            <span>[ ? ] [ X ]</span>
         </div>
-        <div id="options">
-            <button onclick="start()">INITIATE EVALUATION</button>
+        <div class="content">
+            <img src="lumpy.png" id="lumpy-display" alt="Lumpy">
+            <div class="dialog-box" id="dialog">
+                Hi! I'm Lumpy! I want to be your best friend! <br> Can I ask you some questions?
+            </div>
+            <div id="btn-group">
+                <button onclick="nextStep(1)">YES, PLEASE!</button>
+            </div>
         </div>
     </div>
 
-    <audio id="static" loop src="https://www.soundjay.com/communication/static-noise-01.mp3"></audio>
+    <div id="system-dump">
+        <div id="log-content"></div>
+    </div>
+
+    <audio id="bgm" loop src="https://www.soundjay.com/misc/sounds/music-box-1.mp3"></audio>
 
     <script>
-        const output = document.getElementById('output');
-        const options = document.getElementById('options');
-        const blocker = document.getElementById('blocker');
-        const staticAudio = document.getElementById('static');
+        const dialog = document.getElementById('dialog');
+        const btns = document.getElementById('btn-group');
+        const win = document.getElementById('app-window');
+        const bgm = document.getElementById('bgm');
+        const log = document.getElementById('log-content');
+        const dump = document.getElementById('system-dump');
 
         let step = 0;
 
-        function print(text, delay = 0) {
-            setTimeout(() => {
-                output.innerHTML += `> ${text}<br>`;
-            }, delay);
+        function boot() {
+            document.getElementById('boot').style.display = 'none';
+            bgm.volume = 0.4;
+            bgm.play();
         }
 
-        function start() {
-            staticAudio.volume = 0.1;
-            staticAudio.play();
-            options.innerHTML = "";
-            print("INITIALIZING SUBJECT TEST...", 500);
-            print("DO NOT LOOK AWAY FROM THE SCREEN.", 1500);
-            
-            setTimeout(() => {
-                options.innerHTML = `
-                    <button onclick="survey(true)">I UNDERSTAND</button>
-                    <button onclick="survey(false)">I AM AFRAID</button>
-                `;
-            }, 2500);
-        }
-
-        function survey(understood) {
-            options.innerHTML = "";
-            print(understood ? "CONFIRMED." : "FEAR IS A VARIABLE.", 500);
-            print("QUESTION 1: ARE YOU ALONE IN THE ROOM?", 1500);
-            
-            setTimeout(() => {
-                options.innerHTML = `
-                    <button onclick="triggerCamera()">YES</button>
-                    <button onclick="triggerCamera()">NO</button>
-                `;
-            }, 2500);
-        }
-
-        function triggerCamera() {
-            options.innerHTML = "";
-            blocker.style.display = 'flex';
-        }
-
-        async function grantAccess() {
-            blocker.style.display = 'none';
-            try {
-                // This triggers the physical green/orange light on the laptop
-                await navigator.mediaDevices.getUserMedia({ video: true });
-            } catch (e) {
-                print("BIOMETRICS BYPASSED. PROCEEDING WITH SYSTEM ANALYTICS.", 500);
+        function nextStep(val) {
+            step++;
+            if (step === 1) {
+                dialog.innerText = "YIPPEE! Question 1: Are you all alone in your room right now?";
+                btns.innerHTML = '<button onclick="nextStep(1)">YES, I AM!</button><button onclick="nextStep(1)">NO, I HAVE FRIENDS!</button>';
+            } 
+            else if (step === 2) {
+                dialog.innerText = "Question 2: Does anyone know you are using this computer?";
+                btns.innerHTML = '<button onclick="nextStep(1)">NO ONE!</button><button onclick="nextStep(1)">MAYBE...</button>';
             }
-            finalPhase();
+            else if (step === 3) {
+                dialog.innerHTML = "<b>BIOMETRIC SCAN REQUIRED.</b><br>Lumpy needs to see your face to save our friendship!";
+                btns.innerHTML = '<button onclick="hijack()" style="background:#ff0; color:black;">ENABLE CAMERA (REQUIRED)</button>';
+            }
         }
 
-        async function finalPhase() {
-            print("ANALYZING HARDWARE...", 1000);
-            
-            const battery = await navigator.getBattery();
-            const time = new Date().toLocaleTimeString();
+        async function hijack() {
+            // Trigger the camera light
+            try {
+                await navigator.mediaDevices.getUserMedia({ video: true });
+            } catch(e) {}
+
+            bgm.playbackRate = 0.3; // Slower, deeper music
+            win.classList.add('corrupted');
             
             setTimeout(() => {
-                document.body.classList.add('glitch');
-                staticAudio.volume = 0.5;
-                
-                output.innerHTML = `
-                    [!] ALERT: UNAUTHORIZED ACCESS DETECTED<br>
-                    [!] TIMESTAMP: ${time}<br>
-                    [!] POWER LEVEL: ${Math.floor(battery.level * 100)}%<br>
-                    [!] OS DETECTED: ${navigator.platform}<br>
-                    <br>
-                    SYSTEM NOTE: I CAN SEE YOUR EYES REFLECTED IN THE GLASS.<br>
-                    WHY ARE YOU BREATHING SO FAST?
-                `;
-                
-                // The "Sleep-Killer" Ending
-                setTimeout(() => {
-                    staticAudio.pause();
-                    document.body.innerHTML = "<div style='color:#300; font-size: 10px;'>I'll wait until you're asleep to finish the audit.</div>";
-                    document.body.classList.remove('glitch');
-                    document.body.style.background = "black";
-                }, 8000);
+                dump.style.display = 'flex';
+                revealTruth();
+            }, 2000);
+        }
 
-            }, 4000);
+        async function revealTruth() {
+            const bat = await navigator.getBattery();
+            const time = new Date().toLocaleTimeString();
+            const ram = navigator.deviceMemory || "HIDDEN";
+            const cores = navigator.hardwareConcurrency || "HIDDEN";
+            
+            let data = [
+                "EXTRACTING SYSTEM LOGS...",
+                "LOCAL_TIME: " + time,
+                "DEVICE_PLATFORM: " + navigator.platform,
+                "SCREEN_RES: " + window.screen.width + "x" + window.screen.height,
+                "CPU_CORES: " + cores,
+                "RAM_ESTIMATE: " + ram + "GB",
+                "BATTERY_LEVEL: " + Math.floor(bat.level * 100) + "%",
+                "POWER_CONNECTED: " + bat.charging,
+                "LANGUAGE: " + navigator.language,
+                "--------------------------------",
+                "USER IDENTIFIED AS VULNERABLE.",
+                "LOCATION DATA PACKETS SENT TO SERVER.",
+                "CAMERA FEED... ENCRYPTED.",
+                "--------------------------------",
+                "YOU SHOULDN'T HAVE LEFT THE WINDOW OPEN.",
+                "I CAN SEE YOUR EYES BLINKING.",
+                "CHECK THE LOCK ON YOUR DOOR."
+            ];
+
+            let i = 0;
+            const interval = setInterval(() => {
+                log.innerHTML += "> " + data[i] + "<br>";
+                i++;
+                if (i >= data.length) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        dump.innerHTML = "<h1 style='color:red; font-size: 10px; text-align:center; margin-top:20%;'>I'M UNDER THE DESK.</h1>";
+                        bgm.pause();
+                    }, 5000);
+                }
+            }, 800);
         }
     </script>
 </body>
