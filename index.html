@@ -2,209 +2,132 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM_FAILURE_RECORD_77</title>
+    <title>FATAL_ERROR_LOG</title>
     <style>
-        :root {
-            --red: #4b0000;
-            --gray: #1a1a1a;
-        }
-
         body, html {
-            margin: 0;
-            padding: 0;
             background: #000;
-            color: #555;
-            font-family: 'Courier New', Courier, monospace;
+            color: #111; /* Almost invisible text */
+            margin: 0;
             overflow: hidden;
+            font-family: 'Courier New', monospace;
             height: 100vh;
-            cursor: none; /* Hide real mouse */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: none;
         }
 
-        /* --- OVERLAY: GRAIN & SCANLINES --- */
-        #vhs-overlay {
+        #scare-image {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://media.giphy.com/media/oEI9uWUuW9nZ6/giphy.gif');
-            opacity: 0.07;
-            pointer-events: none;
-            z-index: 100;
+            object-fit: cover;
+            display: none;
+            z-index: 9999;
         }
 
-        /* --- THE ENVIRONMENT --- */
-        #viewport {
-            width: 100%;
-            height: 100%;
-            background: url('https://images.unsplash.com/photo-1509248961158-e54f6934749c?q=80&w=2070') center/cover no-repeat;
-            filter: brightness(0.04) contrast(1.2) saturate(0.2);
-            transition: filter 0.1s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        #instruction {
+            color: #222;
+            font-size: 10px;
+            text-align: center;
+            transition: color 5s ease;
         }
 
-        /* --- TERMINAL UI --- */
-        #ui {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            font-size: 11px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            pointer-events: none;
-            line-height: 1.6;
+        /* The Lull: Subtle movement to make them lean in */
+        .dot {
+            width: 2px;
+            height: 2px;
+            background: #111;
+            position: absolute;
         }
 
-        .status-blink {
-            animation: blink 1s infinite;
-            color: var(--red);
-        }
-
-        /* --- CUSTOM CURSOR --- */
-        #eye-cursor {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            background: var(--red);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 999;
-            box-shadow: 0 0 10px var(--red);
-        }
-
-        /* --- START OVERLAY --- */
         #overlay {
             position: fixed;
             inset: 0;
             background: #000;
-            z-index: 1000;
+            z-index: 10000;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #222;
         }
 
-        #overlay button {
+        button {
             background: none;
-            border: 1px solid #222;
-            color: #222;
-            padding: 10px 20px;
+            border: 1px solid #111;
+            color: #111;
+            padding: 20px;
             cursor: pointer;
-            font-family: inherit;
-        }
-
-        #overlay button:hover {
-            color: #555;
-            border-color: #555;
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-        @keyframes glitch {
-            0% { transform: translate(0,0); }
-            10% { transform: translate(-2px, 2px); filter: hue-rotate(90deg); }
-            20% { transform: translate(2px, -2px); }
-            30% { transform: translate(-5px, 0px); filter: invert(1); }
-            40% { transform: translate(0,0); }
-        }
-
-        .glitch-active {
-            animation: glitch 0.2s cubic-bezier(.25,.46,.45,.94) both;
         }
     </style>
 </head>
 <body>
 
-    <div id="overlay">
-        <p>RECOVERY_SESS_404</p>
-        <button onclick="init()">INITIALIZE</button>
-    </div>
+<div id="overlay">
+    <button onclick="start()">ENTER THE VOID</button>
+</div>
 
-    <div id="vhs-overlay"></div>
-    <div id="eye-cursor"></div>
+<div id="instruction">LOOK CLOSER... THERE IS A PIXEL OUT OF PLACE</div>
+<div id="dot" class="dot" style="top: 50%; left: 50%;"></div>
 
-    <div id="viewport">
-        <div id="ui">
-            <div>NODE: TERMINAL_01</div>
-            <div>STATUS: <span class="status-blink">LISTENING...</span></div>
-            <div id="coords">X: 000 | Y: 000</div>
-            <div id="time">TIME: --:--:--</div>
-            <div id="meta" style="color: #333;"></div>
-        </div>
-    </div>
+<img id="scare-image" src="https://i.imgur.com/vH3y1r4.jpeg" alt="SCREAM">
+<audio id="scream" src="https://www.soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Scream+1&filename=24/241857-797585be-5872-4638-89c0-681907e2c90c.mp3"></audio>
 
-    <audio id="ambience" loop src="https://www.soundjay.com/communication/static-noise-01.mp3"></audio>
+<script>
+    const scareImg = document.getElementById('scare-image');
+    const scream = document.getElementById('scream');
+    const dot = document.getElementById('dot');
+    const instruction = document.getElementById('instruction');
 
-    <script>
-        const viewport = document.getElementById('viewport');
-        const cursor = document.getElementById('eye-cursor');
-        const coordsText = document.getElementById('coords');
-        const timeText = document.getElementById('time');
-        const metaText = document.getElementById('meta');
-        const ambience = document.getElementById('ambience');
+    function start() {
+        document.getElementById('overlay').style.display = 'none';
+        
+        // 1. Start the 'Focus' phase (8 seconds)
+        setTimeout(() => {
+            instruction.style.color = "#444";
+            instruction.innerText = "DO YOU SEE THE MOVEMENT IN THE CENTER?";
+        }, 3000);
 
-        function init() {
-            document.getElementById('overlay').style.display = 'none';
-            ambience.volume = 0.2;
-            ambience.play();
-            
-            // Log local data to make it feel invasive
-            const now = new Date();
-            timeText.innerText = `TIME: ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-            metaText.innerText = `BROWSER: ${navigator.platform} | PORT: CLOSED`;
-            
-            // The "Look behind you" timer
-            setTimeout(() => {
-                metaText.innerText = "SENSORS DETECT MOVEMENT BEHIND USER.";
-                metaText.style.color = "#4b0000";
-            }, 10000);
+        // 2. The Jumpscare Trigger
+        // We trigger it when the user gets "bored" or "invested" (around 12 seconds)
+        setTimeout(() => {
+            trigger();
+        }, 12000);
+    }
+
+    function trigger() {
+        // Force full screen for maximum impact
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
         }
 
-        document.addEventListener('mousemove', (e) => {
-            // Update Cursor
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
+        scareImg.style.display = 'block';
+        scream.volume = 1.0;
+        scream.play();
 
-            // Update UI
-            coordsText.innerText = `X: ${e.clientX} | Y: ${e.clientY}`;
+        // Strobe effect
+        let flip = true;
+        const strobe = setInterval(() => {
+            document.body.style.backgroundColor = flip ? "#fff" : "#000";
+            scareImg.style.filter = flip ? "invert(1)" : "invert(0)";
+            flip = !flip;
+        }, 50);
 
-            // Subtle Light follow: Makes the image slightly brighter where the mouse is
-            const xPct = (e.clientX / window.innerWidth) * 100;
-            const yPct = (e.clientY / window.innerHeight) * 100;
-            viewport.style.backgroundPosition = `${xPct}% ${yPct}%`;
+        // Kill the strobe after 2 seconds so they can see the face
+        setTimeout(() => {
+            clearInterval(strobe);
+            document.body.style.backgroundColor = "#000";
+            scareImg.style.filter = "contrast(2) brightness(0.8)";
+        }, 2000);
+    }
 
-            // Random Glitch Trigger
-            if (Math.random() > 0.99) {
-                triggerGlitch();
-            }
-        });
+    // Move the dot slightly to keep them chasing it
+    document.addEventListener('mousemove', (e) => {
+        dot.style.left = (e.clientX + 5) + 'px';
+        dot.style.top = (e.clientY + 5) + 'px';
+    });
+</script>
 
-        function triggerGlitch() {
-            viewport.classList.add('glitch-active');
-            viewport.style.filter = "brightness(0.3) contrast(2) invert(1)";
-            
-            setTimeout(() => {
-                viewport.classList.remove('glitch-active');
-                viewport.style.filter = "brightness(0.04) contrast(1.2) saturate(0.2)";
-            }, 150);
-        }
-
-        // The "Stare" Effect: If mouse stops moving, brightness slowly increases
-        let idleTimer;
-        document.addEventListener('mousemove', () => {
-            clearTimeout(idleTimer);
-            viewport.style.filter = "brightness(0.04) contrast(1.2) saturate(0.2)";
-            idleTimer = setTimeout(() => {
-                viewport.style.filter = "brightness(0.15) contrast(1.5) saturate(0)";
-                metaText.innerText = "EYE CONTACT ESTABLISHED.";
-            }, 5000);
-        });
-
-    </script>
 </body>
 </html>
