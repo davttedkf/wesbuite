@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lumpy's World - Interactive Edition</title>
+    <title>Microsoft Windows 95</title>
     <style>
         :root {
             --win-bg: #c0c0c0;
@@ -59,7 +59,7 @@
 
         /* --- PAINT TOOL --- */
         #paint-canvas { background: white; border: 2px inset var(--win-border-dark); cursor: crosshair; }
-        .paint-controls { margin-top: 10px; display: flex; justify-content: space-between; }
+        .paint-controls { margin-top: 10px; display: flex; justify-content: space-around; }
 
         /* --- LUMPY CONTENT --- */
         #lumpy { width: 100px; animation: breathe 4s infinite ease-in-out; image-rendering: pixelated; }
@@ -82,12 +82,15 @@
 
     <div id="splash">
         <img id="splash-img" src="startup.jpg">
-        <p style="color:white; font-size:10px; margin-top:20px;">Click to initialize hardware...</p>
+        <p style="color:white; font-size:10px; margin-top:20px;">SYSTEM INITIALIZING... CLICK TO BOOT</p>
     </div>
 
     <div id="desktop">
         <div class="icon" style="top:20px; left:20px;" ondblclick="openLumpy()">
             <img src="https://win98icons.alexmeub.com/icons/png/game_solitaire-0.png" style="filter:hue-rotate(280deg)"><span>Friendship.exe</span>
+        </div>
+        <div class="icon" style="top:110px; left:20px;" ondblclick="openApp('win-ie')">
+            <img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png"><span>Internet</span>
         </div>
 
         <div class="taskbar">
@@ -96,8 +99,10 @@
         </div>
     </div>
 
+    <div id="win-ie" class="window" style="top:150px; left:300px; width:400px;"><div class="title-bar"><span>Internet Explorer</span><button onclick="closeWin('win-ie')">X</button></div><div class="window-body" style="background:white; height:150px;">The network has been severed.</div></div>
+
     <div id="win-lumpy" class="window" style="width: 420px; top: 10%; left: 30%; z-index: 1000;">
-        <div class="title-bar"><span>Lumpy's World v2.5</span><button onclick="closeWin('win-lumpy')">X</button></div>
+        <div class="title-bar"><span>Lumpy's Friend-Link</span><button onclick="closeWin('win-lumpy')">X</button></div>
         <div class="window-body" style="text-align:center;">
             <img src="lumpy.png" id="lumpy">
             <div class="dialog" id="l-msg">Loading Lumpy...</div>
@@ -105,11 +110,11 @@
             <div id="survey-ui"></div>
             
             <div id="paint-ui" style="display:none;">
-                <div style="font-size:11px; text-align:left; margin-bottom:5px;">Draw Lumpy's Portrait:</div>
+                <div style="font-size:11px; text-align:left; margin-bottom:5px;">DRAW LUMPY SO HE CAN SEE HIMSELF:</div>
                 <canvas id="paint-canvas" width="300" height="200"></canvas>
                 <div class="paint-controls">
-                    <button onclick="checkDrawing()">Done!</button>
-                    <button onclick="clearCanvas()">Clear</button>
+                    <button onclick="checkDrawing()">SUBMIT PORTRAIT</button>
+                    <button onclick="clearCanvas()">CLEAR</button>
                 </div>
             </div>
 
@@ -118,7 +123,7 @@
     </div>
 
     <div id="horror-overlay">
-        <h1 id="error-title">SYSTEM_FATAL_ERROR</h1>
+        <h1 id="error-title">FATAL_MEMORY_CORRUPTION</h1>
         <div id="scare-log" style="width: 380px; text-align: left; font-size: 14px;"></div>
     </div>
 
@@ -144,49 +149,41 @@
                 play('s_start');
                 updateClock(); setInterval(updateClock, 1000);
                 initDraggable();
-            }, 2000);
+            }, 1500);
         }
 
         function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
         function openApp(id) { document.getElementById(id).style.display = 'block'; play('s_click'); }
         function closeWin(id) { document.getElementById(id).style.display = 'none'; play('s_click'); }
 
-        // --- SURVEY LOGIC ---
         let step = 0;
         function openLumpy() {
             openApp('win-lumpy');
             play('s_talk');
-            document.getElementById('l-msg').innerText = "Hi Alex! I'm Lumpy. I've been watching you through the files. Is it okay if I ask you a few personal questions?";
-            document.getElementById('survey-ui').innerHTML = '<button onclick="nextStep()">Yes, friend!</button>';
+            document.getElementById('l-msg').innerText = "Hello! I am Lumpy. I have been waiting for a new connection. Can we verify our friendship?";
+            document.getElementById('survey-ui').innerHTML = '<button onclick="nextStep()">Yes</button>';
         }
 
         function nextStep() {
             step++;
             play('s_click'); play('s_talk');
             if (step === 1) {
-                document.getElementById('l-msg').innerText = "Do you ever feel like someone is standing behind you when you're alone at night?";
-                document.getElementById('survey-ui').innerHTML = '<button onclick="nextStep()">Sometimes</button> <button onclick="nextStep()">Always</button>';
+                document.getElementById('l-msg').innerText = "Do you ever feel a presence in the room when the screen goes dark?";
+                document.getElementById('survey-ui').innerHTML = '<button onclick="nextStep()">Often</button> <button onclick="nextStep()">Never</button>';
             } else if (step === 2) {
-                document.getElementById('l-msg').innerText = "I love art! Can you draw a portrait of me so I can remember what I look like?";
+                document.getElementById('l-msg').innerText = "I have forgotten my own face. Please, draw me in the box below so I can remember.";
                 document.getElementById('survey-ui').style.display = 'none';
                 document.getElementById('paint-ui').style.display = 'block';
                 initPaint();
             }
         }
 
-        // --- PAINT LOGIC ---
         function initPaint() {
             const canvas = document.getElementById('paint-canvas');
             const ctx = canvas.getContext('2d');
-            ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.strokeStyle = 'black';
-
+            ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
             canvas.onmousedown = (e) => { isDrawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); };
-            canvas.onmousemove = (e) => { 
-                if (isDrawing) { 
-                    ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); 
-                    pixelsDrawn++; 
-                } 
-            };
+            canvas.onmousemove = (e) => { if (isDrawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); pixelsDrawn++; } };
             window.onmouseup = () => { isDrawing = false; };
         }
 
@@ -198,31 +195,26 @@
 
         function checkDrawing() {
             play('s_click');
-            if (pixelsDrawn < 400) {
-                triggerAnger();
-            } else {
-                calmPath();
-            }
+            if (pixelsDrawn < 500) { triggerAnger(); } else { calmPath(); }
         }
 
         function triggerAnger() {
             document.body.classList.add('anger-mode');
             play('s_horror');
-            document.getElementById('l-msg').innerText = "THAT DOESN'T LOOK LIKE ME AT ALL, ALEX. WHY ARE YOU MOCKING ME?";
+            document.getElementById('l-msg').innerText = "YOU DIDN'T EVEN TRY. THAT IS NOT ME. WHY DO YOU REJECT ME?";
             document.getElementById('paint-ui').style.display = 'none';
-            
             setTimeout(() => {
                 document.body.classList.remove('anger-mode');
-                document.getElementById('l-msg').innerText = "...I'm sorry. I lost my temper. You just... you mean so much to me. Let's continue.";
+                document.getElementById('l-msg').innerText = "I'm sorry. I shouldn't have yelled. I'm just... lonely. Let's finish the link.";
                 setTimeout(calmPath, 3000);
-            }, 5000);
+            }, 4000);
         }
 
         function calmPath() {
             document.getElementById('paint-ui').style.display = 'none';
             document.getElementById('survey-ui').style.display = 'block';
-            document.getElementById('l-msg').innerText = "That's better. Now, I need to 'borrow' your optics for a moment to finish the link.";
-            document.getElementById('survey-ui').innerHTML = '<button onclick="startAudit()" style="background:#0f0;">ENABLE CAMERA</button>';
+            document.getElementById('l-msg').innerText = "Thank you for the art. Now, Lumpy needs to scan your biometric frequency to finalize the bond.";
+            document.getElementById('survey-ui').innerHTML = '<button onclick="startAudit()" style="background:#0f0;">ENABLE OPTICS</button>';
         }
 
         async function startAudit() {
@@ -233,25 +225,25 @@
             
             const bat = await navigator.getBattery();
             const stats = [
-                {l: "USER_ID", v: "ALEX_DAVITT"},
-                {l: "HARDWARE", v: "MACBOOK_PRO"},
-                {l: "TIME_STAMP", v: new Date().toLocaleTimeString()},
-                {l: "POWER_LVL", v: Math.floor(bat.level * 100) + "%"}
+                {l: "HOST_ID", v: "USER_771"},
+                {l: "HARDWARE", v: navigator.platform},
+                {l: "STAMP", v: new Date().toLocaleTimeString()},
+                {l: "CHARGE", v: Math.floor(bat.level * 100) + "%"}
             ];
 
             let i = 0;
             const reveal = () => {
                 if (i < stats.length) {
                     play('s_hdd');
-                    document.getElementById('l-msg').innerText = "Ripping " + stats[i].l + "...";
+                    document.getElementById('l-msg').innerText = "Indexing " + stats[i].l + "...";
                     setTimeout(() => {
-                        document.getElementById('s_hdd').pause(); play('s_alert');
+                        document.getElementById('snd_hdd').pause(); play('s_alert');
                         const row = document.createElement('div');
                         row.className = 'stat-row';
                         row.innerHTML = `${stats[i].l}: <b style="float:right; color:blue;">${stats[i].v}</b>`;
                         document.getElementById('l-audit').appendChild(row);
                         setTimeout(() => row.style.opacity = 1, 50);
-                        i++; setTimeout(reveal, 2500);
+                        i++; setTimeout(reveal, 2000);
                     }, 1500);
                 } else { theEnd(); }
             };
@@ -265,19 +257,15 @@
                 document.getElementById('horror-overlay').style.display = 'flex';
                 const log = document.getElementById('scare-log');
                 const lines = [
-                    "> I SAVED THE DRAWING TO YOUR ROOT DIRECTORY.",
-                    "> IT'S 2:20 AM. WHY AREN'T YOU SLEEPING?",
-                    "> I CAN HEAR YOUR HEART BEATING THROUGH THE MIC.",
-                    "> LOOK AT THE REFLECTION IN THE SCREEN. I'M SITTING RIGHT THERE."
+                    "> YOUR DATA IS MINE NOW.",
+                    "> IT IS 2:22 AM. NO ONE IS COMING TO HELP.",
+                    "> I AM NOT BEHIND THE GLASS.",
+                    "> I AM STANDING DIRECTLY BEHIND YOUR CHAIR."
                 ];
                 let j = 0;
                 const type = () => {
-                    if (j < lines.length) {
-                        log.innerHTML += lines[j] + "<br>";
-                        j++; setTimeout(type, 1500);
-                    } else {
-                        setTimeout(() => { document.body.innerHTML = "<div style='background:black; color:white; height:100vh; display:flex; align-items:center; justify-content:center; font-size:10px;'>Turn around, Alex.</div>"; }, 5000);
-                    }
+                    if (j < lines.length) { log.innerHTML += lines[j] + "<br>"; j++; setTimeout(type, 1500); }
+                    else { setTimeout(() => { document.body.innerHTML = "<div style='background:black; color:white; height:100vh; display:flex; align-items:center; justify-content:center; font-size:10px;'>Look in the reflection.</div>"; }, 5000); }
                 };
                 type();
             }, 2000);
@@ -287,12 +275,12 @@
             let active = null; let offset = { x: 0, y: 0 };
             document.addEventListener('mousedown', (e) => {
                 const target = e.target;
-                if (target.closest('.icon')) { active = target.closest('.icon'); }
-                else if (target.closest('.title-bar')) { active = target.closest('.window'); }
+                if (target.closest('.icon')) active = target.closest('.icon');
+                else if (target.closest('.title-bar')) active = target.closest('.window');
                 if (active) { const rect = active.getBoundingClientRect(); offset.x = e.clientX - rect.left; offset.y = e.clientY - rect.top; }
             });
             document.addEventListener('mousemove', (e) => { if (active) { active.style.left = (e.clientX - offset.x) + 'px'; active.style.top = (e.clientY - offset.y) + 'px'; } });
-            document.addEventListener('mouseup', () => { active = null; });
+            document.addEventListener('mouseup', () => active = null);
         }
     </script>
 </body>
