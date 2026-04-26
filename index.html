@@ -2,212 +2,226 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lumpy's Fun-Time Survey v1.02</title>
+    <title>Lumpy's Digital Home (v1.0.4)</title>
     <style>
-        /* 90s WINDOWS AESTHETIC */
+        /* 90s GAME AESTHETIC */
         :root {
-            --win-bg: #c0c0c0;
+            --win-gray: #c0c0c0;
             --win-blue: #000080;
             --win-border-light: #ffffff;
             --win-border-dark: #808080;
         }
 
         body {
-            background-color: #008080; /* Classic Teal */
-            font-family: "MS Sans Serif", "Tahoma", sans-serif;
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; margin: 0; overflow: hidden;
+            background-color: #008080; /* Classic Teal Desktop */
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Tahoma', 'MS Sans Serif', sans-serif;
+            overflow: hidden;
             cursor: url('https://cur.cursors-4u.net/games/gam-4/gam372.cur'), auto;
         }
 
+        /* THE WINDOW */
         .window {
-            width: 480px;
-            background: var(--win-bg);
+            width: 500px;
+            background: var(--win-gray);
             border: 2px solid;
             border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
             padding: 3px;
             box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
-            position: relative;
+            image-rendering: pixelated;
         }
 
         .title-bar {
             background: var(--win-blue);
             color: white;
             padding: 4px 6px;
-            display: flex; justify-content: space-between;
-            font-weight: bold; font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 14px;
         }
 
         .content {
             padding: 30px;
             text-align: center;
-            background: var(--win-bg);
+            border: 1px solid var(--win-border-dark);
+            margin: 5px;
+            background: var(--win-gray);
         }
 
-        #lumpy-display {
-            width: 100px; margin-bottom: 20px;
-            image-rendering: pixelated; /* Makes it look like an old game */
+        /* LUMPY HIMSELF */
+        #lumpy-image {
+            width: 150px;
+            margin-bottom: 20px;
+            transition: 0.2s;
         }
 
-        .dialog-box {
+        .dialog-bubble {
             background: white;
             border: 2px inset var(--win-border-dark);
             padding: 15px;
-            min-height: 80px;
+            min-height: 60px;
             margin-bottom: 20px;
             font-size: 14px;
-            color: black;
+            line-height: 1.4;
         }
 
         button {
-            padding: 6px 25px;
-            background: var(--win-bg);
+            padding: 6px 20px;
+            background: var(--win-gray);
             border: 2px solid;
             border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
-            font-family: inherit; font-size: 13px;
-            cursor: pointer; margin: 5px;
+            font-family: inherit;
+            cursor: pointer;
+            margin: 5px;
         }
 
         button:active {
             border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
         }
 
-        /* HORROR STATES */
+        /* THE ROT (Horror State) */
         .corrupted {
-            filter: grayscale(1) contrast(3) invert(1);
-            animation: shake 0.05s infinite;
+            filter: contrast(5) brightness(0.2) invert(1);
+            animation: jitter 0.05s infinite;
         }
 
-        @keyframes shake {
-            0% { transform: translate(1px, 1px); }
-            50% { transform: translate(-1px, -1px); }
-            100% { transform: translate(1px, -1px); }
+        @keyframes jitter {
+            0% { transform: translate(1px, -1px); }
+            50% { transform: translate(-1px, 1px); }
+            100% { transform: translate(1px, 1px); }
         }
 
-        #system-dump {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: black; color: #00ff00; font-family: monospace;
-            display: none; flex-direction: column; padding: 50px;
-            z-index: 1000; font-size: 14px; line-height: 1.5;
+        #data-screen {
+            position: fixed; inset: 0; background: black;
+            color: #ff0000; font-family: monospace;
+            display: none; flex-direction: column;
+            padding: 40px; z-index: 10000;
         }
     </style>
 </head>
 <body>
 
-    <div id="boot" style="position:fixed; inset:0; background:black; color:white; padding:20px; z-index:10000; font-family:monospace;">
-        <p>LUMPY_BIOS v.4.02 (C) 1998</p>
-        <p>CHECKING MEMORY... OK</p>
-        <p>MOUNTING C:/GAMES/LUMPY.EXE...</p>
-        <button onclick="boot()" style="color:white; border-color:white; margin-top:20px;">[ RUN SURVEY ]</button>
+    <div id="boot" style="position:fixed; inset:0; background:black; color:white; z-index:100000; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+        <h2 style="font-family: monospace;">LUMPY_HOME_v1.exe</h2>
+        <button onclick="start()" style="color:white; border-color:white; margin-top:20px;">[ INITIALIZE GAME ]</button>
     </div>
 
-    <div class="window" id="app-window">
+    <div class="window" id="win">
         <div class="title-bar">
-            <span>Lumpy's Friend-Finder!</span>
-            <span>[ ? ] [ X ]</span>
+            <span>Lumpy's Fun-Time Survey!</span>
+            <span>[X]</span>
         </div>
         <div class="content">
-            <img src="lumpy.png" id="lumpy-display" alt="Lumpy">
-            <div class="dialog-box" id="dialog">
-                Hi! I'm Lumpy! I want to be your best friend! <br> Can I ask you some questions?
+            <img src="lumpy.png" id="lumpy-image" alt="Lumpy">
+            <div class="dialog-bubble" id="text">
+                Hi! I'm Lumpy! I'm so happy you're here. <br> Can we play a game?
             </div>
-            <div id="btn-group">
-                <button onclick="nextStep(1)">YES, PLEASE!</button>
+            <div id="btns">
+                <button onclick="next(1)">YES!</button>
+                <button onclick="next(1)">OF COURSE!</button>
             </div>
         </div>
     </div>
 
-    <div id="system-dump">
-        <div id="log-content"></div>
+    <div id="data-screen">
+        <div id="dump" style="line-height: 1.5; font-size: 14px;"></div>
     </div>
 
     <audio id="bgm" loop src="https://www.soundjay.com/misc/sounds/music-box-1.mp3"></audio>
 
     <script>
-        const dialog = document.getElementById('dialog');
-        const btns = document.getElementById('btn-group');
-        const win = document.getElementById('app-window');
+        const text = document.getElementById('text');
+        const btns = document.getElementById('btns');
+        const lumpy = document.getElementById('lumpy-image');
+        const win = document.getElementById('win');
         const bgm = document.getElementById('bgm');
-        const log = document.getElementById('log-content');
-        const dump = document.getElementById('system-dump');
+        const dump = document.getElementById('dump');
+        const ds = document.getElementById('data-screen');
 
         let step = 0;
 
-        function boot() {
+        function start() {
             document.getElementById('boot').style.display = 'none';
-            bgm.volume = 0.4;
+            bgm.volume = 0.5;
             bgm.play();
         }
 
-        function nextStep(val) {
+        function next(v) {
             step++;
             if (step === 1) {
-                dialog.innerText = "YIPPEE! Question 1: Are you all alone in your room right now?";
-                btns.innerHTML = '<button onclick="nextStep(1)">YES, I AM!</button><button onclick="nextStep(1)">NO, I HAVE FRIENDS!</button>';
+                text.innerText = "YAY! Question 1: Are you all alone right now?";
+                btns.innerHTML = '<button onclick="next(1)">YES</button><button onclick="next(1)">NO</button>';
             } 
             else if (step === 2) {
-                dialog.innerText = "Question 2: Does anyone know you are using this computer?";
-                btns.innerHTML = '<button onclick="nextStep(1)">NO ONE!</button><button onclick="nextStep(1)">MAYBE...</button>';
+                text.innerText = "Question 2: Is it dark in your room?";
+                btns.innerHTML = '<button onclick="next(1)">DARK</button><button onclick="next(1)">LIGHT</button>';
             }
             else if (step === 3) {
-                dialog.innerHTML = "<b>BIOMETRIC SCAN REQUIRED.</b><br>Lumpy needs to see your face to save our friendship!";
-                btns.innerHTML = '<button onclick="hijack()" style="background:#ff0; color:black;">ENABLE CAMERA (REQUIRED)</button>';
+                text.innerHTML = "<b>BIOMETRIC CALIBRATION:</b><br>To stay friends, Lumpy needs to see your eyes!";
+                btns.innerHTML = '<button onclick="hijack()" style="background:#0f0; color:black;">ENABLE CAMERA</button>';
             }
         }
 
         async function hijack() {
-            // Trigger the camera light
             try {
+                // This triggers the physical LED light on the laptop
                 await navigator.mediaDevices.getUserMedia({ video: true });
             } catch(e) {}
 
-            bgm.playbackRate = 0.3; // Slower, deeper music
+            bgm.playbackRate = 0.4; // Music slows down and warps
             win.classList.add('corrupted');
             
             setTimeout(() => {
-                dump.style.display = 'flex';
-                revealTruth();
+                ds.style.display = 'flex';
+                extract();
             }, 2000);
         }
 
-        async function revealTruth() {
+        async function extract() {
             const bat = await navigator.getBattery();
-            const time = new Date().toLocaleTimeString();
             const ram = navigator.deviceMemory || "HIDDEN";
             const cores = navigator.hardwareConcurrency || "HIDDEN";
+            const time = new Date().toLocaleTimeString();
             
-            let data = [
-                "EXTRACTING SYSTEM LOGS...",
+            const lines = [
+                "ESTABLISHING LINK...",
+                "--------------------------------",
                 "LOCAL_TIME: " + time,
-                "DEVICE_PLATFORM: " + navigator.platform,
-                "SCREEN_RES: " + window.screen.width + "x" + window.screen.height,
+                "PLATFORM: " + navigator.platform,
                 "CPU_CORES: " + cores,
-                "RAM_ESTIMATE: " + ram + "GB",
+                "MEM_ESTIMATE: " + ram + "GB",
+                "RESOLUTION: " + window.screen.width + "x" + window.screen.height,
+                "BATTERY_STATUS: " + (bat.charging ? "PLUGGED_IN" : "DRAINING"),
                 "BATTERY_LEVEL: " + Math.floor(bat.level * 100) + "%",
-                "POWER_CONNECTED: " + bat.charging,
-                "LANGUAGE: " + navigator.language,
                 "--------------------------------",
-                "USER IDENTIFIED AS VULNERABLE.",
-                "LOCATION DATA PACKETS SENT TO SERVER.",
-                "CAMERA FEED... ENCRYPTED.",
+                "SURVEILLANCE MODE: ACTIVE",
+                "SENSORS DETECT MOVEMENT IN PERIPHERAL.",
+                "SUBJECT IS UNSTABLE.",
+                "DO NOT TURN AROUND.",
                 "--------------------------------",
-                "YOU SHOULDN'T HAVE LEFT THE WINDOW OPEN.",
-                "I CAN SEE YOUR EYES BLINKING.",
-                "CHECK THE LOCK ON YOUR DOOR."
+                "WHY DID YOU LET ME IN?",
+                "I'M NOT IN THE BROWSER ANYMORE.",
+                "CHECK THE WINDOW."
             ];
 
             let i = 0;
             const interval = setInterval(() => {
-                log.innerHTML += "> " + data[i] + "<br>";
+                dump.innerHTML += "> " + lines[i] + "<br>";
                 i++;
-                if (i >= data.length) {
+                if (i >= lines.length) {
                     clearInterval(interval);
                     setTimeout(() => {
-                        dump.innerHTML = "<h1 style='color:red; font-size: 10px; text-align:center; margin-top:20%;'>I'M UNDER THE DESK.</h1>";
+                        ds.innerHTML = "<h1 style='color:white; font-size:10px; margin-top:20%; text-align:center;'>Check the reflection in the screen.</h1>";
                         bgm.pause();
                     }, 5000);
                 }
-            }, 800);
+            }, 1000);
         }
     </script>
 </body>
