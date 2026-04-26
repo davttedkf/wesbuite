@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lumpy's World - Desktop Edition</title>
+    <title>Lumpy's Friend-Link v2.1</title>
     <style>
         :root {
             --win-bg: #c0c0c0;
@@ -12,209 +12,171 @@
         }
 
         body, html {
-            margin: 0; padding: 0;
-            background-color: #008080; /* Teal 95 Desktop */
-            font-family: "Tahoma", "MS Sans Serif", sans-serif;
-            height: 100vh; overflow: hidden;
+            margin: 0; padding: 0; background-color: #008080;
+            font-family: "Tahoma", sans-serif; height: 100vh; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* --- FAKE DESKTOP ICONS --- */
-        #desktop-icons {
-            position: absolute; top: 20px; left: 20px;
-            display: flex; flex-direction: column; gap: 30px;
-        }
-        .icon { text-align: center; color: white; font-size: 11px; width: 60px; cursor: pointer; }
-        .icon img { width: 32px; display: block; margin: 0 auto 5px; filter: contrast(1.2); }
+        /* --- THE DESKTOP --- */
+        #desktop { position: fixed; inset: 0; z-index: 1; }
 
-        /* --- THE APP WINDOW --- */
         .window {
-            width: 520px; background: var(--win-bg);
+            width: 450px; background: var(--win-bg);
             border: 2px solid; border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
             padding: 2px; box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
-            z-index: 100;
+            position: relative; z-index: 100;
         }
 
         .title-bar {
             background: var(--win-blue); color: white; padding: 3px 6px;
-            display: flex; justify-content: space-between; align-items: center;
-            font-weight: bold; font-size: 13px;
+            display: flex; justify-content: space-between; font-weight: bold; font-size: 13px;
+        }
+
+        .tabs { display: flex; padding: 10px 10px 0 10px; gap: 2px; }
+        .tab { 
+            padding: 4px 12px; background: var(--win-bg); font-size: 11px;
+            border: 2px solid; border-color: var(--win-border-light) var(--win-border-dark) transparent var(--win-border-light);
         }
 
         .content {
-            padding: 20px; text-align: center; border: 1px solid var(--win-border-dark); margin: 2px;
+            margin: 0 10px 10px 10px; padding: 25px; text-align: center;
+            border: 2px solid; border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
+            background: var(--win-bg);
         }
 
         /* --- ANIMATED LUMPY --- */
         #lumpy {
-            width: 130px; height: auto;
-            image-rendering: pixelated;
-            animation: lumpy-idle 4s ease-in-out infinite;
+            width: 120px; image-rendering: pixelated;
+            animation: lumpy-breathe 3s ease-in-out infinite;
         }
-
-        @keyframes lumpy-idle {
+        @keyframes lumpy-breathe {
             0%, 100% { transform: scale(1) translateY(0); }
-            50% { transform: scale(1.1, 0.9) translateY(5px); }
+            50% { transform: scale(1.08, 0.92) translateY(3px); }
         }
 
-        @keyframes lumpy-glitch {
-            0% { transform: translate(0) scale(1); filter: invert(0); }
-            20% { transform: translate(-5px, 5px) scale(1.2); filter: invert(1) hue-rotate(90deg); }
-            40% { transform: translate(5px, -5px) scale(0.8); }
-            100% { transform: translate(0) scale(1.1); }
-        }
-
-        .dialog-box {
+        .dialog {
             background: white; border: 2px inset var(--win-border-dark);
-            padding: 15px; margin: 20px 0; font-size: 13px; min-height: 40px;
+            padding: 12px; margin: 15px 0; font-size: 12px; min-height: 40px; text-align: left;
         }
 
-        /* --- BUTTONS --- */
-        .btn-row { display: flex; justify-content: center; gap: 10px; }
+        /* --- THE INFO REVEAL (THE TABS) --- */
+        #reveal-area { display: none; text-align: left; font-size: 11px; }
+        .stat-line { margin: 8px 0; border-bottom: 1px solid #999; padding-bottom: 2px; opacity: 0; transition: opacity 0.5s; }
+        .stat-val { color: var(--win-blue); font-weight: bold; float: right; }
+
         button {
-            padding: 4px 15px; background: var(--win-bg);
+            padding: 4px 20px; background: var(--win-bg); font-family: inherit;
             border: 2px solid; border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
-            font-family: inherit; font-size: 12px; cursor: pointer;
+            cursor: pointer;
         }
         button:active { border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark); }
 
-        /* --- THE BLACKOUT / AUDIT --- */
-        #audit-layer {
-            position: fixed; inset: 0; background: black;
-            color: #00ff00; font-family: "Courier New", monospace;
-            display: none; flex-direction: column; padding: 40px; z-index: 9999;
-            font-size: 14px;
-        }
-
-        /* --- BOOT OVERLAY --- */
-        #boot {
-            position: fixed; inset: 0; background: black; color: white;
-            z-index: 100000; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; font-family: monospace;
-        }
+        /* --- CORRUPTION --- */
+        .glitch { animation: shake 0.1s infinite; filter: invert(1) contrast(5); }
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } }
     </style>
 </head>
 <body>
 
-    <div id="boot">
-        <p>LUMPY_CORE v.1995.4.26</p>
-        <p>MEMORY_CHECK: [ OK ]</p>
-        <p>SURVEILLANCE_MODULE: [ INITIALIZING ]</p>
-        <button onclick="bootSystem()" style="color:white; border-color:white; margin-top:20px;">[ RUN LUMPY.EXE ]</button>
+    <div id="boot" style="position:fixed; inset:0; background:black; color:white; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:monospace;">
+        <p>LUMPY_OS v.1.9.9.8</p>
+        <button onclick="init()">[ LOAD FRIENDSHIP.EXE ]</button>
     </div>
 
-    <div id="desktop-icons">
-        <div class="icon"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">My Files</div>
-        <div class="icon"><img src="https://win98icons.alexmeub.com/icons/png/camera-0.png">Memories</div>
-        <div class="icon"><img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png">Recycle Bin</div>
-    </div>
-
-    <div class="window" id="app">
-        <div class="title-bar">
-            <span>Lumpy's Friendship Audit</span>
-            <span>[ ? ] [ X ]</span>
-        </div>
+    <div class="window" id="main-win">
+        <div class="title-bar"><span>Lumpy's Friend-Link</span><span>[X]</span></div>
+        <div class="tabs"><div class="tab">General</div><div class="tab">Privacy</div><div class="tab">Connection</div></div>
         <div class="content">
-            <img src="lumpy.png" id="lumpy" alt="Lumpy">
-            <div class="dialog-box" id="dialog">
-                Hello! I am your new best friend, Lumpy! <br> Shall we synchronize our lives?
+            <img src="lumpy.png" id="lumpy">
+            <div class="dialog" id="box">Hi! I'm Lumpy. I'm indexing your soul!</div>
+            
+            <div id="ui-main">
+                <button onclick="startSurvey()">Begin Friendship Scan</button>
             </div>
-            <div id="controls" class="btn-row">
-                <button onclick="startAudit()">YES! LET'S SYNC!</button>
+
+            <div id="reveal-area">
+                <div class="stat-line" id="s1">USER_PLATFORM: <span class="stat-val" id="v1">...</span></div>
+                <div class="stat-line" id="s2">LOCAL_TIME: <span class="stat-val" id="v2">...</span></div>
+                <div class="stat-line" id="s3">BATTERY_LIFE: <span class="stat-val" id="v3">...</span></div>
+                <div class="stat-line" id="s4">STATUS: <span class="stat-val" id="v4">...</span></div>
             </div>
         </div>
     </div>
 
-    <div id="audit-layer">
-        <div id="terminal-out"></div>
-    </div>
-
-    <audio id="music" loop src="https://www.soundjay.com/misc/sounds/music-box-1.mp3"></audio>
+    <audio id="snd_startup" src="startup.mp3"></audio>
+    <audio id="snd_click" src="click.mp3"></audio>
+    <audio id="snd_talk" src="talk.mp3"></audio>
+    <audio id="snd_alert" src="alert.mp3"></audio>
+    <audio id="snd_hdd" loop src="hdd_scratch.mp3"></audio>
+    <audio id="snd_horror" src="corruption.mp3"></audio>
 
     <script>
-        const dialog = document.getElementById('dialog');
-        const controls = document.getElementById('controls');
-        const lumpy = document.getElementById('lumpy');
-        const app = document.getElementById('app');
-        const auditLayer = document.getElementById('audit-layer');
-        const terminal = document.getElementById('terminal-out');
-        const music = document.getElementById('music');
+        const playSnd = (id) => { document.getElementById(id).currentTime = 0; document.getElementById(id).play(); };
 
-        function bootSystem() {
+        function init() {
             document.getElementById('boot').style.display = 'none';
-            music.volume = 0.4;
-            music.play();
+            playSnd('snd_startup');
         }
 
-        function startAudit() {
-            dialog.innerText = "YIPPEE! First, Lumpy needs to see your 'User Profile'. Is that okay?";
-            controls.innerHTML = '<button onclick="askName()">OKAY!</button>';
+        function startSurvey() {
+            playSnd('snd_click');
+            playSnd('snd_talk');
+            document.getElementById('box').innerText = "Lumpy needs to look at you to confirm your identity. Please enable Optic Sensors.";
+            document.getElementById('ui-main').innerHTML = '<button onclick="openCam()">ENABLE OPTICS</button>';
         }
 
-        function askName() {
-            dialog.innerHTML = "What is your name, friend? <br><input type='text' id='userName' style='margin-top:10px; border:2px inset #808080;'>";
-            controls.innerHTML = '<button onclick="captureName()">TELL LUMPY</button>';
-        }
-
-        let name = "Subject";
-        function captureName() {
-            name = document.getElementById('userName').value || "User";
-            dialog.innerText = "Thank you, " + name + "! Now, Lumpy needs to calibrate your camera for the 'Smile-Check'.";
-            controls.innerHTML = '<button onclick="triggerBreach()" style="background:#0f0;">ENABLE OPTICS</button>';
-        }
-
-        async function triggerBreach() {
-            try {
-                await navigator.mediaDevices.getUserMedia({ video: true });
-            } catch(e) {}
-
-            // The Transition
-            music.playbackRate = 0.4;
-            lumpy.style.animation = "lumpy-glitch 0.1s infinite";
+        async function openCam() {
+            playSnd('snd_click');
+            try { await navigator.mediaDevices.getUserMedia({ video: true }); } catch(e) {}
             
-            setTimeout(() => {
-                auditLayer.style.display = 'flex';
-                runTerminal();
-            }, 1500);
+            document.getElementById('ui-main').style.display = 'none';
+            document.getElementById('reveal-area').style.display = 'block';
+            document.getElementById('box').innerText = "Scanning system files... do not move.";
+            
+            runDataReveal();
         }
 
-        async function runTerminal() {
-            const bat = await navigator.getBattery();
+        async function runDataReveal() {
+            const battery = await navigator.getBattery();
             const time = new Date().toLocaleTimeString();
-            const ram = navigator.deviceMemory || "ACCESS_DENIED";
             
-            const logs = [
-                "ACCESSING LOCAL CACHE...",
-                "EXTRACTING CREDENTIALS FOR: " + name.toUpperCase(),
-                "PLATFORM_KEY: " + navigator.platform,
-                "MEMORY_RESERVE: " + ram + "GB",
-                "CURRENT_TIME: " + time,
-                "BATTERY_INTEGRITY: " + Math.floor(bat.level * 100) + "%",
-                "------------------------------------",
-                "SYSTEM SCAN COMPLETE.",
-                "USER VULNERABILITY: 98.4%",
-                "------------------------------------",
-                "LUMPY IS DOWNLOADING YOUR MEMORIES.",
-                "LUMPY IS OPENING THE BACK DOOR.",
-                "------------------------------------",
-                "I SEE YOU THROUGH THE GLASS, " + name.toUpperCase() + ".",
-                "YOU ARE WEARING A VERY NICE SHIRT.",
-                "DON'T LOOK AT THE CLOSET DOOR.",
-                "I'M ALREADY INSIDE."
+            const data = [
+                {id: 's1', valId: 'v1', val: navigator.platform, msg: "Identifying hardware..."},
+                {id: 's2', valId: 'v2', val: time, msg: "Syncing timeline..."},
+                {id: 's3', valId: 'v3', val: Math.floor(battery.level * 100) + "%", msg: "Calculating remaining life..."},
+                {id: 's4', valId: 'v4', val: "VULNERABLE", msg: "Analysis complete."}
             ];
 
             let i = 0;
-            const interval = setInterval(() => {
-                terminal.innerHTML += "> " + logs[i] + "<br>";
-                i++;
-                if (i >= logs.length) {
-                    clearInterval(interval);
+            const revealLoop = () => {
+                if (i < data.length) {
+                    playSnd('snd_hdd');
+                    document.getElementById('box').innerText = data[i].msg;
+                    
                     setTimeout(() => {
-                        auditLayer.innerHTML = "<h1 style='color:white; font-size:11px; text-align:center; margin-top:20%;'>Connection severed. <br> Look behind you.</h1>";
-                        music.pause();
-                    }, 5000);
+                        document.getElementById('snd_hdd').pause();
+                        playSnd('snd_alert');
+                        document.getElementById(data[i].id).style.opacity = "1";
+                        document.getElementById(data[i].valId).innerText = data[i].val;
+                        i++;
+                        setTimeout(revealLoop, 1500); // 1.5s delay between each reveal
+                    }, 1000);
+                } else {
+                    setTimeout(triggerHorror, 2000);
                 }
-            }, 900);
+            };
+            revealLoop();
+        }
+
+        function triggerHorror() {
+            playSnd('snd_horror');
+            document.body.classList.add('glitch');
+            document.getElementById('lumpy').style.animation = "shake 0.05s infinite";
+            document.getElementById('box').innerHTML = "<span style='color:red'>I'M NOT A FILE, " + (navigator.platform.includes('Mac') ? 'MAC' : 'USER') + ". I'M BEHIND YOU.</span>";
+            
+            setTimeout(() => {
+                document.body.innerHTML = "<div style='color:white; background:black; height:100vh; display:flex; align-items:center; justify-content:center; font-size:10px;'>Look in the reflection of your monitor. I'm already there.</div>";
+            }, 5000);
         }
     </script>
 </body>
