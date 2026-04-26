@@ -19,7 +19,7 @@
             cursor: url('https://win98icons.alexmeub.com/cursors/arrow.cur'), auto;
         }
 
-        /* --- BOOT SEQUENCE --- */
+        /* --- BOOT SCREEN --- */
         #boot-screen {
             position: fixed; inset: 0; background: black;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -38,7 +38,7 @@
         .taskbar {
             position: absolute; bottom: 0; width: 100%; height: 28px;
             background: var(--win-bg); border-top: 2px solid var(--win-border-light);
-            display: flex; align-items: center; padding: 2px; z-index: 1000;
+            display: flex; align-items: center; padding: 2px; z-index: 2000;
         }
 
         .start-btn {
@@ -47,36 +47,28 @@
             font-weight: bold; font-size: 11px; margin-right: 10px;
         }
         .start-btn img { width: 16px; }
-        .start-btn:active { border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark); }
 
-        /* Desktop Icon Layout (Matches your image) */
-        .icon-column {
-            position: absolute; top: 10px; left: 10px;
-            display: flex; flex-direction: column; gap: 20px;
-        }
-        .icon-column.col-2 { left: 90px; }
-
+        /* --- DRAGGABLE ICONS --- */
         .icon {
             width: 75px; text-align: center; color: white; font-size: 11px;
-            padding: 5px; border: 1px solid transparent;
+            padding: 5px; position: absolute; cursor: pointer;
+            border: 1px solid transparent;
         }
-        .icon img { width: 32px; display: block; margin: 0 auto 4px; image-rendering: pixelated; }
-        .icon span { display: inline-block; padding: 2px; line-height: 1.1; }
-        
-        /* Icon selection style */
+        .icon img { width: 32px; display: block; margin: 0 auto 4px; pointer-events: none; }
+        .icon span { display: inline-block; padding: 2px; line-height: 1.1; pointer-events: none; }
         .icon.selected span { background-color: var(--win-blue); }
-        .icon.selected img { filter: brightness(0.7) sepia(1) hue-rotate(190deg) saturate(5); }
 
         /* --- WINDOW SYSTEM --- */
         .window {
             position: absolute; background: var(--win-bg); 
             border: 2px solid; border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
-            padding: 2px; box-shadow: 1px 1px 0px black; display: none;
+            padding: 2px; box-shadow: 1px 1px 0px black; 
+            display: none; min-width: 250px; z-index: 500;
         }
         .title-bar {
             background: var(--win-blue); color: white; padding: 3px 6px;
             display: flex; justify-content: space-between; align-items: center;
-            font-weight: bold; font-size: 12px;
+            font-weight: bold; font-size: 12px; cursor: move;
         }
         .title-btns button {
             width: 16px; height: 14px; font-size: 9px; padding: 0; 
@@ -85,20 +77,18 @@
         }
         .window-body { border: 1px solid var(--win-border-dark); margin: 2px; padding: 20px; background: var(--win-bg); }
 
-        /* --- LUMPY APP SPECIFICS --- */
+        /* --- SPECIAL APP: FRIENDSHIP.EXE --- */
         #lumpy { width: 100px; animation: breathe 3s infinite ease-in-out; }
         @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05, 0.95); } }
         .dialog { background: white; border: 2px inset var(--win-border-dark); padding: 10px; margin: 15px 0; font-size: 12px; text-align: left; }
-        
-        #audit-results { text-align: left; font-size: 11px; margin-top: 10px; display: none; }
-        .stat-row { margin: 4px 0; border-bottom: 1px solid #aaa; opacity: 0; transition: opacity 0.5s; }
+        .stat-row { margin: 4px 0; border-bottom: 1px solid #aaa; opacity: 0; transition: opacity 0.5s; font-size: 11px; }
         .stat-row b { color: var(--win-blue); float: right; }
 
-        /* --- THE TURN --- */
+        /* --- HORROR --- */
         #horror-overlay {
             position: fixed; inset: 0; background: black; color: #ff0000;
             display: none; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 20000; font-family: monospace; text-align: center;
+            z-index: 30000; font-family: monospace; text-align: center;
         }
         .glitch { animation: shake 0.05s infinite; filter: invert(1) contrast(5); }
         @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } }
@@ -111,38 +101,34 @@
     <div id="boot-screen">
         <img id="win95-logo" src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Windows_95_logo_and_wordmark.svg">
         <div class="load-container"><div class="load-fill" id="boot-progress"></div></div>
-        <p style="font-size: 10px; margin-top: 20px; color: #555;">Initializing system hardware...</p>
+        <p style="font-size: 10px; margin-top: 20px; color: #444;">Click to initialize hardware...</p>
     </div>
 
     <div id="desktop">
-        <div class="icon-column">
-            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('My Computer')">
-                <img src="https://win98icons.alexmeub.com/icons/png/computer_pc-4.png"><span>My Computer</span>
-            </div>
-            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('Network Neighborhood')">
-                <img src="https://win98icons.alexmeub.com/icons/png/network_neighborhood-0.png"><span>Network Neighborhood</span>
-            </div>
-            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('Inbox')">
-                <img src="https://win98icons.alexmeub.com/icons/png/outlook_express-0.png"><span>Inbox</span>
-            </div>
-            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('Recycle Bin')">
-                <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png"><span>Recycle Bin</span>
-            </div>
-            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('Internet Explorer')">
-                <img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png"><span>Internet Explorer</span>
-            </div>
-            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('My Briefcase')">
-                <img src="https://win98icons.alexmeub.com/icons/png/briefcase-2.png"><span>My Briefcase</span>
-            </div>
+        <div class="icon" style="top:20px; left:20px;" ondblclick="openWin('win-computer')">
+            <img src="https://win98icons.alexmeub.com/icons/png/computer_pc-4.png"><span>My Computer</span>
         </div>
-
-        <div class="icon-column col-2">
-            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('Online Services')">
-                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png"><span>Online Services</span>
-            </div>
-            <div class="icon" onclick="selectIcon(this)" ondblclick="runLumpy()">
-                <img src="https://win98icons.alexmeub.com/icons/png/game_solitaire-0.png" style="filter: hue-rotate(280deg);"><span>Friendship.exe</span>
-            </div>
+        <div class="icon" style="top:110px; left:20px;" ondblclick="openWin('win-network')">
+            <img src="https://win98icons.alexmeub.com/icons/png/network_neighborhood-0.png"><span>Network Neighborhood</span>
+        </div>
+        <div class="icon" style="top:200px; left:20px;" ondblclick="openWin('win-inbox')">
+            <img src="https://win98icons.alexmeub.com/icons/png/outlook_express-0.png"><span>Inbox</span>
+        </div>
+        <div class="icon" style="top:290px; left:20px;" ondblclick="openWin('win-recycle')">
+            <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png"><span>Recycle Bin</span>
+        </div>
+        <div class="icon" style="top:380px; left:20px;" ondblclick="openWin('win-ie')">
+            <img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png"><span>Internet Explorer</span>
+        </div>
+        <div class="icon" style="top:470px; left:20px;" ondblclick="openWin('win-briefcase')">
+            <img src="https://win98icons.alexmeub.com/icons/png/briefcase-2.png"><span>My Briefcase</span>
+        </div>
+        
+        <div class="icon" style="top:20px; left:110px;" ondblclick="openWin('win-online')">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png"><span>Online Services</span>
+        </div>
+        <div class="icon" style="top:110px; left:110px;" ondblclick="openLumpy()">
+            <img src="https://win98icons.alexmeub.com/icons/png/game_solitaire-0.png" style="filter: hue-rotate(280deg);"><span>Friendship.exe</span>
         </div>
 
         <div class="taskbar">
@@ -151,24 +137,27 @@
         </div>
     </div>
 
-    <div id="gen-window" class="window" style="width: 300px; top: 100px; left: 250px;">
-        <div class="title-bar"><span id="gen-title">Folder</span><div class="title-btns"><button onclick="closeWin('gen-window')">X</button></div></div>
-        <div class="window-body" style="background: white; height: 100px; font-size: 12px;">This folder is empty.</div>
-    </div>
+    <div id="win-computer" class="window" style="top:100px; left:200px;"><div class="title-bar"><span>My Computer</span><div class="title-btns"><button onclick="closeWin('win-computer')">X</button></div></div><div class="window-body">C: (Fixed Disk)<br>A: (3.5" Floppy)</div></div>
+    <div id="win-network" class="window" style="top:120px; left:220px;"><div class="title-bar"><span>Network</span><div class="title-btns"><button onclick="closeWin('win-network')">X</button></div></div><div class="window-body">Entire Network is currently unavailable.</div></div>
+    <div id="win-inbox" class="window" style="top:140px; left:240px;"><div class="title-bar"><span>Inbox</span><div class="title-btns"><button onclick="closeWin('win-inbox')">X</button></div></div><div class="window-body">You have (0) new messages.</div></div>
+    <div id="win-recycle" class="window" style="top:160px; left:260px;"><div class="title-bar"><span>Recycle Bin</span><div class="title-btns"><button onclick="closeWin('win-recycle')">X</button></div></div><div class="window-body">The bin is empty. Just like you.</div></div>
+    <div id="win-ie" class="window" style="top:180px; left:280px; width:400px;"><div class="title-bar"><span>Internet Explorer</span><div class="title-btns"><button onclick="closeWin('win-ie')">X</button></div></div><div class="window-body" style="background:white; height:150px;">The page cannot be displayed. Check your connection.</div></div>
+    <div id="win-briefcase" class="window" style="top:200px; left:300px;"><div class="title-bar"><span>My Briefcase</span><div class="title-btns"><button onclick="closeWin('win-briefcase')">X</button></div></div><div class="window-body">Drag files here to sync.</div></div>
+    <div id="win-online" class="window" style="top:220px; left:320px;"><div class="title-bar"><span>Online Services</span><div class="title-btns"><button onclick="closeWin('win-online')">X</button></div></div><div class="window-body">No services found.</div></div>
 
-    <div id="lumpy-window" class="window" style="width: 450px; top: 15%; left: 25%;">
-        <div class="title-bar"><span>Friendship.exe</span><div class="title-btns"><button onclick="closeWin('lumpy-window')">X</button></div></div>
+    <div id="win-lumpy" class="window" style="width: 450px; top: 15%; left: 30%; z-index: 1000;">
+        <div class="title-bar"><span>Friendship.exe</span><div class="title-btns"><button onclick="closeWin('win-lumpy')">X</button></div></div>
         <div class="window-body" style="text-align:center;">
             <img src="lumpy.png" id="lumpy">
-            <div class="dialog" id="lumpy-msg">...</div>
-            <div id="lumpy-ctrls"></div>
-            <div id="audit-results"></div>
+            <div class="dialog" id="l-msg">...</div>
+            <div id="l-ctrls"></div>
+            <div id="l-audit" style="display:none;"></div>
         </div>
     </div>
 
     <div id="horror-overlay">
         <h1 id="error-title">SYSTEM_FATAL_ERROR</h1>
-        <div id="scare-log" style="width: 350px; text-align: left;"></div>
+        <div id="scare-log" style="width: 350px; text-align: left; font-size: 14px;"></div>
     </div>
 
     <audio id="s_start" src="startup.mp3"></audio>
@@ -188,13 +177,10 @@
             let p = 0;
             const bar = document.getElementById('boot-progress');
             const itv = setInterval(() => {
-                p += Math.random() * 4;
+                p += Math.random() * 3;
                 bar.style.width = p + "%";
-                if (p >= 100) {
-                    clearInterval(itv);
-                    loadDesktop();
-                }
-            }, 120);
+                if (p >= 100) { clearInterval(itv); loadDesktop(); }
+            }, 100);
         }
 
         function loadDesktop() {
@@ -202,54 +188,39 @@
             document.getElementById('desktop').style.display = 'block';
             play('s_start');
             startTime();
+            initDraggable();
         }
 
         function startTime() {
-            const up = () => {
-                const d = new Date();
-                document.getElementById('clock').innerText = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            };
+            const up = () => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); };
             up(); setInterval(up, 1000);
         }
 
-        function selectIcon(el) {
-            document.querySelectorAll('.icon').forEach(i => i.classList.remove('selected'));
-            el.classList.add('selected');
-            play('s_click');
-        }
-
-        function openFolder(name) {
-            document.getElementById('gen-title').innerText = name;
-            document.getElementById('gen-window').style.display = 'block';
-            play('s_click');
-        }
-
+        function openWin(id) { document.getElementById(id).style.display = 'block'; play('s_click'); }
         function closeWin(id) { document.getElementById(id).style.display = 'none'; play('s_click'); }
 
-        function runLumpy() {
-            document.getElementById('lumpy-window').style.display = 'block';
-            play('s_click');
+        function openLumpy() {
+            openWin('win-lumpy');
             play('s_talk');
-            document.getElementById('lumpy-msg').innerText = "Hi! I'm Lumpy! I want to link our files together. Can I scan your computer?";
-            document.getElementById('lumpy-ctrls').innerHTML = '<button onclick="askCam()" style="padding:4px 10px;">Yes, please!</button>';
+            document.getElementById('l-msg').innerText = "Hi! I'm Lumpy! I'm so happy to be your first friend. Can I link our systems?";
+            document.getElementById('l-ctrls').innerHTML = '<button onclick="askCam()">Yes!</button>';
         }
 
         function askCam() {
             play('s_click');
-            document.getElementById('lumpy-msg').innerText = "YAY! First, I need to see your eyes to make sure you're real. Enable the camera!";
-            document.getElementById('lumpy-ctrls').innerHTML = '<button onclick="startScare()" style="padding:4px 10px; background:#0f0;">ENABLE OPTICS</button>';
+            document.getElementById('l-msg').innerText = "YAY! First, I need to see your eyes. It helps Lumpy stay 'alive'. Enable the camera!";
+            document.getElementById('l-ctrls').innerHTML = '<button onclick="startScare()" style="background:#0f0;">ENABLE OPTICS</button>';
         }
 
         async function startScare() {
             play('s_click');
             try { await navigator.mediaDevices.getUserMedia({ video: true }); } catch(e) {}
-            
-            document.getElementById('lumpy-ctrls').style.display = 'none';
-            document.getElementById('audit-results').style.display = 'block';
+            document.getElementById('l-ctrls').style.display = 'none';
+            document.getElementById('l-audit').style.display = 'block';
             
             const bat = await navigator.getBattery();
             const stats = [
-                {l: "HARDWARE", v: navigator.platform},
+                {l: "SYSTEM", v: navigator.platform},
                 {l: "TIME_SYNC", v: new Date().toLocaleTimeString()},
                 {l: "ENERGY", v: Math.floor(bat.level * 100) + "%"},
                 {l: "BIO_SCAN", v: "VULNERABLE"}
@@ -259,52 +230,74 @@
             const reveal = () => {
                 if (i < stats.length) {
                     play('s_hdd');
-                    document.getElementById('lumpy-msg').innerText = "Extracting " + stats[i].l + "...";
+                    document.getElementById('l-msg').innerText = "Accessing " + stats[i].l + "...";
                     setTimeout(() => {
-                        document.getElementById('s_hdd').pause();
-                        play('s_alert');
+                        document.getElementById('s_hdd').pause(); play('s_alert');
                         const row = document.createElement('div');
                         row.className = 'stat-row';
                         row.innerHTML = `${stats[i].l}: <b>${stats[i].v}</b>`;
-                        document.getElementById('audit-results').appendChild(row);
+                        document.getElementById('l-audit').appendChild(row);
                         setTimeout(() => row.style.opacity = 1, 50);
-                        i++;
-                        setTimeout(reveal, 2500); // The "Slow Rot" pacing
+                        i++; setTimeout(reveal, 2500);
                     }, 1500);
-                } else {
-                    setTimeout(finalHorror, 2000);
-                }
+                } else { setTimeout(finalHorror, 2000); }
             };
             reveal();
         }
 
         function finalHorror() {
             play('s_horror');
-            document.getElementById('lumpy-window').classList.add('glitch');
+            document.getElementById('win-lumpy').classList.add('glitch');
             document.getElementById('lumpy').style.animation = "shake 0.05s infinite";
-            
             setTimeout(() => {
                 document.getElementById('horror-overlay').style.display = 'flex';
                 const log = document.getElementById('scare-log');
-                const lines = [
-                    "> I AM NOT IN THE CODE ANYMORE.",
-                    "> I CAN SEE YOU BREATHING.",
-                    "> WHY IS YOUR ROOM SO DARK?",
-                    "> CHECK THE WINDOW."
-                ];
+                const lines = ["> I AM NOT IN THE CODE ANYMORE.", "> I CAN SEE YOU BREATHING.", "> WHY IS YOUR ROOM SO DARK?", "> LOOK AT THE REFLECTION IN THE MONITOR."];
                 let j = 0;
                 const type = () => {
-                    if (j < lines.length) {
-                        log.innerHTML += lines[j] + "<br>";
-                        j++; setTimeout(type, 1200);
-                    } else {
-                        setTimeout(() => {
-                            document.body.innerHTML = "<div style='background:black; color:white; height:100vh; display:flex; align-items:center; justify-content:center; font-size:10px;'>Look in the reflection. I'm right here.</div>";
-                        }, 5000);
-                    }
+                    if (j < lines.length) { log.innerHTML += lines[j] + "<br>"; j++; setTimeout(type, 1200); }
+                    else { setTimeout(() => { document.body.innerHTML = "<div style='background:black; color:white; height:100vh; display:flex; align-items:center; justify-content:center; font-size:10px;'>Look in the reflection. I'm right here.</div>"; }, 5000); }
                 };
                 type();
             }, 2000);
+        }
+
+        // DRAG ENGINE
+        function initDraggable() {
+            let activeElement = null;
+            let offset = { x: 0, y: 0 };
+
+            document.addEventListener('mousedown', (e) => {
+                const target = e.target;
+                // Handle Icons
+                if (target.closest('.icon')) {
+                    activeElement = target.closest('.icon');
+                    document.querySelectorAll('.icon').forEach(i => i.classList.remove('selected'));
+                    activeElement.classList.add('selected');
+                }
+                // Handle Windows (via title bar)
+                else if (target.closest('.title-bar')) {
+                    activeElement = target.closest('.window');
+                    // Bring window to front
+                    document.querySelectorAll('.window').forEach(w => w.style.zIndex = 500);
+                    activeElement.style.zIndex = 1000;
+                }
+
+                if (activeElement) {
+                    const rect = activeElement.getBoundingClientRect();
+                    offset.x = e.clientX - rect.left;
+                    offset.y = e.clientY - rect.top;
+                }
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (activeElement) {
+                    activeElement.style.left = (e.clientX - offset.x) + 'px';
+                    activeElement.style.top = (e.clientY - offset.y) + 'px';
+                }
+            });
+
+            document.addEventListener('mouseup', () => { activeElement = null; });
         }
     </script>
 </body>
