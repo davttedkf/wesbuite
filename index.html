@@ -2,25 +2,209 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>TERMINAL_ERROR_0x00</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM_FAILURE_RECORD_77</title>
+    <style>
+        :root {
+            --red: #4b0000;
+            --gray: #1a1a1a;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #555;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            height: 100vh;
+            cursor: none; /* Hide real mouse */
+        }
+
+        /* --- OVERLAY: GRAIN & SCANLINES --- */
+        #vhs-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://media.giphy.com/media/oEI9uWUuW9nZ6/giphy.gif');
+            opacity: 0.07;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* --- THE ENVIRONMENT --- */
+        #viewport {
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1509248961158-e54f6934749c?q=80&w=2070') center/cover no-repeat;
+            filter: brightness(0.04) contrast(1.2) saturate(0.2);
+            transition: filter 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- TERMINAL UI --- */
+        #ui {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            pointer-events: none;
+            line-height: 1.6;
+        }
+
+        .status-blink {
+            animation: blink 1s infinite;
+            color: var(--red);
+        }
+
+        /* --- CUSTOM CURSOR --- */
+        #eye-cursor {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: var(--red);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999;
+            box-shadow: 0 0 10px var(--red);
+        }
+
+        /* --- START OVERLAY --- */
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #222;
+        }
+
+        #overlay button {
+            background: none;
+            border: 1px solid #222;
+            color: #222;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        #overlay button:hover {
+            color: #555;
+            border-color: #555;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        @keyframes glitch {
+            0% { transform: translate(0,0); }
+            10% { transform: translate(-2px, 2px); filter: hue-rotate(90deg); }
+            20% { transform: translate(2px, -2px); }
+            30% { transform: translate(-5px, 0px); filter: invert(1); }
+            40% { transform: translate(0,0); }
+        }
+
+        .glitch-active {
+            animation: glitch 0.2s cubic-bezier(.25,.46,.45,.94) both;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="grain-overlay"></div>
-
-    <div class="entity-container">
-        <img src="https://images.unsplash.com/photo-1509248961158-e54f6934749c?q=80&w=2070" class="horror-bg" alt="darkness">
-        <div class="scare-trigger" id="mainTrigger"></div>
+    <div id="overlay">
+        <p>RECOVERY_SESS_404</p>
+        <button onclick="init()">INITIALIZE</button>
     </div>
 
-    <div class="ui-overlay">
-        <p id="status">SCANNING SYSTEM...</p>
-        <div class="coordinates" id="coords">LAT: 0.000 | LONG: 0.000</div>
+    <div id="vhs-overlay"></div>
+    <div id="eye-cursor"></div>
+
+    <div id="viewport">
+        <div id="ui">
+            <div>NODE: TERMINAL_01</div>
+            <div>STATUS: <span class="status-blink">LISTENING...</span></div>
+            <div id="coords">X: 000 | Y: 000</div>
+            <div id="time">TIME: --:--:--</div>
+            <div id="meta" style="color: #333;"></div>
+        </div>
     </div>
 
-    <audio id="static" loop src="https://www.soundjay.com/communication/static-noise-01.mp3"></audio>
+    <audio id="ambience" loop src="https://www.soundjay.com/communication/static-noise-01.mp3"></audio>
 
-    <script src="script.js"></script>
+    <script>
+        const viewport = document.getElementById('viewport');
+        const cursor = document.getElementById('eye-cursor');
+        const coordsText = document.getElementById('coords');
+        const timeText = document.getElementById('time');
+        const metaText = document.getElementById('meta');
+        const ambience = document.getElementById('ambience');
+
+        function init() {
+            document.getElementById('overlay').style.display = 'none';
+            ambience.volume = 0.2;
+            ambience.play();
+            
+            // Log local data to make it feel invasive
+            const now = new Date();
+            timeText.innerText = `TIME: ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+            metaText.innerText = `BROWSER: ${navigator.platform} | PORT: CLOSED`;
+            
+            // The "Look behind you" timer
+            setTimeout(() => {
+                metaText.innerText = "SENSORS DETECT MOVEMENT BEHIND USER.";
+                metaText.style.color = "#4b0000";
+            }, 10000);
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            // Update Cursor
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+
+            // Update UI
+            coordsText.innerText = `X: ${e.clientX} | Y: ${e.clientY}`;
+
+            // Subtle Light follow: Makes the image slightly brighter where the mouse is
+            const xPct = (e.clientX / window.innerWidth) * 100;
+            const yPct = (e.clientY / window.innerHeight) * 100;
+            viewport.style.backgroundPosition = `${xPct}% ${yPct}%`;
+
+            // Random Glitch Trigger
+            if (Math.random() > 0.99) {
+                triggerGlitch();
+            }
+        });
+
+        function triggerGlitch() {
+            viewport.classList.add('glitch-active');
+            viewport.style.filter = "brightness(0.3) contrast(2) invert(1)";
+            
+            setTimeout(() => {
+                viewport.classList.remove('glitch-active');
+                viewport.style.filter = "brightness(0.04) contrast(1.2) saturate(0.2)";
+            }, 150);
+        }
+
+        // The "Stare" Effect: If mouse stops moving, brightness slowly increases
+        let idleTimer;
+        document.addEventListener('mousemove', () => {
+            clearTimeout(idleTimer);
+            viewport.style.filter = "brightness(0.04) contrast(1.2) saturate(0.2)";
+            idleTimer = setTimeout(() => {
+                viewport.style.filter = "brightness(0.15) contrast(1.5) saturate(0)";
+                metaText.innerText = "EYE CONTACT ESTABLISHED.";
+            }, 5000);
+        });
+
+    </script>
 </body>
 </html>
