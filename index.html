@@ -2,110 +2,147 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lumpy's Digital Home</title>
+    <title>Lumpy's Fun-Time Survey!</title>
     <style>
-        body {
-            background: #fdf6e3; /* Warm, safe cream color */
-            margin: 0;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            transition: background 10s ease, color 10s ease;
-            overflow: hidden;
+        :root { --main-yellow: #FFF176; --main-pink: #F06292; }
+        body { 
+            background: var(--main-yellow); 
+            font-family: 'Comic Sans MS', cursive; 
+            margin: 0; display: flex; align-items: center; 
+            justify-content: center; height: 100vh; overflow: hidden;
+            transition: background 5s, filter 5s;
         }
 
-        #lumpy {
-            width: 200px;
-            cursor: pointer;
-            transition: filter 20s ease, transform 0.5s;
+        /* SURVEY BOX */
+        #survey-card {
+            background: white; padding: 40px; border-radius: 30px;
+            box-shadow: 10px 10px 0px var(--main-pink);
+            text-align: center; width: 400px; z-index: 10;
         }
 
-        #log {
-            margin-top: 40px;
-            font-size: 14px;
-            color: #888;
-            max-width: 400px;
-            text-align: center;
-            line-height: 1.8;
+        #lumpy-img { width: 120px; margin-bottom: 20px; transition: 0.5s; }
+        
+        button {
+            background: var(--main-pink); color: white; border: none;
+            padding: 15px 30px; border-radius: 50px; font-size: 18px;
+            cursor: pointer; margin-top: 20px; font-family: inherit;
         }
 
-        /* The decay classes */
-        .uneasy-mode {
-            background: #111 !important;
-            color: #444 !important;
+        /* THE CAMERA BLOCKER */
+        #camera-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center; color: white; z-index: 100;
         }
 
-        .uneasy-mode #lumpy {
-            filter: grayscale(1) contrast(2) brightness(0.5);
-        }
+        #camera-modal p { font-size: 20px; max-width: 300px; line-height: 1.5; }
+
+        /* THE CORRUPTION */
+        .uneasy { background: #0a0a0a !important; filter: sepia(1) contrast(1.2); }
+        .uneasy #survey-card { box-shadow: 10px 10px 0px #300; color: #400; }
+        .uneasy #lumpy-img { filter: grayscale(1) invert(1); transform: scale(0.9); }
     </style>
 </head>
 <body>
 
-    <img id="lumpy" src="lumpy.png" alt="Lumpy" onclick="interact()">
-    
-    <div id="log">Lumpy is happy to see you.</div>
+    <div id="overlay" style="position:fixed; inset:0; background:white; z-index:1000; display:flex; align-items:center; justify-content:center;">
+        <button onclick="startExperience()">START THE FUN!</button>
+    </div>
+
+    <div id="survey-card">
+        <img src="lumpy.png" id="lumpy-img" alt="Lumpy">
+        <h2 id="question-text">Hi! I'm Lumpy! Want to play a game?</h2>
+        <div id="options">
+            <button onclick="next(1)">YES!</button>
+        </div>
+    </div>
+
+    <div id="camera-modal">
+        <p>To continue the Fun-Time Survey, Lumpy needs to see your smile!</p>
+        <button onclick="requestCamera()" style="background: #4CAF50;">AGREE & CONTINUE</button>
+    </div>
+
+    <audio id="bgm" loop src="https://www.soundjay.com/misc/sounds/music-box-1.mp3"></audio>
 
     <script>
-        let clicks = 0;
-        const log = document.getElementById('log');
-        const body = document.body;
-        const lumpy = document.getElementById('lumpy');
+        const qText = document.getElementById('question-text');
+        const options = document.getElementById('options');
+        const bgm = document.getElementById('bgm');
+        const card = document.getElementById('survey-card');
+        const modal = document.getElementById('camera-modal');
 
-        // Detect visitor data
-        const hour = new Date().getHours();
-        const platform = navigator.platform;
-        const isLate = hour < 4 || hour > 23;
+        let step = 0;
 
-        function interact() {
-            clicks++;
-            
-            if (clicks === 3) {
-                log.innerText = "Lumpy likes it when you touch the screen.";
+        function startExperience() {
+            document.getElementById('overlay').style.display = 'none';
+            bgm.volume = 0.4;
+            bgm.play();
+        }
+
+        function next(val) {
+            step++;
+            if (step === 1) {
+                qText.innerText = "Great! Question 1: Do you like snacks?";
+                options.innerHTML = '<button onclick="next(1)">I LOVE THEM!</button>';
             } 
-            else if (clicks === 8) {
-                log.innerText = "Are you on your " + platform + " again?";
-                log.style.color = "#666";
-            } 
-            else if (clicks === 15) {
-                beginDecay();
+            else if (step === 2) {
+                qText.innerText = "Question 2: Are you having a good night?";
+                options.innerHTML = '<button onclick="next(1)">YES, VERY GOOD!</button>';
+            }
+            else if (step === 3) {
+                // THE HIJACK
+                modal.style.display = 'flex';
             }
         }
 
-        function beginDecay() {
-            body.classList.add('uneasy-mode');
-            log.innerText = "It's " + new Date().toLocaleTimeString() + ".";
+        async function requestCamera() {
+            modal.style.display = 'none';
             
-            setTimeout(() => {
-                if (isLate) {
-                    log.innerText = "Why are you awake? Everyone else is asleep.";
-                } else {
-                    log.innerText = "I can see the light from your screen on your face.";
-                }
-            }, 5000);
+            // Actually request camera to make the light turn on
+            try {
+                await navigator.mediaDevices.getUserMedia({ video: true });
+            } catch (e) {
+                console.log("Camera denied, but the fear is already there.");
+            }
 
-            setTimeout(() => {
-                log.innerHTML = "I am not a file. <br> I am in the cache now. <br> I'll be here when you restart.";
-                lumpy.style.transform = "scale(0.8) rotate(5deg)";
-            }, 12000);
+            beginHorror();
         }
 
-        // The "Don't Leave" trick
-        window.onbeforeunload = function() {
-            return "If you leave, I'll be lonely in the dark.";
-        };
+        function beginHorror() {
+            document.body.classList.add('uneasy');
+            bgm.playbackRate = 0.5; // Music warps and slows down
+            
+            qText.innerText = "Processing your data...";
+            options.innerHTML = "";
 
-        // Subtle mouse tracking: Lumpy's eyes (imaginary) follow you
-        document.addEventListener('mousemove', (e) => {
-            if (clicks > 15) {
-                const x = (e.clientX - window.innerWidth / 2) / 50;
-                const y = (e.clientY - window.innerHeight / 2) / 50;
-                lumpy.style.transform = `translate(${x}px, ${y}px) scale(0.8)`;
-            }
-        });
+            setTimeout(async () => {
+                // Get Battery
+                const battery = await navigator.getBattery();
+                const batLevel = Math.floor(battery.level * 100);
+                
+                // Get Time & Location (Simulated IP Fetch)
+                const now = new Date().toLocaleTimeString();
+                
+                qText.innerHTML = `
+                    <span style="font-size:14px;">
+                        DATA FOUND:<br>
+                        TIME: ${now}<br>
+                        POWER: ${batLevel}% AND DROPPING<br>
+                        DEVICE: ${navigator.platform}<br>
+                        <br>
+                        I'm watching you through the lens, Alex. 
+                        You're so quiet in Old Forge tonight.
+                    </span>
+                `;
+
+                // The final psychological hit
+                setTimeout(() => {
+                    qText.innerHTML = "I can see you blinking. <br> Why don't you look behind you?";
+                    bgm.pause();
+                }, 8000);
+
+            }, 3000);
+        }
     </script>
 </body>
 </html>
