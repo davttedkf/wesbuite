@@ -2,177 +2,110 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SENSORY_CALIBRATION_v4.22</title>
+    <title>Lumpy's Digital Home</title>
     <style>
-        body, html {
-            background: #050505;
-            color: #222;
+        body {
+            background: #fdf6e3; /* Warm, safe cream color */
             margin: 0;
-            overflow: hidden;
-            font-family: "Courier New", Courier, monospace;
-            cursor: none;
+            font-family: 'Courier New', Courier, monospace;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
+            transition: background 10s ease, color 10s ease;
+            overflow: hidden;
         }
 
-        #scare-layer {
-            position: fixed;
-            inset: 0;
-            background: url('https://images.unsplash.com/photo-1509248961158-e54f6934749c?q=80&w=2070') center/cover no-repeat;
-            filter: brightness(0) contrast(2);
-            z-index: 9999;
-            display: none;
-        }
-
-        .calibration-dot {
-            width: 4px;
-            height: 4px;
-            background: #400;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #f00;
-            transition: all 0.1s ease;
-        }
-
-        #ui {
-            position: fixed;
-            bottom: 40px;
-            width: 100%;
-            text-align: center;
-            font-size: 12px;
-            letter-spacing: 3px;
-            opacity: 0.5;
-        }
-
-        #overlay {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 10000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        button {
-            background: none;
-            border: 1px solid #333;
-            color: #444;
-            padding: 15px 30px;
+        #lumpy {
+            width: 200px;
             cursor: pointer;
-            text-transform: uppercase;
+            transition: filter 20s ease, transform 0.5s;
         }
 
-        /* The strobe effect */
-        .strobe {
-            animation: strobe-anim 0.05s infinite;
+        #log {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #888;
+            max-width: 400px;
+            text-align: center;
+            line-height: 1.8;
         }
 
-        @keyframes strobe-anim {
-            0% { background: #fff; filter: invert(0); }
-            50% { background: #000; filter: invert(1); }
-            100% { background: #fff; filter: invert(0); }
+        /* The decay classes */
+        .uneasy-mode {
+            background: #111 !important;
+            color: #444 !important;
+        }
+
+        .uneasy-mode #lumpy {
+            filter: grayscale(1) contrast(2) brightness(0.5);
         }
     </style>
 </head>
 <body>
 
-<div id="overlay">
-    <button onclick="start()">Begin Sensory Calibration</button>
-</div>
+    <img id="lumpy" src="lumpy.png" alt="Lumpy" onclick="interact()">
+    
+    <div id="log">Lumpy is happy to see you.</div>
 
-<div id="ui">
-    <div id="status">INITIATING...</div>
-    <div id="progress">STABILITY: 0%</div>
-</div>
+    <script>
+        let clicks = 0;
+        const log = document.getElementById('log');
+        const body = document.body;
+        const lumpy = document.getElementById('lumpy');
 
-<div id="dot" class="calibration-dot"></div>
-<div id="scare-layer"></div>
+        // Detect visitor data
+        const hour = new Date().getHours();
+        const platform = navigator.platform;
+        const isLate = hour < 4 || hour > 23;
 
-<audio id="scream" src="https://www.soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Scream+1&filename=24/241857-797585be-5872-4638-89c0-681907e2c90c.mp3"></audio>
-<audio id="hum" loop src="https://www.soundjay.com/communication/static-noise-01.mp3"></audio>
-
-<script>
-    const dot = document.getElementById('dot');
-    const status = document.getElementById('status');
-    const progress = document.getElementById('progress');
-    const scare = document.getElementById('scare-layer');
-    const scream = document.getElementById('scream');
-    const hum = document.getElementById('hum');
-
-    let percent = 0;
-    let isCalibrating = false;
-
-    function start() {
-        document.getElementById('overlay').style.display = 'none';
-        isCalibrating = true;
-        hum.volume = 0.1;
-        hum.play();
-        calibrate();
-    }
-
-    function calibrate() {
-        if (percent >= 100) {
-            triggerScare();
-            return;
+        function interact() {
+            clicks++;
+            
+            if (clicks === 3) {
+                log.innerText = "Lumpy likes it when you touch the screen.";
+            } 
+            else if (clicks === 8) {
+                log.innerText = "Are you on your " + platform + " again?";
+                log.style.color = "#666";
+            } 
+            else if (clicks === 15) {
+                beginDecay();
+            }
         }
 
-        percent += 0.5;
-        progress.innerText = `STABILITY: ${Math.floor(percent)}%`;
-        
-        // Random jitter to make them focus harder
-        const x = (Math.random() - 0.5) * 4;
-        const y = (Math.random() - 0.5) * 4;
-        dot.style.transform = `translate(${x}px, ${y}px)`;
+        function beginDecay() {
+            body.classList.add('uneasy-mode');
+            log.innerText = "It's " + new Date().toLocaleTimeString() + ".";
+            
+            setTimeout(() => {
+                if (isLate) {
+                    log.innerText = "Why are you awake? Everyone else is asleep.";
+                } else {
+                    log.innerText = "I can see the light from your screen on your face.";
+                }
+            }, 5000);
 
-        // At 80%, slow down to build tension
-        const speed = percent > 80 ? 150 : 50;
-        
-        if (percent === 90) status.innerText = "CALIBRATION NEARLY COMPLETE. DO NOT BLINK.";
-        
-        setTimeout(calibrate, speed);
-    }
-
-    function triggerScare() {
-        // FULLSCREEN HIJACK
-        if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen();
+            setTimeout(() => {
+                log.innerHTML = "I am not a file. <br> I am in the cache now. <br> I'll be here when you restart.";
+                lumpy.style.transform = "scale(0.8) rotate(5deg)";
+            }, 12000);
         }
 
-        // VISUAL ATTACK
-        scare.style.display = 'block';
-        document.body.classList.add('strobe');
-        
-        // AUDIO ATTACK
-        hum.pause();
-        scream.volume = 1.0;
-        scream.play();
+        // The "Don't Leave" trick
+        window.onbeforeunload = function() {
+            return "If you leave, I'll be lonely in the dark.";
+        };
 
-        // CHANGE IMAGE TO SOMETHING REAL/GRITTY AFTER 100ms
-        // Using a hyper-realistic, desaturated "void" face
-        scare.style.backgroundImage = "url('https://i.imgur.com/vH3y1r4.jpeg')";
-        scare.style.filter = "brightness(1.5) contrast(3)";
-
-        // AFTER-EFFECT: Leave them in total darkness with a whisper
-        setTimeout(() => {
-            document.body.classList.remove('strobe');
-            scare.style.display = 'none';
-            status.innerText = "I SEE YOU.";
-            status.style.color = "#400";
-            status.style.opacity = "1";
-            progress.innerText = "";
-        }, 1500);
-    }
-
-    // Anti-Escape Logic
-    document.addEventListener('keydown', (e) => {
-        if (e.key === "Escape" && isCalibrating && percent < 100) {
-            status.innerText = "DO NOT ATTEMPT TO LEAVE.";
-            status.style.color = "#f00";
-        }
-    });
-</script>
-
+        // Subtle mouse tracking: Lumpy's eyes (imaginary) follow you
+        document.addEventListener('mousemove', (e) => {
+            if (clicks > 15) {
+                const x = (e.clientX - window.innerWidth / 2) / 50;
+                const y = (e.clientY - window.innerHeight / 2) / 50;
+                lumpy.style.transform = `translate(${x}px, ${y}px) scale(0.8)`;
+            }
+        });
+    </script>
 </body>
 </html>
