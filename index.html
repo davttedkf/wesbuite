@@ -14,7 +14,8 @@
 
         body, html {
             margin: 0; padding: 0; height: 100vh; overflow: hidden;
-            background-color: black; font-family: "Tahoma", sans-serif;
+            background-color: black; font-family: "Tahoma", "MS Sans Serif", sans-serif;
+            user-select: none;
             cursor: url('https://win98icons.alexmeub.com/cursors/arrow.cur'), auto;
         }
 
@@ -24,10 +25,9 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             z-index: 10000; color: white;
         }
-
-        #win95-logo { width: 300px; margin-bottom: 20px; image-rendering: pixelated; }
-        .loading-bar-container { width: 200px; height: 15px; border: 2px solid #555; position: relative; }
-        .loading-bar-fill { width: 0%; height: 100%; background: linear-gradient(to right, #000080, #0000ff); }
+        #win95-logo { width: 320px; image-rendering: pixelated; margin-bottom: 20px; }
+        .load-container { width: 240px; height: 16px; border: 2px solid #555; padding: 1px; }
+        .load-fill { width: 0%; height: 100%; background: linear-gradient(to right, #000080, #0000ff); }
 
         /* --- THE DESKTOP --- */
         #desktop {
@@ -42,228 +42,268 @@
         }
 
         .start-btn {
-            height: 22px; padding: 0 5px; display: flex; align-items: center;
+            height: 22px; padding: 0 5px; display: flex; align-items: center; gap: 4px;
             border: 2px solid; border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
             font-weight: bold; font-size: 11px; margin-right: 10px;
         }
+        .start-btn img { width: 16px; }
+        .start-btn:active { border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark); }
 
-        .icon-grid {
-            padding: 20px; display: flex; flex-direction: column; gap: 30px;
+        /* Desktop Icon Layout (Matches your image) */
+        .icon-column {
+            position: absolute; top: 10px; left: 10px;
+            display: flex; flex-direction: column; gap: 20px;
         }
+        .icon-column.col-2 { left: 90px; }
 
         .icon {
-            width: 64px; text-align: center; color: white; font-size: 11px;
-            text-shadow: 1px 1px black; cursor: pointer;
+            width: 75px; text-align: center; color: white; font-size: 11px;
+            padding: 5px; border: 1px solid transparent;
         }
+        .icon img { width: 32px; display: block; margin: 0 auto 4px; image-rendering: pixelated; }
+        .icon span { display: inline-block; padding: 2px; line-height: 1.1; }
+        
+        /* Icon selection style */
+        .icon.selected span { background-color: var(--win-blue); }
+        .icon.selected img { filter: brightness(0.7) sepia(1) hue-rotate(190deg) saturate(5); }
 
-        .icon img { width: 32px; display: block; margin: 0 auto 5px; }
-
-        /* --- THE WINDOW --- */
-        #app-window {
-            position: absolute; top: 20%; left: 30%; width: 450px;
-            background: var(--win-bg); border: 2px solid;
-            border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
-            padding: 2px; box-shadow: 2px 2px 0px black;
-            display: none; z-index: 500;
+        /* --- WINDOW SYSTEM --- */
+        .window {
+            position: absolute; background: var(--win-bg); 
+            border: 2px solid; border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
+            padding: 2px; box-shadow: 1px 1px 0px black; display: none;
         }
-
         .title-bar {
             background: var(--win-blue); color: white; padding: 3px 6px;
-            display: flex; justify-content: space-between; font-weight: bold; font-size: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-weight: bold; font-size: 12px;
         }
-
-        .window-content {
-            padding: 20px; border: 1px solid var(--win-border-dark); margin: 2px; text-align: center;
+        .title-btns button {
+            width: 16px; height: 14px; font-size: 9px; padding: 0; 
+            background: var(--win-bg); border: 1px solid;
+            border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
         }
+        .window-body { border: 1px solid var(--win-border-dark); margin: 2px; padding: 20px; background: var(--win-bg); }
 
-        #lumpy {
-            width: 100px; animation: breathe 3s infinite ease-in-out;
-            image-rendering: pixelated;
-        }
-
+        /* --- LUMPY APP SPECIFICS --- */
+        #lumpy { width: 100px; animation: breathe 3s infinite ease-in-out; }
         @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05, 0.95); } }
+        .dialog { background: white; border: 2px inset var(--win-border-dark); padding: 10px; margin: 15px 0; font-size: 12px; text-align: left; }
+        
+        #audit-results { text-align: left; font-size: 11px; margin-top: 10px; display: none; }
+        .stat-row { margin: 4px 0; border-bottom: 1px solid #aaa; opacity: 0; transition: opacity 0.5s; }
+        .stat-row b { color: var(--win-blue); float: right; }
 
-        .dialog {
-            background: white; border: 2px inset var(--win-border-dark);
-            padding: 10px; margin: 15px 0; font-size: 12px; text-align: left; min-height: 40px;
-        }
-
-        /* --- DATA REVEAL --- */
-        #audit-log { text-align: left; font-size: 11px; display: none; }
-        .log-entry { margin: 5px 0; opacity: 0; transition: opacity 0.3s; }
-        .val { color: var(--win-blue); float: right; font-weight: bold; }
-
-        /* --- THE END --- */
+        /* --- THE TURN --- */
         #horror-overlay {
-            position: fixed; inset: 0; background: black; color: red;
-            z-index: 20000; display: none; flex-direction: column;
-            justify-content: center; align-items: center; font-family: monospace;
+            position: fixed; inset: 0; background: black; color: #ff0000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 20000; font-family: monospace; text-align: center;
         }
-
         .glitch { animation: shake 0.05s infinite; filter: invert(1) contrast(5); }
         @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } }
+
+        #clock { font-size: 11px; padding: 0 8px; border: 2px inset var(--win-border-light); margin-left: auto; }
     </style>
 </head>
-<body onclick="enableAudio()">
+<body onclick="powerOn()">
 
     <div id="boot-screen">
-        <img id="win95-logo" src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Windows_95_logo_and_wordmark.svg" alt="Win95">
-        <div class="loading-bar-container">
-            <div class="loading-bar-fill" id="boot-progress"></div>
-        </div>
-        <p style="font-size: 10px; margin-top: 10px;">Click to initialize hardware...</p>
+        <img id="win95-logo" src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Windows_95_logo_and_wordmark.svg">
+        <div class="load-container"><div class="load-fill" id="boot-progress"></div></div>
+        <p style="font-size: 10px; margin-top: 20px; color: #555;">Initializing system hardware...</p>
     </div>
 
     <div id="desktop">
-        <div class="icon-grid">
-            <div class="icon" ondblclick="openApp()">
-                <img src="https://win98icons.alexmeub.com/icons/png/computer_pc-4.png">
-                My Computer
+        <div class="icon-column">
+            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('My Computer')">
+                <img src="https://win98icons.alexmeub.com/icons/png/computer_pc-4.png"><span>My Computer</span>
             </div>
-            <div class="icon" ondblclick="openApp()">
-                <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png">
-                Recycle Bin
+            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('Network Neighborhood')">
+                <img src="https://win98icons.alexmeub.com/icons/png/network_neighborhood-0.png"><span>Network Neighborhood</span>
             </div>
-            <div class="icon" id="exe-icon" ondblclick="runLumpy()">
-                <img src="https://win98icons.alexmeub.com/icons/png/game_solitaire-0.png">
-                Friendship.exe
+            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('Inbox')">
+                <img src="https://win98icons.alexmeub.com/icons/png/outlook_express-0.png"><span>Inbox</span>
+            </div>
+            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('Recycle Bin')">
+                <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png"><span>Recycle Bin</span>
+            </div>
+            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('Internet Explorer')">
+                <img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png"><span>Internet Explorer</span>
+            </div>
+            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('My Briefcase')">
+                <img src="https://win98icons.alexmeub.com/icons/png/briefcase-2.png"><span>My Briefcase</span>
+            </div>
+        </div>
+
+        <div class="icon-column col-2">
+            <div class="icon" onclick="selectIcon(this)" ondblclick="openFolder('Online Services')">
+                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png"><span>Online Services</span>
+            </div>
+            <div class="icon" onclick="selectIcon(this)" ondblclick="runLumpy()">
+                <img src="https://win98icons.alexmeub.com/icons/png/game_solitaire-0.png" style="filter: hue-rotate(280deg);"><span>Friendship.exe</span>
             </div>
         </div>
 
         <div class="taskbar">
-            <div class="start-btn">Start</div>
-            <div style="flex:1"></div>
-            <div id="clock" style="font-size:11px; padding-right:10px;"></div>
+            <div class="start-btn"><img src="https://win98icons.alexmeub.com/icons/png/windows-0.png"> Start</div>
+            <div id="clock"></div>
         </div>
     </div>
 
-    <div id="app-window" class="window">
-        <div class="title-bar"><span>Lumpy's Friendship Scan</span><span>[X]</span></div>
-        <div class="window-content">
+    <div id="gen-window" class="window" style="width: 300px; top: 100px; left: 250px;">
+        <div class="title-bar"><span id="gen-title">Folder</span><div class="title-btns"><button onclick="closeWin('gen-window')">X</button></div></div>
+        <div class="window-body" style="background: white; height: 100px; font-size: 12px;">This folder is empty.</div>
+    </div>
+
+    <div id="lumpy-window" class="window" style="width: 450px; top: 15%; left: 25%;">
+        <div class="title-bar"><span>Friendship.exe</span><div class="title-btns"><button onclick="closeWin('lumpy-window')">X</button></div></div>
+        <div class="window-body" style="text-align:center;">
             <img src="lumpy.png" id="lumpy">
-            <div class="dialog" id="dialog">...</div>
-            <div id="controls"></div>
-            <div id="audit-log"></div>
+            <div class="dialog" id="lumpy-msg">...</div>
+            <div id="lumpy-ctrls"></div>
+            <div id="audit-results"></div>
         </div>
     </div>
 
     <div id="horror-overlay">
-        <h1 id="scare-msg">SYSTEM CORRUPTION</h1>
-        <div id="final-stats" style="text-align: left; width: 300px;"></div>
+        <h1 id="error-title">SYSTEM_FATAL_ERROR</h1>
+        <div id="scare-log" style="width: 350px; text-align: left;"></div>
     </div>
 
-    <audio id="snd_startup" src="startup.mp3"></audio>
-    <audio id="snd_click" src="click.mp3"></audio>
-    <audio id="snd_talk" src="talk.mp3"></audio>
-    <audio id="snd_hdd" loop src="hdd_scratch.mp3"></audio>
-    <audio id="snd_alert" src="alert.mp3"></audio>
-    <audio id="snd_horror" src="corruption.mp3"></audio>
+    <audio id="s_start" src="startup.mp3"></audio>
+    <audio id="s_click" src="click.mp3"></audio>
+    <audio id="s_talk" src="talk.mp3"></audio>
+    <audio id="s_hdd" loop src="hdd_scratch.mp3"></audio>
+    <audio id="s_alert" src="alert.mp3"></audio>
+    <audio id="s_horror" src="corruption.mp3"></audio>
 
     <script>
-        let audioStarted = false;
-        const play = (id) => { if(audioStarted) { document.getElementById(id).currentTime = 0; document.getElementById(id).play(); } };
+        let booted = false;
+        const play = (id) => { if(booted) { const a = document.getElementById(id); a.currentTime = 0; a.play(); } };
 
-        function enableAudio() {
-            if(!audioStarted) {
-                audioStarted = true;
-                startBoot();
-            }
-        }
-
-        function startBoot() {
-            let prog = 0;
+        function powerOn() {
+            if (booted) return;
+            booted = true;
+            let p = 0;
             const bar = document.getElementById('boot-progress');
-            const interval = setInterval(() => {
-                prog += Math.random() * 5;
-                bar.style.width = prog + "%";
-                if(prog >= 100) {
-                    clearInterval(interval);
-                    showDesktop();
+            const itv = setInterval(() => {
+                p += Math.random() * 4;
+                bar.style.width = p + "%";
+                if (p >= 100) {
+                    clearInterval(itv);
+                    loadDesktop();
                 }
-            }, 100);
+            }, 120);
         }
 
-        function showDesktop() {
+        function loadDesktop() {
             document.getElementById('boot-screen').style.display = 'none';
             document.getElementById('desktop').style.display = 'block';
-            play('snd_startup');
-            updateClock();
-            setInterval(updateClock, 1000);
+            play('s_start');
+            startTime();
         }
 
-        function updateClock() {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        function startTime() {
+            const up = () => {
+                const d = new Date();
+                document.getElementById('clock').innerText = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            };
+            up(); setInterval(up, 1000);
         }
+
+        function selectIcon(el) {
+            document.querySelectorAll('.icon').forEach(i => i.classList.remove('selected'));
+            el.classList.add('selected');
+            play('s_click');
+        }
+
+        function openFolder(name) {
+            document.getElementById('gen-title').innerText = name;
+            document.getElementById('gen-window').style.display = 'block';
+            play('s_click');
+        }
+
+        function closeWin(id) { document.getElementById(id).style.display = 'none'; play('s_click'); }
 
         function runLumpy() {
-            play('snd_click');
-            document.body.style.cursor = "url('https://win98icons.alexmeub.com/cursors/wait.cur'), wait";
-            setTimeout(() => {
-                document.body.style.cursor = "url('https://win98icons.alexmeub.com/cursors/arrow.cur'), auto";
-                document.getElementById('app-window').style.display = 'block';
-                startLumpyTalk();
-            }, 1000);
+            document.getElementById('lumpy-window').style.display = 'block';
+            play('s_click');
+            play('s_talk');
+            document.getElementById('lumpy-msg').innerText = "Hi! I'm Lumpy! I want to link our files together. Can I scan your computer?";
+            document.getElementById('lumpy-ctrls').innerHTML = '<button onclick="askCam()" style="padding:4px 10px;">Yes, please!</button>';
         }
 
-        function startLumpyTalk() {
-            play('snd_talk');
-            document.getElementById('dialog').innerText = "Hi! I'm Lumpy! I want to link our souls! Can I see your eyes through the camera?";
-            document.getElementById('controls').innerHTML = '<button onclick="openCam()" style="padding:4px 15px;">Enable Optics</button>';
+        function askCam() {
+            play('s_click');
+            document.getElementById('lumpy-msg').innerText = "YAY! First, I need to see your eyes to make sure you're real. Enable the camera!";
+            document.getElementById('lumpy-ctrls').innerHTML = '<button onclick="startScare()" style="padding:4px 10px; background:#0f0;">ENABLE OPTICS</button>';
         }
 
-        async function openCam() {
-            play('snd_click');
+        async function startScare() {
+            play('s_click');
             try { await navigator.mediaDevices.getUserMedia({ video: true }); } catch(e) {}
             
-            document.getElementById('controls').style.display = 'none';
-            document.getElementById('audit-log').style.display = 'block';
-            runSlowReveal();
-        }
-
-        async function runSlowReveal() {
-            const bat = await navigator.getBattery();
-            const time = new Date().toLocaleTimeString();
+            document.getElementById('lumpy-ctrls').style.display = 'none';
+            document.getElementById('audit-results').style.display = 'block';
             
-            const entries = [
-                { label: "TARGET_OS", val: navigator.platform },
-                { label: "SYNC_TIME", val: time },
-                { label: "ENERGY_RESERVE", val: Math.floor(bat.level * 100) + "%" },
-                { label: "BIO_SCAN", val: "VULNERABLE" }
+            const bat = await navigator.getBattery();
+            const stats = [
+                {l: "HARDWARE", v: navigator.platform},
+                {l: "TIME_SYNC", v: new Date().toLocaleTimeString()},
+                {l: "ENERGY", v: Math.floor(bat.level * 100) + "%"},
+                {l: "BIO_SCAN", v: "VULNERABLE"}
             ];
 
             let i = 0;
-            const revealNext = () => {
-                if(i < entries.length) {
-                    play('snd_hdd');
-                    document.getElementById('dialog').innerText = "Analyzing " + entries[i].label + "...";
-                    
+            const reveal = () => {
+                if (i < stats.length) {
+                    play('s_hdd');
+                    document.getElementById('lumpy-msg').innerText = "Extracting " + stats[i].l + "...";
                     setTimeout(() => {
-                        document.getElementById('snd_hdd').pause();
-                        play('snd_alert');
-                        const id = "log-" + i;
-                        document.getElementById('audit-log').innerHTML += `<div class="log-entry" id="${id}" style="opacity:1">${entries[i].label}: <span class="val">${entries[i].val}</span></div>`;
+                        document.getElementById('s_hdd').pause();
+                        play('s_alert');
+                        const row = document.createElement('div');
+                        row.className = 'stat-row';
+                        row.innerHTML = `${stats[i].l}: <b>${stats[i].v}</b>`;
+                        document.getElementById('audit-results').appendChild(row);
+                        setTimeout(() => row.style.opacity = 1, 50);
                         i++;
-                        setTimeout(revealNext, 2000); // 2 second delay for "Slow Rot"
-                    }, 12000 / 10); // Simulated HDD seek time
+                        setTimeout(reveal, 2500); // The "Slow Rot" pacing
+                    }, 1500);
                 } else {
-                    setTimeout(triggerHorror, 2500);
+                    setTimeout(finalHorror, 2000);
                 }
             };
-            revealNext();
+            reveal();
         }
 
-        function triggerHorror() {
-            play('snd_horror');
-            document.getElementById('app-window').classList.add('glitch');
+        function finalHorror() {
+            play('s_horror');
+            document.getElementById('lumpy-window').classList.add('glitch');
             document.getElementById('lumpy').style.animation = "shake 0.05s infinite";
             
             setTimeout(() => {
                 document.getElementById('horror-overlay').style.display = 'flex';
-                document.getElementById('final-stats').innerHTML = "> I CAN SEE YOU BLINKING.<br>> I'M IN THE ROOM NOW.<br>> DON'T TURN OFF THE MONITOR.";
-                
-                setTimeout(() => {
-                    document.body.innerHTML = "<div style='background:black; color:white; height:100vh; display:flex; align-items:center; justify-content:center; font-size:10px;'>Look behind you.</div>";
-                }, 6000);
+                const log = document.getElementById('scare-log');
+                const lines = [
+                    "> I AM NOT IN THE CODE ANYMORE.",
+                    "> I CAN SEE YOU BREATHING.",
+                    "> WHY IS YOUR ROOM SO DARK?",
+                    "> CHECK THE WINDOW."
+                ];
+                let j = 0;
+                const type = () => {
+                    if (j < lines.length) {
+                        log.innerHTML += lines[j] + "<br>";
+                        j++; setTimeout(type, 1200);
+                    } else {
+                        setTimeout(() => {
+                            document.body.innerHTML = "<div style='background:black; color:white; height:100vh; display:flex; align-items:center; justify-content:center; font-size:10px;'>Look in the reflection. I'm right here.</div>";
+                        }, 5000);
+                    }
+                };
+                type();
             }, 2000);
         }
     </script>
