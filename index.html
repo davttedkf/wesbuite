@@ -2,45 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>FATAL_ERROR_LOG</title>
+    <title>SENSORY_CALIBRATION_v4.22</title>
     <style>
         body, html {
-            background: #000;
-            color: #111; /* Almost invisible text */
+            background: #050505;
+            color: #222;
             margin: 0;
             overflow: hidden;
-            font-family: 'Courier New', monospace;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-family: "Courier New", Courier, monospace;
             cursor: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
-        #scare-image {
+        #scare-layer {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: none;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1509248961158-e54f6934749c?q=80&w=2070') center/cover no-repeat;
+            filter: brightness(0) contrast(2);
             z-index: 9999;
+            display: none;
         }
 
-        #instruction {
-            color: #222;
-            font-size: 10px;
+        .calibration-dot {
+            width: 4px;
+            height: 4px;
+            background: #400;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #f00;
+            transition: all 0.1s ease;
+        }
+
+        #ui {
+            position: fixed;
+            bottom: 40px;
+            width: 100%;
             text-align: center;
-            transition: color 5s ease;
-        }
-
-        /* The Lull: Subtle movement to make them lean in */
-        .dot {
-            width: 2px;
-            height: 2px;
-            background: #111;
-            position: absolute;
+            font-size: 12px;
+            letter-spacing: 3px;
+            opacity: 0.5;
         }
 
         #overlay {
@@ -55,77 +57,120 @@
 
         button {
             background: none;
-            border: 1px solid #111;
-            color: #111;
-            padding: 20px;
+            border: 1px solid #333;
+            color: #444;
+            padding: 15px 30px;
             cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        /* The strobe effect */
+        .strobe {
+            animation: strobe-anim 0.05s infinite;
+        }
+
+        @keyframes strobe-anim {
+            0% { background: #fff; filter: invert(0); }
+            50% { background: #000; filter: invert(1); }
+            100% { background: #fff; filter: invert(0); }
         }
     </style>
 </head>
 <body>
 
 <div id="overlay">
-    <button onclick="start()">ENTER THE VOID</button>
+    <button onclick="start()">Begin Sensory Calibration</button>
 </div>
 
-<div id="instruction">LOOK CLOSER... THERE IS A PIXEL OUT OF PLACE</div>
-<div id="dot" class="dot" style="top: 50%; left: 50%;"></div>
+<div id="ui">
+    <div id="status">INITIATING...</div>
+    <div id="progress">STABILITY: 0%</div>
+</div>
 
-<img id="scare-image" src="https://i.imgur.com/vH3y1r4.jpeg" alt="SCREAM">
+<div id="dot" class="calibration-dot"></div>
+<div id="scare-layer"></div>
+
 <audio id="scream" src="https://www.soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Scream+1&filename=24/241857-797585be-5872-4638-89c0-681907e2c90c.mp3"></audio>
+<audio id="hum" loop src="https://www.soundjay.com/communication/static-noise-01.mp3"></audio>
 
 <script>
-    const scareImg = document.getElementById('scare-image');
-    const scream = document.getElementById('scream');
     const dot = document.getElementById('dot');
-    const instruction = document.getElementById('instruction');
+    const status = document.getElementById('status');
+    const progress = document.getElementById('progress');
+    const scare = document.getElementById('scare-layer');
+    const scream = document.getElementById('scream');
+    const hum = document.getElementById('hum');
+
+    let percent = 0;
+    let isCalibrating = false;
 
     function start() {
         document.getElementById('overlay').style.display = 'none';
-        
-        // 1. Start the 'Focus' phase (8 seconds)
-        setTimeout(() => {
-            instruction.style.color = "#444";
-            instruction.innerText = "DO YOU SEE THE MOVEMENT IN THE CENTER?";
-        }, 3000);
-
-        // 2. The Jumpscare Trigger
-        // We trigger it when the user gets "bored" or "invested" (around 12 seconds)
-        setTimeout(() => {
-            trigger();
-        }, 12000);
+        isCalibrating = true;
+        hum.volume = 0.1;
+        hum.play();
+        calibrate();
     }
 
-    function trigger() {
-        // Force full screen for maximum impact
+    function calibrate() {
+        if (percent >= 100) {
+            triggerScare();
+            return;
+        }
+
+        percent += 0.5;
+        progress.innerText = `STABILITY: ${Math.floor(percent)}%`;
+        
+        // Random jitter to make them focus harder
+        const x = (Math.random() - 0.5) * 4;
+        const y = (Math.random() - 0.5) * 4;
+        dot.style.transform = `translate(${x}px, ${y}px)`;
+
+        // At 80%, slow down to build tension
+        const speed = percent > 80 ? 150 : 50;
+        
+        if (percent === 90) status.innerText = "CALIBRATION NEARLY COMPLETE. DO NOT BLINK.";
+        
+        setTimeout(calibrate, speed);
+    }
+
+    function triggerScare() {
+        // FULLSCREEN HIJACK
         if (document.documentElement.requestFullscreen) {
             document.documentElement.requestFullscreen();
         }
 
-        scareImg.style.display = 'block';
+        // VISUAL ATTACK
+        scare.style.display = 'block';
+        document.body.classList.add('strobe');
+        
+        // AUDIO ATTACK
+        hum.pause();
         scream.volume = 1.0;
         scream.play();
 
-        // Strobe effect
-        let flip = true;
-        const strobe = setInterval(() => {
-            document.body.style.backgroundColor = flip ? "#fff" : "#000";
-            scareImg.style.filter = flip ? "invert(1)" : "invert(0)";
-            flip = !flip;
-        }, 50);
+        // CHANGE IMAGE TO SOMETHING REAL/GRITTY AFTER 100ms
+        // Using a hyper-realistic, desaturated "void" face
+        scare.style.backgroundImage = "url('https://i.imgur.com/vH3y1r4.jpeg')";
+        scare.style.filter = "brightness(1.5) contrast(3)";
 
-        // Kill the strobe after 2 seconds so they can see the face
+        // AFTER-EFFECT: Leave them in total darkness with a whisper
         setTimeout(() => {
-            clearInterval(strobe);
-            document.body.style.backgroundColor = "#000";
-            scareImg.style.filter = "contrast(2) brightness(0.8)";
-        }, 2000);
+            document.body.classList.remove('strobe');
+            scare.style.display = 'none';
+            status.innerText = "I SEE YOU.";
+            status.style.color = "#400";
+            status.style.opacity = "1";
+            progress.innerText = "";
+        }, 1500);
     }
 
-    // Move the dot slightly to keep them chasing it
-    document.addEventListener('mousemove', (e) => {
-        dot.style.left = (e.clientX + 5) + 'px';
-        dot.style.top = (e.clientY + 5) + 'px';
+    // Anti-Escape Logic
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape" && isCalibrating && percent < 100) {
+            status.innerText = "DO NOT ATTEMPT TO LEAVE.";
+            status.style.color = "#f00";
+        }
     });
 </script>
 
