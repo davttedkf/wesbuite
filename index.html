@@ -1,26 +1,240 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Message</title>
+    <title>Riverbend Rapids | Secure Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: sans-serif;
-            background-color: #f0f0f0;
+        :root {
+            --navy: #1b3a5d;
+            --aqua: #4ec1e0;
+            --forest: #2d4739;
+            --sand: #f4f1ea;
+            --white: #ffffff;
+            --slate: #4a5568;
         }
-        h1 {
-            color: #333;
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Open Sans', sans-serif; color: var(--navy); background-color: var(--white); }
+
+        /* --- LOGIN SCREEN --- */
+        #login-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(rgba(27, 58, 93, 0.95), rgba(27, 58, 93, 0.95)), 
+                        url('ChatGPT Image Apr 30, 2026, 05_59_11 PM.jpg') center/cover;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 10000;
+        }
+
+        .login-card {
+            background: var(--white);
+            padding: 50px;
+            border-radius: 4px; /* Professional sharp edges or slight round */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            width: 400px;
+            text-align: center;
+        }
+
+        .login-card img { width: 180px; margin-bottom: 30px; }
+        
+        .login-card input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            font-family: inherit;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: var(--navy);
+            color: white;
+            border: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        #err { color: #c53030; font-size: 0.85rem; margin-top: 15px; display: none; font-weight: 600; }
+
+        /* --- MAIN SITE --- */
+        #site-wrapper { display: none; }
+
+        .top-bar {
+            background: var(--forest);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+
+        header img { height: 50px; }
+
+        nav ul { display: flex; list-style: none; gap: 30px; }
+        nav a { text-decoration: none; color: var(--navy); font-weight: 800; font-size: 0.75rem; letter-spacing: 1px; }
+
+        /* --- MAP INTERFACE --- */
+        .map-section {
+            background: var(--sand);
+            padding: 60px 5%;
+            text-align: center;
+        }
+
+        .map-section h2 { font-family: 'Montserrat'; font-size: 2rem; margin-bottom: 40px; }
+
+        .map-frame {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .map-frame img { width: 100%; display: block; border: 1px solid #ddd; }
+
+        /* --- ATTRACTION GRID --- */
+        .grid-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .info-box {
+            background: white;
+            padding: 25px;
+            text-align: left;
+            border-top: 4px solid var(--aqua);
+        }
+
+        .info-box h4 { margin-bottom: 10px; text-transform: uppercase; font-size: 0.9rem; }
+        .info-box p { font-size: 0.85rem; color: var(--slate); }
+
+        /* --- LOGO ICONS (SVG) --- */
+        .icon { width: 24px; height: 24px; vertical-align: middle; fill: var(--navy); margin-right: 10px; }
+
+        footer {
+            background: var(--navy);
+            color: rgba(255,255,255,0.6);
+            padding: 60px 5%;
+            text-align: center;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
-    <h1>you're gay</h1>
+
+    <div id="login-overlay">
+        <div class="login-card">
+            <img src="ChatGPT Image Apr 30, 2026, 05_56_43 PM.jpg" alt="Riverbend Rapids Logo">
+            <input type="text" id="uid" placeholder="USER ID">
+            <input type="password" id="key" placeholder="ACCESS KEY">
+            <button class="btn-login" onclick="validate()">Authorize Access</button>
+            <p id="err">INVALID CREDENTIALS</p>
+        </div>
+    </div>
+
+    <div id="site-wrapper">
+        <div class="top-bar">
+            SYSTEM STATUS: OPERATIONAL | FACILITY OPEN
+        </div>
+
+        <header>
+            <img src="ChatGPT Image Apr 30, 2026, 05_56_43 PM.jpg" alt="Logo">
+            <nav>
+                <ul>
+                    <li><a href="#">OPERATIONS</a></li>
+                    <li><a href="#">FACILITY MAP</a></li>
+                    <li><a href="#">GUEST SERVICES</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <section class="map-section">
+            <h2>PARK LAYOUT & ATTRACTIONS</h2>
+            
+            <div class="map-frame">
+                <img src="ChatGPT Image Apr 30, 2026, 05_59_11 PM.jpg" alt="Morrow County Waterpark Map">
+            </div>
+
+            <div class="grid-container">
+                <div class="info-box">
+                    <h4>
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M10,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L14,2M12,15.44L8.12,17.25L10.5,9.22L12,4.27L13.5,9.22L15.88,17.25L12,15.44Z"/></svg>
+                        Rapids Tower
+                    </h4>
+                    <p>Featuring Thunder Falls, Canyon Twist, and Pine Drop. High-thrill vertical descents.</p>
+                </div>
+                <div class="info-box">
+                    <h4>
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12,20A6,6 0 0,1 6,14C6,10 12,3.25 12,3.25C12,3.25 18,10 18,14A6,6 0 0,1 12,20Z"/></svg>
+                        Morrow Bay
+                    </h4>
+                    <p>Premium wave pool facility with Waveside Grill dining adjacent.</p>
+                </div>
+                <div class="info-box">
+                    <h4>
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22C17.53,22 22,17.53 22,12C22,6.47 17.53,2 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M15,12A3,3 0 1,1 12,9A3,3 0 0,1 15,12Z"/></svg>
+                        Driftwood Creek
+                    </h4>
+                    <p>Continuous lazy river navigation with forest perimeter views.</p>
+                </div>
+            </div>
+        </section>
+
+        <section style="padding: 60px 5%; text-align: center; border-top: 1px solid #eee;">
+            <h3 style="letter-spacing: 2px; margin-bottom: 30px;">DINING & RETAIL LOGOS</h3>
+            <div style="display: flex; justify-content: center; gap: 50px; opacity: 0.7; font-weight: 800; font-size: 0.7rem;">
+                <span>PIZZA PLAZA</span>
+                <span>WAVESIDE GRILL</span>
+                <span>RIVER SHACK</span>
+                <span>SURF SIDE SNACKS</span>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 RIVERBEND RAPIDS WATERPARK | MORROW COUNTY FACILITY</p>
+            <p style="margin-top: 10px; font-size: 0.7rem;">OFFICIAL USE ONLY - INTERNAL SYSTEM</p>
+        </footer>
+    </div>
+
+    <script>
+        function validate() {
+            const u = document.getElementById('uid').value;
+            const k = document.getElementById('key').value;
+            // Admin Credentials
+            if (u === "admin" && k === "general") {
+                document.getElementById('login-overlay').style.display = "none";
+                document.getElementById('site-wrapper').style.display = "block";
+                window.scrollTo(0,0);
+            } else {
+                document.getElementById('err').style.display = "block";
+            }
+        }
+
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') validate();
+        });
+    </script>
 </body>
 </html>
