@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riverbend Rapids | Secure Portal</title>
+    <title>Riverbend Rapids | Internal Facility Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,67 +13,71 @@
             --sand: #f4f1ea;
             --white: #ffffff;
             --slate: #4a5568;
+            --border: #e2e8f0;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Open Sans', sans-serif; color: var(--navy); background-color: var(--white); }
+        body { font-family: 'Open Sans', sans-serif; color: var(--navy); background-color: var(--white); line-height: 1.6; }
 
-        /* --- LOGIN SCREEN --- */
-        #login-overlay {
+        /* --- ACCESS GATE --- */
+        #gate-overlay {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: linear-gradient(rgba(27, 58, 93, 0.95), rgba(27, 58, 93, 0.95)), 
-                        url('ChatGPT Image Apr 30, 2026, 05_59_11 PM.jpg') center/cover;
+            background: linear-gradient(rgba(27, 58, 93, 0.98), rgba(27, 58, 93, 0.98)), 
+                        url('map-facility.jpg') center/cover;
             display: flex; justify-content: center; align-items: center;
             z-index: 10000;
         }
 
-        .login-card {
+        .gate-card {
             background: var(--white);
-            padding: 50px;
-            border-radius: 4px; /* Professional sharp edges or slight round */
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            width: 400px;
+            padding: 60px;
+            width: 450px;
             text-align: center;
+            border-bottom: 6px solid var(--forest);
         }
 
-        .login-card img { width: 180px; margin-bottom: 30px; }
+        .gate-card img { width: 220px; margin-bottom: 40px; }
         
-        .login-card input {
+        .gate-card input {
             width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
+            padding: 14px;
+            margin: 10px 0;
+            border: 1px solid var(--border);
+            background: var(--sand);
             font-family: inherit;
+            font-weight: 600;
         }
 
-        .btn-login {
+        .btn-auth {
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             background: var(--navy);
             color: white;
             border: none;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 20px;
+            transition: background 0.3s;
         }
 
-        #err { color: #c53030; font-size: 0.85rem; margin-top: 15px; display: none; font-weight: 600; }
+        .btn-auth:hover { background: var(--forest); }
+        #auth-error { color: #c53030; font-size: 0.8rem; margin-top: 15px; display: none; font-weight: 700; text-transform: uppercase; }
 
-        /* --- MAIN SITE --- */
-        #site-wrapper { display: none; }
+        /* --- CONTENT WRAPPER --- */
+        #portal-content { display: none; }
 
-        .top-bar {
+        .status-header {
             background: var(--forest);
             color: white;
             text-align: center;
-            padding: 10px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 2px;
+            padding: 12px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 2.5px;
             text-transform: uppercase;
         }
 
@@ -81,159 +85,237 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 5%;
+            padding: 25px 8%;
             background: white;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border);
         }
 
-        header img { height: 50px; }
+        header img { height: 55px; }
 
-        nav ul { display: flex; list-style: none; gap: 30px; }
-        nav a { text-decoration: none; color: var(--navy); font-weight: 800; font-size: 0.75rem; letter-spacing: 1px; }
+        nav ul { display: flex; list-style: none; gap: 35px; }
+        nav a { text-decoration: none; color: var(--navy); font-weight: 800; font-size: 0.75rem; letter-spacing: 1.5px; }
+        nav a:hover { color: var(--aqua); }
 
-        /* --- MAP INTERFACE --- */
-        .map-section {
-            background: var(--sand);
-            padding: 60px 5%;
-            text-align: center;
-        }
+        /* --- MAP SECTION --- */
+        .section-container { padding: 80px 8%; }
+        .section-title { text-align: center; margin-bottom: 50px; }
+        .section-title h2 { font-family: 'Montserrat'; font-size: 2.2rem; letter-spacing: -1px; text-transform: uppercase; }
 
-        .map-section h2 { font-family: 'Montserrat'; font-size: 2rem; margin-bottom: 40px; }
-
-        .map-frame {
-            max-width: 1100px;
-            margin: 0 auto;
+        .map-display {
             background: white;
-            padding: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            position: relative;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
         }
 
-        .map-frame img { width: 100%; display: block; border: 1px solid #ddd; }
+        .map-display img { width: 100%; display: block; }
 
-        /* --- ATTRACTION GRID --- */
-        .grid-container {
-            max-width: 1100px;
-            margin: 40px auto;
+        /* --- SVG ICONS --- */
+        .icon { width: 22px; height: 22px; vertical-align: middle; fill: var(--navy); margin-right: 12px; }
+
+        /* --- REVIEWS SECTION --- */
+        .reviews-bg { background: var(--sand); }
+        
+        .reviews-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
         }
 
-        .info-box {
-            background: white;
-            padding: 25px;
-            text-align: left;
-            border-top: 4px solid var(--aqua);
+        .review-card {
+            background: var(--white);
+            padding: 30px;
+            border-left: 4px solid var(--aqua);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
 
-        .info-box h4 { margin-bottom: 10px; text-transform: uppercase; font-size: 0.9rem; }
-        .info-box p { font-size: 0.85rem; color: var(--slate); }
+        .review-card h4 { font-size: 0.9rem; margin-bottom: 5px; color: var(--forest); }
+        .review-card p { font-size: 0.85rem; color: var(--slate); font-style: italic; }
+        .review-meta { margin-top: 15px; font-size: 0.7rem; font-weight: 700; color: var(--navy); text-transform: uppercase; }
 
-        /* --- LOGO ICONS (SVG) --- */
-        .icon { width: 24px; height: 24px; vertical-align: middle; fill: var(--navy); margin-right: 10px; }
-
+        /* --- FOOTER --- */
         footer {
             background: var(--navy);
-            color: rgba(255,255,255,0.6);
-            padding: 60px 5%;
+            color: white;
+            padding: 80px 8%;
             text-align: center;
-            font-size: 0.8rem;
         }
+
+        .footer-logo { width: 150px; opacity: 0.5; margin-bottom: 30px; filter: brightness(0) invert(1); }
+        .legal { font-size: 0.7rem; opacity: 0.4; letter-spacing: 1px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div id="login-overlay">
-        <div class="login-card">
-            <img src="ChatGPT Image Apr 30, 2026, 05_56_43 PM.jpg" alt="Riverbend Rapids Logo">
-            <input type="text" id="uid" placeholder="USER ID">
-            <input type="password" id="key" placeholder="ACCESS KEY">
-            <button class="btn-login" onclick="validate()">Authorize Access</button>
-            <p id="err">INVALID CREDENTIALS</p>
+    <div id="gate-overlay">
+        <div class="gate-card">
+            <img src="logo-main.png" alt="Riverbend Rapids">
+            <input type="text" id="user-field" placeholder="FACILITY ID">
+            <input type="password" id="pass-field" placeholder="ACCESS KEY">
+            <button class="btn-auth" onclick="unlock()">Authorize Entry</button>
+            <p id="auth-error">Access Denied: Invalid System Credentials</p>
         </div>
     </div>
 
-    <div id="site-wrapper">
-        <div class="top-bar">
-            SYSTEM STATUS: OPERATIONAL | FACILITY OPEN
+    <div id="portal-content">
+        <div class="status-header">
+            FACILITY STATUS: OPERATIONAL | SECURITY LEVEL: ALPHA | WEATHER: CLEAR
         </div>
 
         <header>
-            <img src="ChatGPT Image Apr 30, 2026, 05_56_43 PM.jpg" alt="Logo">
+            <img src="logo-main.png" alt="Logo">
             <nav>
                 <ul>
-                    <li><a href="#">OPERATIONS</a></li>
-                    <li><a href="#">FACILITY MAP</a></li>
-                    <li><a href="#">GUEST SERVICES</a></li>
+                    <li><a href="#map">PARK MAP</a></li>
+                    <li><a href="#attractions">FACILITIES</a></li>
+                    <li><a href="#reviews">VISITOR FEEDBACK</a></li>
                 </ul>
             </nav>
         </header>
 
-        <section class="map-section">
-            <h2>PARK LAYOUT & ATTRACTIONS</h2>
-            
-            <div class="map-frame">
-                <img src="ChatGPT Image Apr 30, 2026, 05_59_11 PM.jpg" alt="Morrow County Waterpark Map">
+        <section id="map" class="section-container">
+            <div class="section-title">
+                <h2>
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M15,19L9,16.89V5L15,7.11M20.5,3L20.34,3.03L15,5.1L9,3L3.36,4.9L3,5V20.5L3.16,20.47L9,18.4L15,20.5L20.64,18.6L21,18.5V3H20.5Z"/></svg>
+                    Park Navigation Layout
+                </h2>
             </div>
-
-            <div class="grid-container">
-                <div class="info-box">
-                    <h4>
-                        <svg class="icon" viewBox="0 0 24 24"><path d="M10,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L14,2M12,15.44L8.12,17.25L10.5,9.22L12,4.27L13.5,9.22L15.88,17.25L12,15.44Z"/></svg>
-                        Rapids Tower
-                    </h4>
-                    <p>Featuring Thunder Falls, Canyon Twist, and Pine Drop. High-thrill vertical descents.</p>
-                </div>
-                <div class="info-box">
-                    <h4>
-                        <svg class="icon" viewBox="0 0 24 24"><path d="M12,20A6,6 0 0,1 6,14C6,10 12,3.25 12,3.25C12,3.25 18,10 18,14A6,6 0 0,1 12,20Z"/></svg>
-                        Morrow Bay
-                    </h4>
-                    <p>Premium wave pool facility with Waveside Grill dining adjacent.</p>
-                </div>
-                <div class="info-box">
-                    <h4>
-                        <svg class="icon" viewBox="0 0 24 24"><path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22C17.53,22 22,17.53 22,12C22,6.47 17.53,2 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M15,12A3,3 0 1,1 12,9A3,3 0 0,1 15,12Z"/></svg>
-                        Driftwood Creek
-                    </h4>
-                    <p>Continuous lazy river navigation with forest perimeter views.</p>
-                </div>
+            <div class="map-display">
+                <img src="map-facility.jpg" alt="Morrow County Waterpark Map">
             </div>
         </section>
 
-        <section style="padding: 60px 5%; text-align: center; border-top: 1px solid #eee;">
-            <h3 style="letter-spacing: 2px; margin-bottom: 30px;">DINING & RETAIL LOGOS</h3>
-            <div style="display: flex; justify-content: center; gap: 50px; opacity: 0.7; font-weight: 800; font-size: 0.7rem;">
-                <span>PIZZA PLAZA</span>
-                <span>WAVESIDE GRILL</span>
-                <span>RIVER SHACK</span>
-                <span>SURF SIDE SNACKS</span>
+        <section id="reviews" class="section-container reviews-bg">
+            <div class="section-title">
+                <h2>
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/></svg>
+                    Verified Visitor Log
+                </h2>
+            </div>
+
+            <div class="reviews-grid">
+                <div class="review-card">
+                    <h4>Perfect for Families</h4>
+                    <p>"The Splash Zone kept my toddlers occupied for four hours straight. The dump bucket is a huge hit, and the sightlines for parents are excellent."</p>
+                    <div class="review-meta">Visitor ID: 8842 | Morrow Local</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Rapids Tower Thrills</h4>
+                    <p>"Thunder Falls is easily the best drop slide in the county. The vertical descent is terrifying in the best way possible. A must-visit for adrenaline junkies."</p>
+                    <div class="review-meta">Visitor ID: 1029 | Season Pass Holder</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Driftwood Creek Relaxation</h4>
+                    <p>"Most relaxing lazy river I've ever experienced. The way it winds through the actual trees instead of just concrete paths makes a massive difference."</p>
+                    <div class="review-meta">Visitor ID: 5531 | Weekend Guest</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Impeccable Facilities</h4>
+                    <p>"Extremely clean. The locker system is digital and easy to use, and the changing rooms didn't have the typical 'damp' smell of other parks."</p>
+                    <div class="review-meta">Visitor ID: 9920 | Travel Reviewer</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Waveside Grill Quality</h4>
+                    <p>"Actually good park food. The brisket sandwich at Waveside Grill was restaurant-quality. A bit of a wait, but worth every minute."</p>
+                    <div class="review-meta">Visitor ID: 4412 | Food Critic</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Safety First</h4>
+                    <p>"As a parent, I was impressed by the lifeguard rotation. They are incredibly attentive and didn't miss a beat even during a busy Saturday."</p>
+                    <div class="review-meta">Visitor ID: 6701 | First Time Guest</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Morrow Bay Vibes</h4>
+                    <p>"The beach entry at the wave pool is perfect. It felt like being at the ocean without the salt and sand. Very well maintained."</p>
+                    <div class="review-meta">Visitor ID: 2218 | Senior Resident</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Canyon Twist Surprise</h4>
+                    <p>"Don't sleep on Canyon Twist. It looks moderate from the ground, but the transitions in the dark sections are surprisingly fast."</p>
+                    <div class="review-meta">Visitor ID: 3394 | Slide Enthusiast</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Excellent Value</h4>
+                    <p>"The season pass paid for itself in three visits. If you live in Morrow County, there is no reason not to have one of these for the summer."</p>
+                    <div class="review-meta">Visitor ID: 1105 | Family Group</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Natural Integration</h4>
+                    <p>"I love that they kept the original pine trees. It provides so much natural shade compared to other parks that are just open asphalt."</p>
+                    <div class="review-meta">Visitor ID: 7729 | Nature Group</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Cabana Experience</h4>
+                    <p>"Renting a cabana was the best decision. Having a dedicated home base with a shaded table made the 90-degree heat totally manageable."</p>
+                    <div class="review-meta">Visitor ID: 4566 | Corporate Event</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Fast Lines</h4>
+                    <p>"Visited on a Tuesday and never waited more than 10 minutes for the Rapids Tower. The park operations team really knows how to move a crowd."</p>
+                    <div class="review-meta">Visitor ID: 8221 | Mid-Week Visitor</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Pine Drop Review</h4>
+                    <p>"Pine Drop is short but sweet. The initial dip gives you a great stomach-flip feeling before you hit the splashdown."</p>
+                    <div class="review-meta">Visitor ID: 5002 | Teen Visitor</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Staff Professionalism</h4>
+                    <p>"Lost my sunglasses near the River Shack and the Guest Services team found them and had them at the desk within the hour. Top notch service."</p>
+                    <div class="review-meta">Visitor ID: 1993 | Daily Guest</div>
+                </div>
+
+                <div class="review-card">
+                    <h4>Pizza Plaza Surprise</h4>
+                    <p>"The crust on the Pizza Plaza slices was surprisingly crispy. Best quick-service pizza I've had at an attraction."</p>
+                    <div class="review-meta">Visitor ID: 3044 | Local Family</div>
+                </div>
             </div>
         </section>
 
         <footer>
-            <p>&copy; 2026 RIVERBEND RAPIDS WATERPARK | MORROW COUNTY FACILITY</p>
-            <p style="margin-top: 10px; font-size: 0.7rem;">OFFICIAL USE ONLY - INTERNAL SYSTEM</p>
+            <img src="logo-main.png" alt="Riverbend Rapids" class="footer-logo">
+            <p>123 RIVER ROAD, MORROW COUNTY | OPERATIONAL PORTAL V2.6</p>
+            <p class="legal">SECURE SYSTEM ACCESS FOR AUTHORIZED PERSONNEL ONLY. REPRODUCTION OF MAP ASSETS IS STRICTLY PROHIBITED.</p>
         </footer>
     </div>
 
     <script>
-        function validate() {
-            const u = document.getElementById('uid').value;
-            const k = document.getElementById('key').value;
-            // Admin Credentials
-            if (u === "admin" && k === "general") {
-                document.getElementById('login-overlay').style.display = "none";
-                document.getElementById('site-wrapper').style.display = "block";
+        function unlock() {
+            const u = document.getElementById('user-field').value;
+            const p = document.getElementById('pass-field').value;
+            
+            // Credentials as requested
+            if (u === "admin" && p === "general") {
+                document.getElementById('gate-overlay').style.display = "none";
+                document.getElementById('portal-content').style.display = "block";
                 window.scrollTo(0,0);
             } else {
-                document.getElementById('err').style.display = "block";
+                document.getElementById('auth-error').style.display = "block";
+                // Simple vibration effect
+                const card = document.querySelector('.gate-card');
+                card.style.transform = "translateX(5px)";
+                setTimeout(() => card.style.transform = "translateX(-5px)", 50);
+                setTimeout(() => card.style.transform = "translateX(0)", 100);
             }
         }
 
+        // Enter key support
         document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') validate();
+            if (e.key === 'Enter') unlock();
         });
     </script>
 </body>
