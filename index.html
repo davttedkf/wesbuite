@@ -3,258 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riverbend Rapids | Official Site & Operations</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Game Terminal</title>
     <style>
-        :root {
-            --river-blue: #0061ff;
-            --river-dark: #1b3a5d;
-            --forest: #2d4739;
-            --accent-orange: #ff6b00; /* Aqua Planet Style CTA */
-            --light-bg: #f4f7f6;
-            --white: #ffffff;
-            --text: #334155;
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Open Sans', sans-serif; background: var(--light-bg); color: var(--text); overflow-x: hidden; }
-
-        /* --- LOGIN GATE --- */
-        #login-gate {
-            position: fixed; inset: 0; z-index: 10000;
-            background: linear-gradient(rgba(27, 58, 93, 0.9), rgba(27, 58, 93, 0.9)), 
-                        url('https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=2070') center/cover;
-            display: flex; justify-content: center; align-items: center; transition: 0.5s;
-        }
-        .login-card {
-            background: var(--white); padding: 50px; width: 400px; border-radius: 2px; text-align: center;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-        }
-        .login-card img { width: 180px; margin-bottom: 30px; }
-        .login-card input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; background: #fafafa; font-family: inherit; }
-        .login-btn { width: 100%; padding: 15px; background: var(--river-dark); color: white; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
-        .login-btn:hover { background: var(--forest); }
-
-        /* --- MAIN SITE STRUCTURE --- */
-        #main-site { display: none; }
-
-        /* Aqua Planet Top Header */
-        .top-info-bar {
-            background: var(--river-dark); color: white; padding: 10px 8%;
-            display: flex; justify-content: flex-end; gap: 30px; font-size: 0.65rem; font-weight: 700; letter-spacing: 1px;
+        /* Login Screen Styles */
+        #login-container {
+            text-align: center;
+            border: 1px solid #333;
+            padding: 40px;
+            background: #0a0a0a;
+            z-index: 10;
         }
 
-        header {
-            background: var(--white); padding: 15px 8%; display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        input {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            background: #111;
+            border: 1px solid #444;
+            color: #0f0;
+            outline: none;
         }
-        .logo img { height: 60px; }
-        nav ul { display: flex; list-style: none; gap: 30px; }
-        nav a { text-decoration: none; color: var(--river-dark); font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
-        nav a:hover { color: var(--river-blue); }
 
-        /* --- HERO SECTION (Aqua Planet Design) --- */
-        .hero {
-            height: 85vh; position: relative;
-            background: linear-gradient(rgba(0, 97, 255, 0.2), rgba(0, 97, 255, 0.2)), 
-                        url('https://images.unsplash.com/photo-1519331379826-f10be5486c6f?q=80&w=2070') center/cover;
-            display: flex; align-items: center; padding: 0 8%;
+        button {
+            padding: 10px 20px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
+            cursor: pointer;
         }
-        .hero-content { max-width: 600px; color: white; }
-        .hero-title { font-family: 'Montserrat'; font-weight: 900; font-size: 4rem; line-height: 1; margin-bottom: 20px; text-transform: uppercase; }
-        .hero-desc { font-size: 1rem; margin-bottom: 30px; line-height: 1.6; opacity: 0.9; }
-        .cta-btn {
-            background: var(--accent-orange); color: white; padding: 18px 40px; text-decoration: none;
-            font-weight: 800; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;
-            display: inline-flex; align-items: center; gap: 15px; border-radius: 2px; transition: 0.3s;
+
+        button:hover {
+            background: #333;
         }
-        .cta-btn:hover { background: #e66000; transform: scale(1.05); }
 
-        /* --- LIVE STATUS BAR --- */
-        .status-strip {
-            background: var(--white); padding: 30px 8%; display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 20px; border-bottom: 1px solid #eee;
+        /* Credits Screen Styles */
+        #credits-wrapper {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 400px; /* Optional: adds a slight tilt effect */
         }
-        .status-box { border-left: 3px solid var(--river-blue); padding-left: 20px; }
-        .status-box small { display: block; font-weight: 800; color: #94a3b8; font-size: 0.65rem; text-transform: uppercase; }
-        .status-box span { font-size: 1.4rem; font-weight: 800; color: var(--river-dark); }
 
-        /* --- BETTER MAP INTERFACE --- */
-        .map-section { padding: 80px 8%; background: var(--white); text-align: center; }
-        .map-section h2 { font-family: 'Montserrat'; font-size: 2.5rem; text-transform: uppercase; margin-bottom: 40px; }
-        
-        .map-viewer {
-            position: relative; max-width: 1100px; margin: 0 auto; 
-            border: 10px solid #fff; box-shadow: 0 40px 100px rgba(0,0,0,0.1); overflow: hidden;
+        #credits-content {
+            position: absolute;
+            width: 100%;
+            bottom: -150%; /* Start below the screen */
+            text-align: center;
         }
-        .map-viewer img { width: 100%; display: block; transition: 0.5s; }
-        
-        /* Map Hotspots */
-        .hotspot {
-            position: absolute; width: 30px; height: 30px; background: var(--river-blue);
-            border-radius: 50%; border: 3px solid white; cursor: pointer; transition: 0.3s;
+
+        .scrolling {
+            /* 3 minutes and 20 seconds = 200 seconds */
+            animation: scroll-up 200s linear forwards;
         }
-        .hotspot:hover { transform: scale(1.5); background: var(--accent-orange); }
-        .hotspot::after {
-            content: attr(data-label); position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-            background: var(--river-dark); color: white; padding: 5px 12px; font-size: 0.7rem; font-weight: 700;
-            white-space: nowrap; opacity: 0; visibility: hidden; transition: 0.3s; border-radius: 4px;
+
+        @keyframes scroll-up {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-300%); } /* Adjust based on content length */
         }
-        .hotspot:hover::after { opacity: 1; visibility: visible; bottom: 45px; }
 
-        /* --- ATTRACTON CARDS (Aqua Planet Style) --- */
-        .spots-section { padding: 80px 8%; background: var(--light-bg); }
-        .spots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 40px; }
-        .spot-card { background: white; border-radius: 4px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .spot-img { height: 240px; background-size: cover; background-position: center; }
-        .spot-info { padding: 25px; }
-        .spot-info h3 { font-family: 'Montserrat'; text-transform: uppercase; margin-bottom: 10px; font-size: 1rem; color: var(--river-dark); }
-        .spot-info p { font-size: 0.85rem; color: #64748b; line-height: 1.5; }
+        h1 { font-size: 3em; margin-bottom: 50px; color: #aaa; }
+        h2 { margin-top: 60px; color: #888; }
+        p { font-size: 1.2em; margin: 10px 0; }
 
-        footer { background: var(--river-dark); color: white; padding: 80px 8%; text-align: center; }
-        .footer-logo { height: 60px; filter: brightness(0) invert(1); opacity: 0.6; margin-bottom: 20px; }
-        .footer-legal { font-size: 0.7rem; opacity: 0.5; letter-spacing: 1px; }
-
-        /* SVG Icon Utility */
-        .icon { width: 20px; height: 20px; fill: currentColor; }
-
+        .error { color: #f00; font-size: 0.8em; margin-top: 10px; display: none;}
     </style>
 </head>
 <body>
 
-    <div id="login-gate">
-        <div class="login-card">
-            <img src="logo-main.png" alt="Logo">
-            <input type="text" id="uid" placeholder="ADMIN USERNAME">
-            <input type="password" id="ukey" placeholder="ACCESS KEY">
-            <button class="login-btn" onclick="login()">Enter Facility</button>
-            <p id="err" style="color:red; display:none; margin-top:15px; font-weight:700; font-size:0.7rem;">ACCESS DENIED</p>
-        </div>
+    <div id="login-container">
+        <h2>SYSTEM ACCESS</h2>
+        <input type="text" id="username" placeholder="USERNAME">
+        <input type="password" id="password" placeholder="PASSWORD">
+        <button onclick="attemptLogin()">AUTHORIZE</button>
+        <div id="error-msg" class="error">INVALID CREDENTIALS</div>
     </div>
 
-    <div id="main-site">
-        <div class="top-info-bar">
-            <span>OPERATIONS@RIVERBEND.COM</span>
-            <span>+1 800 RAPIDS</span>
-        </div>
-
-        <header>
-            <div class="logo">
-                <img src="logo-main.png" alt="Riverbend Rapids">
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#map">Map Center</a></li>
-                    <li><a href="#">Safety</a></li>
-                    <li><a href="#">Join Us</a></li>
-                    <li>
-                        <svg class="icon" viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"/></svg>
-                    </li>
-                </ul>
-            </nav>
-        </header>
-
-        <section class="hero">
-            <div class="hero-content">
-                <h1 class="hero-title">Riverbend Rapids</h1>
-                <p class="hero-desc">Morrow County's premier water theme park featuring 25+ natural-themed attractions. Experience the thrill of the forest with high-speed drops and winding river escapes.</p>
-                <a href="#map" class="cta-btn">
-                    Explore The Park
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"/></svg>
-                </a>
-            </div>
-        </section>
-
-        <section class="status-strip">
-            <div class="status-box">
-                <small>Park Status</small>
-                <span>OPERATIONAL</span>
-            </div>
-            <div class="status-box">
-                <small>Current Temp</small>
-                <span>84.2° F</span>
-            </div>
-            <div class="status-box">
-                <small>Live Capacity</small>
-                <span>64%</span>
-            </div>
-            <div class="status-box">
-                <small>Peak Wait Time</small>
-                <span>25 MIN</span>
-            </div>
-        </section>
-
-        <section id="map" class="map-section">
-            <h2>Interactive Facility Map</h2>
-            <div class="map-viewer">
-                <img src="map-facility.jpg" alt="Master Map">
-                
-                <div class="hotspot" style="top: 25%; left: 45%;" data-label="Morrow Bay Wave Pool"></div>
-                <div class="hotspot" style="top: 15%; left: 75%;" data-label="Rapids Tower"></div>
-                <div class="hotspot" style="top: 60%; left: 70%;" data-label="Driftwood Creek"></div>
-                <div class="hotspot" style="top: 80%; left: 50%;" data-label="Main Entrance"></div>
-                <div class="hotspot" style="top: 45%; left: 35%;" data-label="Splash Zone"></div>
-            </div>
-        </section>
-
-        <section class="spots-section">
-            <h2 style="text-align: center; font-family: 'Montserrat'; text-transform: uppercase;">Signature Spots</h2>
-            <p style="text-align: center; margin-bottom: 50px; font-weight: 600; color: #64748b;">Riverbend boasts over 25 attractions for the whole family.</p>
+    <div id="credits-wrapper">
+        <div id="credits-content">
+            <h1>STRATCOM</h1>
             
-            <div class="spots-grid">
-                <div class="spot-card">
-                    <div class="spot-img" style="background-image: url('https://images.unsplash.com/photo-1582650625119-3a31f8fa2699?q=80&w=800');"></div>
-                    <div class="spot-info">
-                        <h3>Thunder Falls</h3>
-                        <p>Our flagship vertical drop slide that plunges you into a natural limestone basin.</p>
-                    </div>
-                </div>
-                <div class="spot-card">
-                    <div class="spot-img" style="background-image: url('https://images.unsplash.com/photo-1519331379826-f10be5486c6f?q=80&w=800');"></div>
-                    <div class="spot-info">
-                        <h3>Morrow Bay</h3>
-                        <p>Massive 4-foot swells and a white sand beach entry for a coastal feel.</p>
-                    </div>
-                </div>
-                <div class="spot-card">
-                    <div class="spot-img" style="background-image: url('https://images.unsplash.com/photo-1520116468816-95b69f847357?q=80&w=800');"></div>
-                    <div class="spot-info">
-                        <h3>Driftwood Creek</h3>
-                        <p>Wind through a dense pine grove on this 1,200-foot continuous lazy river.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+            <h2>DEVELOPMENT TEAM</h2>
+            <p>Lead Developer</p>
+            <p>UI/UX Design</p>
+            
+            <h2>SIMULATION ENGINE</h2>
+            <p>Logic Systems</p>
+            <p>Data Management</p>
 
-        <footer>
-            <img src="logo-main.png" alt="Logo" class="footer-logo">
-            <p style="font-weight: 800; letter-spacing: 2px;">RIVERBEND RAPIDS WATERPARK</p>
-            <p style="margin: 20px 0; font-size: 0.8rem; opacity: 0.6;">123 River Road, Morrow County, USA</p>
-            <p class="footer-legal">&copy; 2026 OFFICIAL MORROW COUNTY TOURISM ASSET. ALL RIGHTS RESERVED.</p>
-        </footer>
+            <h2>SOUND DESIGN</h2>
+            <p>Ambient Score</p>
+            <p>Sound Effects</p>
+
+            <h2>SPECIAL THANKS</h2>
+            <p>The Testers</p>
+            <p>Community Supporters</p>
+            <p>And You.</p>
+
+            <div style="margin-top: 500px;">
+                <p>© 2026 PROJECT TERMINATED</p>
+            </div>
+        </div>
     </div>
+
+    <audio id="credits-music">
+        <source src="your-song.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 
     <script>
-        function login() {
-            const u = document.getElementById('uid').value;
-            const k = document.getElementById('ukey').value;
-            if(u === 'admin' && k === 'general') {
-                document.getElementById('login-gate').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('login-gate').style.display = 'none';
-                    document.getElementById('main-site').style.display = 'block';
-                    window.scrollTo(0,0);
-                }, 500);
+        function attemptLogin() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+
+            if (user === "admin" && pass === "general") {
+                startCredits();
             } else {
-                document.getElementById('err').style.display = 'block';
+                errorMsg.style.display = "block";
             }
         }
 
-        // Enter key shortcut
-        document.addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') login();
-        });
+        function startCredits() {
+            // Hide Login
+            document.getElementById('login-container').style.display = 'none';
+            
+            // Show Credits Wrapper
+            const wrapper = document.getElementById('credits-wrapper');
+            const content = document.getElementById('credits-content');
+            wrapper.style.display = 'block';
+            
+            // Play Music
+            const music = document.getElementById('credits-music');
+            music.play().catch(e => console.log("Audio play failed: Check file path or browser permissions."));
+
+            // Start Animation
+            content.classList.add('scrolling');
+        }
     </script>
 </body>
 </html>
