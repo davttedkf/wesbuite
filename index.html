@@ -58,38 +58,43 @@
             left: 0;
             width: 100%;
             height: 100%;
-            perspective: 400px; /* Optional: adds a slight tilt effect */
         }
 
         #credits-content {
             position: absolute;
             width: 100%;
-            bottom: -150%; /* Start below the screen */
+            /* Start fully below the visible screen */
+            top: 100%;
             text-align: center;
         }
 
+        /* 
+            Total duration: 3 minutes 20 seconds = 200 seconds
+            We need the content to travel from top:100% to above the screen.
+            Using translateY to move it up by (100vh + full content height).
+            We use a large translateY value to ensure all content scrolls past.
+        */
         .scrolling {
-            /* 3 minutes and 20 seconds = 200 seconds */
             animation: scroll-up 200s linear forwards;
         }
 
         @keyframes scroll-up {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-300%); } /* Adjust based on content length */
+            0%   { transform: translateY(0); }
+            100% { transform: translateY(-3500px); }
         }
 
         h1 { font-size: 3em; margin-bottom: 50px; color: #aaa; }
         h2 { margin-top: 60px; color: #888; }
-        p { font-size: 1.2em; margin: 10px 0; }
+        p  { font-size: 1.2em; margin: 10px 0; }
 
-        .error { color: #f00; font-size: 0.8em; margin-top: 10px; display: none;}
+        .error { color: #f00; font-size: 0.8em; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
 
     <div id="login-container">
         <h2>SYSTEM ACCESS</h2>
-        <input type="text" id="username" placeholder="USERNAME">
+        <input type="text"     id="username" placeholder="USERNAME">
         <input type="password" id="password" placeholder="PASSWORD">
         <button onclick="attemptLogin()">AUTHORIZE</button>
         <div id="error-msg" class="error">INVALID CREDENTIALS</div>
@@ -98,11 +103,11 @@
     <div id="credits-wrapper">
         <div id="credits-content">
             <h1>STRATCOM</h1>
-            
+
             <h2>DEVELOPMENT TEAM</h2>
             <p>Lead Developer</p>
             <p>UI/UX Design</p>
-            
+
             <h2>SIMULATION ENGINE</h2>
             <p>Logic Systems</p>
             <p>Data Management</p>
@@ -122,15 +127,20 @@
         </div>
     </div>
 
-  <audio id="credits-music">
-       <source src="credits.mp3" type="audio/mpeg">
-       <source src="credits.ogg" type="audio/ogg">
-   </audio>
+    <!--
+        IMPORTANT: Replace "credits.mp3" with the exact filename of your MP3
+        as it appears in the root of your GitHub repository.
+        Example: if your file is called "theme.mp3", change it to src="theme.mp3"
+    -->
+    <audio id="credits-music">
+        <source src="credits.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 
     <script>
         function attemptLogin() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
+            const user     = document.getElementById('username').value;
+            const pass     = document.getElementById('password').value;
             const errorMsg = document.getElementById('error-msg');
 
             if (user === "admin" && pass === "general") {
@@ -141,21 +151,25 @@
         }
 
         function startCredits() {
-            // Hide Login
+            // Hide login
             document.getElementById('login-container').style.display = 'none';
-            
-            // Show Credits Wrapper
+
+            // Show credits wrapper
             const wrapper = document.getElementById('credits-wrapper');
             const content = document.getElementById('credits-content');
             wrapper.style.display = 'block';
-            
-            // Play Music
-            const music = document.getElementById('credits-music');
-            music.play().catch(e => console.log("Audio play failed: Check file path or browser permissions."));
 
-            // Start Animation
+            // Play music — this works on GitHub Pages because it's
+            // triggered directly by a user click (the AUTHORIZE button).
+            const music = document.getElementById('credits-music');
+            music.play().catch(e => {
+                console.warn("Audio could not play:", e);
+            });
+
+            // Start the 3:20 scroll animation
             content.classList.add('scrolling');
         }
     </script>
 </body>
 </html>
+
