@@ -3,173 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Terminal</title>
+    <title>Private Notepad</title>
     <style>
-        body, html {
+        :root {
+            --bg-color: #f8f9fa;
+            --notepad-bg: #ffffff;
+            --text-color: #212529;
+            --border-color: #dee2e6;
+            --accent-color: #4dadf7;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --notepad-bg: #2d2d2d;
+                --text-color: #f8f9fa;
+                --border-color: #404040;
+                --accent-color: #3b5bdb;
+                --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .notepad-container {
+            width: 100%;
+            max-width: 800px;
+            height: 80vh;
+            background-color: var(--notepad-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--notepad-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status {
+            font-size: 0.85rem;
+            color: #868e96;
+            transition: opacity 0.3s;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--border-color);
+        }
+
+        .btn-danger:hover {
+            background-color: #fa5252;
+            color: white;
+            border-color: #fa5252;
+        }
+
+        .textarea-wrapper {
+            flex-grow: 1;
+            position: relative;
+            padding: 20px;
+        }
+
+        textarea {
             width: 100%;
             height: 100%;
-            background-color: #000;
-            color: #fff;
-            font-family: 'Courier New', Courier, monospace;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Login Screen Styles */
-        #login-container {
-            text-align: center;
-            border: 1px solid #333;
-            padding: 40px;
-            background: #0a0a0a;
-            z-index: 10;
-        }
-
-        input {
-            display: block;
-            margin: 10px auto;
-            padding: 10px;
-            background: #111;
-            border: 1px solid #444;
-            color: #0f0;
+            border: none;
+            resize: none;
+            background: transparent;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 1.1rem;
+            line-height: 1.6;
             outline: none;
         }
 
-        button {
-            padding: 10px 20px;
-            background: #222;
-            color: #fff;
-            border: 1px solid #444;
-            cursor: pointer;
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-
-        button:hover {
-            background: #333;
+        ::-webkit-scrollbar-track {
+            background: transparent;
         }
-
-        /* Credits Screen Styles */
-        #credits-wrapper {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
         }
-
-        #credits-content {
-            position: absolute;
-            width: 100%;
-            /* Start fully below the visible screen */
-            top: 100%;
-            text-align: center;
-        }
-
-        /* 
-            Total duration: 3 minutes 20 seconds = 200 seconds
-            We need the content to travel from top:100% to above the screen.
-            Using translateY to move it up by (100vh + full content height).
-            We use a large translateY value to ensure all content scrolls past.
-        */
-        .scrolling {
-            animation: scroll-up 200s linear forwards;
-        }
-
-        @keyframes scroll-up {
-            0%   { transform: translateY(0); }
-            100% { transform: translateY(-3500px); }
-        }
-
-        h1 { font-size: 3em; margin-bottom: 50px; color: #aaa; }
-        h2 { margin-top: 60px; color: #888; }
-        p  { font-size: 1.2em; margin: 10px 0; }
-
-        .error { color: #f00; font-size: 0.8em; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
 
-    <div id="login-container">
-        <h2>SYSTEM ACCESS</h2>
-        <input type="text"     id="username" placeholder="USERNAME">
-        <input type="password" id="password" placeholder="PASSWORD">
-        <button onclick="attemptLogin()">AUTHORIZE</button>
-        <div id="error-msg" class="error">INVALID CREDENTIALS</div>
-    </div>
-
-    <div id="credits-wrapper">
-        <div id="credits-content">
-            <h1>STRATCOM</h1>
-
-            <h2>DEVELOPMENT TEAM</h2>
-            <p>Lead Developer</p>
-            <p>UI/UX Design</p>
-
-            <h2>SIMULATION ENGINE</h2>
-            <p>Logic Systems</p>
-            <p>Data Management</p>
-
-            <h2>SOUND DESIGN</h2>
-            <p>Ambient Score</p>
-            <p>Sound Effects</p>
-
-            <h2>SPECIAL THANKS</h2>
-            <p>The Testers</p>
-            <p>Community Supporters</p>
-            <p>And You.</p>
-
-            <div style="margin-top: 500px;">
-                <p>© 2026 PROJECT TERMINATED</p>
+    <div class="notepad-container">
+        <div class="header">
+            <div class="title">
+                🔒 Private Notepad
             </div>
+            <div class="controls">
+                <span id="status" class="status">Saved locally</span>
+                <button class="btn" onclick="copyText()">Copy Text</button>
+                <button class="btn btn-danger" onclick="clearNotepad()">Clear All</button>
+            </div>
+        </div>
+        <div class="textarea-wrapper">
+            <textarea id="note-area" placeholder="Type your private notes here... Everything is auto-saved locally to your browser." autofocus></textarea>
         </div>
     </div>
 
-    <!--
-        IMPORTANT: Replace "credits.mp3" with the exact filename of your MP3
-        as it appears in the root of your GitHub repository.
-        Example: if your file is called "theme.mp3", change it to src="theme.mp3"
-    -->
-    <audio id="credits-music">
-        <source src="credits.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-
     <script>
-        function attemptLogin() {
-            const user     = document.getElementById('username').value;
-            const pass     = document.getElementById('password').value;
-            const errorMsg = document.getElementById('error-msg');
+        const notepad = document.getElementById('note-area');
+        const status = document.getElementById('status');
+        let saveTimeout;
 
-            if (user === "admin" && pass === "general") {
-                startCredits();
-            } else {
-                errorMsg.style.display = "block";
+        // Load saved content on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedContent = localStorage.getItem('private_notepad_data');
+            if (savedContent) {
+                notepad.value = savedContent;
             }
+        });
+
+        // Listen for typing to auto-save
+        notepad.addEventListener('input', () => {
+            status.textContent = 'Typing...';
+            
+            // Debounce saving to optimize performance
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                localStorage.setItem('private_notepad_data', notepad.value);
+                status.textContent = 'Saved locally';
+            }, 500); 
+        });
+
+        // Copy text functionality
+        function copyText() {
+            notepad.select();
+            document.execCommand('copy');
+            
+            const originalStatus = status.textContent;
+            status.textContent = 'Copied to clipboard!';
+            setTimeout(() => {
+                status.textContent = originalStatus;
+            }, 2000);
         }
 
-        function startCredits() {
-            // Hide login
-            document.getElementById('login-container').style.display = 'none';
-
-            // Show credits wrapper
-            const wrapper = document.getElementById('credits-wrapper');
-            const content = document.getElementById('credits-content');
-            wrapper.style.display = 'block';
-
-            // Play music — this works on GitHub Pages because it's
-            // triggered directly by a user click (the AUTHORIZE button).
-            const music = document.getElementById('credits-music');
-            music.play().catch(e => {
-                console.warn("Audio could not play:", e);
-            });
-
-            // Start the 3:20 scroll animation
-            content.classList.add('scrolling');
+        // Clear notepad functionality
+        function clearNotepad() {
+            if (confirm('Are you sure you want to permanently delete all text in this notepad?')) {
+                notepad.value = '';
+                localStorage.removeItem('private_notepad_data');
+                status.textContent = 'Cleared';
+                setTimeout(() => {
+                    status.textContent = 'Saved locally';
+                }, 2000);
+            }
         }
     </script>
 </body>
 </html>
-
