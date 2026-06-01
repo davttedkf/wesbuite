@@ -3,207 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private Notepad</title>
+    <title>Surprise!</title>
     <style>
-        :root {
-            --bg-color: #f8f9fa;
-            --notepad-bg: #ffffff;
-            --text-color: #212529;
-            --border-color: #dee2e6;
-            --accent-color: #4dadf7;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #1a1a1a;
-                --notepad-bg: #2d2d2d;
-                --text-color: #f8f9fa;
-                --border-color: #404040;
-                --accent-color: #3b5bdb;
-                --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            }
-        }
-
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
         }
-
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-            transition: background-color 0.3s;
-        }
-
-        .notepad-container {
-            width: 100%;
-            max-width: 800px;
-            height: 80vh;
-            background-color: var(--notepad-bg);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial Black', Gadget, sans-serif;
+            background: radial-gradient(circle, #222 0%, #050505 100%);
             overflow: hidden;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background-color: var(--notepad-bg);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status {
-            font-size: 0.85rem;
-            color: #868e96;
-            transition: opacity 0.3s;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            background: none;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-
-        .btn:hover {
-            background-color: var(--border-color);
-        }
-
-        .btn-danger:hover {
-            background-color: #fa5252;
-            color: white;
-            border-color: #fa5252;
-        }
-
-        .textarea-wrapper {
-            flex-grow: 1;
             position: relative;
-            padding: 20px;
+            perspective: 1000px;
         }
 
-        textarea {
-            width: 100%;
-            height: 100%;
-            border: none;
-            resize: none;
-            background: transparent;
-            color: var(--text-color);
-            font-family: inherit;
-            font-size: 1.1rem;
-            line-height: 1.6;
-            outline: none;
+        .message {
+            text-align: center;
+            z-index: 10;
+            pointer-events: none;
+            transform: scale(0.5);
+            animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+        h1 {
+            font-size: 6rem;
+            margin: 0;
+            text-transform: uppercase;
+            color: #ffffff;
+            letter-spacing: 4px;
+            text-shadow: 
+                0 0 10px rgba(255, 255, 255, 0.3),
+                0 5px 0 #ccc,
+                0 10px 0 #bbb,
+                0 15px 0 #aaa,
+                0 20px 0 #999,
+                0 25px 30px rgba(0, 0, 0, 0.9);
+            animation: float 3s ease-in-out infinite alternate;
         }
-        ::-webkit-scrollbar-track {
-            background: transparent;
+
+        @keyframes popIn {
+            to { transform: scale(1); }
         }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(-2deg); }
+            100% { transform: translateY(-15px) rotate(2deg); }
+        }
+
+       
+        .confetti {
+            position: absolute;
+            top: -50px;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
+            100% {
+                
+                transform: translateY(110vh) translateX(100px) rotateX(720deg) rotateY(360deg) rotateZ(180deg);
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="notepad-container">
-        <div class="header">
-            <div class="title">
-                🔒 Private Notepad
-            </div>
-            <div class="controls">
-                <span id="status" class="status">Saved locally</span>
-                <button class="btn" onclick="copyText()">Copy Text</button>
-                <button class="btn btn-danger" onclick="clearNotepad()">Clear All</button>
-            </div>
-        </div>
-        <div class="textarea-wrapper">
-            <textarea id="note-area" placeholder="Type your private notes here... Everything is auto-saved locally to your browser." autofocus></textarea>
-        </div>
+    <div class="message">
+        <h1>your gay</h1>
     </div>
 
     <script>
-        const notepad = document.getElementById('note-area');
-        const status = document.getElementById('status');
-        let saveTimeout;
-
-        // Load saved content on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedContent = localStorage.getItem('private_notepad_data');
-            if (savedContent) {
-                notepad.value = savedContent;
-            }
-        });
-
-        // Listen for typing to auto-save
-        notepad.addEventListener('input', () => {
-            status.textContent = 'Typing...';
-            
-            // Debounce saving to optimize performance
-            clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => {
-                localStorage.setItem('private_notepad_data', notepad.value);
-                status.textContent = 'Saved locally';
-            }, 500); 
-        });
-
-        // Copy text functionality
-        function copyText() {
-            notepad.select();
-            document.execCommand('copy');
-            
-            const originalStatus = status.textContent;
-            status.textContent = 'Copied to clipboard!';
-            setTimeout(() => {
-                status.textContent = originalStatus;
-            }, 2000);
-        }
-
-        // Clear notepad functionality
-        function clearNotepad() {
-            if (confirm('Are you sure you want to permanently delete all text in this notepad?')) {
-                notepad.value = '';
-                localStorage.removeItem('private_notepad_data');
-                status.textContent = 'Cleared';
-                setTimeout(() => {
-                    status.textContent = 'Saved locally';
-                }, 2000);
-            }
-        }
-    </script>
+ 
 </body>
 </html>
