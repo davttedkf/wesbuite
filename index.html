@@ -1,86 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>gay boy!</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Message</title>
+
     <style>
-        * {
-            box-sizing: border-box;
-        }
-        
         body {
+            margin: 0;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Arial Black', Gadget, sans-serif;
-            background: radial-gradient(circle, #222 0%, #050505 100%);
-            overflow: hidden;
-            position: relative;
-            perspective: 1000px;
-        }
-
-        .message {
-            text-align: center;
-            z-index: 10;
-            pointer-events: none;
-            transform: scale(0.5);
-            animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            background-color: #111;
+            font-family: Arial, sans-serif;
         }
 
         h1 {
-            font-size: 6rem;
-            margin: 0;
-            text-transform: uppercase;
-            color: #ffffff;
-            letter-spacing: 4px;
-            text-shadow: 
-                0 0 10px rgba(255, 255, 255, 0.3),
-                0 5px 0 #ccc,
-                0 10px 0 #bbb,
-                0 15px 0 #aaa,
-                0 20px 0 #999,
-                0 25px 30px rgba(0, 0, 0, 0.9);
-            animation: float 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes popIn {
-            to { transform: scale(1); }
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(-2deg); }
-            100% { transform: translateY(-15px) rotate(2deg); }
-        }
-
-       
-        .confetti {
-            position: absolute;
-            top: -50px;
-            pointer-events: none;
-            animation: fall linear infinite;
-        }
-
-        @keyframes fall {
-            0% {
-                transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-            }
-            100% {
-                
-                transform: translateY(110vh) translateX(100px) rotateX(720deg) rotateY(360deg) rotateZ(180deg);
-            }
+            color: #fff;
+            font-size: 4rem;
+            font-weight: bold;
         }
     </style>
 </head>
+
 <body>
-
-    <div class="message">
-        <h1>your gay</h1>
-    </div>
-
-    <script>
- 
+    <h1>you're gay</h1>
 </body>
 </html>
