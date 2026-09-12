@@ -9,8 +9,7 @@
 <style>
 *{
     box-sizing:border-box;
-    user-select:none;
-    -webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
@@ -18,41 +17,128 @@ html,body{
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#91c7e8;
     font-family:Arial,sans-serif;
+    background:#101827;
+    color:white;
+}
+
+button,input{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.screen{
+    position:absolute;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+}
+
+.screen.active{
+    display:flex;
+}
+
+.menu{
+    width:min(92vw,520px);
+    padding:30px;
+    border:4px solid #fff;
+    background:#182238;
+    box-shadow:10px 10px 0 #080d18;
+    text-align:center;
+}
+
+.title{
+    margin:0 0 8px;
+    font-size:clamp(34px,8vw,64px);
+    line-height:1;
+    letter-spacing:2px;
+    text-shadow:5px 5px 0 #080d18;
+}
+
+.subtitle{
+    margin:0 0 25px;
+    color:#b9c6df;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    border:3px solid white;
+    background:#0e1627;
+    color:white;
+    outline:none;
+    text-align:center;
+    margin-bottom:14px;
+}
+
+.mainBtn{
+    width:100%;
+    padding:15px;
+    border:3px solid white;
+    background:#3e79ff;
+    color:white;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+.mainBtn:hover{
+    background:#5a8cff;
+}
+
+.smallBtn{
+    padding:10px 18px;
+    border:3px solid white;
+    background:#263451;
+    color:white;
+    font-weight:bold;
 }
 
 #game{
-    position:relative;
-    width:100vw;
-    height:100vh;
+    position:absolute;
+    inset:0;
+    display:none;
     overflow:hidden;
     background:
         linear-gradient(
             to bottom,
-            #78b8df 0%,
-            #a8d5ed 48%,
-            #d8e7ed 100%
+            #69c9ff 0%,
+            #9ee4ff 55%,
+            #d9f7ff 100%
         );
 }
 
-#sun{
+#game.active{
+    display:block;
+}
+
+#world{
     position:absolute;
-    width:75px;
-    height:75px;
+    inset:0;
+    overflow:hidden;
+}
+
+.sun{
+    position:absolute;
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    background:#fff4a5;
     right:9%;
     top:8%;
-    border-radius:50%;
-    background:#fff0a3;
-    box-shadow:0 0 35px #fff0a3;
+    box-shadow:0 0 45px rgba(255,244,165,.7);
 }
 
 .cloud{
     position:absolute;
-    width:130px;
-    height:32px;
-    background:rgba(255,255,255,.7);
-    border-radius:30px;
+    width:170px;
+    height:45px;
+    background:rgba(255,255,255,.75);
+    border-radius:40px;
 }
 
 .cloud:before,
@@ -64,859 +150,530 @@ html,body{
 }
 
 .cloud:before{
-    width:50px;
-    height:50px;
-    left:20px;
-    bottom:8px;
+    width:65px;
+    height:65px;
+    left:25px;
+    top:-30px;
 }
 
 .cloud:after{
-    width:65px;
-    height:65px;
+    width:80px;
+    height:80px;
     right:20px;
-    bottom:4px;
+    top:-40px;
 }
 
-#cloud1{left:5%;top:16%;transform:scale(.8)}
-#cloud2{left:48%;top:11%;transform:scale(.55)}
-#cloud3{left:72%;top:28%;transform:scale(.7)}
+.c1{
+    top:15%;
+    left:7%;
+}
 
-#city{
+.c2{
+    top:32%;
+    right:4%;
+    transform:scale(.75);
+}
+
+.c3{
+    top:8%;
+    left:40%;
+    transform:scale(.55);
+}
+
+.city{
     position:absolute;
-    bottom:0;
     left:0;
-    width:100%;
-    height:27%;
-    display:flex;
-    align-items:flex-end;
-    gap:5px;
-    opacity:.55;
-}
-
-.cityBuilding{
-    flex:1;
-    background:#8299a5;
-    position:relative;
-}
-
-.cityBuilding:after{
-    content:"";
-    position:absolute;
-    inset:10px;
+    right:0;
+    bottom:0;
+    height:32%;
     background:
         repeating-linear-gradient(
-            to bottom,
-            rgba(255,230,120,.55) 0 5px,
-            transparent 5px 16px
+            90deg,
+            #4d6579 0 45px,
+            #3e566b 45px 85px
         );
+    opacity:.8;
 }
 
-#city .cityBuilding:nth-child(1){height:35%}
-#city .cityBuilding:nth-child(2){height:60%}
-#city .cityBuilding:nth-child(3){height:42%}
-#city .cityBuilding:nth-child(4){height:72%}
-#city .cityBuilding:nth-child(5){height:49%}
-#city .cityBuilding:nth-child(6){height:82%}
-#city .cityBuilding:nth-child(7){height:55%}
-#city .cityBuilding:nth-child(8){height:68%}
-#city .cityBuilding:nth-child(9){height:40%}
-#city .cityBuilding:nth-child(10){height:75%}
-#city .cityBuilding:nth-child(11){height:50%}
-#city .cityBuilding:nth-child(12){height:63%}
-
-#gameUI{
+.city:before{
+    content:"";
     position:absolute;
-    top:18px;
-    left:18px;
-    z-index:1000;
-    color:white;
-    text-shadow:2px 2px #24343d;
-    font-weight:bold;
-}
-
-#title{
-    font-size:26px;
-}
-
-#status{
-    margin-top:5px;
-    font-size:14px;
-}
-
-#planeButton{
-    position:absolute;
-    top:18px;
-    right:18px;
-    z-index:1001;
-    border:3px solid #24343d;
-    background:#e7e7e7;
-    color:#18252c;
-    padding:10px 14px;
-    font-weight:bold;
-    cursor:pointer;
-    box-shadow:4px 4px 0 rgba(0,0,0,.25);
-}
-
-#planeMenu{
-    display:none;
-    position:absolute;
-    z-index:2000;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    width:min(560px,92vw);
-    max-height:85vh;
-    overflow:auto;
-    padding:18px;
-    background:#26343b;
-    border:4px solid #10181c;
-    box-shadow:10px 10px 0 rgba(0,0,0,.3);
-    color:white;
-}
-
-#planeMenu h2{
-    margin:0 0 15px;
-    text-align:center;
-}
-
-#planeOptions{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-}
-
-.planeOption{
-    border:3px solid #65747c;
-    background:#34464f;
-    color:white;
-    padding:12px;
-    cursor:pointer;
-    text-align:left;
-}
-
-.planeOption:hover{
-    background:#435963;
-}
-
-.planeOption.selected{
-    border-color:#ffd75e;
-}
-
-.planeName{
-    font-weight:bold;
-    font-size:16px;
-}
-
-.planeStats{
-    margin-top:4px;
-    font-size:11px;
-    color:#cbd8dd;
-}
-
-#closeMenu{
-    display:block;
-    width:100%;
-    margin-top:14px;
-    padding:10px;
-    border:0;
-    background:#d7d7d7;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-/* ORIGINAL TOWERS */
-
-.towerAssembly{
-    position:absolute;
-    width:175px;
-    height:125%;
-    bottom:-43%;
-    transform-origin:50% 100%;
-    z-index:20;
-}
-
-#towerAssembly1{
-    left:27%;
-}
-
-#towerAssembly2{
-    right:27%;
-    height:128%;
-    bottom:-46%;
+    inset:20px 0 0;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            transparent 0 18px,
+            rgba(255,241,151,.65) 18px 24px,
+            transparent 24px 42px
+        );
+    opacity:.6;
 }
 
 .tower{
     position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
+    width:17.5%;
+    min-width:120px;
+    max-width:190px;
+    height:55%;
+    bottom:0;
     background:
         repeating-linear-gradient(
-            to right,
-            #f7f8f8 0 15px,
-            #d0d5d8 15px 19px,
-            #ffffff 19px 35px
+            90deg,
+            #38495d 0 15px,
+            #263649 15px 30px
         );
-    border-left:6px solid #a7afb4;
-    border-right:6px solid #a7afb4;
-    box-shadow:
-        14px 0 0 rgba(48,58,65,.22),
-        inset 0 0 30px rgba(70,80,90,.16);
-    overflow:visible;
+    border:4px solid #182638;
+    box-shadow:8px 0 0 rgba(0,0,0,.18);
 }
 
 .tower:before{
     content:"";
     position:absolute;
-    inset:18px 12px;
-    background:
-        repeating-linear-gradient(
-            to bottom,
-            #405a6b 0 7px,
-            #9db5c4 7px 11px,
-            #314652 11px 15px,
-            transparent 15px 28px
-        );
-    opacity:.94;
-}
-
-.tower:after{
-    content:"";
-    position:absolute;
-    left:50%;
+    left:8%;
+    right:8%;
     top:0;
-    bottom:0;
-    width:7px;
-    transform:translateX(-50%);
-    background:#bdc4c8;
-    opacity:.8;
+    height:8px;
+    background:#8194a7;
 }
 
-.windowGrid{
+.towerLeft{
+    left:26%;
+}
+
+.towerRight{
+    left:56.5%;
+}
+
+.tower.destroyed{
+    transform:rotate(-5deg) translateY(30px);
+    opacity:.35;
+}
+
+.towerRoof{
     position:absolute;
-    inset:25px 19px;
-    z-index:3;
-    background:
-        repeating-linear-gradient(
-            to right,
-            transparent 0 17px,
-            rgba(255,235,130,.85) 17px 24px,
-            transparent 24px 34px
-        ),
-        repeating-linear-gradient(
-            to bottom,
-            transparent 0 22px,
-            rgba(255,235,130,.7) 22px 29px,
-            transparent 29px 39px
-        );
-    mix-blend-mode:screen;
-    opacity:.55;
-    animation:windowFlicker 2.8s steps(5) infinite;
-}
-
-@keyframes windowFlicker{
-    0%,100%{opacity:.55}
-    30%{opacity:.42}
-    55%{opacity:.62}
-    80%{opacity:.48}
-}
-
-.roof{
-    position:absolute;
-    top:-10px;
-    left:-8px;
-    width:calc(100% + 16px);
+    left:-4px;
+    right:-4px;
+    top:-9px;
     height:10px;
-    background:#858e94;
-    border:3px solid #5e676d;
-    z-index:4;
+    background:#172638;
 }
 
-.antenna{
+.healthBox{
     position:absolute;
-    bottom:100%;
-    left:50%;
-    width:5px;
-    height:115px;
-    transform:translateX(-50%);
-    background:#5b646a;
-    z-index:5;
+    top:-42px;
+    left:0;
+    width:100%;
+    height:27px;
+    border:3px solid white;
+    background:#101827;
 }
 
-.antenna:before{
+.healthFill{
+    height:100%;
+    width:100%;
+    background:#55df72;
+}
+
+.healthText{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.turret{
+    position:absolute;
+    width:55px;
+    height:32px;
+    z-index:30;
+    transform-origin:bottom center;
+}
+
+.turretBase{
+    position:absolute;
+    width:40px;
+    height:20px;
+    left:8px;
+    bottom:0;
+    background:#161d28;
+    border:3px solid #05080d;
+}
+
+.turretGun{
+    position:absolute;
+    width:48px;
+    height:8px;
+    left:10px;
+    bottom:18px;
+    background:#111722;
+    border:2px solid #05080d;
+    transform-origin:5px center;
+}
+
+.turretGun:after{
     content:"";
     position:absolute;
-    top:25px;
-    left:-12px;
-    width:29px;
+    right:-10px;
+    top:1px;
+    width:12px;
     height:4px;
-    background:#5b646a;
+    background:#05080d;
 }
-
-.antenna:after{
-    content:"";
-    position:absolute;
-    top:60px;
-    left:-5px;
-    width:15px;
-    height:4px;
-    background:#5b646a;
-}
-
-/* PLANE */
 
 #plane{
     position:absolute;
-    left:3.5%;
-    top:35%;
-    width:180px;
-    height:80px;
-    z-index:50;
-    transform-origin:50% 50%;
-    pointer-events:none;
-    will-change:left,top,transform;
+    width:82px;
+    height:34px;
+    z-index:40;
+    transform-origin:center center;
 }
 
 .planeBody{
     position:absolute;
-    left:20px;
-    top:31px;
-    width:120px;
-    height:18px;
-    background:#e7e9e9;
-    border:3px solid #39444a;
+    left:8px;
+    top:10px;
+    width:62px;
+    height:14px;
+    background:#f1f1f1;
+    border:3px solid #182238;
 }
 
 .planeNose{
     position:absolute;
-    left:132px;
-    top:31px;
-    width:28px;
-    height:18px;
-    background:#e7e9e9;
-    border-top:3px solid #39444a;
-    border-right:3px solid #39444a;
-    border-bottom:3px solid #39444a;
-    clip-path:polygon(0 0,100% 50%,0 100%);
+    right:-7px;
+    top:11px;
+    width:20px;
+    height:12px;
+    background:#f1f1f1;
+    border-right:3px solid #182238;
+    transform:skewX(30deg);
 }
 
 .planeWing{
     position:absolute;
-    left:56px;
-    top:43px;
-    width:70px;
-    height:30px;
-    background:#c8ced1;
-    border:3px solid #39444a;
-    clip-path:polygon(0 0,100% 0,65% 100%,38% 100%);
-}
-
-.planeWing2{
-    position:absolute;
-    left:62px;
-    top:7px;
-    width:70px;
-    height:28px;
-    background:#c8ced1;
-    border:3px solid #39444a;
-    clip-path:polygon(0 100%,100% 100%,66% 0,38% 0);
+    left:25px;
+    top:2px;
+    width:35px;
+    height:32px;
+    background:#d7dce2;
+    clip-path:polygon(0 45%,100% 0,75% 100%);
+    border:2px solid #182238;
 }
 
 .planeTail{
     position:absolute;
-    left:25px;
-    top:8px;
-    width:35px;
-    height:37px;
-    background:#d8dcdd;
-    border:3px solid #39444a;
-    clip-path:polygon(0 100%,100% 100%,65% 0,35% 0);
+    left:8px;
+    top:1px;
+    width:20px;
+    height:18px;
+    background:#d7dce2;
+    clip-path:polygon(0 100%,100% 100%,55% 0);
 }
 
-.tailFin{
+.planeWindow{
     position:absolute;
-    left:28px;
-    top:0;
-    width:27px;
-    height:38px;
-    background:#cbd0d2;
-    border:3px solid #39444a;
-    clip-path:polygon(0 100%,100% 100%,63% 0,30% 0);
-}
-
-.engine{
-    position:absolute;
-    width:22px;
-    height:13px;
-    background:#5b666b;
-    border:2px solid #303a3f;
-    border-radius:3px;
-    z-index:3;
-}
-
-.engine1{
-    left:67px;
-    top:51px;
-}
-
-.engine2{
-    left:105px;
-    top:51px;
-}
-
-.engineSmoke{
-    position:absolute;
-    width:10px;
-    height:10px;
-    border-radius:50%;
-    background:#303030;
-    opacity:.85;
-    animation:engineSmoke .8s infinite ease-out;
-}
-
-@keyframes engineSmoke{
-    0%{
-        transform:translate(0,0) scale(.5);
-        opacity:.8;
-    }
-
-    100%{
-        transform:translate(-45px,10px) scale(2.8);
-        opacity:0;
-    }
-}
-
-/* IMPACT */
-
-.damageMark{
-    position:absolute;
-    z-index:60;
-    width:60px;
-    height:80px;
-    background:
-        radial-gradient(
-            ellipse at center,
-            #171717 0 20%,
-            #383838 21% 45%,
-            #141414 46% 55%,
-            transparent 56%
-        );
-    filter:contrast(1.3);
-    transform:rotate(-8deg);
-    pointer-events:none;
-}
-
-.impactFlash{
-    position:absolute;
-    width:120px;
-    height:120px;
-    border-radius:50%;
-    background:#fff3a3;
-    box-shadow:
-        0 0 20px #fff,
-        0 0 55px #ffb52e,
-        0 0 100px #ff5b21;
-    z-index:100;
-    pointer-events:none;
-    animation:flash .35s forwards;
-}
-
-@keyframes flash{
-    0%{
-        transform:scale(.2);
-        opacity:1;
-    }
-
-    100%{
-        transform:scale(2.2);
-        opacity:0;
-    }
+    left:48px;
+    top:12px;
+    width:13px;
+    height:7px;
+    background:#65b8e8;
+    border:2px solid #182238;
 }
 
 .fire{
     position:absolute;
-    width:22px;
-    height:38px;
-    background:#ff6a16;
-    border:3px solid #a82d12;
-    clip-path:polygon(
-        50% 0,
-        100% 45%,
-        72% 100%,
-        25% 85%,
-        0 45%
-    );
+    width:65px;
+    height:65px;
+    border-radius:50%;
+    background:#ff9d21;
+    box-shadow:
+        0 0 20px #ff641f,
+        0 0 40px #ff3015;
     z-index:45;
-    animation:fireFlicker .25s infinite alternate;
-    pointer-events:none;
+    animation:fire .16s infinite alternate;
 }
 
 .fire:after{
     content:"";
     position:absolute;
-    left:6px;
-    top:8px;
-    width:9px;
-    height:20px;
-    background:#ffd34e;
-    clip-path:polygon(
-        50% 0,
-        100% 55%,
-        70% 100%,
-        25% 82%,
-        0 45%
-    );
+    width:25px;
+    height:40px;
+    background:#fff2a6;
+    border-radius:50%;
+    left:20px;
+    top:5px;
 }
 
-@keyframes fireFlicker{
-    from{
-        transform:scale(.9) rotate(-2deg);
-    }
-
-    to{
-        transform:scale(1.12) rotate(3deg);
-    }
+@keyframes fire{
+    from{transform:scale(.9)}
+    to{transform:scale(1.12)}
 }
 
 .smoke{
     position:absolute;
-    width:28px;
-    height:28px;
+    width:25px;
+    height:25px;
     border-radius:50%;
-    background:#282828;
-    opacity:.8;
-    z-index:40;
-    animation:smokeRise 4s linear forwards;
-    pointer-events:none;
+    background:#5c6269;
+    opacity:.65;
+    animation:smoke 1.5s linear forwards;
+    z-index:44;
 }
 
-.lightSmoke{
-    position:absolute;
-    width:35px;
-    height:35px;
-    border-radius:50%;
-    background:#9da0a0;
-    opacity:.55;
-    z-index:39;
-    animation:lightSmokeRise 6s linear forwards;
-    pointer-events:none;
-}
-
-@keyframes smokeRise{
-    0%{
+@keyframes smoke{
+    from{
         transform:translate(0,0) scale(.5);
-        opacity:.85;
-    }
-
-    100%{
-        transform:translate(var(--sx),-240px) scale(3);
-        opacity:0;
-    }
-}
-
-@keyframes lightSmokeRise{
-    0%{
-        transform:translate(0,0) scale(.4);
-        opacity:.5;
-    }
-
-    100%{
-        transform:translate(var(--sx),-380px) scale(4);
-        opacity:0;
-    }
-}
-
-.glass{
-    position:absolute;
-    width:5px;
-    height:8px;
-    background:#bce7ef;
-    border:1px solid #6f99a2;
-    z-index:70;
-    animation:glassFly 1.1s ease-out forwards;
-    pointer-events:none;
-}
-
-@keyframes glassFly{
-    0%{
-        transform:translate(0,0) rotate(0);
-        opacity:1;
-    }
-
-    100%{
-        transform:
-            translate(var(--gx),var(--gy))
-            rotate(var(--gr));
-        opacity:0;
-    }
-}
-
-.buildingChunk{
-    position:absolute;
-    z-index:80;
-    background:
-        repeating-linear-gradient(
-            to right,
-            #f7f8f8 0 15px,
-            #d0d5d8 15px 19px,
-            #ffffff 19px 35px
-        );
-    border:3px solid #7b858a;
-    box-shadow:inset 0 0 8px rgba(0,0,0,.25);
-    animation:chunkFall var(--ct) cubic-bezier(.2,.7,.2,1) forwards;
-    pointer-events:none;
-}
-
-@keyframes chunkFall{
-    0%{
-        transform:translate(0,0) rotate(0);
-    }
-
-    100%{
-        transform:
-            translate(var(--cx),var(--cy))
-            rotate(var(--cr));
-    }
-}
-
-.fallingWindow{
-    position:absolute;
-    width:7px;
-    height:5px;
-    background:#ffe77d;
-    z-index:85;
-    animation:windowFall var(--wt) ease-in forwards;
-    pointer-events:none;
-}
-
-@keyframes windowFall{
-    0%{
-        transform:translate(0,0) rotate(0);
-        opacity:.8;
-    }
-
-    100%{
-        transform:
-            translate(var(--wx),var(--wy))
-            rotate(var(--wr));
-        opacity:0;
-    }
-}
-
-.dust{
-    position:absolute;
-    width:55px;
-    height:30px;
-    border-radius:50%;
-    background:#b9a993;
-    opacity:.55;
-    z-index:200;
-    animation:dustCloud 2.3s ease-out forwards;
-    pointer-events:none;
-}
-
-@keyframes dustCloud{
-    0%{
-        transform:scale(.2);
         opacity:.7;
     }
-
-    100%{
-        transform:scale(5) translateY(-25px);
+    to{
+        transform:translate(-20px,-90px) scale(2.5);
         opacity:0;
     }
 }
 
-/* COLLAPSING SECTIONS */
+.debris{
+    position:absolute;
+    width:10px;
+    height:10px;
+    background:#303a45;
+    z-index:50;
+    animation:debris 1.1s ease-out forwards;
+}
 
-.collapsePieces{
+@keyframes debris{
+    to{
+        transform:translate(var(--dx),var(--dy)) rotate(500deg);
+        opacity:0;
+    }
+}
+
+#hud{
+    position:absolute;
+    left:15px;
+    right:15px;
+    top:15px;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    z-index:80;
+    pointer-events:none;
+}
+
+.hudPanel{
+    padding:10px 14px;
+    background:rgba(10,16,27,.82);
+    border:3px solid white;
+    box-shadow:4px 4px 0 rgba(0,0,0,.25);
+}
+
+.hudName{
+    font-size:12px;
+    color:#b8c5d8;
+}
+
+.hudValue{
+    font-weight:bold;
+    font-size:18px;
+}
+
+#planeHealth{
+    position:absolute;
+    top:78px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(330px,60vw);
+    height:22px;
+    border:3px solid white;
+    background:#101827;
+    z-index:80;
+}
+
+#planeHealthFill{
+    height:100%;
+    width:100%;
+    background:#ef5350;
+}
+
+#planeHealthText{
     position:absolute;
     inset:0;
-    z-index:75;
-    pointer-events:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    font-weight:bold;
 }
 
-.collapseSection{
-    position:absolute;
-    overflow:hidden;
-    background:
-        repeating-linear-gradient(
-            to right,
-            #f7f8f8 0 15px,
-            #d0d5d8 15px 19px,
-            #ffffff 19px 35px
-        );
-    border-left:6px solid #a7afb4;
-    border-right:6px solid #a7afb4;
-    box-shadow:
-        14px 0 0 rgba(48,58,65,.22),
-        inset 0 0 30px rgba(70,80,90,.16);
-    will-change:transform;
-}
-
-.collapseSection:before{
-    content:"";
-    position:absolute;
-    inset:18px 12px;
-    background:
-        repeating-linear-gradient(
-            to bottom,
-            #405a6b 0 7px,
-            #9db5c4 7px 11px,
-            #314652 11px 15px,
-            transparent 15px 28px
-        );
-    opacity:.94;
-}
-
-.collapseSection:after{
-    content:"";
-    position:absolute;
-    inset:25px 19px;
-    background:
-        repeating-linear-gradient(
-            to right,
-            transparent 0 17px,
-            rgba(255,235,130,.85) 17px 24px,
-            transparent 24px 34px
-        ),
-        repeating-linear-gradient(
-            to bottom,
-            transparent 0 22px,
-            rgba(255,235,130,.7) 22px 29px,
-            transparent 29px 39px
-        );
-    opacity:.55;
-    mix-blend-mode:screen;
-}
-
-.collapseSection{
-    animation:
-        sectionCollapse
-        var(--st)
-        cubic-bezier(.18,.7,.22,1)
-        forwards;
-}
-
-@keyframes sectionCollapse{
-    0%{
-        transform:translate(0,0) rotate(0);
-    }
-
-    100%{
-        transform:
-            translate(var(--sx),var(--sy))
-            rotate(var(--sr));
-    }
-}
-
-/* MESSAGE */
-
-#message{
+#roleBox{
     position:absolute;
     left:50%;
-    top:18%;
+    top:115px;
     transform:translateX(-50%);
-    z-index:1000;
-    color:white;
-    text-align:center;
+    padding:8px 14px;
+    background:rgba(10,16,27,.78);
+    border:2px solid white;
+    z-index:80;
     font-weight:bold;
-    font-size:20px;
-    text-shadow:3px 3px #27343b;
-    pointer-events:none;
 }
 
-/* MOBILE */
+#crosshair{
+    position:absolute;
+    width:34px;
+    height:34px;
+    margin-left:-17px;
+    margin-top:-17px;
+    border:3px solid #ff4141;
+    border-radius:50%;
+    z-index:70;
+    pointer-events:none;
+    display:none;
+}
+
+#crosshair:before,
+#crosshair:after{
+    content:"";
+    position:absolute;
+    background:#ff4141;
+}
+
+#crosshair:before{
+    width:46px;
+    height:2px;
+    left:-9px;
+    top:13px;
+}
+
+#crosshair:after{
+    width:2px;
+    height:46px;
+    left:13px;
+    top:-9px;
+}
+
+#fireButton{
+    position:absolute;
+    right:25px;
+    bottom:30px;
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    border:5px solid white;
+    background:#d93030;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    z-index:100;
+    display:none;
+}
 
 #mobileControls{
     position:absolute;
     inset:0;
-    z-index:900;
     pointer-events:none;
+    z-index:90;
 }
 
-.control{
+.controlBtn{
     position:absolute;
-    width:58px;
-    height:58px;
-    border-radius:50%;
-    border:3px solid rgba(255,255,255,.7);
-    background:rgba(25,45,55,.45);
+    width:60px;
+    height:60px;
+    border:3px solid white;
+    background:rgba(15,24,40,.75);
     color:white;
+    pointer-events:auto;
     font-size:22px;
     font-weight:bold;
-    pointer-events:auto;
-    touch-action:none;
-}
-
-#leftBtn{
-    left:18px;
-    bottom:25px;
-}
-
-#rightBtn{
-    left:88px;
-    bottom:25px;
 }
 
 #upBtn{
-    right:88px;
-    bottom:25px;
+    left:80px;
+    bottom:135px;
 }
 
 #downBtn{
-    right:18px;
-    bottom:25px;
+    left:80px;
+    bottom:15px;
 }
 
-@media(min-width:800px){
-    #mobileControls{
-        display:none;
-    }
+#leftBtn{
+    left:15px;
+    bottom:75px;
 }
 
-@media(max-width:600px){
+#rightBtn{
+    left:145px;
+    bottom:75px;
+}
 
-    .towerAssembly{
-        width:115px;
-        height:125%;
-        bottom:-43%;
+#brakeBtn{
+    left:15px;
+    bottom:15px;
+    width:60px;
+    height:45px;
+    font-size:13px;
+}
+
+#planeSelector{
+    display:none;
+    margin-top:20px;
+}
+
+.planeOption{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    width:100%;
+    padding:12px;
+    margin:7px 0;
+    background:#111b2d;
+    color:white;
+    border:2px solid #60708d;
+}
+
+.planeOption.selected{
+    border-color:#58a6ff;
+    background:#1b3155;
+}
+
+#countdown{
+    position:absolute;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:150;
+    font-size:clamp(60px,15vw,140px);
+    font-weight:bold;
+    text-shadow:8px 8px 0 #101827;
+    background:rgba(0,0,0,.2);
+}
+
+@media(max-width:700px){
+    .menu{
+        padding:22px;
     }
 
-    #towerAssembly1{
-        left:16%;
+    .tower{
+        width:20%;
     }
 
-    #towerAssembly2{
-        right:16%;
-        height:128%;
-        bottom:-46%;
+    .towerLeft{
+        left:20%;
     }
 
-    #title{
-        font-size:20px;
+    .towerRight{
+        left:60%;
     }
 
-    #status{
-        font-size:11px;
+    #hud{
+        font-size:12px;
     }
 
-    #plane{
-        transform-origin:50% 50%;
-    }
-
-    #planeOptions{
-        grid-template-columns:1fr;
-    }
-
-    #gameUI{
-        top:10px;
-        left:10px;
-    }
-
-    #planeButton{
-        top:10px;
-        right:10px;
+    .hudPanel{
+        padding:7px 9px;
     }
 }
 </style>
@@ -924,171 +681,278 @@ html,body{
 
 <body>
 
-<div id="game">
+<div id="menuScreen" class="screen active">
+    <div class="menu">
+        <h1 class="title">PIXEL SKY CRASH</h1>
+        <p class="subtitle">1V1 PILOT VS GUNNER</p>
 
-    <div id="sun"></div>
+        <input
+            id="nameInput"
+            maxlength="16"
+            placeholder="Enter your name"
+            autocomplete="off"
+        >
 
-    <div id="cloud1" class="cloud"></div>
-    <div id="cloud2" class="cloud"></div>
-    <div id="cloud3" class="cloud"></div>
+        <button
+            id="findMatchBtn"
+            class="mainBtn"
+        >
+            FIND 1V1 MATCH
+        </button>
 
-    <div id="city">
-        <div class="cityBuilding"></div>
-        <div class="cityBuilding"></div>
-        <div class="cityBuilding"></div>
-        <div class="cityBuilding"></div>
-        <div class="cityBuilding"></div>
-        <div class="cityBuilding"></div>
-        <div class="cityBuilding"></div>
-        <div class="cityBuilding"></div>
-        <div class="cityBuilding"></div>
-        <div class="cityBuilding"></div>
-        <div class="cityBuilding"></div>
-        <div class="cityBuilding"></div>
-    </div>
+        <button
+            id="planeMenuBtn"
+            class="mainBtn"
+        >
+            PLANE SELECT
+        </button>
 
-    <div id="gameUI">
-        <div id="title">PIXEL SKY CRASH</div>
-        <div id="status">W / ▲ TO ACCELERATE</div>
-    </div>
-
-    <button id="planeButton">✈ PLANES</button>
-
-    <div id="planeMenu">
-
-        <h2>SELECT AIRCRAFT</h2>
-
-        <div id="planeOptions">
-
-            <button class="planeOption" data-plane="small">
-                <div class="planeName">Small Jet</div>
-                <div class="planeStats">
-                    Fast acceleration • Easy turning
-                </div>
+        <div id="planeSelector">
+            <button class="planeOption selected" data-plane="airliner">
+                <span>Airliner</span>
+                <span>Balanced</span>
             </button>
 
-            <button class="planeOption" data-plane="airliner">
-                <div class="planeName">Airliner</div>
-                <div class="planeStats">
-                    Balanced • Stable
-                </div>
+            <button class="planeOption" data-plane="small">
+                <span>Small Jet</span>
+                <span>Fast</span>
             </button>
 
             <button class="planeOption" data-plane="large">
-                <div class="planeName">Large Airliner</div>
-                <div class="planeStats">
-                    Heavy • Powerful • Slow turning
-                </div>
+                <span>Large Airliner</span>
+                <span>Heavy</span>
             </button>
 
             <button class="planeOption" data-plane="cargo">
-                <div class="planeName">Cargo Plane</div>
-                <div class="planeStats">
-                    Very heavy • Strong braking
-                </div>
+                <span>Cargo Plane</span>
+                <span>Heavy</span>
             </button>
 
             <button class="planeOption" data-plane="fighter">
-                <div class="planeName">Fighter Jet</div>
-                <div class="planeStats">
-                    Extremely fast • Sharp turning
-                </div>
+                <span>Fighter Jet</span>
+                <span>Very Fast</span>
             </button>
+        </div>
+    </div>
+</div>
 
+<div id="queueScreen" class="screen">
+    <div class="menu">
+        <h1 class="title">MATCHMAKING</h1>
+        <p id="queueText" class="subtitle">
+            Looking for another player...
+        </p>
+
+        <button id="cancelQueueBtn" class="smallBtn">
+            CANCEL
+        </button>
+    </div>
+</div>
+
+<div id="foundScreen" class="screen">
+    <div class="menu">
+        <h1 class="title">MATCH FOUND</h1>
+        <p id="matchPlayers" class="subtitle"></p>
+        <div id="foundCountdown" style="font-size:60px;font-weight:bold">
+            3
+        </div>
+    </div>
+</div>
+
+<div id="game">
+
+    <div id="world">
+
+        <div class="sun"></div>
+
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
+        <div class="cloud c3"></div>
+
+        <div class="city"></div>
+
+        <div
+            id="tower1"
+            class="tower towerLeft"
+        >
+            <div class="towerRoof"></div>
+
+            <div class="healthBox">
+                <div
+                    id="tower1Fill"
+                    class="healthFill"
+                ></div>
+
+                <div
+                    id="tower1Text"
+                    class="healthText"
+                >
+                    100%
+                </div>
+            </div>
         </div>
 
-        <button id="closeMenu">CLOSE</button>
+        <div
+            id="tower2"
+            class="tower towerRight"
+        >
+            <div class="towerRoof"></div>
+
+            <div class="healthBox">
+                <div
+                    id="tower2Fill"
+                    class="healthFill"
+                ></div>
+
+                <div
+                    id="tower2Text"
+                    class="healthText"
+                >
+                    100%
+                </div>
+            </div>
+        </div>
+
+        <div id="turret" class="turret">
+            <div class="turretBase"></div>
+            <div id="turretGun" class="turretGun"></div>
+        </div>
+
+        <div id="plane">
+            <div class="planeTail"></div>
+            <div class="planeWing"></div>
+            <div class="planeBody"></div>
+            <div class="planeNose"></div>
+            <div class="planeWindow"></div>
+        </div>
+
+        <div id="crosshair"></div>
 
     </div>
 
-    <div id="message"></div>
+    <div id="hud">
 
-    <!-- ORIGINAL TOWERS -->
+        <div class="hudPanel">
+            <div class="hudName">YOU</div>
+            <div id="youName" class="hudValue">Player</div>
+        </div>
 
-    <div id="towerAssembly1" class="towerAssembly">
-
-        <div id="tower1" class="tower">
-            <div class="windowGrid"></div>
-            <div class="roof"></div>
-            <div class="antenna"></div>
+        <div class="hudPanel">
+            <div class="hudName">OPPONENT</div>
+            <div id="opponentName" class="hudValue">Player</div>
         </div>
 
     </div>
 
-    <div id="towerAssembly2" class="towerAssembly">
-
-        <div id="tower2" class="tower">
-            <div class="windowGrid"></div>
-            <div class="roof"></div>
-            <div class="antenna"></div>
-        </div>
-
+    <div id="roleBox">
+        WAITING
     </div>
 
-    <!-- PLANE -->
-
-    <div id="plane">
-
-        <div class="planeTail"></div>
-
-        <div class="tailFin"></div>
-
-        <div class="planeBody"></div>
-
-        <div class="planeNose"></div>
-
-        <div class="planeWing"></div>
-
-        <div class="planeWing2"></div>
-
-        <div class="engine engine1"></div>
-
-        <div class="engine engine2"></div>
-
+    <div id="planeHealth">
+        <div id="planeHealthFill"></div>
+        <div id="planeHealthText">PLANE 100%</div>
     </div>
 
-    <!-- MOBILE CONTROLS -->
+    <button id="fireButton">
+        FIRE
+    </button>
 
     <div id="mobileControls">
 
-        <button id="leftBtn" class="control">
-            ◀
-        </button>
-
-        <button id="rightBtn" class="control">
-            ▶
-        </button>
-
-        <button id="upBtn" class="control">
+        <button id="upBtn" class="controlBtn">
             ▲
         </button>
 
-        <button id="downBtn" class="control">
+        <button id="downBtn" class="controlBtn">
             ▼
+        </button>
+
+        <button id="leftBtn" class="controlBtn">
+            ◀
+        </button>
+
+        <button id="rightBtn" class="controlBtn">
+            ▶
+        </button>
+
+        <button id="brakeBtn" class="controlBtn">
+            BRAKE
         </button>
 
     </div>
 
+    <div id="countdown"></div>
+</div>
+
+<div id="endScreen" class="screen">
+    <div class="menu">
+        <h1 id="endTitle" class="title">
+            GAME OVER
+        </h1>
+
+        <p id="endReason" class="subtitle"></p>
+
+        <button
+            id="rematchBtn"
+            class="mainBtn"
+        >
+            REMATCH
+        </button>
+
+        <button
+            id="menuBtn"
+            class="mainBtn"
+        >
+            MAIN MENU
+        </button>
+    </div>
 </div>
 
 <script>
-"use strict";
+const menuScreen =
+    document.getElementById("menuScreen");
 
-/* =========================
-   ELEMENTS
-========================= */
+const queueScreen =
+    document.getElementById("queueScreen");
+
+const foundScreen =
+    document.getElementById("foundScreen");
+
+const endScreen =
+    document.getElementById("endScreen");
 
 const game =
     document.getElementById("game");
 
+const nameInput =
+    document.getElementById("nameInput");
+
+const findMatchBtn =
+    document.getElementById("findMatchBtn");
+
+const cancelQueueBtn =
+    document.getElementById("cancelQueueBtn");
+
+const rematchBtn =
+    document.getElementById("rematchBtn");
+
+const menuBtn =
+    document.getElementById("menuBtn");
+
+const planeMenuBtn =
+    document.getElementById("planeMenuBtn");
+
+const planeSelector =
+    document.getElementById("planeSelector");
+
 const plane =
     document.getElementById("plane");
 
-const towerAssembly1 =
-    document.getElementById("towerAssembly1");
+const turret =
+    document.getElementById("turret");
 
-const towerAssembly2 =
-    document.getElementById("towerAssembly2");
+const turretGun =
+    document.getElementById("turretGun");
 
 const tower1 =
     document.getElementById("tower1");
@@ -1096,2182 +960,1160 @@ const tower1 =
 const tower2 =
     document.getElementById("tower2");
 
-const statusText =
-    document.getElementById("status");
+const tower1Fill =
+    document.getElementById("tower1Fill");
 
-const message =
-    document.getElementById("message");
+const tower2Fill =
+    document.getElementById("tower2Fill");
 
-const planeButton =
-    document.getElementById("planeButton");
+const tower1Text =
+    document.getElementById("tower1Text");
 
-const planeMenu =
-    document.getElementById("planeMenu");
+const tower2Text =
+    document.getElementById("tower2Text");
 
-const closeMenu =
-    document.getElementById("closeMenu");
+const planeHealthFill =
+    document.getElementById("planeHealthFill");
 
+const planeHealthText =
+    document.getElementById("planeHealthText");
 
-/* =========================
-   PLANES
-========================= */
+const crosshair =
+    document.getElementById("crosshair");
+
+const fireButton =
+    document.getElementById("fireButton");
+
+const roleBox =
+    document.getElementById("roleBox");
+
+const youName =
+    document.getElementById("youName");
+
+const opponentName =
+    document.getElementById("opponentName");
+
+const countdown =
+    document.getElementById("countdown");
+
+const foundCountdown =
+    document.getElementById("foundCountdown");
+
+const matchPlayers =
+    document.getElementById("matchPlayers");
+
+const endTitle =
+    document.getElementById("endTitle");
+
+const endReason =
+    document.getElementById("endReason");
+
+let socket = null;
+
+let myRole = null;
+let myName = "Player";
+let opponentNameValue = "Player";
+
+let currentState = null;
+
+let selectedPlane = "airliner";
+
+let lastState = null;
+
+const input = {
+    up:false,
+    down:false,
+    left:false,
+    right:false,
+    brake:false
+};
 
 const planeData = {
-
     small:{
-        name:"Small Jet",
-        maxSpeed:7.5,
-        acceleration:2.8,
-        braking:4.5,
-        turn:170,
-        climb:145,
-        stall:.32
+        name:"Small Jet"
     },
 
     airliner:{
-        name:"Airliner",
-        maxSpeed:5.5,
-        acceleration:1.8,
-        braking:3.0,
-        turn:105,
-        climb:100,
-        stall:.26
+        name:"Airliner"
     },
 
     large:{
-        name:"Large Airliner",
-        maxSpeed:4.7,
-        acceleration:1.35,
-        braking:2.7,
-        turn:82,
-        climb:82,
-        stall:.23
+        name:"Large Airliner"
     },
 
     cargo:{
-        name:"Cargo Plane",
-        maxSpeed:4.2,
-        acceleration:1.1,
-        braking:3.8,
-        turn:70,
-        climb:70,
-        stall:.21
+        name:"Cargo Plane"
     },
 
     fighter:{
-        name:"Fighter Jet",
-        maxSpeed:10,
-        acceleration:3.8,
-        braking:5.5,
-        turn:240,
-        climb:190,
-        stall:.36
+        name:"Fighter Jet"
     }
-
 };
 
-let selectedPlane =
-    "airliner";
+function showOnly(screen){
+    menuScreen.classList.remove("active");
+    queueScreen.classList.remove("active");
+    foundScreen.classList.remove("active");
+    endScreen.classList.remove("active");
 
-let stats =
-    planeData[selectedPlane];
-
-
-/* =========================
-   PHYSICS
-========================= */
-
-let px = 3.5;
-let py = 35;
-
-let velocity = 0;
-
-let verticalVelocity = 0;
-
-let pitch = 0;
-
-let crashed = false;
-
-let crashCooldown = false;
-
-let hitTower1 = false;
-let hitTower2 = false;
-
-let tower1Destroyed = false;
-let tower2Destroyed = false;
-
-let roundComplete = false;
-
-let firstCrashFinished = false;
-
-let engine1Damaged = false;
-let engine2Damaged = false;
-
-let inputLocked = false;
-
-
-/* =========================
-   INPUT
-========================= */
-
-const keys = {};
-
-let left = false;
-let right = false;
-let up = false;
-let down = false;
-
-let lastTime =
-    performance.now();
-
-
-document.addEventListener(
-    "keydown",
-    function(event){
-
-        const key =
-            event.key.toLowerCase();
-
-        keys[key] = true;
-
-        startMusic();
-
-        if(
-            key === "p" &&
-            !crashed &&
-            !roundComplete
-        ){
-
-            togglePlaneMenu();
-
-            event.preventDefault();
-        }
-
-        if(
-            key === "r" &&
-            roundComplete
-        ){
-
-            resetGame();
-
-            event.preventDefault();
-        }
-
-        if(event.key === "ArrowLeft"){
-            left=true;
-            event.preventDefault();
-        }
-
-        if(event.key === "ArrowRight"){
-            right=true;
-            event.preventDefault();
-        }
-
-        if(event.key === "ArrowUp"){
-            up=true;
-            event.preventDefault();
-        }
-
-        if(event.key === "ArrowDown"){
-            down=true;
-            event.preventDefault();
-        }
-
+    if(screen){
+        screen.classList.add("active");
     }
-);
-
-
-document.addEventListener(
-    "keyup",
-    function(event){
-
-        const key =
-            event.key.toLowerCase();
-
-        keys[key] = false;
-
-        if(event.key === "ArrowLeft"){
-            left=false;
-        }
-
-        if(event.key === "ArrowRight"){
-            right=false;
-        }
-
-        if(event.key === "ArrowUp"){
-            up=false;
-        }
-
-        if(event.key === "ArrowDown"){
-            down=false;
-        }
-
-    }
-);
-
-
-/* =========================
-   MOBILE INPUT
-========================= */
-
-function mobileControl(
-    id,
-    setter
-){
-
-    const button =
-        document.getElementById(id);
-
-    button.addEventListener(
-        "pointerdown",
-        function(event){
-
-            event.preventDefault();
-
-            startMusic();
-
-            setter(true);
-
-        }
-    );
-
-    button.addEventListener(
-        "pointerup",
-        function(event){
-
-            event.preventDefault();
-
-            setter(false);
-
-        }
-    );
-
-    button.addEventListener(
-        "pointercancel",
-        function(){
-
-            setter(false);
-
-        }
-    );
-
-    button.addEventListener(
-        "pointerleave",
-        function(){
-
-            setter(false);
-
-        }
-    );
 }
 
-
-mobileControl(
-    "leftBtn",
-    value => left=value
-);
-
-mobileControl(
-    "rightBtn",
-    value => right=value
-);
-
-mobileControl(
-    "upBtn",
-    value => up=value
-);
-
-mobileControl(
-    "downBtn",
-    value => down=value
-);
-
-
-/* =========================
-   MUSIC
-========================= */
-
-let audio = null;
-
-let musicStarted = false;
-
-function startMusic(){
-
-    if(musicStarted){
-        return;
-    }
-
-    musicStarted=true;
-
-    audio =
-        new Audio("towersong.mp3");
-
-    audio.loop=true;
-
-    audio.volume=.38;
-
-    audio.play().catch(
-        function(){}
-    );
-}
-
-
-/* =========================
-   PLANE MENU
-========================= */
-
-function togglePlaneMenu(){
-
-    if(inputLocked){
-        return;
-    }
-
-    if(
-        planeMenu.style.display ===
-        "block"
+function connect(){
+    if(socket &&
+       (
+           socket.readyState === WebSocket.OPEN ||
+           socket.readyState === WebSocket.CONNECTING
+       )
     ){
-
-        planeMenu.style.display =
-            "none";
-
-    }else{
-
-        planeMenu.style.display =
-            "block";
-
-    }
-}
-
-
-planeButton.addEventListener(
-    "click",
-    function(){
-
-        if(
-            crashed ||
-            roundComplete ||
-            inputLocked
-        ){
-            return;
-        }
-
-        startMusic();
-
-        togglePlaneMenu();
-
-    }
-);
-
-
-closeMenu.addEventListener(
-    "click",
-    function(){
-
-        planeMenu.style.display =
-            "none";
-
-    }
-);
-
-
-document
-.querySelectorAll(".planeOption")
-.forEach(
-    function(button){
-
-        button.addEventListener(
-            "click",
-            function(){
-
-                if(
-                    crashed ||
-                    roundComplete ||
-                    inputLocked
-                ){
-                    return;
-                }
-
-                selectPlane(
-                    button.dataset.plane
-                );
-
-            }
-        );
-
-    }
-);
-
-
-function selectPlane(type){
-
-    if(!planeData[type]){
         return;
     }
 
-    selectedPlane=type;
+    let serverURL;
 
-    stats =
-        planeData[type];
+    if(location.protocol === "file:"){
+        serverURL =
+            "ws://localhost:3000";
+    }
+    else if(location.protocol === "https:"){
+        serverURL =
+            "wss://" + location.host;
+    }
+    else{
+        serverURL =
+            "ws://" + location.host;
+    }
 
-    /*
-       IMPORTANT:
-       Switching aircraft does NOT
-       teleport the player.
-    */
+    socket =
+        new WebSocket(serverURL);
 
-    velocity =
-        Math.min(
-            velocity,
-            stats.maxSpeed
-        );
-
-    /*
-       Reset vertical momentum so
-       changing aircraft doesn't make
-       the new aircraft instantly dive.
-    */
-
-    verticalVelocity=0;
-
-    /*
-       Keep the aircraft where it was.
-    */
-
-    plane.style.left =
-        px+"%";
-
-    plane.style.top =
-        py+"%";
-
-    document
-    .querySelectorAll(".planeOption")
-    .forEach(
-        function(button){
-
-            button.classList.toggle(
-                "selected",
-                button.dataset.plane ===
-                type
+    socket.addEventListener(
+        "open",
+        () => {
+            console.log(
+                "Connected to game server."
             );
-
         }
     );
 
-    planeMenu.style.display =
-        "none";
-
-    message.textContent =
-        stats.name+" SELECTED";
-
-    setTimeout(
-        function(){
+    socket.addEventListener(
+        "close",
+        () => {
+            console.log(
+                "Disconnected from server."
+            );
 
             if(
-                !crashed &&
-                !roundComplete
+                !game.classList.contains("active")
             ){
-                message.textContent="";
+                return;
             }
 
-        },
-        1000
+            roleBox.textContent =
+                "DISCONNECTED";
+        }
+    );
+
+    socket.addEventListener(
+        "error",
+        () => {
+            console.log(
+                "WebSocket connection error."
+            );
+        }
+    );
+
+    socket.addEventListener(
+        "message",
+        event => {
+            let message;
+
+            try{
+                message =
+                    JSON.parse(event.data);
+            }
+            catch{
+                return;
+            }
+
+            handleServerMessage(message);
+        }
     );
 }
 
-
-/* =========================
-   RECTANGLE COLLISION
-========================= */
-
-function getPlaneRect(){
-
-    return plane.getBoundingClientRect();
-
-}
-
-
-function getTowerRect(tower){
-
-    return tower.getBoundingClientRect();
-
-}
-
-
-function rectsOverlap(a,b){
-
-    return !(
-        a.right <= b.left ||
-        a.left >= b.right ||
-        a.bottom <= b.top ||
-        a.top >= b.bottom
-    );
-
-}
-
-
-/* =========================
-   COLLISION
-========================= */
-
-function checkCollision(){
-
+function send(data){
     if(
-        crashed ||
-        crashCooldown ||
-        inputLocked
+        !socket ||
+        socket.readyState !== WebSocket.OPEN
     ){
         return;
     }
+
+    socket.send(
+        JSON.stringify(data)
+    );
+}
+
+function handleServerMessage(message){
+
+    if(message.type === "connected"){
+        return;
+    }
+
+    if(message.type === "queued"){
+        queueScreen
+            .querySelector(".subtitle")
+            .textContent =
+            "Looking for another player...";
+        return;
+    }
+
+    if(message.type === "matchFound"){
+        myRole =
+            message.you.role;
+
+        myName =
+            message.you.name;
+
+        opponentNameValue =
+            message.opponent.name;
+
+        youName.textContent =
+            myName;
+
+        opponentName.textContent =
+            opponentNameValue;
+
+        roleBox.textContent =
+            myRole.toUpperCase();
+
+        matchPlayers.textContent =
+            `${myName} (${myRole}) VS ${opponentNameValue} (${message.opponent.role})`;
+
+        showOnly(foundScreen);
+
+        let count = 3;
+
+        foundCountdown.textContent =
+            count;
+
+        const interval =
+            setInterval(() => {
+                count--;
+
+                if(count > 0){
+                    foundCountdown.textContent =
+                        count;
+                }
+                else{
+                    clearInterval(interval);
+
+                    foundCountdown.textContent =
+                        "GO!";
+
+                    setTimeout(() => {
+                        showGame();
+                    },500);
+                }
+            },1000);
+
+        return;
+    }
+
+    if(message.type === "state"){
+        currentState =
+            message.state;
+
+        renderState(
+            currentState
+        );
+
+        if(
+            currentState.phase ===
+            "ended"
+        ){
+            showEnd(
+                currentState
+            );
+        }
+
+        return;
+    }
+
+    if(message.type === "opponentLeft"){
+        showEnd({
+            winnerName:myName,
+            reason:"Your opponent left the match."
+        });
+
+        return;
+    }
+}
+
+function showGame(){
+    showOnly(null);
+
+    game.classList.add("active");
+
+    crosshair.style.display =
+        myRole === "Gunner"
+            ? "block"
+            : "none";
+
+    fireButton.style.display =
+        myRole === "Gunner"
+            ? "block"
+            : "none";
+
+    document.getElementById(
+        "mobileControls"
+    ).style.display =
+        myRole === "Pilot"
+            ? "block"
+            : "none";
+}
+
+function renderState(state){
+
+    if(!state){
+        return;
+    }
+
+    currentState =
+        state;
+
+    const width =
+        window.innerWidth;
+
+    const height =
+        window.innerHeight;
+
+    /*
+        The server uses a normalized
+        1000 x 600 world.
+
+        Convert it to the player's
+        actual screen size.
+    */
+
+    const sx =
+        width / 1000;
+
+    const sy =
+        height / 600;
 
     const p =
-        getPlaneRect();
+        state.plane;
 
-    /*
-       Only collide with the actual
-       visible tower element.
-    */
+    const px =
+        p.x * sx;
+
+    const py =
+        p.y * sy;
+
+    plane.style.left =
+        `${px - 41}px`;
+
+    plane.style.top =
+        `${py - 17}px`;
+
+    plane.style.transform =
+        `rotate(${p.pitch}deg)`;
+
+    const leftTower =
+        tower1;
+
+    const rightTower =
+        tower2;
+
+    const tower1HP =
+        Math.max(
+            0,
+            state.towers[0].hp
+        );
+
+    const tower2HP =
+        Math.max(
+            0,
+            state.towers[1].hp
+        );
+
+    tower1Fill.style.width =
+        `${tower1HP}%`;
+
+    tower2Fill.style.width =
+        `${tower2HP}%`;
+
+    tower1Text.textContent =
+        `${tower1HP}%`;
+
+    tower2Text.textContent =
+        `${tower2HP}%`;
 
     if(
-        !hitTower1 &&
-        !tower1Destroyed &&
-        tower1.style.visibility !==
-            "hidden"
+        state.towers[0].destroyed
     ){
+        leftTower.classList.add(
+            "destroyed"
+        );
+    }
+    else{
+        leftTower.classList.remove(
+            "destroyed"
+        );
+    }
 
-        const t1 =
-            getTowerRect(tower1);
+    if(
+        state.towers[1].destroyed
+    ){
+        rightTower.classList.add(
+            "destroyed"
+        );
+    }
+    else{
+        rightTower.classList.remove(
+            "destroyed"
+        );
+    }
 
-        if(rectsOverlap(p,t1)){
+    const planeHP =
+        Math.max(
+            0,
+            state.plane.hp
+        );
 
-            hitTower1=true;
+    planeHealthFill.style.width =
+        `${planeHP}%`;
 
-            crash(
-                p,
-                tower1,
-                towerAssembly1,
-                1
+    planeHealthText.textContent =
+        `PLANE ${planeHP}%`;
+
+    roleBox.textContent =
+        myRole === "Gunner"
+            ? `GUNNER — TOWER ${state.gunnerTower}`
+            : `PILOT — ${planeData[state.plane.planeType]?.name || "Plane"}`;
+
+    /*
+        Turret positions use the same
+        normalized server world.
+    */
+
+    let tx;
+
+    if(state.gunnerTower === 1){
+        tx = 347;
+    }
+    else{
+        tx = 652;
+    }
+
+    const ty = 245;
+
+    turret.style.left =
+        `${tx * sx - 27}px`;
+
+    turret.style.top =
+        `${ty * sy - 32}px`;
+
+    /*
+        Aim the turret.
+    */
+
+    if(myRole === "Gunner"){
+        const ax =
+            state.aim.x * sx;
+
+        const ay =
+            state.aim.y * sy;
+
+        const turretCenterX =
+            tx * sx;
+
+        const turretCenterY =
+            ty * sy;
+
+        const angle =
+            Math.atan2(
+                ay - turretCenterY,
+                ax - turretCenterX
+            ) * 180 / Math.PI;
+
+        turretGun.style.transform =
+            `rotate(${angle}deg)`;
+    }
+
+    /*
+        Create local effects whenever
+        a tower loses HP.
+    */
+
+    if(lastState){
+        if(
+            state.towers[0].hp <
+            lastState.towers[0].hp
+        ){
+            createImpact(
+                347 * sx,
+                300 * sy
             );
+        }
 
-            return;
+        if(
+            state.towers[1].hp <
+            lastState.towers[1].hp
+        ){
+            createImpact(
+                652 * sx,
+                300 * sy
+            );
+        }
+
+        if(
+            state.plane.hp <
+            lastState.plane.hp
+        ){
+            createPlaneHit(
+                px,
+                py
+            );
+        }
+
+        if(
+            state.towers[0].destroyed &&
+            !lastState.towers[0].destroyed
+        ){
+            collapseTower(
+                tower1
+            );
+        }
+
+        if(
+            state.towers[1].destroyed &&
+            !lastState.towers[1].destroyed
+        ){
+            collapseTower(
+                tower2
+            );
         }
     }
 
-    if(
-        hitTower1 &&
-        !hitTower2 &&
-        !tower2Destroyed &&
-        tower2.style.visibility !==
-            "hidden"
-    ){
-
-        const t2 =
-            getTowerRect(tower2);
-
-        if(rectsOverlap(p,t2)){
-
-            hitTower2=true;
-
-            crash(
-                p,
-                tower2,
-                towerAssembly2,
-                2
-            );
-
-        }
-    }
+    lastState =
+        JSON.parse(
+            JSON.stringify(state)
+        );
 }
 
-
-/* =========================
-   CRASH
-========================= */
-
-function crash(
-    planeRect,
-    tower,
-    towerAssembly,
-    number
-){
-
-    if(crashed){
-        return;
-    }
-
-    crashed=true;
-
-    crashCooldown=true;
-
-    inputLocked=true;
-
-    planeMenu.style.display =
-        "none";
-
-    /*
-       Kill movement.
-    */
-
-    velocity *= .15;
-
-    verticalVelocity =
-        number === 1
-        ? .15
-        : -.15;
-
-    statusText.textContent =
-        "IMPACT — BUILDING DAMAGE";
-
-    message.textContent =
-        "IMPACT";
-
-    createImpactEffects(
-        planeRect,
-        number
-    );
-
-    damageEngine();
-
-    /*
-       The original tower is hidden
-       only after the impact effects
-       are placed.
-    */
-
-    createCollapsePieces(
-        towerAssembly,
-        number
-    );
-
-    tower.style.visibility =
-        "hidden";
-
-    /*
-       Start collapse after a short
-       impact pause.
-    */
-
-    setTimeout(
-        function(){
-
-            startTowerCollapse(
-                towerAssembly,
-                number
-            );
-
-        },
-        500
-    );
-
-    /*
-       Finish crash sequence.
-    */
-
-    setTimeout(
-        function(){
-
-            crashCooldown=false;
-
-            if(number===1){
-
-                tower1Destroyed=true;
-
-                firstCrashFinished=true;
-
-                prepareSecondFlight();
-
-            }else{
-
-                tower2Destroyed=true;
-
-                finishRound();
-
-            }
-
-        },
-        6500
-    );
-}
-
-
-/* =========================
-   IMPACT EFFECTS
-========================= */
-
-function createImpactEffects(
-    planeRect,
-    number
-){
-
-    const gameRect =
-        game.getBoundingClientRect();
-
-    const impactX =
-        planeRect.left -
-        gameRect.left +
-        planeRect.width*.72;
-
-    const impactY =
-        planeRect.top -
-        gameRect.top +
-        planeRect.height*.5;
-
-    const mark =
-        document.createElement(
-            "div"
-        );
-
-    mark.className =
-        "damageMark";
-
-    mark.style.left =
-        (impactX-30)+"px";
-
-    mark.style.top =
-        (impactY-40)+"px";
-
-    game.appendChild(mark);
-
-    setTimeout(
-        function(){
-            mark.remove();
-        },
-        10000
-    );
-
-    createFlash(
-        impactX,
-        impactY
-    );
-
-    /*
-       Glass
-    */
-
-    for(
-        let i=0;
-        i<18;
-        i++
-    ){
-
-        createGlass(
-            impactX,
-            impactY
-        );
-
-    }
-
-    /*
-       Fire near impact.
-    */
-
-    for(
-        let i=0;
-        i<13;
-        i++
-    ){
-
-        createFire(
-            impactX+
-            random(-45,45),
-
-            impactY+
-            random(-70,70)
-        );
-
-    }
-
-    /*
-       Dark smoke near impact.
-    */
-
-    for(
-        let i=0;
-        i<11;
-        i++
-    ){
-
-        createSmoke(
-            impactX+
-            random(-35,35),
-
-            impactY+
-            random(-40,40),
-
-            false
-        );
-
-    }
-
-    /*
-       Lighter smoke higher up.
-    */
-
-    for(
-        let i=0;
-        i<9;
-        i++
-    ){
-
-        createSmoke(
-            impactX+
-            random(-65,65),
-
-            impactY-
-            random(60,180),
-
-            true
-        );
-
-    }
-
-    /*
-       Building chunks.
-    */
-
-    for(
-        let i=0;
-        i<12;
-        i++
-    ){
-
-        createChunk(
-            impactX+
-            random(-45,45),
-
-            impactY+
-            random(-50,70)
-        );
-
-    }
-}
-
-
-function random(min,max){
-
-    return Math.random()*
-        (max-min)+min;
-
-}
-
-
-/* =========================
-   FLASH
-========================= */
-
-function createFlash(x,y){
+function createImpact(x,y){
 
     const flash =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
-    flash.className =
-        "impactFlash";
+    flash.style.position =
+        "absolute";
 
     flash.style.left =
-        (x-60)+"px";
+        `${x - 25}px`;
 
     flash.style.top =
-        (y-60)+"px";
+        `${y - 25}px`;
 
-    game.appendChild(flash);
+    flash.style.width =
+        "50px";
 
-    setTimeout(
-        function(){
-            flash.remove();
-        },
-        450
+    flash.style.height =
+        "50px";
+
+    flash.style.borderRadius =
+        "50%";
+
+    flash.style.background =
+        "#fff";
+
+    flash.style.zIndex =
+        "90";
+
+    flash.style.pointerEvents =
+        "none";
+
+    world.appendChild(
+        flash
     );
+
+    setTimeout(() => {
+        flash.remove();
+    },100);
 }
 
+function createPlaneHit(x,y){
 
-/* =========================
-   GLASS
-========================= */
+    for(let i=0;i<5;i++){
 
-function createGlass(x,y){
+        const smoke =
+            document.createElement("div");
 
-    const glass =
-        document.createElement(
-            "div"
+        smoke.className =
+            "smoke";
+
+        smoke.style.left =
+            `${x + (Math.random()*30-15)}px`;
+
+        smoke.style.top =
+            `${y + (Math.random()*20-10)}px`;
+
+        world.appendChild(
+            smoke
         );
 
-    glass.className =
-        "glass";
-
-    glass.style.left =
-        x+"px";
-
-    glass.style.top =
-        y+"px";
-
-    glass.style.setProperty(
-        "--gx",
-        random(-150,150)+"px"
-    );
-
-    glass.style.setProperty(
-        "--gy",
-        random(-100,220)+"px"
-    );
-
-    glass.style.setProperty(
-        "--gr",
-        random(-500,500)+"deg"
-    );
-
-    game.appendChild(glass);
-
-    setTimeout(
-        function(){
-            glass.remove();
-        },
-        1300
-    );
+        setTimeout(() => {
+            smoke.remove();
+        },1500);
+    }
 }
 
+function collapseTower(element){
 
-/* =========================
-   CHUNKS
-========================= */
+    const rect =
+        element.getBoundingClientRect();
 
-function createChunk(x,y){
+    const worldRect =
+        world.getBoundingClientRect();
 
-    const chunk =
-        document.createElement(
-            "div"
-        );
+    const x =
+        rect.left -
+        worldRect.left +
+        rect.width / 2;
 
-    chunk.className =
-        "buildingChunk";
-
-    chunk.style.width =
-        random(18,48)+"px";
-
-    chunk.style.height =
-        random(25,80)+"px";
-
-    chunk.style.left =
-        x+"px";
-
-    chunk.style.top =
-        y+"px";
-
-    chunk.style.setProperty(
-        "--cx",
-        random(-160,160)+"px"
-    );
-
-    chunk.style.setProperty(
-        "--cy",
-        random(180,480)+"px"
-    );
-
-    chunk.style.setProperty(
-        "--cr",
-        random(-70,70)+"deg"
-    );
-
-    chunk.style.setProperty(
-        "--ct",
-        random(1.5,3.2)+"s"
-    );
-
-    game.appendChild(chunk);
-
-    setTimeout(
-        function(){
-            chunk.remove();
-        },
-        4500
-    );
-}
-
-
-/* =========================
-   FIRE
-========================= */
-
-function createFire(x,y){
+    const y =
+        rect.top -
+        worldRect.top +
+        20;
 
     const fire =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
     fire.className =
         "fire";
 
     fire.style.left =
-        x+"px";
+        `${x - 32}px`;
 
     fire.style.top =
-        y+"px";
+        `${y - 32}px`;
 
-    game.appendChild(fire);
-
-    /*
-       Fire eventually disappears,
-       preventing unlimited DOM growth.
-    */
-
-    setTimeout(
-        function(){
-            fire.remove();
-        },
-        4800
+    world.appendChild(
+        fire
     );
 
-    /*
-       Fire spreads vertically.
-    */
+    setTimeout(() => {
+        fire.remove();
+    },3000);
 
-    setTimeout(
-        function(){
+    for(let i=0;i<22;i++){
 
-            if(
-                document.body.contains(fire)
-            ){
+        const debris =
+            document.createElement("div");
 
-                createFire(
-                    x+random(-25,25),
-                    y+random(-55,55)
-                );
+        debris.className =
+            "debris";
 
-            }
+        debris.style.left =
+            `${x + Math.random()*100-50}px`;
 
-        },
-        random(450,900)
-    );
-}
+        debris.style.top =
+            `${y + Math.random()*50}px`;
 
-
-/* =========================
-   SMOKE
-========================= */
-
-function createSmoke(
-    x,
-    y,
-    light
-){
-
-    const smoke =
-        document.createElement(
-            "div"
+        debris.style.setProperty(
+            "--dx",
+            `${Math.random()*300-150}px`
         );
 
-    smoke.className =
-        light
-        ? "lightSmoke"
-        : "smoke";
+        debris.style.setProperty(
+            "--dy",
+            `${Math.random()*250+50}px`
+        );
 
-    smoke.style.left =
-        x+"px";
+        world.appendChild(
+            debris
+        );
 
-    smoke.style.top =
-        y+"px";
-
-    smoke.style.setProperty(
-        "--sx",
-        random(-70,70)+"px"
-    );
-
-    game.appendChild(smoke);
-
-    setTimeout(
-        function(){
-            smoke.remove();
-        },
-        light ? 6500 : 4500
-    );
+        setTimeout(() => {
+            debris.remove();
+        },1200);
+    }
 }
 
+function showEnd(state){
 
-/* =========================
-   ENGINE DAMAGE
-========================= */
+    game.classList.remove(
+        "active"
+    );
 
-function damageEngine(){
+    showOnly(endScreen);
 
-    /*
-       Don't repeatedly damage engines.
-    */
+    const won =
+        state.winnerName === myName;
 
-    if(
-        engine1Damaged ||
-        engine2Damaged
-    ){
-        return;
-    }
+    endTitle.textContent =
+        won
+            ? "YOU WIN!"
+            : "YOU LOSE!";
 
-    const damaged =
-        Math.random()<.5
-        ? 1
-        : 2;
+    endReason.textContent =
+        state.reason ||
+        "The match has ended.";
+}
 
-    if(damaged===1){
-        engine1Damaged=true;
-    }else{
-        engine2Damaged=true;
-    }
+findMatchBtn.addEventListener(
+    "click",
+    () => {
 
-    /*
-       One controlled smoke loop.
-    */
+        const entered =
+            nameInput.value.trim();
 
-    let smokeCount=0;
+        myName =
+            entered || "Player";
 
-    const smokeTimer =
-        setInterval(
-            function(){
+        nameInput.value =
+            myName;
+
+        connect();
+
+        const wait =
+            setInterval(() => {
 
                 if(
-                    smokeCount>=14 ||
-                    !crashed
+                    socket &&
+                    socket.readyState ===
+                    WebSocket.OPEN
                 ){
+                    clearInterval(wait);
 
-                    clearInterval(
-                        smokeTimer
+                    send({
+                        type:"queue",
+                        name:myName
+                    });
+
+                    showOnly(
+                        queueScreen
                     );
-
-                    return;
                 }
 
-                const smoke =
-                    document.createElement(
-                        "div"
-                    );
-
-                smoke.className =
-                    "engineSmoke";
-
-                smoke.style.left =
-                    damaged===1
-                    ? "67px"
-                    : "105px";
-
-                smoke.style.top =
-                    "48px";
-
-                plane.appendChild(smoke);
-
-                setTimeout(
-                    function(){
-                        smoke.remove();
-                    },
-                    900
-                );
-
-                smokeCount++;
-
-            },
-            220
-        );
-}
-
-
-/* =========================
-   COLLAPSE PIECES
-========================= */
-
-function createCollapsePieces(
-    assembly,
-    number
-){
-
-    const old =
-        assembly.querySelector(
-            ".collapsePieces"
-        );
-
-    if(old){
-        old.remove();
-    }
-
-    const pieces =
-        document.createElement(
-            "div"
-        );
-
-    pieces.className =
-        "collapsePieces";
-
-    assembly.appendChild(pieces);
-
-    const width =
-        assembly.clientWidth;
-
-    const height =
-        assembly.clientHeight;
-
-    const sectionHeight =
-        height/4;
-
-    /*
-       Four large sections.
-    */
-
-    for(
-        let i=0;
-        i<4;
-        i++
-    ){
-
-        const section =
-            document.createElement(
-                "div"
-            );
-
-        section.className =
-            "collapseSection";
-
-        section.style.left =
-            "0px";
-
-        section.style.top =
-            (i*sectionHeight)+"px";
-
-        section.style.width =
-            width+"px";
-
-        section.style.height =
-            (sectionHeight+4)+"px";
-
-        /*
-           Each section gets a different
-           direction.
-        */
-
-        let horizontal =
-            (i-1.5)*(
-                number===1
-                ? 75
-                : 95
-            );
-
-        horizontal +=
-            random(-30,30);
-
-        let vertical =
-            120+
-            i*95+
-            random(-25,60);
-
-        let rotation =
-            random(-35,35);
-
-        section.style.setProperty(
-            "--sx",
-            horizontal+"px"
-        );
-
-        section.style.setProperty(
-            "--sy",
-            vertical+"px"
-        );
-
-        section.style.setProperty(
-            "--sr",
-            rotation+"deg"
-        );
-
-        section.style.setProperty(
-            "--st",
-            random(2.2,3.7)+"s"
-        );
-
-        /*
-           Top section gets a roof-like
-           strip so the collapse still
-           resembles the original tower.
-        */
-
-        if(i===0){
-
-            const roof =
-                document.createElement(
-                    "div"
-                );
-
-            roof.style.position =
-                "absolute";
-
-            roof.style.left =
-                "-8px";
-
-            roof.style.top =
-                "-10px";
-
-            roof.style.width =
-                "calc(100% + 16px)";
-
-            roof.style.height =
-                "10px";
-
-            roof.style.background =
-                "#858e94";
-
-            roof.style.border =
-                "3px solid #5e676d";
-
-            roof.style.zIndex =
-                "5";
-
-            section.appendChild(
-                roof
-            );
-
-        }
-
-        pieces.appendChild(
-            section
-        );
-    }
-
-    createFallingWindows(
-        assembly,
-        width,
-        height
-    );
-}
-
-
-/* =========================
-   FALLING WINDOWS
-========================= */
-
-function createFallingWindows(
-    assembly,
-    width,
-    height
-){
-
-    /*
-       Keep count reasonable so
-       mobile devices don't get flooded.
-    */
-
-    const columns =
-        Math.max(
-            4,
-            Math.floor(width/18)
-        );
-
-    const rows =
-        Math.max(
-            8,
-            Math.floor(height/65)
-        );
-
-    const count =
-        Math.min(
-            columns*rows,
-            75
-        );
-
-    for(
-        let i=0;
-        i<count;
-        i++
-    ){
-
-        const window =
-            document.createElement(
-                "div"
-            );
-
-        window.className =
-            "fallingWindow";
-
-        window.style.left =
-            random(
-                15,
-                Math.max(20,width-15)
-            )+"px";
-
-        window.style.top =
-            random(
-                25,
-                Math.max(30,height-25)
-            )+"px";
-
-        window.style.setProperty(
-            "--wx",
-            random(-180,180)+"px"
-        );
-
-        window.style.setProperty(
-            "--wy",
-            random(180,600)+"px"
-        );
-
-        window.style.setProperty(
-            "--wr",
-            random(-500,500)+"deg"
-        );
-
-        window.style.setProperty(
-            "--wt",
-            random(1.5,4)+"s"
-        );
-
-        assembly.appendChild(
-            window
-        );
+            },100);
 
         setTimeout(
-            function(){
-                window.remove();
-            },
-            5200
+            () => clearInterval(wait),
+            5000
         );
     }
-}
+);
 
+cancelQueueBtn.addEventListener(
+    "click",
+    () => {
 
-/* =========================
-   START COLLAPSE
-========================= */
+        send({
+            type:"cancelQueue"
+        });
 
-function startTowerCollapse(
-    assembly,
-    number
-){
-
-    const sections =
-        assembly.querySelectorAll(
-            ".collapseSection"
-        );
-
-    /*
-       Sections already have their
-       animation. Force browser to
-       recognize it immediately.
-    */
-
-    sections.forEach(
-        function(section){
-
-            void section.offsetWidth;
-
-            section.style.animationPlayState =
-                "running";
-
-        }
-    );
-
-    /*
-       Dust appears later, when pieces
-       reach the ground.
-    */
-
-    setTimeout(
-        function(){
-
-            createDustAtBottom(
-                assembly
-            );
-
-        },
-        1700
-    );
-
-    setTimeout(
-        function(){
-
-            createDustAtBottom(
-                assembly
-            );
-
-        },
-        2400
-    );
-}
-
-
-/* =========================
-   DUST
-========================= */
-
-function createDustAtBottom(
-    assembly
-){
-
-    const rect =
-        assembly.getBoundingClientRect();
-
-    const gameRect =
-        game.getBoundingClientRect();
-
-    for(
-        let i=0;
-        i<4;
-        i++
-    ){
-
-        const dust =
-            document.createElement(
-                "div"
-            );
-
-        dust.className =
-            "dust";
-
-        dust.style.left =
-            (
-                rect.left-
-                gameRect.left+
-                random(0,rect.width)
-            )+"px";
-
-        dust.style.top =
-            (
-                rect.bottom-
-                gameRect.top-
-                random(15,55)
-            )+"px";
-
-        game.appendChild(
-            dust
-        );
-
-        setTimeout(
-            function(){
-                dust.remove();
-            },
-            2500
+        showOnly(
+            menuScreen
         );
     }
-}
+);
 
+planeMenuBtn.addEventListener(
+    "click",
+    () => {
 
-/* =========================
-   SECOND FLIGHT
-========================= */
-
-function prepareSecondFlight(){
-
-    setTimeout(
-        function(){
-
-            px=3.5;
-
-            py=35;
-
-            velocity=0;
-
-            verticalVelocity=0;
-
-            pitch=0;
-
-            crashed=false;
-
-            crashCooldown=false;
-
-            inputLocked=false;
-
-            plane.style.left =
-                px+"%";
-
-            plane.style.top =
-                py+"%";
-
-            plane.style.transform =
-                "rotate(0deg)";
-
-            statusText.textContent =
-                "SECOND RUN — CHOOSE A PLANE";
-
-            message.textContent =
-                "CHOOSE YOUR PLANE";
-
-        },
-        300
-    );
-}
-
-
-/* =========================
-   ROUND COMPLETE
-========================= */
-
-function finishRound(){
-
-    crashed=false;
-
-    crashCooldown=false;
-
-    inputLocked=true;
-
-    roundComplete=true;
-
-    velocity=0;
-
-    verticalVelocity=0;
-
-    statusText.textContent =
-        "ROUND COMPLETE";
-
-    message.innerHTML =
-        "ROUND COMPLETE<br><small>PRESS R OR TAP FLY AGAIN</small>";
-
-    /*
-       Add a real Fly Again button.
-    */
-
-    const again =
-        document.createElement(
-            "button"
-        );
-
-    again.id =
-        "flyAgainButton";
-
-    again.textContent =
-        "FLY AGAIN";
-
-    again.style.position =
-        "absolute";
-
-    again.style.left =
-        "50%";
-
-    again.style.top =
-        "calc(18% + 60px)";
-
-    again.style.transform =
-        "translateX(-50%)";
-
-    again.style.zIndex =
-        "1500";
-
-    again.style.padding =
-        "12px 22px";
-
-    again.style.border =
-        "3px solid #24343d";
-
-    again.style.background =
-        "#f0f0f0";
-
-    again.style.fontWeight =
-        "bold";
-
-    again.style.cursor =
-        "pointer";
-
-    again.onclick =
-        function(){
-
-            again.remove();
-
-            resetGame();
-
-        };
-
-    game.appendChild(
-        again
-    );
-}
-
-
-/* =========================
-   RESET
-========================= */
-
-function resetGame(){
-
-    document
-    .querySelectorAll(
-        ".fallingWindow,"+
-        ".buildingChunk,"+
-        ".glass,"+
-        ".fire,"+
-        ".smoke,"+
-        ".lightSmoke,"+
-        ".dust,"+
-        ".damageMark,"+
-        ".impactFlash"
-    )
-    .forEach(
-        function(element){
-            element.remove();
-        }
-    );
-
-    towerAssembly1
-        .querySelector(
-            ".collapsePieces"
-        )
-        ?.remove();
-
-    towerAssembly2
-        .querySelector(
-            ".collapsePieces"
-        )
-        ?.remove();
-
-    towerAssembly1.style.transform =
-        "";
-
-    towerAssembly2.style.transform =
-        "";
-
-    tower1.style.visibility =
-        "visible";
-
-    tower2.style.visibility =
-        "visible";
-
-    px=3.5;
-
-    py=35;
-
-    velocity=0;
-
-    verticalVelocity=0;
-
-    pitch=0;
-
-    crashed=false;
-
-    crashCooldown=false;
-
-    inputLocked=false;
-
-    hitTower1=false;
-
-    hitTower2=false;
-
-    tower1Destroyed=false;
-
-    tower2Destroyed=false;
-
-    roundComplete=false;
-
-    firstCrashFinished=false;
-
-    engine1Damaged=false;
-
-    engine2Damaged=false;
-
-    plane.style.left =
-        px+"%";
-
-    plane.style.top =
-        py+"%";
-
-    plane.style.transform =
-        "rotate(0deg)";
-
-    planeMenu.style.display =
-        "none";
-
-    const again =
-        document.getElementById(
-            "flyAgainButton"
-        );
-
-    if(again){
-        again.remove();
-    }
-
-    statusText.textContent =
-        "W / ▲ TO ACCELERATE";
-
-    message.textContent =
-        "";
-
-}
-
-
-/* =========================
-   FLIGHT PHYSICS
-========================= */
-
-function updatePhysics(dt){
-
-    if(
-        crashed ||
-        roundComplete ||
-        inputLocked ||
-        planeMenu.style.display ===
+        planeSelector.style.display =
+            planeSelector.style.display ===
             "block"
-    ){
+                ? "none"
+                : "block";
+    }
+);
+
+document.querySelectorAll(
+    ".planeOption"
+).forEach(button => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            document.querySelectorAll(
+                ".planeOption"
+            ).forEach(
+                b =>
+                    b.classList.remove(
+                        "selected"
+                    )
+            );
+
+            button.classList.add(
+                "selected"
+            );
+
+            selectedPlane =
+                button.dataset.plane;
+
+            if(
+                myRole === "Pilot"
+            ){
+                send({
+                    type:"selectPlane",
+                    plane:selectedPlane
+                });
+            }
+        }
+    );
+});
+
+rematchBtn.addEventListener(
+    "click",
+    () => {
+
+        lastState = null;
+
+        game.classList.remove(
+            "active"
+        );
+
+        connect();
+
+        const wait =
+            setInterval(() => {
+
+                if(
+                    socket &&
+                    socket.readyState ===
+                    WebSocket.OPEN
+                ){
+                    clearInterval(wait);
+
+                    send({
+                        type:"queue",
+                        name:myName
+                    });
+
+                    showOnly(
+                        queueScreen
+                    );
+                }
+
+            },100);
+    }
+);
+
+menuBtn.addEventListener(
+    "click",
+    () => {
+
+        send({
+            type:"leaveRoom"
+        });
+
+        game.classList.remove(
+            "active"
+        );
+
+        showOnly(
+            menuScreen
+        );
+    }
+);
+
+/*
+    Keyboard controls.
+*/
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        const key =
+            event.key.toLowerCase();
+
+        if(key === "w" || key === "arrowup"){
+            input.up = true;
+        }
+
+        if(key === "s" || key === "arrowdown"){
+            input.down = true;
+        }
+
+        if(key === "a" || key === "arrowleft"){
+            input.left = true;
+        }
+
+        if(key === "d" || key === "arrowright"){
+            input.right = true;
+        }
+
+        if(key === " "){
+            input.brake = true;
+            event.preventDefault();
+        }
+
+        if(
+            key === "p" &&
+            myRole === "Pilot"
+        ){
+
+            const names =
+                Object.keys(
+                    planeData
+                );
+
+            let index =
+                names.indexOf(
+                    selectedPlane
+                );
+
+            index =
+                (index + 1) %
+                names.length;
+
+            selectedPlane =
+                names[index];
+
+            send({
+                type:"selectPlane",
+                plane:selectedPlane
+            });
+        }
+
+        sendInput();
+    }
+);
+
+document.addEventListener(
+    "keyup",
+    event => {
+
+        const key =
+            event.key.toLowerCase();
+
+        if(key === "w" || key === "arrowup"){
+            input.up = false;
+        }
+
+        if(key === "s" || key === "arrowdown"){
+            input.down = false;
+        }
+
+        if(key === "a" || key === "arrowleft"){
+            input.left = false;
+        }
+
+        if(key === "d" || key === "arrowright"){
+            input.right = false;
+        }
+
+        if(key === " "){
+            input.brake = false;
+        }
+
+        sendInput();
+    }
+);
+
+function sendInput(){
+
+    if(myRole !== "Pilot"){
         return;
     }
 
-    /*
-       Desktop W / S.
-    */
-
-    const accelerate =
-        up ||
-        keys["w"];
-
-    const brake =
-        down ||
-        keys["s"] ||
-        keys[" "];
-
-
-    /*
-       A / D.
-    */
-
-    const turnLeft =
-        left ||
-        keys["a"];
-
-    const turnRight =
-        right ||
-        keys["d"];
-
-
-    /*
-       ACCELERATION
-
-       IMPORTANT:
-       There is NO automatic acceleration.
-
-       The plane stays still until the
-       player presses W / UP.
-    */
-
-    if(accelerate){
-
-        velocity +=
-            stats.acceleration*
-            dt;
-
-    }else if(brake){
-
-        velocity -=
-            stats.braking*
-            dt;
-
-    }
-
-
-    /*
-       Natural drag.
-       Very small, so releasing W
-       doesn't instantly stop the plane.
-    */
-
-    if(
-        !accelerate &&
-        !brake
-    ){
-
-        velocity -=
-            .22*
-            dt;
-
-    }
-
-
-    velocity =
-        Math.max(
-            0,
-            Math.min(
-                velocity,
-                stats.maxSpeed
-            )
-        );
-
-
-    /*
-       TURNING
-    */
-
-    let horizontalTurn=0;
-
-    if(turnLeft){
-        horizontalTurn -=
-            stats.turn*
-            dt;
-    }
-
-    if(turnRight){
-        horizontalTurn +=
-            stats.turn*
-            dt;
-    }
-
-    px +=
-        horizontalTurn*
-        velocity/
-        Math.max(
-            stats.maxSpeed,
-            .1
-        );
-
-
-    /*
-       VERTICAL FLIGHT
-
-       Up = climb
-       Down = descend
-    */
-
-    if(accelerate && !brake){
-
-        /*
-           Small natural climb only while
-           the player is actually accelerating.
-        */
-
-        if(keys["w"] || up){
-            verticalVelocity -=
-                stats.climb*
-                .00045*
-                dt;
+    send({
+        type:"input",
+        input:{
+            up:input.up,
+            down:input.down,
+            left:input.left,
+            right:input.right,
+            brake:input.brake
         }
+    });
+}
 
+/*
+    Mobile pilot buttons.
+*/
+
+function bindHold(
+    element,
+    property
+){
+
+    element.addEventListener(
+        "pointerdown",
+        event => {
+            event.preventDefault();
+
+            input[property] = true;
+            sendInput();
+        }
+    );
+
+    element.addEventListener(
+        "pointerup",
+        event => {
+            event.preventDefault();
+
+            input[property] = false;
+            sendInput();
+        }
+    );
+
+    element.addEventListener(
+        "pointercancel",
+        () => {
+            input[property] = false;
+            sendInput();
+        }
+    );
+
+    element.addEventListener(
+        "pointerleave",
+        () => {
+            input[property] = false;
+            sendInput();
+        }
+    );
+}
+
+bindHold(
+    document.getElementById("upBtn"),
+    "up"
+);
+
+bindHold(
+    document.getElementById("downBtn"),
+    "down"
+);
+
+bindHold(
+    document.getElementById("leftBtn"),
+    "left"
+);
+
+bindHold(
+    document.getElementById("rightBtn"),
+    "right"
+);
+
+bindHold(
+    document.getElementById("brakeBtn"),
+    "brake"
+);
+
+/*
+    Gunner aiming.
+*/
+
+function updateAim(event){
+
+    if(myRole !== "Gunner"){
+        return;
     }
 
-    if(
-        keys["s"] ||
-        down
-    ){
+    const rect =
+        world.getBoundingClientRect();
 
-        verticalVelocity +=
-            stats.climb*
-            .00065*
-            dt;
+    const x =
+        event.clientX -
+        rect.left;
 
-    }
+    const y =
+        event.clientY -
+        rect.top;
 
+    crosshair.style.left =
+        `${x}px`;
+
+    crosshair.style.top =
+        `${y}px`;
 
     /*
-       If no vertical input, velocity
-       slowly returns toward level.
+        Send normalized world coordinates.
     */
 
-    if(
-        !keys["w"] &&
-        !up &&
-        !keys["s"] &&
-        !down
-    ){
+    const worldX =
+        x /
+        window.innerWidth *
+        1000;
 
-        verticalVelocity *=
-            Math.pow(
-                .90,
-                dt
-            );
+    const worldY =
+        y /
+        window.innerHeight *
+        600;
 
-    }
+    send({
+        type:"aim",
+        x:worldX,
+        y:worldY
+    });
+}
 
+world.addEventListener(
+    "pointermove",
+    updateAim
+);
 
-    /*
-       Stall.
-
-       A slow aircraft cannot climb
-       forever.
-    */
-
-    if(
-        (keys["w"] || up) &&
-        velocity <
-            stats.maxSpeed*
-            stats.stall
-    ){
-
-        verticalVelocity +=
-            25*
-            dt;
-
-        statusText.textContent =
-            "STALL — TOO SLOW";
-
-    }else{
+world.addEventListener(
+    "pointerdown",
+    event => {
 
         if(
-            !hitTower1 &&
-            !hitTower2
+            myRole !== "Gunner"
         ){
-
-            statusText.textContent =
-                velocity <= .05
-                ? "W / ▲ TO ACCELERATE"
-                : "FLY TOWARD THE BUILDINGS";
-
+            return;
         }
 
+        updateAim(event);
+
+        if(
+            event.target ===
+            fireButton
+        ){
+            return;
+        }
+
+        send({
+            type:"fire"
+        });
     }
-
-
-    /*
-       Limit vertical speed.
-    */
-
-    verticalVelocity =
-        Math.max(
-            -2.8,
-            Math.min(
-                verticalVelocity,
-                2.8
-            )
-        );
-
-
-    /*
-       Convert vertical velocity
-       into screen position.
-    */
-
-    py +=
-        verticalVelocity*
-        dt;
-
-
-    /*
-       Screen boundaries.
-    */
-
-    if(py<5){
-
-        py=5;
-
-        verticalVelocity=
-            Math.max(
-                verticalVelocity,
-                0
-            );
-
-    }
-
-    if(py>76){
-
-        py=76;
-
-        verticalVelocity=
-            Math.min(
-                verticalVelocity,
-                0
-            );
-
-    }
-
-
-    /*
-       Keep the plane within the
-       horizontal playable area.
-
-       It does NOT wrap around anymore.
-    */
-
-    if(px>96){
-
-        px=96;
-
-        velocity=0;
-
-    }
-
-    if(px<0){
-
-        px=0;
-
-        velocity=0;
-
-    }
-
-
-    /*
-       Plane banking.
-
-       Turning left/right makes the
-       aircraft visually bank.
-    */
-
-    let targetPitch=0;
-
-    if(turnLeft){
-        targetPitch=-12;
-    }
-
-    if(turnRight){
-        targetPitch=12;
-    }
-
-    if(accelerate && velocity>1){
-        targetPitch +=
-            verticalVelocity*
-            4;
-    }
-
-    pitch +=
-        (
-            targetPitch-
-            pitch
-        )*
-        Math.min(
-            1,
-            .12*dt
-        );
-
-
-    /*
-       Render.
-    */
-
-    plane.style.left =
-        px+"%";
-
-    plane.style.top =
-        py+"%";
-
-    plane.style.transform =
-        "rotate("+pitch+"deg)";
-}
-
-
-/* =========================
-   MAIN LOOP
-========================= */
-
-function gameLoop(now){
-
-    const dt =
-        Math.min(
-            .05,
-            (now-lastTime)/
-            1000
-        );
-
-    lastTime=now;
-
-    updatePhysics(
-        dt
-    );
-
-    checkCollision();
-
-    requestAnimationFrame(
-        gameLoop
-    );
-}
-
-
-/* =========================
-   START
-========================= */
-
-selectPlane(
-    "airliner"
 );
 
-velocity=0;
+fireButton.addEventListener(
+    "pointerdown",
+    event => {
 
-requestAnimationFrame(
-    gameLoop
+        event.preventDefault();
+
+        send({
+            type:"fire"
+        });
+    }
 );
 
+window.addEventListener(
+    "resize",
+    () => {
+
+        if(currentState){
+            renderState(
+                currentState
+            );
+        }
+    }
+);
+
+connect();
 </script>
 
 </body>
 </html>
+
