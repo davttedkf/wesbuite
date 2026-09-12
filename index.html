@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -252,16 +253,14 @@ html,body{
     width:15px;
     height:4px;
     background:#5b646a;
+    z-index:5;
 }
-
-/* COLLAPSE */
 
 .towerCollapsing{
     animation:towerCollapse 4s steps(24) forwards;
 }
 
 @keyframes towerCollapse{
-
     0%{
         transform:scaleY(1) translateX(0);
     }
@@ -306,7 +305,6 @@ html,body{
 }
 
 @keyframes pieceFall{
-
     0%{
         transform:translate(0,0) rotate(0deg);
         opacity:1;
@@ -335,7 +333,6 @@ html,body{
 }
 
 @keyframes dustRise{
-
     0%{
         transform:translate(0,0) scale(.5);
         opacity:.85;
@@ -353,8 +350,6 @@ html,body{
         opacity:0;
     }
 }
-
-/* PLANE */
 
 #plane{
     position:absolute;
@@ -427,8 +422,6 @@ html,body{
 
 .planeWindow{left:30px}
 .planeWindow2{left:42px}
-
-/* IMPACT */
 
 .impactFlash{
     position:absolute;
@@ -542,7 +535,6 @@ html,body{
 }
 
 @keyframes smokeRise{
-
     0%{
         transform:translate(0,0) scale(.55);
         opacity:1;
@@ -578,7 +570,6 @@ html,body{
 }
 
 @keyframes debris{
-
     from{
         transform:translate(0,0) rotate(0);
         opacity:1;
@@ -602,14 +593,11 @@ html,body{
 }
 
 @keyframes spark{
-
     to{
         transform:translate(var(--sx),var(--sy));
         opacity:0;
     }
 }
-
-/* UI */
 
 #status{
     position:absolute;
@@ -749,7 +737,7 @@ html,body{
 
 <div id="game">
 
-<audio id="backgroundMusic" autoplay loop>
+<audio id="backgroundMusic" loop preload="auto">
     <source src="towersong.mp3" type="audio/mpeg">
 </audio>
 
@@ -844,6 +832,24 @@ let vy=0;
 
 let crashed=false;
 let smokeInterval=null;
+let musicStarted=false;
+
+function startMusic(){
+
+    if(musicStarted)return;
+
+    backgroundMusic.volume=.6;
+
+    backgroundMusic.play().then(()=>{
+
+        musicStarted=true;
+
+    }).catch(()=>{
+
+        musicStarted=false;
+
+    });
+}
 
 function setStartPosition(){
 
@@ -864,23 +870,37 @@ function setStartPosition(){
 const keys={};
 
 window.addEventListener("keydown",e=>{
+
     keys[e.key.toLowerCase()]=true;
+
+    startMusic();
+
 });
 
 window.addEventListener("keyup",e=>{
+
     keys[e.key.toLowerCase()]=false;
+
 });
 
 function holdButton(el,key){
 
     const down=e=>{
+
         e.preventDefault();
+
         keys[key]=true;
+
+        startMusic();
+
     };
 
     const up=e=>{
+
         e.preventDefault();
+
         keys[key]=false;
+
     };
 
     el.addEventListener("pointerdown",down);
@@ -897,6 +917,12 @@ holdButton(document.getElementById("down"),"arrowdown");
 function updatePlane(){
 
     if(crashed)return;
+
+    if(Math.abs(vx)>0.1 || Math.abs(vy)>0.1){
+
+        startMusic();
+
+    }
 
     if(keys["arrowright"]||keys["d"])
         vx+=.42;
@@ -923,23 +949,31 @@ function updatePlane(){
     const maxY=window.innerHeight-plane.offsetHeight;
 
     if(x<0){
+
         x=0;
         vx*=-.5;
+
     }
 
     if(x>maxX){
+
         x=maxX;
         vx*=-.5;
+
     }
 
     if(y<0){
+
         y=0;
         vy*=-.5;
+
     }
 
     if(y>maxY){
+
         y=maxY;
         vy*=-.5;
+
     }
 
     plane.style.left=x+"px";
@@ -975,6 +1009,7 @@ function checkCollision(){
 
             crash(tower,p);
             return;
+
         }
     }
 }
@@ -1008,14 +1043,14 @@ function crash(tower,p){
         )
     );
 
-    /*
-        Keep the plane visible at the impact point.
-        It will move downward with the collapsing tower.
-    */
-
     plane.style.display="block";
-    plane.style.left=(impactX-p.width/2)+"px";
-    plane.style.top=(impactY-p.height/2)+"px";
+
+    plane.style.left=
+        (impactX-p.width/2)+"px";
+
+    plane.style.top=
+        (impactY-p.height/2)+"px";
+
     plane.style.transform="rotate(0deg)";
 
     createImpact(impactX,impactY);
@@ -1026,8 +1061,12 @@ function crash(tower,p){
     smokeInterval=setInterval(()=>{
 
         if(!crashed){
+
             clearInterval(smokeInterval);
+            smokeInterval=null;
+
             return;
+
         }
 
         createSmoke(
@@ -1036,10 +1075,6 @@ function crash(tower,p){
         );
 
     },240);
-
-    /*
-        Wait before the fictional tower starts collapsing.
-    */
 
     setTimeout(()=>{
 
@@ -1063,18 +1098,14 @@ function collapseTower(tower,impactX,impactY){
 
     const rect=tower.getBoundingClientRect();
 
-    /*
-        Plane follows the collapsing tower.
+    const planeStartY=
+        impactY-plane.offsetHeight/2;
 
-        The tower's bottom stays roughly fixed while
-        the top moves downward, so the plane gradually
-        moves toward the bottom with it.
-    */
+    const planeEndY=
+        rect.bottom-plane.offsetHeight/2-8;
 
-    const planeStartY=impactY-plane.offsetHeight/2;
-    const planeEndY=rect.bottom-plane.offsetHeight/2-8;
-
-    const planeX=impactX-plane.offsetWidth/2;
+    const planeX=
+        impactX-plane.offsetWidth/2;
 
     const startTime=performance.now();
     const duration=4000;
@@ -1088,40 +1119,41 @@ function collapseTower(tower,impactX,impactY){
             (now-startTime)/duration
         );
 
-        const eased=progress*progress*(3-2*progress);
+        const eased=
+            progress*progress*(3-2*progress);
 
         const newY=
             planeStartY+
             (planeEndY-planeStartY)*eased;
-
-        /*
-            Slight shaking while going down.
-        */
 
         const shake=
             progress<.8
             ? Math.sin(now/45)*3
             : 0;
 
-        plane.style.left=planeX+"px";
-        plane.style.top=(newY+shake)+"px";
+        plane.style.left=
+            planeX+"px";
+
+        plane.style.top=
+            (newY+shake)+"px";
 
         if(progress<1){
 
-            requestAnimationFrame(movePlaneWithTower);
+            requestAnimationFrame(
+                movePlaneWithTower
+            );
 
         }else{
 
-            plane.style.top=planeEndY+"px";
+            plane.style.top=
+                planeEndY+"px";
 
         }
     }
 
-    requestAnimationFrame(movePlaneWithTower);
-
-    /*
-        Falling building pieces.
-    */
+    requestAnimationFrame(
+        movePlaneWithTower
+    );
 
     for(let i=0;i<38;i++){
 
@@ -1129,11 +1161,17 @@ function collapseTower(tower,impactX,impactY){
 
         piece.className="collapsePiece";
 
-        const width=8+Math.random()*22;
-        const height=7+Math.random()*20;
+        const width=
+            8+Math.random()*22;
 
-        piece.style.width=width+"px";
-        piece.style.height=height+"px";
+        const height=
+            7+Math.random()*20;
+
+        piece.style.width=
+            width+"px";
+
+        piece.style.height=
+            height+"px";
 
         piece.style.left=
             rect.left+
@@ -1163,19 +1201,18 @@ function collapseTower(tower,impactX,impactY){
         game.appendChild(piece);
 
         setTimeout(()=>{
+
             piece.remove();
+
         },1900);
     }
-
-    /*
-        Dust.
-    */
 
     for(let i=0;i<22;i++){
 
         setTimeout(()=>{
 
-            const dust=document.createElement("div");
+            const dust=
+                document.createElement("div");
 
             dust.className="collapseDust";
 
@@ -1197,7 +1234,9 @@ function collapseTower(tower,impactX,impactY){
             game.appendChild(dust);
 
             setTimeout(()=>{
+
                 dust.remove();
+
             },2800);
 
         },i*130);
@@ -1205,14 +1244,10 @@ function collapseTower(tower,impactX,impactY){
 
     createCollapseSmoke(rect);
 
-    /*
-        Once the tower is completely down,
-        stop ALL continuous smoke.
-    */
-
     setTimeout(()=>{
 
-        statusText.textContent="STATUS: COLLAPSED";
+        statusText.textContent=
+            "STATUS: COLLAPSED";
 
         clearInterval(smokeInterval);
         smokeInterval=null;
@@ -1230,22 +1265,29 @@ function collapseTower(tower,impactX,impactY){
 
 function createImpact(x,y){
 
-    const flash=document.createElement("div");
+    const flash=
+        document.createElement("div");
 
     flash.className="impactFlash";
 
-    flash.style.left=(x-45)+"px";
-    flash.style.top=(y-45)+"px";
+    flash.style.left=
+        (x-45)+"px";
+
+    flash.style.top=
+        (y-45)+"px";
 
     game.appendChild(flash);
 
     setTimeout(()=>{
+
         flash.remove();
+
     },250);
 
     for(let i=0;i<25;i++){
 
-        const spark=document.createElement("div");
+        const spark=
+            document.createElement("div");
 
         spark.className="spark";
 
@@ -1265,7 +1307,9 @@ function createImpact(x,y){
         game.appendChild(spark);
 
         setTimeout(()=>{
+
             spark.remove();
+
         },750);
     }
 }
@@ -1283,7 +1327,8 @@ function createFire(x,y){
 
     for(const o of offsets){
 
-        const fire=document.createElement("div");
+        const fire=
+            document.createElement("div");
 
         fire.className="fire";
 
@@ -1298,7 +1343,8 @@ function createFire(x,y){
 
         game.appendChild(fire);
 
-        const glow=document.createElement("div");
+        const glow=
+            document.createElement("div");
 
         glow.className="fireGlow";
 
@@ -1314,12 +1360,16 @@ function createFire(x,y){
 
 function createSmoke(x,y){
 
-    const smoke=document.createElement("div");
+    const smoke=
+        document.createElement("div");
 
     smoke.className="smoke";
 
-    smoke.style.left=(x-19)+"px";
-    smoke.style.top=(y-18)+"px";
+    smoke.style.left=
+        (x-19)+"px";
+
+    smoke.style.top=
+        (y-18)+"px";
 
     smoke.style.setProperty(
         "--drift",
@@ -1329,7 +1379,9 @@ function createSmoke(x,y){
     game.appendChild(smoke);
 
     setTimeout(()=>{
+
         smoke.remove();
+
     },4100);
 }
 
@@ -1341,6 +1393,7 @@ function createSmokeCloud(x,y){
             x+(Math.random()*55-27),
             y+(Math.random()*35-12)
         );
+
     }
 }
 
@@ -1356,6 +1409,7 @@ function createCollapseSmoke(rect){
                 rect.left+
                 rect.width/2+
                 (Math.random()-.5)*rect.width,
+
                 rect.bottom-
                 Math.random()*140
             );
@@ -1368,7 +1422,8 @@ function createDebris(x,y){
 
     for(let i=0;i<20;i++){
 
-        const d=document.createElement("div");
+        const d=
+            document.createElement("div");
 
         d.className="debris";
 
@@ -1388,7 +1443,9 @@ function createDebris(x,y){
         game.appendChild(d);
 
         setTimeout(()=>{
+
             d.remove();
+
         },950);
     }
 }
@@ -1405,7 +1462,9 @@ function removeAllEffects(){
         ".collapsePiece,"+
         ".collapseDust"
     ).forEach(el=>{
+
         el.remove();
+
     });
 }
 
@@ -1418,15 +1477,21 @@ resetButton.addEventListener("click",()=>{
 
     removeAllEffects();
 
-    tower1.classList.remove("towerCollapsing");
-    tower2.classList.remove("towerCollapsing");
+    tower1.classList.remove(
+        "towerCollapsing"
+    );
+
+    tower2.classList.remove(
+        "towerCollapsing"
+    );
 
     tower1.style.visibility="visible";
     tower2.style.visibility="visible";
 
     plane.style.display="block";
 
-    statusText.textContent="STATUS: FLYING";
+    statusText.textContent=
+        "STATUS: FLYING";
 
     resetButton.style.display="none";
 
@@ -1434,7 +1499,9 @@ resetButton.addEventListener("click",()=>{
 
     backgroundMusic.currentTime=0;
 
-    backgroundMusic.play().catch(()=>{});
+    musicStarted=false;
+
+    startMusic();
 
 });
 
@@ -1449,13 +1516,12 @@ setStartPosition();
 
 backgroundMusic.volume=.6;
 
-backgroundMusic.play().catch(()=>{});
-
 function loop(){
 
     updatePlane();
 
     requestAnimationFrame(loop);
+
 }
 
 loop();
@@ -1464,4 +1530,3 @@ loop();
 
 </body>
 </html>
-
