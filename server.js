@@ -7,47 +7,21 @@ const WebSocket = require("ws");
 
 const PORT = process.env.PORT || 3000;
 
-const server = http.createServer((req, res) => {
-    if (req.url === "/" || req.url === "/index.html") {
-        const filePath = path.join(__dirname, "index.html");
+const WORLD_WIDTH = 1000;
+const WORLD_HEIGHT = 600;
 
-        fs.readFile(filePath, (err, data) => {
-            if (err) {
-                res.writeHead(500, {
-                    "Content-Type": "text/plain"
-                });
+const TICK_RATE = 30;
 
-                res.end("Could not load index.html.");
-                return;
-            }
-
-            res.writeHead(200, {
-                "Content-Type": "text/html; charset=utf-8"
-            });
-
-            res.end(data);
-        });
-
-        return;
-    }
-
-    res.writeHead(404, {
-        "Content-Type": "text/plain"
-    });
-
-    res.end("Not found.");
-});
-
-const wss = new WebSocket.Server({
-    server
-});
+const TOWER_MAX_HP = 100;
+const PLANE_MAX_HP = 100;
 
 const queue = [];
-const rooms = new Map();
 const players = new Map();
+const rooms = new Map();
 
 const PLANES = {
     small: {
+        name: "Small Jet",
         maxSpeed: 7.5,
         acceleration: 2.8,
         braking: 4.5,
@@ -57,6 +31,7 @@ const PLANES = {
     },
 
     airliner: {
+        name: "Airliner",
         maxSpeed: 5.5,
         acceleration: 1.8,
         braking: 3.0,
@@ -66,6 +41,7 @@ const PLANES = {
     },
 
     large: {
+        name: "Large Airliner",
         maxSpeed: 4.7,
         acceleration: 1.35,
         braking: 2.7,
@@ -75,6 +51,7 @@ const PLANES = {
     },
 
     cargo: {
+        name: "Cargo Plane",
         maxSpeed: 4.2,
         acceleration: 1.1,
         braking: 3.8,
@@ -84,6 +61,7 @@ const PLANES = {
     },
 
     fighter: {
+        name: "Fighter Jet",
         maxSpeed: 10,
         acceleration: 3.8,
         braking: 5.5,
@@ -93,387 +71,660 @@ const PLANES = {
     }
 };
 
-const TOWER_MAX_HP = 100;
-const PLANE_MAX_HP = 100;
+const server = http.createServer(
+    (req, res) => {
 
-function makeId() {
-    return crypto.randomBytes(8).toString("hex");
+        if(
+            req.url === "/" ||
+            req.url === "/index.html"
+        ){
+
+            const file =
+                path.join(
+                    __dirname,
+                    "index.html"
+                );
+
+            fs.readFile(
+                file,
+                (error, data) => {
+
+                    if(error){
+
+                        res.writeHead(
+                            500,
+                            {
+                                "Content-Type":
+                                    "text/plain"
+                            }
+                        );
+
+                        res.end(
+                            "Could not load index.html."
+                        );
+
+                        return;
+                    }
+
+                    res.writeHead(
+                        200,
+                        {
+                            "Content-Type":
+                                "text/html; charset=utf-8"
+                        }
+                    );
+
+                    res.end(data);
+                }
+            );
+
+            return;
+        }
+
+        res.writeHead(
+            404,
+            {
+                "Content-Type":
+                    "text/plain"
+            }
+        );
+
+        res.end(
+            "Not found."
+        );
+    }
+);
+
+const wss =
+    new WebSocket.Server({
+        server
+    });
+
+function id(){
+    return crypto
+        .randomBytes(8)
+        .toString("hex");
 }
 
-function send(ws, message) {
-    if (
+function send(
+    ws,
+    data
+){
+    if(
         ws &&
-        ws.readyState === WebSocket.OPEN
-    ) {
-        ws.send(JSON.stringify(message));
+        ws.readyState ===
+        WebSocket.OPEN
+    ){
+        ws.send(
+            JSON.stringify(data)
+        );
     }
 }
 
-function broadcast(room, message) {
-    for (const player of room.players) {
-        send(player.ws, message);
+function broadcast(
+    room,
+    data
+){
+    for(
+        const player of room.players
+    ){
+        send(
+            player.ws,
+            data
+        );
     }
 }
 
-function cleanName(name) {
-    if (typeof name !== "string") {
+function cleanName(name){
+
+    if(
+        typeof name !==
+        "string"
+    ){
         return "Player";
     }
 
-    return name
-        .replace(/[^\w \-]/g, "")
-        .trim()
-        .slice(0, 16) || "Player";
+    const cleaned =
+        name
+            .replace(
+                /[^\w \-]/g,
+                ""
+            )
+            .trim()
+            .slice(0,16);
+
+    return cleaned ||
+        "Player";
 }
 
-function removeFromQueue(ws) {
-    const index = queue.indexOf(ws);
+function removeFromQueue(ws){
 
-    if (index !== -1) {
-        queue.splice(index, 1);
+    const index =
+        queue.indexOf(ws);
+
+    if(index !== -1){
+        queue.splice(
+            index,
+            1
+        );
     }
 }
 
-function getRoom(player) {
-    if (!player || !player.roomId) {
+function getRoom(player){
+
+    if(
+        !player ||
+        !player.roomId
+    ){
         return null;
     }
 
-    return rooms.get(player.roomId) || null;
+    return (
+        rooms.get(
+            player.roomId
+        ) || null
+    );
 }
 
-function createInitialState() {
-    return {
-        phase: "waiting",
+function makeState(){
 
-        towers: [
+    return {
+        phase:"waiting",
+
+        towers:[
             {
-                hp: 100,
-                destroyed: false
+                hp:TOWER_MAX_HP,
+                destroyed:false
             },
+
             {
-                hp: 100,
-                destroyed: false
+                hp:TOWER_MAX_HP,
+                destroyed:false
             }
         ],
 
-        plane: {
-            x: 100,
-            y: 280,
+        plane:{
+            x:90,
+            y:270,
 
-            vx: 0,
-            vy: 0,
+            vx:0,
+            vy:0,
 
-            speed: 4,
+            speed:4,
 
-            pitch: 0,
+            pitch:0,
 
-            hp: PLANE_MAX_HP,
+            hp:PLANE_MAX_HP,
 
-            planeType: "airliner"
+            planeType:"airliner"
         },
 
-        aim: {
-            x: 0,
-            y: 0
+        aim:{
+            x:650,
+            y:250
         },
 
-        gunnerTower: 1,
+        gunnerTower:1,
 
-        winnerName: null,
-        reason: null
+        winnerName:null,
+
+        reason:null
     };
 }
 
-function createRoom(playerA, playerB) {
-    const room = {
-        id: makeId(),
+function makeRoom(
+    playerA,
+    playerB
+){
 
-        players: [
+    const room = {
+        id:id(),
+
+        players:[
             playerA,
             playerB
         ],
 
-        state: createInitialState(),
+        state:
+            makeState(),
 
-        bullets: [],
+        bullets:[],
 
-        lastTime: Date.now(),
+        lastTime:
+            Date.now(),
 
-        finished: false
+        finished:false
     };
 
-    const pilotFirst = Math.random() < 0.5;
+    const pilotFirst =
+        Math.random() < 0.5;
 
-    playerA.role = pilotFirst
-        ? "Pilot"
-        : "Gunner";
+    if(pilotFirst){
 
-    playerB.role = pilotFirst
-        ? "Gunner"
-        : "Pilot";
+        playerA.role =
+            "Pilot";
 
-    playerA.roomId = room.id;
-    playerB.roomId = room.id;
+        playerB.role =
+            "Gunner";
 
-    rooms.set(room.id, room);
+    }
+    else{
 
-    sendMatchFound(playerA, playerB);
-    sendMatchFound(playerB, playerA);
+        playerA.role =
+            "Gunner";
 
-    setTimeout(() => {
-        if (!rooms.has(room.id)) {
-            return;
-        }
+        playerB.role =
+            "Pilot";
+    }
 
-        room.state.phase = "playing";
-        room.lastTime = Date.now();
+    playerA.roomId =
+        room.id;
 
-        broadcast(room, {
-            type: "state",
-            state: room.state
-        });
-    }, 3200);
+    playerB.roomId =
+        room.id;
+
+    rooms.set(
+        room.id,
+        room
+    );
+
+    sendMatchFound(
+        playerA,
+        playerB
+    );
+
+    sendMatchFound(
+        playerB,
+        playerA
+    );
+
+    setTimeout(
+        () => {
+
+            if(
+                !rooms.has(
+                    room.id
+                )
+            ){
+                return;
+            }
+
+            if(
+                room.finished
+            ){
+                return;
+            }
+
+            room.state.phase =
+                "playing";
+
+            room.lastTime =
+                Date.now();
+
+            broadcast(
+                room,
+                {
+                    type:"state",
+                    state:room.state
+                }
+            );
+
+        },
+        3200
+    );
 
     return room;
 }
 
-function sendMatchFound(player, opponent) {
-    send(player.ws, {
-        type: "matchFound",
+function sendMatchFound(
+    player,
+    opponent
+){
 
-        you: {
-            name: player.name,
-            role: player.role
-        },
+    send(
+        player.ws,
+        {
+            type:"matchFound",
 
-        opponent: {
-            name: opponent.name,
-            role: opponent.role
-        },
-
-        players: [
-            {
-                name: player.name,
-                role: player.role
+            you:{
+                name:player.name,
+                role:player.role
             },
 
-            {
-                name: opponent.name,
-                role: opponent.role
+            opponent:{
+                name:opponent.name,
+                role:opponent.role
             }
-        ]
-    });
+        }
+    );
 }
 
-function tryMatchPlayers() {
-    while (queue.length >= 2) {
-        const wsA = queue.shift();
-        const wsB = queue.shift();
+function tryMatch(){
 
-        if (
+    while(
+        queue.length >= 2
+    ){
+
+        const wsA =
+            queue.shift();
+
+        const wsB =
+            queue.shift();
+
+        if(
             !wsA ||
-            !wsB ||
-            wsA.readyState !== WebSocket.OPEN ||
-            wsB.readyState !== WebSocket.OPEN
-        ) {
+            !wsB
+        ){
             continue;
         }
 
-        const playerA = players.get(wsA);
-        const playerB = players.get(wsB);
-
-        if (!playerA || !playerB) {
+        if(
+            wsA.readyState !==
+            WebSocket.OPEN ||
+            wsB.readyState !==
+            WebSocket.OPEN
+        ){
             continue;
         }
 
-        createRoom(playerA, playerB);
+        const playerA =
+            players.get(wsA);
+
+        const playerB =
+            players.get(wsB);
+
+        if(
+            !playerA ||
+            !playerB
+        ){
+            continue;
+        }
+
+        makeRoom(
+            playerA,
+            playerB
+        );
     }
 }
 
-function queuePlayer(player) {
-    removeFromQueue(player.ws);
+function queuePlayer(
+    player
+){
 
-    queue.push(player.ws);
+    removeFromQueue(
+        player.ws
+    );
 
-    send(player.ws, {
-        type: "queued",
-        position: Math.min(queue.length, 2)
-    });
+    queue.push(
+        player.ws
+    );
 
-    tryMatchPlayers();
+    send(
+        player.ws,
+        {
+            type:"queued",
+            position:queue.length
+        }
+    );
+
+    tryMatch();
 }
 
-function handleInput(player, message) {
-    const room = getRoom(player);
+function handleInput(
+    player,
+    message
+){
 
-    if (!room) {
+    const room =
+        getRoom(player);
+
+    if(!room){
         return;
     }
 
-    if (player.role !== "Pilot") {
+    if(
+        player.role !==
+        "Pilot"
+    ){
         return;
     }
 
-    if (!message.input) {
+    const i =
+        message.input;
+
+    if(!i){
         return;
     }
 
     player.input = {
-        up: !!message.input.up,
-        down: !!message.input.down,
-        left: !!message.input.left,
-        right: !!message.input.right,
-        brake: !!message.input.brake
+        up:!!i.up,
+        down:!!i.down,
+        left:!!i.left,
+        right:!!i.right,
+        brake:!!i.brake
     };
 }
 
-function handleAim(player, message) {
-    const room = getRoom(player);
+function handleAim(
+    player,
+    message
+){
 
-    if (!room) {
+    const room =
+        getRoom(player);
+
+    if(!room){
         return;
     }
 
-    if (player.role !== "Gunner") {
+    if(
+        player.role !==
+        "Gunner"
+    ){
         return;
     }
 
-    const x = Number(message.x);
-    const y = Number(message.y);
+    let x =
+        Number(message.x);
 
-    if (
+    let y =
+        Number(message.y);
+
+    if(
         !Number.isFinite(x) ||
         !Number.isFinite(y)
-    ) {
+    ){
         return;
     }
 
-    room.state.aim.x = x;
-    room.state.aim.y = y;
+    x =
+        Math.max(
+            0,
+            Math.min(
+                WORLD_WIDTH,
+                x
+            )
+        );
+
+    y =
+        Math.max(
+            0,
+            Math.min(
+                WORLD_HEIGHT,
+                y
+            )
+        );
+
+    room.state.aim.x =
+        x;
+
+    room.state.aim.y =
+        y;
 }
 
-function handleFire(player) {
-    const room = getRoom(player);
+function handleFire(
+    player
+){
 
-    if (!room) {
+    const room =
+        getRoom(player);
+
+    if(!room){
         return;
     }
 
-    if (player.role !== "Gunner") {
+    if(
+        player.role !==
+        "Gunner"
+    ){
         return;
     }
 
-    if (room.finished) {
+    if(
+        room.finished
+    ){
         return;
     }
 
-    const now = Date.now();
+    const now =
+        Date.now();
 
-    if (
-        player.lastShot &&
-        now - player.lastShot < 110
-    ) {
+    if(
+        now -
+        (player.lastShot || 0)
+        < 110
+    ){
         return;
     }
 
-    player.lastShot = now;
+    player.lastShot =
+        now;
 
-    const plane = room.state.plane;
+    const tower =
+        room.state.gunnerTower;
+
+    const startX =
+        tower === 1
+            ? 347
+            : 652;
+
+    const startY =
+        245;
+
+    const aimX =
+        room.state.aim.x;
+
+    const aimY =
+        room.state.aim.y;
 
     const dx =
-        room.state.aim.x -
-        plane.x;
+        aimX -
+        startX;
 
     const dy =
-        room.state.aim.y -
-        plane.y;
+        aimY -
+        startY;
 
-    const length =
+    const distance =
         Math.sqrt(
             dx * dx +
             dy * dy
         ) || 1;
 
-    const startX =
-        room.state.gunnerTower === 1
-            ? 300
-            : 650;
-
-    const startY = 250;
+    const speed =
+        13;
 
     room.bullets.push({
-        x: startX,
-        y: startY,
+        x:startX,
+        y:startY,
 
-        vx: (dx / length) * 13,
-        vy: (dy / length) * 13,
+        vx:
+            dx /
+            distance *
+            speed,
 
-        life: 100
+        vy:
+            dy /
+            distance *
+            speed,
+
+        life:90
     });
 }
 
-function handlePlaneSelection(player, message) {
-    const room = getRoom(player);
+function selectPlane(
+    player,
+    message
+){
 
-    if (!room) {
+    const room =
+        getRoom(player);
+
+    if(!room){
         return;
     }
 
-    if (player.role !== "Pilot") {
+    if(
+        player.role !==
+        "Pilot"
+    ){
         return;
     }
 
-    const planeType = message.plane;
+    const type =
+        message.plane;
 
-    if (!PLANES[planeType]) {
+    if(
+        !PLANES[type]
+    ){
         return;
     }
 
-    room.state.plane.planeType = planeType;
+    room.state.plane.planeType =
+        type;
 }
 
-function updatePlane(room, dt) {
-    const plane = room.state.plane;
+function updatePlane(
+    room,
+    dt
+){
 
-    const pilot = room.players.find(
-        player => player.role === "Pilot"
-    );
+    const plane =
+        room.state.plane;
 
-    if (!pilot) {
+    const pilot =
+        room.players.find(
+            player =>
+                player.role ===
+                "Pilot"
+        );
+
+    if(!pilot){
         return;
     }
 
-    const input = pilot.input || {};
+    const input =
+        pilot.input || {};
 
     const stats =
-        PLANES[plane.planeType] ||
+        PLANES[
+            plane.planeType
+        ] ||
         PLANES.airliner;
 
     /*
-        OLD PLANE PHYSICS
+        OLD STYLE PHYSICS
 
-        The plane automatically moves forward.
-
-        W / UP:
-        Accelerates and climbs.
-
-        S / DOWN:
-        Slows down and descends.
-
-        A / LEFT:
-        Turns left.
-
-        D / RIGHT:
-        Turns right.
-
-        SPACE:
-        Brakes.
+        The plane automatically
+        flies forward even when
+        the pilot does nothing.
     */
 
-    if (input.up) {
+    if(input.up){
+
         plane.speed +=
-            stats.acceleration * dt;
+            stats.acceleration *
+            dt;
 
         plane.speed =
             Math.min(
@@ -482,14 +733,18 @@ function updatePlane(room, dt) {
             );
 
         plane.vy -=
-            stats.climb * 0.18 * dt;
+            stats.climb *
+            0.18 *
+            dt;
     }
-    else if (
-        input.down ||
-        input.brake
-    ) {
+
+    else if(
+        input.down
+    ){
+
         plane.speed -=
-            stats.braking * dt;
+            stats.braking *
+            dt;
 
         plane.speed =
             Math.max(
@@ -498,11 +753,32 @@ function updatePlane(room, dt) {
             );
 
         plane.vy +=
-            stats.climb * 0.12 * dt;
+            stats.climb *
+            0.12 *
+            dt;
     }
-    else {
+
+    else if(
+        input.brake
+    ){
+
+        plane.speed -=
+            stats.braking *
+            0.8 *
+            dt;
+
+        plane.speed =
+            Math.max(
+                0,
+                plane.speed
+            );
+    }
+
+    else{
+
         /*
-            Automatic forward acceleration.
+            Automatic forward
+            acceleration.
         */
 
         plane.speed +=
@@ -517,28 +793,32 @@ function updatePlane(room, dt) {
             );
     }
 
-    if (input.left) {
+    if(input.left){
+
         plane.vx -=
             stats.turn *
             0.012 *
             dt;
     }
 
-    if (input.right) {
+    if(input.right){
+
         plane.vx +=
             stats.turn *
             0.012 *
             dt;
     }
 
-    if (input.up) {
+    if(input.up){
+
         plane.vy -=
             stats.climb *
             0.18 *
             dt;
     }
 
-    if (input.down) {
+    if(input.down){
+
         plane.vy +=
             stats.climb *
             0.18 *
@@ -546,10 +826,16 @@ function updatePlane(room, dt) {
     }
 
     plane.vx *=
-        Math.pow(0.985, dt * 60);
+        Math.pow(
+            0.985,
+            dt * 60
+        );
 
     plane.vy *=
-        Math.pow(0.94, dt * 60);
+        Math.pow(
+            0.94,
+            dt * 60
+        );
 
     plane.vx =
         Math.max(
@@ -570,11 +856,14 @@ function updatePlane(room, dt) {
         );
 
     /*
-        Forward movement.
+        Move forward.
     */
 
     plane.x +=
-        (plane.speed + plane.vx) *
+        (
+            plane.speed +
+            plane.vx
+        ) *
         35 *
         dt;
 
@@ -584,11 +873,9 @@ function updatePlane(room, dt) {
         dt;
 
     /*
-        World boundaries.
+        Keep the plane inside
+        the playable world.
     */
-
-    const WORLD_WIDTH = 1000;
-    const WORLD_HEIGHT = 600;
 
     plane.x =
         Math.max(
@@ -601,9 +888,9 @@ function updatePlane(room, dt) {
 
     plane.y =
         Math.max(
-            90,
+            85,
             Math.min(
-                WORLD_HEIGHT - 170,
+                440,
                 plane.y
             )
         );
@@ -622,66 +909,95 @@ function updatePlane(room, dt) {
         );
 
     /*
-        Stall effect.
+        Stall.
     */
 
-    if (
+    if(
         plane.speed <
         stats.maxSpeed *
         stats.stall
-    ) {
+    ){
+
         plane.vy +=
-            0.18 * dt;
+            0.18 *
+            dt;
     }
 }
 
-function getTowerRect(number) {
-    if (number === 1) {
+function towerRect(
+    number
+){
+
+    if(number === 1){
+
         return {
-            x: 260,
-            y: 250,
-            w: 175,
-            h: 500
+            x:347,
+            y:465,
+            w:175,
+            h:330
         };
     }
 
     return {
-        x: 565,
-        y: 250,
-        w: 175,
-        h: 500
+        x:652,
+        y:465,
+        w:175,
+        h:330
     };
 }
 
-function checkPlaneTowerCollision(room) {
-    const plane = room.state.plane;
+function checkPlaneCollision(
+    room
+){
 
-    for (let i = 1; i <= 2; i++) {
-        const tower = room.state.towers[i - 1];
+    const plane =
+        room.state.plane;
 
-        if (tower.destroyed) {
+    for(
+        let i = 1;
+        i <= 2;
+        i++
+    ){
+
+        const tower =
+            room.state.towers[
+                i - 1
+            ];
+
+        if(
+            tower.destroyed
+        ){
             continue;
         }
 
-        const rect = getTowerRect(i);
+        const rect =
+            towerRect(i);
 
-        const dx =
+        /*
+            Plane hitbox.
+        */
+
+        const hitX =
             Math.abs(
-                plane.x - rect.x
-            );
+                plane.x -
+                rect.x
+            ) <
+            rect.w / 2 + 35;
 
-        const dy =
+        const hitY =
             Math.abs(
-                plane.y - rect.y
-            );
+                plane.y -
+                rect.y
+            ) <
+            rect.h / 2;
 
-        if (
-            dx <
-                rect.w / 2 + 45 &&
-            dy <
-                rect.h / 2
-        ) {
-            tower.hp -= 28;
+        if(
+            hitX &&
+            hitY
+        ){
+
+            tower.hp -=
+                28;
 
             tower.hp =
                 Math.max(
@@ -689,34 +1005,47 @@ function checkPlaneTowerCollision(room) {
                     tower.hp
                 );
 
-            if (tower.hp <= 0) {
-                tower.destroyed = true;
-            }
+            plane.speed *=
+                0.65;
 
-            plane.speed *= 0.65;
-            plane.vx *= 0.4;
+            plane.vx *=
+                0.35;
 
-            /*
-                Move the gunner to the
-                remaining tower.
-            */
+            if(
+                tower.hp <= 0
+            ){
 
-            if (
-                tower.destroyed &&
-                room.state.gunnerTower === i
-            ) {
-                room.state.gunnerTower =
-                    i === 1 ? 2 : 1;
+                tower.destroyed =
+                    true;
+
+                /*
+                    Move gunner to
+                    the remaining tower.
+                */
+
+                if(
+                    room.state.gunnerTower ===
+                    i
+                ){
+
+                    room.state.gunnerTower =
+                        i === 1
+                            ? 2
+                            : 1;
+                }
             }
 
             /*
                 Both towers destroyed.
             */
 
-            if (
-                room.state.towers[0].destroyed &&
-                room.state.towers[1].destroyed
-            ) {
+            if(
+                room.state.towers[0]
+                    .destroyed &&
+                room.state.towers[1]
+                    .destroyed
+            ){
+
                 finishRoom(
                     room,
                     "Pilot",
@@ -729,19 +1058,28 @@ function checkPlaneTowerCollision(room) {
     }
 }
 
-function updateBullets(room) {
-    const plane = room.state.plane;
+function updateBullets(
+    room
+){
 
-    for (
-        let i = room.bullets.length - 1;
+    const plane =
+        room.state.plane;
+
+    for(
+        let i =
+            room.bullets.length - 1;
         i >= 0;
         i--
-    ) {
+    ){
+
         const bullet =
             room.bullets[i];
 
-        bullet.x += bullet.vx;
-        bullet.y += bullet.vy;
+        bullet.x +=
+            bullet.vx;
+
+        bullet.y +=
+            bullet.vy;
 
         bullet.life--;
 
@@ -759,8 +1097,12 @@ function updateBullets(room) {
                 dy * dy
             );
 
-        if (distance < 35) {
-            plane.hp -= 5;
+        if(
+            distance < 30
+        ){
+
+            plane.hp -=
+                5;
 
             plane.hp =
                 Math.max(
@@ -768,9 +1110,15 @@ function updateBullets(room) {
                     plane.hp
                 );
 
-            room.bullets.splice(i, 1);
+            room.bullets.splice(
+                i,
+                1
+            );
 
-            if (plane.hp <= 0) {
+            if(
+                plane.hp <= 0
+            ){
+
                 finishRoom(
                     room,
                     "Gunner",
@@ -783,14 +1131,20 @@ function updateBullets(room) {
             continue;
         }
 
-        if (
+        if(
             bullet.life <= 0 ||
-            bullet.x < 0 ||
-            bullet.x > 1200 ||
-            bullet.y < 0 ||
-            bullet.y > 800
-        ) {
-            room.bullets.splice(i, 1);
+            bullet.x < -100 ||
+            bullet.x >
+                WORLD_WIDTH + 100 ||
+            bullet.y < -100 ||
+            bullet.y >
+                WORLD_HEIGHT + 100
+        ){
+
+            room.bullets.splice(
+                i,
+                1
+            );
         }
     }
 }
@@ -799,46 +1153,68 @@ function finishRoom(
     room,
     winningRole,
     reason
-) {
-    if (room.finished) {
+){
+
+    if(
+        room.finished
+    ){
         return;
     }
 
-    room.finished = true;
+    room.finished =
+        true;
 
     const winner =
         room.players.find(
             player =>
-                player.role === winningRole
+                player.role ===
+                winningRole
         );
 
-    room.state.phase = "ended";
+    room.state.phase =
+        "ended";
 
     room.state.winnerName =
         winner
             ? winner.name
             : "Player";
 
-    room.state.reason = reason;
+    room.state.reason =
+        reason;
 
-    broadcast(room, {
-        type: "state",
-        state: room.state
-    });
+    broadcast(
+        room,
+        {
+            type:"state",
+            state:room.state
+        }
+    );
 }
 
-function leaveRoom(player) {
-    removeFromQueue(player.ws);
+function leaveRoom(
+    player
+){
 
-    if (!player.roomId) {
+    removeFromQueue(
+        player.ws
+    );
+
+    if(
+        !player.roomId
+    ){
         return;
     }
 
     const room =
-        rooms.get(player.roomId);
+        rooms.get(
+            player.roomId
+        );
 
-    if (!room) {
-        player.roomId = null;
+    if(!room){
+
+        player.roomId =
+            null;
+
         return;
     }
 
@@ -848,36 +1224,58 @@ function leaveRoom(player) {
                 other !== player
         );
 
-    if (opponent) {
-        opponent.roomId = null;
+    if(opponent){
 
-        send(opponent.ws, {
-            type: "opponentLeft"
-        });
+        opponent.roomId =
+            null;
+
+        send(
+            opponent.ws,
+            {
+                type:
+                    "opponentLeft"
+            }
+        );
     }
 
-    rooms.delete(room.id);
+    rooms.delete(
+        room.id
+    );
 
-    player.roomId = null;
+    player.roomId =
+        null;
 }
 
-function gameTick() {
-    const now = Date.now();
+function gameTick(){
 
-    for (const room of rooms.values()) {
-        if (room.finished) {
+    const now =
+        Date.now();
+
+    for(
+        const room of rooms.values()
+    ){
+
+        if(
+            room.finished
+        ){
             continue;
         }
 
-        if (room.state.phase !== "playing") {
+        if(
+            room.state.phase !==
+            "playing"
+        ){
             continue;
         }
 
         let dt =
-            (now - room.lastTime) /
-            1000;
+            (
+                now -
+                room.lastTime
+            ) / 1000;
 
-        room.lastTime = now;
+        room.lastTime =
+            now;
 
         dt =
             Math.max(
@@ -893,175 +1291,224 @@ function gameTick() {
             dt
         );
 
-        checkPlaneTowerCollision(
+        checkPlaneCollision(
             room
         );
 
-        if (room.finished) {
+        if(
+            room.finished
+        ){
             continue;
         }
 
-        updateBullets(room);
+        updateBullets(
+            room
+        );
 
-        if (room.finished) {
+        if(
+            room.finished
+        ){
             continue;
         }
 
-        broadcast(room, {
-            type: "state",
-            state: room.state
-        });
+        broadcast(
+            room,
+            {
+                type:"state",
+                state:room.state
+            }
+        );
     }
 }
 
-setInterval(
-    gameTick,
-    1000 / 30
+wss.on(
+    "connection",
+    ws => {
+
+        const player = {
+
+            ws,
+
+            id:id(),
+
+            name:"Player",
+
+            role:null,
+
+            roomId:null,
+
+            input:{
+                up:false,
+                down:false,
+                left:false,
+                right:false,
+                brake:false
+            },
+
+            lastShot:0
+        };
+
+        players.set(
+            ws,
+            player
+        );
+
+        send(
+            ws,
+            {
+                type:"connected"
+            }
+        );
+
+        ws.on(
+            "message",
+            raw => {
+
+                let message;
+
+                try{
+
+                    message =
+                        JSON.parse(
+                            raw.toString()
+                        );
+                }
+                catch{
+
+                    return;
+                }
+
+                if(
+                    !message ||
+                    typeof message.type !==
+                    "string"
+                ){
+                    return;
+                }
+
+                switch(
+                    message.type
+                ){
+
+                    case "queue":
+
+                        if(
+                            player.roomId
+                        ){
+                            return;
+                        }
+
+                        player.name =
+                            cleanName(
+                                message.name
+                            );
+
+                        queuePlayer(
+                            player
+                        );
+
+                        break;
+
+                    case "cancelQueue":
+
+                        removeFromQueue(
+                            ws
+                        );
+
+                        break;
+
+                    case "input":
+
+                        handleInput(
+                            player,
+                            message
+                        );
+
+                        break;
+
+                    case "aim":
+
+                        handleAim(
+                            player,
+                            message
+                        );
+
+                        break;
+
+                    case "fire":
+
+                        handleFire(
+                            player
+                        );
+
+                        break;
+
+                    case "selectPlane":
+
+                        selectPlane(
+                            player,
+                            message
+                        );
+
+                        break;
+
+                    case "leaveRoom":
+
+                        leaveRoom(
+                            player
+                        );
+
+                        break;
+                }
+            }
+        );
+
+        ws.on(
+            "close",
+            () => {
+
+                removeFromQueue(
+                    ws
+                );
+
+                leaveRoom(
+                    player
+                );
+
+                players.delete(
+                    ws
+                );
+            }
+        );
+    }
 );
 
-wss.on("connection", ws => {
-    const player = {
-        ws,
-
-        id: makeId(),
-
-        name: "Player",
-
-        role: null,
-
-        roomId: null,
-
-        input: {
-            up: false,
-            down: false,
-            left: false,
-            right: false,
-            brake: false
-        },
-
-        lastShot: 0
-    };
-
-    players.set(
-        ws,
-        player
-    );
-
-    send(ws, {
-        type: "connected"
-    });
-
-    ws.on("message", raw => {
-        let message;
-
-        try {
-            message =
-                JSON.parse(
-                    raw.toString()
-                );
-        }
-        catch {
-            return;
-        }
-
-        if (
-            !message ||
-            typeof message.type !== "string"
-        ) {
-            return;
-        }
-
-        if (message.type === "queue") {
-            if (player.roomId) {
-                return;
-            }
-
-            player.name =
-                cleanName(
-                    message.name
-                );
-
-            queuePlayer(player);
-
-            return;
-        }
-
-        if (
-            message.type ===
-            "cancelQueue"
-        ) {
-            removeFromQueue(
-                player.ws
-            );
-
-            return;
-        }
-
-        if (message.type === "input") {
-            handleInput(
-                player,
-                message
-            );
-
-            return;
-        }
-
-        if (message.type === "aim") {
-            handleAim(
-                player,
-                message
-            );
-
-            return;
-        }
-
-        if (message.type === "fire") {
-            handleFire(player);
-
-            return;
-        }
-
-        if (
-            message.type ===
-            "selectPlane"
-        ) {
-            handlePlaneSelection(
-                player,
-                message
-            );
-
-            return;
-        }
-
-        if (
-            message.type ===
-            "leaveRoom"
-        ) {
-            leaveRoom(player);
-
-            return;
-        }
-    });
-
-    ws.on("close", () => {
-        removeFromQueue(ws);
-
-        leaveRoom(player);
-
-        players.delete(ws);
-    });
-});
+setInterval(
+    gameTick,
+    1000 / TICK_RATE
+);
 
 server.listen(
     PORT,
     () => {
-        console.log(
-            `Pixel Sky Crash server running on port ${PORT}`
-        );
 
+        console.log("");
         console.log(
-            `Open http://localhost:${PORT}`
+            "=============================="
         );
+        console.log(
+            "   PIXEL SKY CRASH SERVER"
+        );
+        console.log(
+            "=============================="
+        );
+        console.log(
+            `Running on port ${PORT}`
+        );
+        console.log(
+            `http://localhost:${PORT}`
+        );
+        console.log("");
     }
 );
 
