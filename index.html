@@ -157,7 +157,58 @@ html,body{
     to{left:110vw}
 }
 
-/* DISTANT AIRCRAFT */
+/* DISTANT CITY */
+
+#distantCity{
+    position:absolute;
+    left:0;
+    bottom:-15%;
+    width:100%;
+    height:55%;
+    z-index:2;
+    opacity:.22;
+}
+
+.distantBuilding{
+    position:absolute;
+    bottom:0;
+    background:#506d81;
+    border-top:4px solid #70899a;
+}
+
+.distantBuilding:after{
+    content:"";
+    position:absolute;
+    inset:9px 6px;
+    background:
+        repeating-linear-gradient(
+            to right,
+            rgba(210,235,245,.65) 0 4px,
+            transparent 4px 12px
+        ),
+        repeating-linear-gradient(
+            to bottom,
+            rgba(210,235,245,.6) 0 4px,
+            transparent 4px 13px
+        );
+}
+
+.db1{left:0;width:6%;height:48%}
+.db2{left:6%;width:4%;height:67%}
+.db3{left:11%;width:7%;height:42%}
+.db4{left:18%;width:5%;height:72%}
+.db5{left:24%;width:8%;height:55%}
+.db6{left:33%;width:5%;height:78%}
+.db7{left:39%;width:7%;height:47%}
+.db8{left:47%;width:5%;height:69%}
+.db9{left:54%;width:8%;height:51%}
+.db10{left:63%;width:5%;height:75%}
+.db11{left:69%;width:8%;height:43%}
+.db12{left:78%;width:5%;height:66%}
+.db13{left:84%;width:7%;height:53%}
+.db14{left:92%;width:8%;height:71%}
+
+/* DISTANT PLANES */
 
 .distantPlane{
     position:absolute;
@@ -300,57 +351,6 @@ html,body{
     }
 }
 
-/* DISTANT CITY */
-
-#distantCity{
-    position:absolute;
-    left:0;
-    bottom:-15%;
-    width:100%;
-    height:55%;
-    z-index:2;
-    opacity:.22;
-}
-
-.distantBuilding{
-    position:absolute;
-    bottom:0;
-    background:#506d81;
-    border-top:4px solid #70899a;
-}
-
-.distantBuilding:after{
-    content:"";
-    position:absolute;
-    inset:9px 6px;
-    background:
-        repeating-linear-gradient(
-            to right,
-            rgba(210,235,245,.65) 0 4px,
-            transparent 4px 12px
-        ),
-        repeating-linear-gradient(
-            to bottom,
-            rgba(210,235,245,.6) 0 4px,
-            transparent 4px 13px
-        );
-}
-
-.db1{left:0;width:6%;height:48%}
-.db2{left:6%;width:4%;height:67%}
-.db3{left:11%;width:7%;height:42%}
-.db4{left:18%;width:5%;height:72%}
-.db5{left:24%;width:8%;height:55%}
-.db6{left:33%;width:5%;height:78%}
-.db7{left:39%;width:7%;height:47%}
-.db8{left:47%;width:5%;height:69%}
-.db9{left:54%;width:8%;height:51%}
-.db10{left:63%;width:5%;height:75%}
-.db11{left:69%;width:8%;height:43%}
-.db12{left:78%;width:5%;height:66%}
-.db13{left:84%;width:7%;height:53%}
-.db14{left:92%;width:8%;height:71%}
-
 /* CITY */
 
 #city{
@@ -361,6 +361,8 @@ html,body{
     height:100%;
     z-index:8;
 }
+
+/* TOWER ASSEMBLY */
 
 .towerAssembly{
     position:absolute;
@@ -503,83 +505,169 @@ html,body{
     background:#5b646a;
 }
 
-/* PLANE */
+/* REALISTIC PIXEL PLANE */
 
 #plane{
     position:absolute;
-    width:72px;
-    height:38px;
+    width:100px;
+    height:52px;
     z-index:80;
-    filter:drop-shadow(5px 6px 0 rgba(0,0,0,.22));
+    filter:drop-shadow(5px 6px 0 rgba(0,0,0,.25));
 }
 
-.planeBody{
+.fuselage{
     position:absolute;
-    left:8px;
-    top:12px;
-    width:55px;
-    height:15px;
-    background:#f4f4f4;
-    border:4px solid #333b42;
+    left:4px;
+    top:18px;
+    width:91px;
+    height:17px;
+    background:#f2f3f3;
+    border:4px solid #303a40;
 }
 
-.planeBody:after{
+.fuselage:after{
     content:"";
     position:absolute;
-    right:-13px;
+    right:-15px;
     top:1px;
-    border-left:14px solid #333b42;
-    border-top:6px solid transparent;
-    border-bottom:6px solid transparent;
-}
-
-.planeWing{
-    position:absolute;
-    left:23px;
-    top:5px;
-    width:31px;
-    height:9px;
-    background:#cfd4d8;
-    border:3px solid #333b42;
-}
-
-.planeWing2{
-    position:absolute;
-    left:24px;
-    top:26px;
-    width:27px;
-    height:8px;
-    background:#cfd4d8;
-    border:3px solid #333b42;
-}
-
-.planeTail{
-    position:absolute;
-    left:9px;
-    top:2px;
-    width:13px;
-    height:17px;
-    background:#d7dadd;
-    border:3px solid #333b42;
+    width:15px;
+    height:11px;
+    background:#303a40;
     clip-path:polygon(
-        0 100%,
-        100% 100%,
-        65% 0
+        0 0,
+        100% 50%,
+        0 100%
     );
 }
 
-.planeWindow,
-.planeWindow2{
+.cockpit{
     position:absolute;
-    top:15px;
-    width:7px;
-    height:6px;
-    background:#4fa8df;
-    border:2px solid #333b42;
+    left:70px;
+    top:21px;
+    width:17px;
+    height:9px;
+    background:#263f52;
+    border:2px solid #202b31;
+    clip-path:polygon(
+        0 0,
+        100% 20%,
+        100% 100%,
+        0 100%
+    );
+    z-index:5;
 }
 
-.planeWindow{left:30px}
-.planeWindow2{left:42px}
+.window{
+    position:absolute;
+    top:22px;
+    width:6px;
+    height:5px;
+    background:#5bb6e8;
+    border:1px solid #26343b;
+    z-index:6;
+}
+
+.w1{left:23px}
+.w2{left:32px}
+.w3{left:41px}
+.w4{left:50px}
+.w5{left:59px}
+
+.mainWing{
+    position:absolute;
+    left:34px;
+    top:6px;
+    width:48px;
+    height:23px;
+    background:#d5dadd;
+    border:4px solid #303a40;
+    clip-path:polygon(
+        0 100%,
+        28% 0,
+        100% 0,
+        66% 100%
+    );
+    z-index:2;
+}
+
+.lowerWing{
+    position:absolute;
+    left:38px;
+    top:31px;
+    width:43px;
+    height:18px;
+    background:#cbd1d4;
+    border:4px solid #303a40;
+    clip-path:polygon(
+        0 0,
+        100% 0,
+        68% 100%,
+        28% 100%
+    );
+    z-index:2;
+}
+
+.tailFin{
+    position:absolute;
+    left:8px;
+    top:3px;
+    width:22px;
+    height:25px;
+    background:#d8dcde;
+    border:4px solid #303a40;
+    clip-path:polygon(
+        0 100%,
+        25% 15%,
+        100% 0,
+        100% 100%
+    );
+    z-index:5;
+}
+
+.tailWing{
+    position:absolute;
+    left:5px;
+    top:12px;
+    width:25px;
+    height:16px;
+    background:#cbd0d3;
+    border:3px solid #303a40;
+    clip-path:polygon(
+        0 45%,
+        100% 0,
+        82% 100%
+    );
+    z-index:3;
+}
+
+.engine{
+    position:absolute;
+    width:15px;
+    height:11px;
+    background:#68747a;
+    border:3px solid #303a40;
+    z-index:7;
+}
+
+.engine:after{
+    content:"";
+    position:absolute;
+    left:2px;
+    top:2px;
+    width:5px;
+    height:5px;
+    background:#202a2f;
+}
+
+.engine1{
+    left:48px;
+    top:12px;
+}
+
+.engine2{
+    left:48px;
+    top:35px;
+}
 
 /* IMPACT */
 
@@ -672,18 +760,6 @@ html,body{
     opacity:.24;
     filter:blur(8px);
     z-index:30;
-}
-
-.fire.spread1{
-    animation-delay:.15s;
-}
-
-.fire.spread2{
-    animation-delay:.3s;
-}
-
-.fire.spread3{
-    animation-delay:.45s;
 }
 
 @keyframes flicker{
@@ -833,6 +909,104 @@ html,body{
     }
 }
 
+/* STRUCTURAL COLLAPSE */
+
+.towerCollapsing{
+    animation:
+        realisticCollapse
+        4.8s
+        cubic-bezier(.35,.05,.7,.95)
+        forwards;
+}
+
+@keyframes realisticCollapse{
+
+    0%{
+        transform:
+            translate(0,0)
+            rotate(0deg)
+            scaleY(1);
+    }
+
+    8%{
+        transform:
+            translate(-2px,0)
+            rotate(-.4deg)
+            scaleY(1);
+    }
+
+    16%{
+        transform:
+            translate(3px,3px)
+            rotate(.7deg)
+            scaleY(.995);
+    }
+
+    25%{
+        transform:
+            translate(-3px,8px)
+            rotate(-1deg)
+            scaleY(.985);
+    }
+
+    35%{
+        transform:
+            translate(4px,20px)
+            rotate(2deg)
+            scaleY(.96);
+    }
+
+    45%{
+        transform:
+            translate(-3px,45px)
+            rotate(-3.5deg)
+            scaleY(.92);
+    }
+
+    55%{
+        transform:
+            translate(7px,80px)
+            rotate(6deg)
+            scaleY(.86);
+    }
+
+    65%{
+        transform:
+            translate(18px,125px)
+            rotate(10deg)
+            scaleY(.77);
+    }
+
+    76%{
+        transform:
+            translate(38px,190px)
+            rotate(16deg)
+            scaleY(.64);
+    }
+
+    87%{
+        transform:
+            translate(70px,275px)
+            rotate(24deg)
+            scaleY(.47);
+    }
+
+    95%{
+        transform:
+            translate(105px,370px)
+            rotate(31deg)
+            scaleY(.28);
+    }
+
+    100%{
+        transform:
+            translate(145px,470px)
+            rotate(38deg)
+            scaleY(.08);
+        opacity:.25;
+    }
+}
+
 /* COLLAPSE PIECES */
 
 .collapsePiece{
@@ -844,17 +1018,36 @@ html,body{
         inset 5px 0 rgba(255,255,255,.35);
     animation:
         pieceFall
-        1.8s
-        steps(12)
+        2.5s
+        cubic-bezier(.25,.1,.25,1)
         forwards;
 }
 
 @keyframes pieceFall{
+
     0%{
         transform:
             translate(0,0)
             rotate(0deg);
         opacity:1;
+    }
+
+    25%{
+        transform:
+            translate(
+                calc(var(--dx)*.15),
+                calc(var(--dy)*.1)
+            )
+            rotate(calc(var(--rot)*.15));
+    }
+
+    60%{
+        transform:
+            translate(
+                calc(var(--dx)*.55),
+                calc(var(--dy)*.55)
+            )
+            rotate(calc(var(--rot)*.55));
     }
 
     100%{
@@ -921,6 +1114,19 @@ html,body{
     font-weight:bold;
     z-index:100;
     box-shadow:5px 5px 0 rgba(0,0,0,.25);
+}
+
+#targetStatus{
+    position:absolute;
+    top:65px;
+    left:18px;
+    padding:8px 12px;
+    color:white;
+    background:rgba(18,27,34,.76);
+    border:2px solid white;
+    font-size:12px;
+    font-weight:bold;
+    z-index:100;
 }
 
 #title{
@@ -992,6 +1198,12 @@ html,body{
         font-size:11px;
     }
 
+    #targetStatus{
+        top:91px;
+        left:10px;
+        font-size:10px;
+    }
+
     .towerAssembly{
         width:115px;
         height:125%;
@@ -1044,6 +1256,10 @@ html,body{
         user-select:none;
         touch-action:none;
     }
+
+    #plane{
+        transform:scale(.8);
+    }
 }
 </style>
 
@@ -1076,20 +1292,24 @@ html,body{
 <div class="bird bird4"></div>
 
 <div id="distantCity">
-    <div class="distantBuilding db1"></div>
-    <div class="distantBuilding db2"></div>
-    <div class="distantBuilding db3"></div>
-    <div class="distantBuilding db4"></div>
-    <div class="distantBuilding db5"></div>
-    <div class="distantBuilding db6"></div>
-    <div class="distantBuilding db7"></div>
-    <div class="distantBuilding db8"></div>
-    <div class="distantBuilding db9"></div>
-    <div class="distantBuilding db10"></div>
-    <div class="distantBuilding db11"></div>
-    <div class="distantBuilding db12"></div>
-    <div class="distantBuilding db13"></div>
-    <div class="distantBuilding db14"></div>
+
+```
+<div class="distantBuilding db1"></div>
+<div class="distantBuilding db2"></div>
+<div class="distantBuilding db3"></div>
+<div class="distantBuilding db4"></div>
+<div class="distantBuilding db5"></div>
+<div class="distantBuilding db6"></div>
+<div class="distantBuilding db7"></div>
+<div class="distantBuilding db8"></div>
+<div class="distantBuilding db9"></div>
+<div class="distantBuilding db10"></div>
+<div class="distantBuilding db11"></div>
+<div class="distantBuilding db12"></div>
+<div class="distantBuilding db13"></div>
+<div class="distantBuilding db14"></div>
+```
+
 </div>
 
 <div id="city">
@@ -1104,9 +1324,11 @@ html,body{
         id="tower1"
         class="tower"
     >
+
         <div class="windowGrid"></div>
         <div class="roof"></div>
         <div class="antenna"></div>
+
     </div>
 
 </div>
@@ -1120,9 +1342,11 @@ html,body{
         id="tower2"
         class="tower"
     >
+
         <div class="windowGrid"></div>
         <div class="roof"></div>
         <div class="antenna"></div>
+
     </div>
 
 </div>
@@ -1130,21 +1354,39 @@ html,body{
 
 </div>
 
+<!-- PLANE -->
+
 <div id="plane">
 
 ```
-<div class="planeTail"></div>
-<div class="planeWing"></div>
-<div class="planeBody"></div>
-<div class="planeWing2"></div>
-<div class="planeWindow"></div>
-<div class="planeWindow2"></div>
+<div class="tailWing"></div>
+<div class="mainWing"></div>
+<div class="lowerWing"></div>
+
+<div class="tailFin"></div>
+
+<div class="engine engine1"></div>
+<div class="engine engine2"></div>
+
+<div class="fuselage"></div>
+
+<div class="cockpit"></div>
+
+<div class="window w1"></div>
+<div class="window w2"></div>
+<div class="window w3"></div>
+<div class="window w4"></div>
+<div class="window w5"></div>
 ```
 
 </div>
 
 <div id="status">
     STATUS: FLYING
+</div>
+
+<div id="targetStatus">
+    TOWERS: 0 / 2 HIT
 </div>
 
 <div id="title">
@@ -1160,10 +1402,25 @@ html,body{
 </div>
 
 <div id="mobileControls">
-    <div class="control" id="left">←</div>
-    <div class="control" id="up">↑</div>
-    <div class="control" id="down">↓</div>
-    <div class="control" id="right">→</div>
+
+```
+<div class="control" id="left">
+    ←
+</div>
+
+<div class="control" id="up">
+    ↑
+</div>
+
+<div class="control" id="down">
+    ↓
+</div>
+
+<div class="control" id="right">
+    →
+</div>
+```
+
 </div>
 
 </div>
@@ -1178,6 +1435,9 @@ const plane=
 
 const statusText=
     document.getElementById("status");
+
+const targetStatus=
+    document.getElementById("targetStatus");
 
 const resetButton=
     document.getElementById("resetButton");
@@ -1211,11 +1471,18 @@ let vy=0;
 
 let crashed=false;
 
-let smokeInterval=null;
-
 let musicStarted=false;
 
-let crashAssembly=null;
+let smokeInterval=null;
+
+let hitTower1=false;
+let hitTower2=false;
+
+let currentAssembly=null;
+
+const keys={};
+
+/* MUSIC */
 
 function startMusic(){
 
@@ -1234,6 +1501,8 @@ function startMusic(){
     });
 }
 
+/* PLANE POSITION */
+
 function setStartPosition(){
 
     const w=
@@ -1243,12 +1512,13 @@ function setStartPosition(){
         window.innerHeight;
 
     x=w*.035;
-
     y=h*.35;
 
     vx=2.5;
-
     vy=0;
+
+    plane.style.position=
+        "absolute";
 
     plane.style.left=
         x+"px";
@@ -1256,14 +1526,11 @@ function setStartPosition(){
     plane.style.top=
         y+"px";
 
-    plane.style.transform=
-        "rotate(0deg)";
-
-    plane.style.position=
-        "absolute";
-
     plane.style.zIndex=
         "80";
+
+    plane.style.transform=
+        "rotate(0deg)";
 
     plane.style.display=
         "block";
@@ -1272,12 +1539,13 @@ function setStartPosition(){
         plane.parentElement !== game
     ){
 
-        game.appendChild(plane);
-
+        game.appendChild(
+            plane
+        );
     }
 }
 
-const keys={};
+/* CONTROLS */
 
 window.addEventListener(
     "keydown",
@@ -1303,7 +1571,10 @@ window.addEventListener(
     }
 );
 
-function holdButton(el,key){
+function holdButton(
+    element,
+    key
+){
 
     const down=e=>{
 
@@ -1323,22 +1594,22 @@ function holdButton(el,key){
 
     };
 
-    el.addEventListener(
+    element.addEventListener(
         "pointerdown",
         down
     );
 
-    el.addEventListener(
+    element.addEventListener(
         "pointerup",
         up
     );
 
-    el.addEventListener(
+    element.addEventListener(
         "pointerleave",
         up
     );
 
-    el.addEventListener(
+    element.addEventListener(
         "pointercancel",
         up
     );
@@ -1363,6 +1634,8 @@ holdButton(
     document.getElementById("down"),
     "arrowdown"
 );
+
+/* PLANE MOVEMENT */
 
 function updatePlane(){
 
@@ -1428,7 +1701,6 @@ function updatePlane(){
     if(x<0){
 
         x=0;
-
         vx*=-.5;
 
     }
@@ -1436,7 +1708,6 @@ function updatePlane(){
     if(x>maxX){
 
         x=maxX;
-
         vx*=-.5;
 
     }
@@ -1444,7 +1715,6 @@ function updatePlane(){
     if(y<0){
 
         y=0;
-
         vy*=-.5;
 
     }
@@ -1452,7 +1722,6 @@ function updatePlane(){
     if(y>maxY){
 
         y=maxY;
-
         vy*=-.5;
 
     }
@@ -1463,10 +1732,14 @@ function updatePlane(){
     plane.style.top=
         y+"px";
 
-    const angle=Math.max(
-        -20,
-        Math.min(20,vy*4)
-    );
+    const angle=
+        Math.max(
+            -20,
+            Math.min(
+                20,
+                vy*4
+            )
+        );
 
     plane.style.transform=
         "rotate("+angle+"deg)";
@@ -1474,27 +1747,42 @@ function updatePlane(){
     checkCollision();
 }
 
+/* COLLISION */
+
 function checkCollision(){
 
     const p=
         plane.getBoundingClientRect();
 
+    const towers=[
+        {
+            tower:tower1,
+            assembly:towerAssembly1,
+            hit:hitTower1
+        },
+        {
+            tower:tower2,
+            assembly:towerAssembly2,
+            hit:hitTower2
+        }
+    ];
+
     for(
-        const tower of
-        [tower1,tower2]
+        const item of towers
     ){
 
+        if(item.hit)
+            continue;
+
         if(
-            tower.closest(
-                ".towerAssembly"
-            ).classList.contains(
+            item.assembly.classList.contains(
                 "towerCollapsing"
             )
         )
             continue;
 
         const t=
-            tower.getBoundingClientRect();
+            item.tower.getBoundingClientRect();
 
         if(
             p.right>t.left &&
@@ -1504,7 +1792,8 @@ function checkCollision(){
         ){
 
             crash(
-                tower,
+                item.tower,
+                item.assembly,
                 p
             );
 
@@ -1513,7 +1802,11 @@ function checkCollision(){
     }
 }
 
-function shake(strong=false){
+/* SCREEN SHAKE */
+
+function shake(
+    strong=false
+){
 
     game.classList.remove(
         "shake",
@@ -1529,27 +1822,42 @@ function shake(strong=false){
     );
 }
 
-function crash(tower,p){
+/* CRASH */
+
+function crash(
+    tower,
+    assembly,
+    p
+){
 
     if(crashed)return;
 
     crashed=true;
 
+    currentAssembly=
+        assembly;
+
     vx=0;
     vy=0;
+
+    if(
+        assembly === towerAssembly1
+    ){
+
+        hitTower1=true;
+
+    }else{
+
+        hitTower2=true;
+
+    }
+
+    updateTargetStatus();
 
     statusText.textContent=
         "STATUS: IMPACT";
 
     shake(false);
-
-    const assembly=
-        tower.closest(
-            ".towerAssembly"
-        );
-
-    crashAssembly=
-        assembly;
 
     const t=
         tower.getBoundingClientRect();
@@ -1571,11 +1879,11 @@ function crash(tower,p){
     );
 
     /*
-       Move the plane INTO the tower.
+       Put the plane inside the building.
 
-       Because the plane is now a child of
-       the tower assembly, it will fall with
-       the building during the collapse.
+       It becomes a child of the tower
+       assembly, so it follows the tower
+       during the collapse.
     */
 
     const localX=
@@ -1601,19 +1909,16 @@ function crash(tower,p){
     plane.style.top=
         localY+"px";
 
+    /*
+       Behind the tower's front layers,
+       making the plane look embedded.
+    */
+
     plane.style.zIndex=
-        "12";
+        "2";
 
     plane.style.transform=
         "rotate(0deg)";
-
-    /*
-       Put the plane slightly behind the
-       building surface so it looks embedded.
-    */
-
-    plane.style.filter=
-        "drop-shadow(3px 4px 0 rgba(0,0,0,.25))";
 
     createImpact(
         assembly,
@@ -1667,14 +1972,22 @@ function crash(tower,p){
 
             createSmoke(
                 assembly,
-                localX+p.width/2+
-                (Math.random()*55-27),
 
-                localY+p.height/2+
+                localX+
+                p.width/2+
+                (Math.random()*70-35),
+
+                localY+
+                p.height/2+
                 (Math.random()*35-15)
             );
 
         },240);
+
+    /*
+       Let the crash settle before
+       structural failure begins.
+    */
 
     setTimeout(()=>{
 
@@ -1687,8 +2000,24 @@ function crash(tower,p){
             assembly
         );
 
-    },8500);
+    },7000);
 }
+
+/* UPDATE TARGET COUNTER */
+
+function updateTargetStatus(){
+
+    const count=
+        (hitTower1?1:0)+
+        (hitTower2?1:0);
+
+    targetStatus.textContent=
+        "TOWERS: "+
+        count+
+        " / 2 HIT";
+}
+
+/* IMPACT FLASH */
 
 function createImpact(
     parent,
@@ -1697,7 +2026,9 @@ function createImpact(
 ){
 
     const flash=
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     flash.className=
         "impactFlash";
@@ -1721,7 +2052,9 @@ function createImpact(
     for(let i=0;i<25;i++){
 
         const spark=
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         spark.className=
             "spark";
@@ -1753,6 +2086,8 @@ function createImpact(
         },750);
     }
 }
+
+/* EXPLOSION PARTICLES */
 
 function createExplosionParticles(
     parent,
@@ -1818,6 +2153,8 @@ function createExplosionParticles(
     }
 }
 
+/* FIRE */
+
 function createFire(
     parent,
     x,
@@ -1876,10 +2213,7 @@ function createFire(
     }
 }
 
-/*
-   Fire gradually appears at different
-   heights of the building.
-*/
+/* FIRE SPREAD */
 
 function spreadFire(
     parent,
@@ -1888,13 +2222,13 @@ function spreadFire(
 ){
 
     const spots=[
-        [-45,-130],
-        [40,-95],
-        [-35,-55],
-        [48,-20],
+        [-45,-150],
+        [40,-115],
+        [-35,-70],
+        [48,-25],
         [-50,25],
-        [30,65],
-        [-20,105]
+        [30,75],
+        [-20,120]
     ];
 
     spots.forEach(
@@ -1910,9 +2244,7 @@ function spreadFire(
                     );
 
                 fire.className=
-                    "fire spread"+(
-                        (index%3)+1
-                    );
+                    "fire";
 
                 fire.style.left=
                     (x+spot[0])+"px";
@@ -1920,12 +2252,11 @@ function spreadFire(
                 fire.style.top=
                     (y+spot[1])+"px";
 
-                const scale=
-                    .65+
-                    Math.random()*.6;
-
                 fire.style.transform=
-                    "scale("+scale+")";
+                    "scale("+
+                    (.65+
+                    Math.random()*.6)+
+                    ")";
 
                 parent.appendChild(
                     fire
@@ -1949,11 +2280,13 @@ function spreadFire(
                     glow
                 );
 
-            },900+index*650);
+            },900+index*600);
 
         }
     );
 }
+
+/* SMOKE */
 
 function createSmoke(
     parent,
@@ -1976,13 +2309,13 @@ function createSmoke(
         (y-18)+"px";
 
     /*
-       Every smoke cloud gets a different
-       wind direction.
+       Random wind direction for
+       each individual smoke cloud.
     */
 
     smoke.style.setProperty(
         "--drift",
-        ((Math.random()-.5)*130)+"px"
+        ((Math.random()-.5)*150)+"px"
     );
 
     parent.appendChild(
@@ -1995,6 +2328,8 @@ function createSmoke(
 
     },4100);
 }
+
+/* SMOKE CLOUD */
 
 function createSmokeCloud(
     parent,
@@ -2014,6 +2349,8 @@ function createSmokeCloud(
         );
     }
 }
+
+/* DEBRIS */
 
 function createDebris(
     parent,
@@ -2059,36 +2396,7 @@ function createDebris(
     }
 }
 
-function createCollapseSmoke(
-    parent
-){
-
-    const width=
-        parent.offsetWidth;
-
-    const height=
-        parent.offsetHeight;
-
-    for(let i=0;i<25;i++){
-
-        setTimeout(()=>{
-
-            if(!crashed)return;
-
-            createSmoke(
-                parent,
-
-                width/2+
-                (Math.random()-.5)*
-                width,
-
-                height-
-                Math.random()*300
-            );
-
-        },i*140);
-    }
-}
+/* COLLAPSE */
 
 function collapseTower(
     assembly
@@ -2105,19 +2413,15 @@ function collapseTower(
         "towerCollapsing"
     );
 
-    const rect=
-        assembly.getBoundingClientRect();
-
     createCollapseSmoke(
         assembly
     );
 
     /*
-       Falling building pieces stay
-       attached to the assembly.
+       More structural debris.
     */
 
-    for(let i=0;i<38;i++){
+    for(let i=0;i<45;i++){
 
         const piece=
             document.createElement(
@@ -2128,10 +2432,10 @@ function collapseTower(
             "collapsePiece";
 
         piece.style.width=
-            (8+Math.random()*22)+"px";
+            (8+Math.random()*24)+"px";
 
         piece.style.height=
-            (7+Math.random()*20)+"px";
+            (7+Math.random()*24)+"px";
 
         piece.style.left=
             Math.random()*
@@ -2140,22 +2444,22 @@ function collapseTower(
 
         piece.style.top=
             Math.random()*
-            assembly.offsetHeight*.8+
+            assembly.offsetHeight*.75+
             "px";
 
         piece.style.setProperty(
             "--dx",
-            ((Math.random()-.5)*280)+"px"
+            ((Math.random()-.5)*360)+"px"
         );
 
         piece.style.setProperty(
             "--dy",
-            (70+Math.random()*240)+"px"
+            (100+Math.random()*350)+"px"
         );
 
         piece.style.setProperty(
             "--rot",
-            ((Math.random()-.5)*720)+"deg"
+            ((Math.random()-.5)*900)+"deg"
         );
 
         assembly.appendChild(
@@ -2166,10 +2470,15 @@ function collapseTower(
 
             piece.remove();
 
-        },1900);
+        },2600);
     }
 
-    for(let i=0;i<22;i++){
+    /*
+       Dust clouds appear as the structure
+       hits lower levels.
+    */
+
+    for(let i=0;i<30;i++){
 
         setTimeout(()=>{
 
@@ -2193,7 +2502,7 @@ function collapseTower(
 
             dust.style.setProperty(
                 "--dx",
-                ((Math.random()-.5)*170)+"px"
+                ((Math.random()-.5)*220)+"px"
             );
 
             assembly.appendChild(
@@ -2209,10 +2518,12 @@ function collapseTower(
         },i*130);
     }
 
-    setTimeout(()=>{
+    /*
+       Wait until the tower has visibly
+       finished falling.
+    */
 
-        statusText.textContent=
-            "STATUS: COLLAPSED";
+    setTimeout(()=>{
 
         clearInterval(
             smokeInterval
@@ -2220,7 +2531,9 @@ function collapseTower(
 
         smokeInterval=null;
 
-        removeAllEffects();
+        removeEffectsFrom(
+            assembly
+        );
 
         assembly.style.visibility=
             "hidden";
@@ -2228,15 +2541,87 @@ function collapseTower(
         plane.style.display=
             "none";
 
-        resetButton.style.display=
-            "block";
+        if(
+            hitTower1 &&
+            hitTower2
+        ){
 
-    },4300);
+            statusText.textContent=
+                "STATUS: BOTH TOWERS DOWN";
+
+            targetStatus.textContent=
+                "TOWERS: 2 / 2 HIT";
+
+            setTimeout(()=>{
+
+                statusText.textContent=
+                    "STATUS: READY AGAIN";
+
+                resetButton.style.display=
+                    "block";
+
+            },1200);
+
+        }else{
+
+            /*
+               Only one target has been hit.
+               Spawn another plane automatically.
+            */
+
+            statusText.textContent=
+                "STATUS: NEW PLANE READY";
+
+            setTimeout(()=>{
+
+                spawnNextPlane();
+
+            },1200);
+        }
+
+    },5000);
 }
 
-function removeAllEffects(){
+/* COLLAPSE SMOKE */
 
-    document.querySelectorAll(
+function createCollapseSmoke(
+    parent
+){
+
+    const width=
+        parent.offsetWidth;
+
+    const height=
+        parent.offsetHeight;
+
+    for(let i=0;i<28;i++){
+
+        setTimeout(()=>{
+
+            if(!crashed)return;
+
+            createSmoke(
+                parent,
+
+                width/2+
+                (Math.random()-.5)*
+                width,
+
+                height-
+                Math.random()*350
+            );
+
+        },i*150);
+    }
+}
+
+/* REMOVE EFFECTS FROM SPECIFIC TOWER */
+
+function removeEffectsFrom(
+    parent
+){
+
+    parent.querySelectorAll(
         ".fire,"+
         ".fireGlow,"+
         ".smoke,"+
@@ -2253,87 +2638,153 @@ function removeAllEffects(){
     });
 }
 
+/* NEW PLANE */
+
+function spawnNextPlane(){
+
+    crashed=false;
+
+    currentAssembly=null;
+
+    clearInterval(
+        smokeInterval
+    );
+
+    smokeInterval=null;
+
+    if(
+        plane.parentElement !== game
+    ){
+
+        game.appendChild(
+            plane
+        );
+    }
+
+    plane.style.display=
+        "block";
+
+    plane.style.position=
+        "absolute";
+
+    plane.style.zIndex=
+        "80";
+
+    plane.style.transform=
+        "rotate(0deg)";
+
+    statusText.textContent=
+        hitTower1 && !hitTower2
+        ? "STATUS: HIT THE SECOND TOWER"
+        : "STATUS: HIT THE FIRST TOWER";
+
+    setStartPosition();
+}
+
+/* FULL RESET */
+
+function resetGame(){
+
+    crashed=false;
+
+    currentAssembly=null;
+
+    clearInterval(
+        smokeInterval
+    );
+
+    smokeInterval=null;
+
+    hitTower1=false;
+    hitTower2=false;
+
+    updateTargetStatus();
+
+    removeEffectsFrom(
+        towerAssembly1
+    );
+
+    removeEffectsFrom(
+        towerAssembly2
+    );
+
+    towerAssembly1.classList.remove(
+        "towerCollapsing"
+    );
+
+    towerAssembly2.classList.remove(
+        "towerCollapsing"
+    );
+
+    towerAssembly1.style.visibility=
+        "visible";
+
+    towerAssembly2.style.visibility=
+        "visible";
+
+    game.classList.remove(
+        "shake",
+        "bigShake"
+    );
+
+    if(
+        plane.parentElement !== game
+    ){
+
+        game.appendChild(
+            plane
+        );
+    }
+
+    plane.style.display=
+        "block";
+
+    plane.style.position=
+        "absolute";
+
+    plane.style.zIndex=
+        "80";
+
+    plane.style.filter=
+        "drop-shadow(5px 6px 0 rgba(0,0,0,.25))";
+
+    statusText.textContent=
+        "STATUS: FLYING";
+
+    resetButton.style.display=
+        "none";
+
+    setStartPosition();
+
+    backgroundMusic.currentTime=
+        0;
+
+    musicStarted=false;
+
+    startMusic();
+}
+
+/* RESET BUTTON */
+
 resetButton.addEventListener(
     "click",
-    ()=>{
-
-        crashed=false;
-
-        crashAssembly=null;
-
-        clearInterval(
-            smokeInterval
-        );
-
-        smokeInterval=null;
-
-        removeAllEffects();
-
-        towerAssembly1.classList.remove(
-            "towerCollapsing"
-        );
-
-        towerAssembly2.classList.remove(
-            "towerCollapsing"
-        );
-
-        towerAssembly1.style.visibility=
-            "visible";
-
-        towerAssembly2.style.visibility=
-            "visible";
-
-        game.classList.remove(
-            "shake",
-            "bigShake"
-        );
-
-        if(
-            plane.parentElement !== game
-        ){
-
-            game.appendChild(
-                plane
-            );
-
-        }
-
-        plane.style.display=
-            "block";
-
-        plane.style.position=
-            "absolute";
-
-        plane.style.zIndex=
-            "80";
-
-        plane.style.filter=
-            "drop-shadow(5px 6px 0 rgba(0,0,0,.22))";
-
-        statusText.textContent=
-            "STATUS: FLYING";
-
-        resetButton.style.display=
-            "none";
-
-        setStartPosition();
-
-        backgroundMusic.currentTime=
-            0;
-
-        musicStarted=false;
-
-        startMusic();
-
-    }
+    resetGame
 );
+
+/* RESIZE */
 
 window.addEventListener(
     "resize",
     ()=>{
 
-        if(!crashed)
+        if(
+            !crashed &&
+            plane.parentElement===game
+        ){
+
             setStartPosition();
+
+        }
 
     }
 );
@@ -2341,6 +2792,8 @@ window.addEventListener(
 setStartPosition();
 
 backgroundMusic.volume=.6;
+
+/* GAME LOOP */
 
 function loop(){
 
