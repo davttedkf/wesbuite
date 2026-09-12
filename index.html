@@ -1,1 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Steven</title>
+<style>
+body {
+    background: #000;
+    color: #c0c0c0;
+    font-family: "Times New Roman", serif;
+    margin: 0;
+}
 
+table {
+    border-collapse: collapse;
+}
+
+.main {
+    width: 760px;
+    margin: 30px auto;
+    border: 3px ridge #777;
+    background: #111;
+}
+
+.header {
+    background: #222;
+    border-bottom: 2px solid #900;
+    padding: 8px;
+    text-align: center;
+}
+
+.header h1 {
+    color: #ff0000;
+    font-size: 32px;
+    margin: 0;
+    font-weight: bold;
+}
+
+.login {
+    padding: 25px;
+    text-align: center;
+}
+
+.login table {
+    margin: auto;
+}
+
+.login td {
+    padding: 5px;
+    color: #fff;
+    font-size: 16px;
+}
+
+input {
+    background: #000;
+    color: #fff;
+    border: 2px inset #888;
+    font-family: "Courier New", monospace;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 180px;
+}
+
+input[type="submit"] {
+    padding: 2px 12px;
+    cursor: pointer;
+}
+
+.photo {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 2px ridge #777;
+    margin: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<table class="main">
+<tr>
+<td>
+
+<div class="header">
+    <h1>STEVEN</h1>
+</div>
+
+<div class="login">
+
+    <img src="IMG_0226.jpg" class="photo">
+    <img src="IMG_0333.jpg" class="photo">
+
+    <br><br>
+
+    <form onsubmit="return false;">
+        <table>
+            <tr>
+                <td>USERNAME:</td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <td>PASSWORD:</td>
+                <td><input type="password"></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <input type="submit" value="ENTER">
+                </td>
+            </tr>
+        </table>
+    </form>
+
+</div>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>
