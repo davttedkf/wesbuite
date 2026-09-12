@@ -112,7 +112,6 @@ phase: "waiting",
 round: 1,
 roundWins: [0, 0],
 
-```
     players: {
         tower1: "",
         tower2: ""
@@ -156,7 +155,7 @@ roundWins: [0, 0],
     winnerName: "",
     reason: ""
 };
-```
+
 
 }
 
@@ -171,7 +170,7 @@ lastFire: 0,
 nextRoundTimer: null
 };
 
-```
+
 const pilotFirst = Math.random() < 0.5;
 
 if (pilotFirst) {
@@ -212,7 +211,7 @@ setTimeout(() => {
 
     broadcast(room, room.state);
 }, 3200);
-```
+
 
 }
 
@@ -221,14 +220,14 @@ while (queue.length >= 2) {
 const a = queue.shift();
 const b = queue.shift();
 
-```
+
     if (!a || !b) break;
     if (a.ws.readyState !== WebSocket.OPEN) continue;
     if (b.ws.readyState !== WebSocket.OPEN) continue;
 
     makeRoom(a, b);
 }
-```
+
 
 }
 
@@ -242,14 +241,14 @@ h: 330
 };
 }
 
-```
+
 return {
     x: 652,
     y: 465,
     w: 175,
     h: 330
 };
-```
+
 
 }
 
@@ -276,14 +275,14 @@ s.aim.y = 245;
 
 s.bullets = [];
 room.lastFire = 0;
-```
+
 
 }
 
 function switchRoles(room) {
 const s = room.state;
 
-```
+
 const oldPilot = s.pilotId;
 const oldGunner = s.gunnerId;
 
@@ -311,14 +310,14 @@ send(room.player2.ws, {
     type: "matchFound",
     role: room.player2.id === s.pilotId ? "Pilot" : "Gunner"
 });
-```
+
 
 }
 
 function startNextRound(room) {
 if (!rooms.has(room.id)) return;
 
-```
+
 room.state.round++;
 
 switchRoles(room);
@@ -332,14 +331,14 @@ setTimeout(() => {
     if (!rooms.has(room.id)) return;
     broadcast(room, room.state);
 }, 1200);
-```
+
 
 }
 
 function finishMatch(room, winnerId, reason) {
 if (!rooms.has(room.id)) return;
 
-```
+
 const s = room.state;
 
 s.phase = "ended";
@@ -353,14 +352,14 @@ s.winnerName = winner ? winner.name : "";
 s.reason = reason;
 
 broadcast(room, s);
-```
+
 
 }
 
 function finishRound(room, winnerId, reason) {
 const s = room.state;
 
-```
+
 const playerIndex =
     winnerId === s.pilotId ? 0 : 1;
 
@@ -388,7 +387,7 @@ if (room.nextRoundTimer) {
 room.nextRoundTimer = setTimeout(() => {
     startNextRound(room);
 }, 2500);
-```
+
 
 }
 
@@ -396,7 +395,7 @@ function handleInput(player, msg) {
 const room = player.room;
 if (!room || !room.running) return;
 
-```
+
 const s = room.state;
 
 if (s.pilotId !== player.id) return;
@@ -408,7 +407,7 @@ player.input = {
     right: !!msg.right,
     brake: !!msg.brake
 };
-```
+
 
 }
 
@@ -416,7 +415,7 @@ function handleAim(player, msg) {
 const room = player.room;
 if (!room || !room.running) return;
 
-```
+
 const s = room.state;
 
 if (s.gunnerId !== player.id) return;
@@ -429,7 +428,7 @@ if (!Number.isFinite(y)) y = s.aim.y;
 
 s.aim.x = Math.max(0, Math.min(WORLD_WIDTH, x));
 s.aim.y = Math.max(0, Math.min(WORLD_HEIGHT, y));
-```
+
 
 }
 
@@ -437,7 +436,7 @@ function handleFire(player, msg) {
 const room = player.room;
 if (!room || !room.running) return;
 
-```
+
 const s = room.state;
 
 if (s.gunnerId !== player.id) return;
@@ -447,7 +446,7 @@ player.firing = !!msg.down;
 if (player.firing) {
     fireBullet(room);
 }
-```
+
 
 }
 
@@ -455,7 +454,7 @@ function fireBullet(room) {
 const now = Date.now();
 const s = room.state;
 
-```
+
 const gun = gunData[s.gun] || gunData.mg;
 
 if (now - room.lastFire < gun.cooldown) {
@@ -484,7 +483,7 @@ s.bullets.push({
     life: 90,
     damage: gun.damage
 });
-```
+
 
 }
 
@@ -492,7 +491,7 @@ function selectPlane(player, msg) {
 const room = player.room;
 if (!room) return;
 
-```
+
 const s = room.state;
 
 if (s.pilotId !== player.id) return;
@@ -500,7 +499,7 @@ if (s.pilotId !== player.id) return;
 if (!planeData[msg.plane]) return;
 
 s.plane.planeType = msg.plane;
-```
+
 
 }
 
@@ -508,7 +507,7 @@ function selectGun(player, msg) {
 const room = player.room;
 if (!room) return;
 
-```
+
 const s = room.state;
 
 if (s.gunnerId !== player.id) return;
@@ -516,7 +515,7 @@ if (s.gunnerId !== player.id) return;
 if (!gunData[msg.gun]) return;
 
 s.gun = msg.gun;
-```
+
 
 }
 
@@ -604,14 +603,14 @@ s.plane.pitch =
 
 s.plane.stalled =
     s.plane.speed < type.maxSpeed * type.stall;
-```
+    
 
 }
 
 function checkPlaneCollision(room) {
 const s = room.state;
 
-```
+
 const planeX = s.plane.x;
 const planeY = s.plane.y;
 
