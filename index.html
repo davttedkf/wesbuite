@@ -1,146 +1,111 @@
-
+```html
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <html>
 <head>
 
-<title>Steven's Home Page</title>
+<title>Steven</title>
 
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style type="text/css">
+<style>
 
 body {
-    margin: 0;
-    padding: 10px;
-    background-color: #008080;
+    background: #ffffff;
     color: #000000;
     font-family: "Times New Roman", Times, serif;
     font-size: 13px;
+    margin: 20px;
 }
 
-a {
-    color: #0000ff;
+table {
+    border-collapse: collapse;
 }
 
-.page {
-    width: 760px;
-    max-width: 96%;
+.main {
+    width: 600px;
+    max-width: 95%;
     margin: auto;
+    border: 2px solid #000000;
 }
 
-.window {
-    background-color: #c0c0c0;
-    border-top: 3px solid #ffffff;
-    border-left: 3px solid #ffffff;
-    border-right: 3px solid #000000;
-    border-bottom: 3px solid #000000;
-}
-
-.titlebar {
-    background-color: #000080;
-    color: #ffffff;
+.header {
+    background: #c0c0c0;
+    color: #000000;
+    padding: 4px;
+    border-bottom: 2px solid #000000;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 12px;
     font-weight: bold;
-    padding: 3px 5px;
-}
-
-.menu {
-    background-color: #c0c0c0;
-    border-bottom: 2px solid #808080;
-    padding: 3px 6px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 11px;
 }
 
 .content {
-    background-color: #ffffff;
-    padding: 10px;
-    border: 2px inset #c0c0c0;
-}
-
-.box {
-    border: 2px ridge #808080;
-    background-color: #c0c0c0;
-    padding: 6px;
-    margin-bottom: 10px;
-}
-
-.photo {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border: 2px solid #000000;
-    margin: 3px;
+    padding: 15px;
 }
 
 .login {
-    width: 360px;
+    width: 320px;
     max-width: 95%;
-    margin: auto;
-    background-color: #c0c0c0;
-    border-top: 2px solid #ffffff;
-    border-left: 2px solid #ffffff;
-    border-right: 2px solid #000000;
-    border-bottom: 2px solid #000000;
+    margin: 20px auto;
+    border: 2px solid #000000;
 }
 
-.login-title {
-    background-color: #000080;
+.loginheader {
+    background: #000080;
     color: #ffffff;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 11px;
-    font-weight: bold;
     padding: 3px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
 }
 
-.login-content {
-    padding: 10px;
-    text-align: center;
+.loginbody {
+    background: #c0c0c0;
+    padding: 15px;
 }
 
 input {
+    width: 160px;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 11px;
-    border: 2px inset #c0c0c0;
+    font-size: 12px;
+    border: 2px inset #ffffff;
 }
 
-.button {
-    background-color: #c0c0c0;
+button {
+    background: #c0c0c0;
+    color: #000000;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 11px;
-    padding: 2px 15px;
+    padding: 3px 18px;
+
     border-top: 2px solid #ffffff;
     border-left: 2px solid #ffffff;
     border-right: 2px solid #000000;
     border-bottom: 2px solid #000000;
 }
 
-.status {
-    background-color: #c0c0c0;
-    border-top: 2px solid #808080;
-    padding: 3px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 10px;
+button:active {
+    border-top: 2px solid #000000;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+
+.photos {
+    text-align: center;
+}
+
+.photos img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border: 1px solid #000000;
+    margin: 3px;
 }
 
 .small {
     font-size: 10px;
-}
-
-@media (max-width: 600px) {
-
-    body {
-        padding: 4px;
-    }
-
-    .photo {
-        width: 90px;
-        height: 90px;
-    }
-
 }
 
 </style>
@@ -149,19 +114,13 @@ input {
 
 <body>
 
-<div class="page">
+<table class="main" cellpadding="0" cellspacing="0">
 
-<div class="window">
+<tr>
+<td>
 
-<div class="titlebar">
-Steven's Home Page
-</div>
-
-<div class="menu">
-File&nbsp;&nbsp;&nbsp;&nbsp;
-Edit&nbsp;&nbsp;&nbsp;&nbsp;
-View&nbsp;&nbsp;&nbsp;&nbsp;
-Help
+<div class="header">
+Steven
 </div>
 
 <div class="content">
@@ -169,84 +128,174 @@ Help
 <center>
 
 <font size="5">
-<b>Steven's Home Page</b>
+<b>Steven</b>
 </font>
-
-<br>
-
-<font size="2">
-Welcome to my page on the World Wide Web!
-</font>
-
-</center>
-
-<hr>
-
-
-<div class="box">
-
-<b>About Steven</b>
-
-<hr>
-
-This is a personal web page about Steven.
 
 <br><br>
 
-Thanks for visiting.
+<font size="2">
+Please enter your username and password.
+</font>
 
+</center>
+
+
+<table class="login" cellpadding="0" cellspacing="0">
+
+<tr>
+<td>
+
+<div class="loginheader">
+Login
 </div>
 
-
-<div class="box">
-
-<b>Pictures</b>
-
-<hr>
+<div class="loginbody">
 
 <center>
 
-<img class="photo" src="IMG_0226.jpeg" alt="Steven">
+<table cellpadding="4">
 
-<img class="photo" src="IMG_0333.jpeg" alt="Steven">
+<tr>
 
-<img class="photo" src="IMG_0751.jpeg" alt="Steven">
+<td align="right">
+<b>USERNAME:</b>
+</td>
+
+<td>
+<input type="text" id="username">
+</td>
+
+</tr>
+
+<tr>
+
+<td align="right">
+<b>PASSWORD:</b>
+</td>
+
+<td>
+<input type="password" id="password">
+</td>
+
+</tr>
+
+<tr>
+
+<td colspan="2" align="center">
 
 <br>
 
-<img class="photo" src="IMG_0752.jpeg" alt="Steven">
+<button onclick="login()">
+LOGIN
+</button>
 
-<img class="photo" src="IMG_0753.jpeg" alt="Steven">
+</td>
 
-<img class="photo" src="IMG_0754.jpeg" alt="Steven">
+</tr>
+
+</table>
+
+<div id="result"></div>
 
 </center>
 
 </div>
 
+</td>
+</tr>
 
-<div class="box">
+</table>
 
-<b>Links</b>
 
-<hr>
+<center>
 
-<a href="#">Home</a>
+<font size="2">
+Pictures
+</font>
+
+<br><br>
+
+<div class="photos">
+
+<img src="IMG_0226.jpeg">
+<img src="IMG_0333.jpeg">
+<img src="IMG_0751.jpeg">
+
 <br>
 
-<a href="#">Pictures</a>
-<br>
-
-<a href="#">Guestbook</a>
-<br>
-
-<a href="#">Email</a>
+<img src="IMG_0752.jpeg">
+<img src="IMG_0753.jpeg">
+<img src="IMG_0754.jpeg">
 
 </div>
 
+<br>
 
-<div class="login">
+<font class="small">
+Best viewed with Internet Explorer 5.0<br>
+800 x 600 recommended
+</font>
 
-<div class="login-title">
+</center>
+
+</div>
+
+</td>
+</tr>
+
+</table>
 
 
+<audio id="music" loop>
+
+<source src="backgound music.mp3" type="audio/mpeg">
+
+</audio>
+
+
+<script>
+
+var music = document.getElementById("music");
+
+document.addEventListener("click", function () {
+
+    music.volume = 0.35;
+
+    music.play().catch(function () {});
+
+}, { once: true });
+
+
+function login() {
+
+    var username =
+        document.getElementById("username").value;
+
+    var password =
+        document.getElementById("password").value;
+
+    var result =
+        document.getElementById("result");
+
+    var text =
+        (username + " " + password).toLowerCase();
+
+    if (text.indexOf("steven") !== -1) {
+
+        result.innerHTML =
+            "<br><font color='green'><b>LOGIN ACCEPTED</b></font>";
+
+    } else {
+
+        result.innerHTML =
+            "<br><font color='red'><b>LOGIN FAILED</b></font>";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
+```
