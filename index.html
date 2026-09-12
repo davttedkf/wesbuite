@@ -37,6 +37,40 @@ html,body{
         );
 }
 
+#game.shake{
+    animation:screenShake .55s steps(8);
+}
+
+#game.bigShake{
+    animation:bigScreenShake .9s steps(12);
+}
+
+@keyframes screenShake{
+    0%{transform:translate(0,0)}
+    12%{transform:translate(-7px,4px)}
+    25%{transform:translate(6px,-5px)}
+    37%{transform:translate(-5px,-4px)}
+    50%{transform:translate(5px,6px)}
+    62%{transform:translate(-4px,2px)}
+    75%{transform:translate(4px,-3px)}
+    87%{transform:translate(-2px,2px)}
+    100%{transform:translate(0,0)}
+}
+
+@keyframes bigScreenShake{
+    0%{transform:translate(0,0)}
+    10%{transform:translate(-13px,8px)}
+    20%{transform:translate(11px,-9px)}
+    30%{transform:translate(-10px,-7px)}
+    40%{transform:translate(12px,8px)}
+    50%{transform:translate(-9px,5px)}
+    60%{transform:translate(8px,-7px)}
+    70%{transform:translate(-6px,4px)}
+    80%{transform:translate(5px,-3px)}
+    90%{transform:translate(-3px,2px)}
+    100%{transform:translate(0,0)}
+}
+
 /* SUN */
 
 #sun{
@@ -123,6 +157,149 @@ html,body{
     to{left:110vw}
 }
 
+/* DISTANT AIRCRAFT */
+
+.distantPlane{
+    position:absolute;
+    width:42px;
+    height:18px;
+    z-index:4;
+    opacity:.35;
+    animation:flyAcross linear infinite;
+}
+
+.distantPlane:before{
+    content:"";
+    position:absolute;
+    left:7px;
+    top:7px;
+    width:30px;
+    height:5px;
+    background:#3b5360;
+}
+
+.distantPlane:after{
+    content:"";
+    position:absolute;
+    left:17px;
+    top:2px;
+    width:17px;
+    height:12px;
+    background:#536c78;
+    clip-path:polygon(
+        0 45%,
+        100% 0,
+        72% 100%
+    );
+}
+
+.dp1{
+    top:18%;
+    left:-60px;
+    animation-duration:34s;
+}
+
+.dp2{
+    top:34%;
+    left:-80px;
+    transform:scale(.65);
+    animation-duration:47s;
+    animation-delay:12s;
+}
+
+.dp3{
+    top:10%;
+    left:-100px;
+    transform:scale(.45);
+    animation-duration:58s;
+    animation-delay:24s;
+}
+
+@keyframes flyAcross{
+    from{left:-100px}
+    to{left:110vw}
+}
+
+/* BIRDS */
+
+.bird{
+    position:absolute;
+    width:28px;
+    height:16px;
+    z-index:12;
+    animation:birdFly linear infinite;
+}
+
+.bird:before,
+.bird:after{
+    content:"";
+    position:absolute;
+    top:7px;
+    width:12px;
+    height:4px;
+    border-top:3px solid #263943;
+}
+
+.bird:before{
+    left:1px;
+    transform:rotate(25deg);
+}
+
+.bird:after{
+    right:1px;
+    transform:rotate(-25deg);
+}
+
+.bird1{
+    top:25%;
+    animation-duration:18s;
+}
+
+.bird2{
+    top:38%;
+    transform:scale(.7);
+    animation-duration:25s;
+    animation-delay:7s;
+}
+
+.bird3{
+    top:15%;
+    transform:scale(.5);
+    animation-duration:31s;
+    animation-delay:14s;
+}
+
+.bird4{
+    top:48%;
+    transform:scale(.8);
+    animation-duration:22s;
+    animation-delay:18s;
+}
+
+@keyframes birdFly{
+    0%{
+        left:-60px;
+        margin-top:0;
+    }
+
+    25%{
+        margin-top:-12px;
+    }
+
+    50%{
+        margin-top:3px;
+    }
+
+    75%{
+        margin-top:-9px;
+    }
+
+    100%{
+        left:110vw;
+        margin-top:0;
+    }
+}
+
 /* DISTANT CITY */
 
 #distantCity{
@@ -174,155 +351,7 @@ html,body{
 .db13{left:84%;width:7%;height:53%}
 .db14{left:92%;width:8%;height:71%}
 
-/* DISTANT AIRCRAFT */
-
-.distantPlane{
-    position:absolute;
-    width:42px;
-    height:18px;
-    z-index:4;
-    opacity:.35;
-    animation:flyAcross linear infinite;
-}
-
-.distantPlane:before{
-    content:"";
-    position:absolute;
-    left:7px;
-    top:7px;
-    width:30px;
-    height:5px;
-    background:#3b5360;
-}
-
-.distantPlane:after{
-    content:"";
-    position:absolute;
-    left:17px;
-    top:2px;
-    width:17px;
-    height:12px;
-    background:#536c78;
-    clip-path:polygon(0 45%,100% 0,72% 100%);
-}
-
-.dp1{
-    top:18%;
-    left:-60px;
-    animation-duration:34s;
-}
-
-.dp2{
-    top:34%;
-    left:-80px;
-    transform:scale(.65);
-    animation-duration:47s;
-    animation-delay:12s;
-}
-
-.dp3{
-    top:10%;
-    left:-100px;
-    transform:scale(.45);
-    animation-duration:58s;
-    animation-delay:24s;
-}
-
-@keyframes flyAcross{
-    from{
-        left:-100px;
-    }
-
-    to{
-        left:110vw;
-    }
-}
-
-/* BIRDS */
-
-.bird{
-    position:absolute;
-    width:28px;
-    height:16px;
-    z-index:12;
-    animation:birdFly linear infinite;
-}
-
-.bird:before,
-.bird:after{
-    content:"";
-    position:absolute;
-    top:7px;
-    width:12px;
-    height:4px;
-    border-top:3px solid #263943;
-}
-
-.bird:before{
-    left:1px;
-    transform:rotate(25deg);
-}
-
-.bird:after{
-    right:1px;
-    transform:rotate(-25deg);
-}
-
-.bird1{
-    top:25%;
-    left:-40px;
-    animation-duration:18s;
-}
-
-.bird2{
-    top:38%;
-    left:-70px;
-    transform:scale(.7);
-    animation-duration:25s;
-    animation-delay:7s;
-}
-
-.bird3{
-    top:15%;
-    left:-90px;
-    transform:scale(.5);
-    animation-duration:31s;
-    animation-delay:14s;
-}
-
-.bird4{
-    top:48%;
-    left:-50px;
-    transform:scale(.8);
-    animation-duration:22s;
-    animation-delay:18s;
-}
-
-@keyframes birdFly{
-    0%{
-        left:-60px;
-        transform:translateY(0) scale(var(--birdScale,1));
-    }
-
-    25%{
-        transform:translateY(-12px) scale(var(--birdScale,1));
-    }
-
-    50%{
-        transform:translateY(3px) scale(var(--birdScale,1));
-    }
-
-    75%{
-        transform:translateY(-9px) scale(var(--birdScale,1));
-    }
-
-    100%{
-        left:110vw;
-        transform:translateY(0) scale(var(--birdScale,1));
-    }
-}
-
-/* MAIN CITY */
+/* CITY */
 
 #city{
     position:absolute;
@@ -333,11 +362,29 @@ html,body{
     z-index:8;
 }
 
-.tower{
+.towerAssembly{
     position:absolute;
     width:175px;
     height:125%;
     bottom:-43%;
+    transform-origin:50% 100%;
+}
+
+#towerAssembly1{
+    left:27%;
+}
+
+#towerAssembly2{
+    right:27%;
+    height:128%;
+    bottom:-46%;
+}
+
+.tower{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
     background:
         repeating-linear-gradient(
             to right,
@@ -350,7 +397,7 @@ html,body{
     box-shadow:
         14px 0 0 rgba(48,58,65,.22),
         inset 0 0 30px rgba(70,80,90,.16);
-    transform-origin:50% 100%;
+    overflow:visible;
 }
 
 .tower:before{
@@ -380,7 +427,7 @@ html,body{
     opacity:.8;
 }
 
-/* FLASHING WINDOWS */
+/* WINDOWS */
 
 .windowGrid{
     position:absolute;
@@ -412,15 +459,7 @@ html,body{
     72%{opacity:.48}
 }
 
-#tower1{
-    left:27%;
-}
-
-#tower2{
-    right:27%;
-    height:128%;
-    bottom:-46%;
-}
+/* ROOF */
 
 .roof{
     position:absolute;
@@ -462,103 +501,6 @@ html,body{
     width:15px;
     height:4px;
     background:#5b646a;
-}
-
-/* COLLAPSE */
-
-.towerCollapsing{
-    animation:towerCollapse 4s steps(24) forwards;
-}
-
-@keyframes towerCollapse{
-    0%{
-        transform:scaleY(1) translateX(0);
-    }
-
-    12%{
-        transform:scaleY(.995) translateX(-3px);
-    }
-
-    25%{
-        transform:scaleY(.96) translateX(4px);
-    }
-
-    40%{
-        transform:scaleY(.88) translateX(-5px);
-    }
-
-    55%{
-        transform:scaleY(.73) translateX(6px);
-    }
-
-    70%{
-        transform:scaleY(.54) translateX(-6px);
-    }
-
-    85%{
-        transform:scaleY(.30) translateX(4px);
-    }
-
-    100%{
-        transform:scaleY(.02) translateX(0);
-        opacity:.1;
-    }
-}
-
-.collapsePiece{
-    position:absolute;
-    z-index:75;
-    background:#bfc5c8;
-    border:3px solid #777f84;
-    box-shadow:inset 5px 0 rgba(255,255,255,.35);
-    animation:pieceFall 1.8s steps(12) forwards;
-}
-
-@keyframes pieceFall{
-    0%{
-        transform:translate(0,0) rotate(0deg);
-        opacity:1;
-    }
-
-    100%{
-        transform:
-            translate(var(--dx),var(--dy))
-            rotate(var(--rot));
-        opacity:0;
-    }
-}
-
-.collapseDust{
-    position:absolute;
-    width:45px;
-    height:30px;
-    background:#8b9295;
-    opacity:.7;
-    z-index:74;
-    box-shadow:
-        25px 5px 0 #777f82,
-        -22px 10px 0 #969c9f,
-        10px -13px 0 #a1a6a8;
-    animation:dustRise 2.7s steps(12) forwards;
-}
-
-@keyframes dustRise{
-    0%{
-        transform:translate(0,0) scale(.5);
-        opacity:.85;
-    }
-
-    45%{
-        transform:translate(var(--dx),-50px) scale(1.6);
-        opacity:.7;
-    }
-
-    100%{
-        transform:
-            translate(calc(var(--dx) * 1.7),-150px)
-            scale(3.5);
-        opacity:0;
-    }
 }
 
 /* PLANE */
@@ -619,7 +561,11 @@ html,body{
     height:17px;
     background:#d7dadd;
     border:3px solid #333b42;
-    clip-path:polygon(0 100%,100% 100%,65% 0);
+    clip-path:polygon(
+        0 100%,
+        100% 100%,
+        65% 0
+    );
 }
 
 .planeWindow,
@@ -641,7 +587,7 @@ html,body{
     position:absolute;
     width:90px;
     height:90px;
-    z-index:70;
+    z-index:90;
     background:#fff5a0;
     clip-path:polygon(
         50% 0,
@@ -678,7 +624,7 @@ html,body{
     position:absolute;
     width:32px;
     height:44px;
-    z-index:62;
+    z-index:35;
     animation:flicker .12s steps(2) infinite alternate;
 }
 
@@ -718,11 +664,6 @@ html,body{
     );
 }
 
-@keyframes flicker{
-    from{transform:scale(1)}
-    to{transform:scale(1.1,.93) translateY(-2px)}
-}
-
 .fireGlow{
     position:absolute;
     width:65px;
@@ -730,7 +671,31 @@ html,body{
     background:#ff5217;
     opacity:.24;
     filter:blur(8px);
-    z-index:60;
+    z-index:30;
+}
+
+.fire.spread1{
+    animation-delay:.15s;
+}
+
+.fire.spread2{
+    animation-delay:.3s;
+}
+
+.fire.spread3{
+    animation-delay:.45s;
+}
+
+@keyframes flicker{
+    from{
+        transform:scale(1);
+    }
+
+    to{
+        transform:
+            scale(1.1,.93)
+            translateY(-2px);
+    }
 }
 
 /* SMOKE */
@@ -741,7 +706,7 @@ html,body{
     height:31px;
     background:#111416;
     opacity:.96;
-    z-index:63;
+    z-index:40;
     box-shadow:
         25px 5px 0 #1a1d20,
         -21px 9px 0 #0c0f11,
@@ -754,44 +719,59 @@ html,body{
 
 @keyframes smokeRise{
     0%{
-        transform:translate(0,0) scale(.55);
+        transform:
+            translate(0,0)
+            scale(.55);
         opacity:1;
     }
 
     25%{
-        transform:translate(var(--drift),-40px) scale(.9);
+        transform:
+            translate(
+                calc(var(--drift) * .35),
+                -40px
+            )
+            scale(.9);
         opacity:.98;
     }
 
     55%{
         transform:
-            translate(calc(var(--drift) * -1),-105px)
+            translate(
+                calc(var(--drift) * .75),
+                -105px
+            )
             scale(1.6);
         opacity:.94;
     }
 
     100%{
         transform:
-            translate(var(--drift),-225px)
+            translate(
+                var(--drift),
+                -225px
+            )
             scale(3);
         opacity:0;
     }
 }
 
-/* PIXEL PARTICLES */
+/* DEBRIS */
 
 .debris{
     position:absolute;
     width:7px;
     height:7px;
     background:#686f73;
-    z-index:65;
+    z-index:50;
     animation:debris .9s steps(8) forwards;
 }
 
 @keyframes debris{
     from{
-        transform:translate(0,0) rotate(0);
+        transform:
+            translate(0,0)
+            rotate(0);
         opacity:1;
     }
 
@@ -803,35 +783,44 @@ html,body{
     }
 }
 
+/* SPARKS */
+
 .spark{
     position:absolute;
     width:5px;
     height:5px;
     background:#ffe247;
-    z-index:66;
+    z-index:60;
     animation:spark .7s steps(7) forwards;
 }
 
 @keyframes spark{
     to{
-        transform:translate(var(--sx),var(--sy));
+        transform:
+            translate(var(--sx),var(--sy));
         opacity:0;
     }
 }
 
-/* EXTRA PIXEL EXPLOSION PARTICLES */
+/* EXPLOSION PARTICLES */
 
 .explosionParticle{
     position:absolute;
     width:8px;
     height:8px;
-    z-index:69;
-    animation:explosionParticle .8s steps(8) forwards;
+    z-index:70;
+    animation:
+        explosionParticle
+        .8s
+        steps(8)
+        forwards;
 }
 
 @keyframes explosionParticle{
     0%{
-        transform:translate(0,0) scale(1);
+        transform:
+            translate(0,0)
+            scale(1);
         opacity:1;
     }
 
@@ -840,6 +829,80 @@ html,body{
             translate(var(--px),var(--py))
             rotate(var(--pr))
             scale(.3);
+        opacity:0;
+    }
+}
+
+/* COLLAPSE PIECES */
+
+.collapsePiece{
+    position:absolute;
+    z-index:45;
+    background:#bfc5c8;
+    border:3px solid #777f84;
+    box-shadow:
+        inset 5px 0 rgba(255,255,255,.35);
+    animation:
+        pieceFall
+        1.8s
+        steps(12)
+        forwards;
+}
+
+@keyframes pieceFall{
+    0%{
+        transform:
+            translate(0,0)
+            rotate(0deg);
+        opacity:1;
+    }
+
+    100%{
+        transform:
+            translate(var(--dx),var(--dy))
+            rotate(var(--rot));
+        opacity:0;
+    }
+}
+
+/* DUST */
+
+.collapseDust{
+    position:absolute;
+    width:45px;
+    height:30px;
+    background:#8b9295;
+    opacity:.7;
+    z-index:44;
+    box-shadow:
+        25px 5px 0 #777f82,
+        -22px 10px 0 #969c9f,
+        10px -13px 0 #a1a6a8;
+    animation:dustRise 2.7s steps(12) forwards;
+}
+
+@keyframes dustRise{
+    0%{
+        transform:
+            translate(0,0)
+            scale(.5);
+        opacity:.85;
+    }
+
+    45%{
+        transform:
+            translate(var(--dx),-50px)
+            scale(1.6);
+        opacity:.7;
+    }
+
+    100%{
+        transform:
+            translate(
+                calc(var(--dx) * 1.7),
+                -150px
+            )
+            scale(3.5);
         opacity:0;
     }
 }
@@ -893,7 +956,9 @@ html,body{
 
 #resetButton:hover{
     background:#354650;
-    transform:translate(-50%,-50%) scale(1.05);
+    transform:
+        translate(-50%,-50%)
+        scale(1.05);
 }
 
 #instructions{
@@ -927,17 +992,17 @@ html,body{
         font-size:11px;
     }
 
-    .tower{
+    .towerAssembly{
         width:115px;
         height:125%;
         bottom:-43%;
     }
 
-    #tower1{
+    #towerAssembly1{
         left:16%;
     }
 
-    #tower2{
+    #towerAssembly2{
         right:16%;
         height:128%;
         bottom:-46%;
@@ -1030,31 +1095,57 @@ html,body{
 <div id="city">
 
 ```
-<div id="tower1" class="tower">
-    <div class="windowGrid"></div>
-    <div class="roof"></div>
-    <div class="antenna"></div>
+<div
+    id="towerAssembly1"
+    class="towerAssembly"
+>
+
+    <div
+        id="tower1"
+        class="tower"
+    >
+        <div class="windowGrid"></div>
+        <div class="roof"></div>
+        <div class="antenna"></div>
+    </div>
+
 </div>
 
-<div id="tower2" class="tower">
-    <div class="windowGrid"></div>
-    <div class="roof"></div>
-    <div class="antenna"></div>
+<div
+    id="towerAssembly2"
+    class="towerAssembly"
+>
+
+    <div
+        id="tower2"
+        class="tower"
+    >
+        <div class="windowGrid"></div>
+        <div class="roof"></div>
+        <div class="antenna"></div>
+    </div>
+
 </div>
 ```
 
 </div>
 
 <div id="plane">
-    <div class="planeTail"></div>
-    <div class="planeWing"></div>
-    <div class="planeBody"></div>
-    <div class="planeWing2"></div>
-    <div class="planeWindow"></div>
-    <div class="planeWindow2"></div>
+
+```
+<div class="planeTail"></div>
+<div class="planeWing"></div>
+<div class="planeBody"></div>
+<div class="planeWing2"></div>
+<div class="planeWindow"></div>
+<div class="planeWindow2"></div>
+```
+
 </div>
 
-<div id="status">STATUS: FLYING</div>
+<div id="status">
+    STATUS: FLYING
+</div>
 
 <div id="title">
     PIXEL SKY CRASH
@@ -1079,24 +1170,52 @@ html,body{
 
 <script>
 
-const game=document.getElementById("game");
-const plane=document.getElementById("plane");
-const statusText=document.getElementById("status");
-const resetButton=document.getElementById("resetButton");
+const game=
+    document.getElementById("game");
 
-const tower1=document.getElementById("tower1");
-const tower2=document.getElementById("tower2");
+const plane=
+    document.getElementById("plane");
 
-const backgroundMusic=document.getElementById("backgroundMusic");
+const statusText=
+    document.getElementById("status");
+
+const resetButton=
+    document.getElementById("resetButton");
+
+const tower1=
+    document.getElementById("tower1");
+
+const tower2=
+    document.getElementById("tower2");
+
+const towerAssembly1=
+    document.getElementById(
+        "towerAssembly1"
+    );
+
+const towerAssembly2=
+    document.getElementById(
+        "towerAssembly2"
+    );
+
+const backgroundMusic=
+    document.getElementById(
+        "backgroundMusic"
+    );
 
 let x=0;
 let y=0;
+
 let vx=0;
 let vy=0;
 
 let crashed=false;
+
 let smokeInterval=null;
+
 let musicStarted=false;
+
+let crashAssembly=null;
 
 function startMusic(){
 
@@ -1117,35 +1236,72 @@ function startMusic(){
 
 function setStartPosition(){
 
-    const w=window.innerWidth;
-    const h=window.innerHeight;
+    const w=
+        window.innerWidth;
+
+    const h=
+        window.innerHeight;
 
     x=w*.035;
+
     y=h*.35;
 
     vx=2.5;
+
     vy=0;
 
-    plane.style.left=x+"px";
-    plane.style.top=y+"px";
-    plane.style.transform="rotate(0deg)";
+    plane.style.left=
+        x+"px";
+
+    plane.style.top=
+        y+"px";
+
+    plane.style.transform=
+        "rotate(0deg)";
+
+    plane.style.position=
+        "absolute";
+
+    plane.style.zIndex=
+        "80";
+
+    plane.style.display=
+        "block";
+
+    if(
+        plane.parentElement !== game
+    ){
+
+        game.appendChild(plane);
+
+    }
 }
 
 const keys={};
 
-window.addEventListener("keydown",e=>{
+window.addEventListener(
+    "keydown",
+    e=>{
 
-    keys[e.key.toLowerCase()]=true;
+        keys[
+            e.key.toLowerCase()
+        ]=true;
 
-    startMusic();
+        startMusic();
 
-});
+    }
+);
 
-window.addEventListener("keyup",e=>{
+window.addEventListener(
+    "keyup",
+    e=>{
 
-    keys[e.key.toLowerCase()]=false;
+        keys[
+            e.key.toLowerCase()
+        ]=false;
 
-});
+    }
+);
 
 function holdButton(el,key){
 
@@ -1167,10 +1323,25 @@ function holdButton(el,key){
 
     };
 
-    el.addEventListener("pointerdown",down);
-    el.addEventListener("pointerup",up);
-    el.addEventListener("pointerleave",up);
-    el.addEventListener("pointercancel",up);
+    el.addEventListener(
+        "pointerdown",
+        down
+    );
+
+    el.addEventListener(
+        "pointerup",
+        up
+    );
+
+    el.addEventListener(
+        "pointerleave",
+        up
+    );
+
+    el.addEventListener(
+        "pointercancel",
+        up
+    );
 }
 
 holdButton(
@@ -1197,42 +1368,67 @@ function updatePlane(){
 
     if(crashed)return;
 
-    if(Math.abs(vx)>0.1 || Math.abs(vy)>0.1){
+    if(
+        Math.abs(vx)>.1 ||
+        Math.abs(vy)>.1
+    ){
 
         startMusic();
 
     }
 
-    if(keys["arrowright"]||keys["d"])
+    if(
+        keys["arrowright"] ||
+        keys["d"]
+    )
         vx+=.42;
 
-    if(keys["arrowleft"]||keys["a"])
+    if(
+        keys["arrowleft"] ||
+        keys["a"]
+    )
         vx-=.42;
 
-    if(keys["arrowup"]||keys["w"])
+    if(
+        keys["arrowup"] ||
+        keys["w"]
+    )
         vy-=.42;
 
-    if(keys["arrowdown"]||keys["s"])
+    if(
+        keys["arrowdown"] ||
+        keys["s"]
+    )
         vy+=.42;
 
     vx*=.93;
     vy*=.93;
 
-    vx=Math.max(-7,Math.min(7,vx));
-    vy=Math.max(-7,Math.min(7,vy));
+    vx=Math.max(
+        -7,
+        Math.min(7,vx)
+    );
+
+    vy=Math.max(
+        -7,
+        Math.min(7,vy)
+    );
 
     x+=vx;
     y+=vy;
 
     const maxX=
-        window.innerWidth-plane.offsetWidth;
+        window.innerWidth-
+        plane.offsetWidth;
 
     const maxY=
-        window.innerHeight-plane.offsetHeight;
+        window.innerHeight-
+        plane.offsetHeight;
 
     if(x<0){
 
         x=0;
+
         vx*=-.5;
 
     }
@@ -1240,6 +1436,7 @@ function updatePlane(){
     if(x>maxX){
 
         x=maxX;
+
         vx*=-.5;
 
     }
@@ -1247,6 +1444,7 @@ function updatePlane(){
     if(y<0){
 
         y=0;
+
         vy*=-.5;
 
     }
@@ -1254,12 +1452,16 @@ function updatePlane(){
     if(y>maxY){
 
         y=maxY;
+
         vy*=-.5;
 
     }
 
-    plane.style.left=x+"px";
-    plane.style.top=y+"px";
+    plane.style.left=
+        x+"px";
+
+    plane.style.top=
+        y+"px";
 
     const angle=Math.max(
         -20,
@@ -1277,10 +1479,15 @@ function checkCollision(){
     const p=
         plane.getBoundingClientRect();
 
-    for(const tower of [tower1,tower2]){
+    for(
+        const tower of
+        [tower1,tower2]
+    ){
 
         if(
-            tower.classList.contains(
+            tower.closest(
+                ".towerAssembly"
+            ).classList.contains(
                 "towerCollapsing"
             )
         )
@@ -1296,12 +1503,30 @@ function checkCollision(){
             p.top<t.bottom
         ){
 
-            crash(tower,p);
+            crash(
+                tower,
+                p
+            );
 
             return;
-
         }
     }
+}
+
+function shake(strong=false){
+
+    game.classList.remove(
+        "shake",
+        "bigShake"
+    );
+
+    void game.offsetWidth;
+
+    game.classList.add(
+        strong
+        ? "bigShake"
+        : "shake"
+    );
 }
 
 function crash(tower,p){
@@ -1315,6 +1540,16 @@ function crash(tower,p){
 
     statusText.textContent=
         "STATUS: IMPACT";
+
+    shake(false);
+
+    const assembly=
+        tower.closest(
+            ".towerAssembly"
+        );
+
+    crashAssembly=
+        assembly;
 
     const t=
         tower.getBoundingClientRect();
@@ -1335,283 +1570,131 @@ function crash(tower,p){
         )
     );
 
-    plane.style.display="block";
+    /*
+       Move the plane INTO the tower.
+
+       Because the plane is now a child of
+       the tower assembly, it will fall with
+       the building during the collapse.
+    */
+
+    const localX=
+        impactX-
+        t.left-
+        p.width/2;
+
+    const localY=
+        impactY-
+        t.top-
+        p.height/2;
+
+    assembly.appendChild(
+        plane
+    );
+
+    plane.style.position=
+        "absolute";
 
     plane.style.left=
-        (impactX-p.width/2)+"px";
+        localX+"px";
 
     plane.style.top=
-        (impactY-p.height/2)+"px";
+        localY+"px";
+
+    plane.style.zIndex=
+        "12";
 
     plane.style.transform=
         "rotate(0deg)";
 
+    /*
+       Put the plane slightly behind the
+       building surface so it looks embedded.
+    */
+
+    plane.style.filter=
+        "drop-shadow(3px 4px 0 rgba(0,0,0,.25))";
+
     createImpact(
-        impactX,
-        impactY
+        assembly,
+        localX+p.width/2,
+        localY+p.height/2
     );
 
     createFire(
-        impactX,
-        impactY
+        assembly,
+        localX+p.width/2,
+        localY+p.height/2
     );
 
     createSmokeCloud(
-        impactX,
-        impactY
+        assembly,
+        localX+p.width/2,
+        localY+p.height/2
     );
 
     createDebris(
-        impactX,
-        impactY
+        assembly,
+        localX+p.width/2,
+        localY+p.height/2
     );
 
     createExplosionParticles(
-        impactX,
-        impactY
+        assembly,
+        localX+p.width/2,
+        localY+p.height/2
     );
 
-    smokeInterval=setInterval(()=>{
+    spreadFire(
+        assembly,
+        localX+p.width/2,
+        localY+p.height/2
+    );
 
-        if(!crashed){
+    smokeInterval=
+        setInterval(()=>{
 
-            clearInterval(
-                smokeInterval
+            if(!crashed){
+
+                clearInterval(
+                    smokeInterval
+                );
+
+                smokeInterval=null;
+
+                return;
+            }
+
+            createSmoke(
+                assembly,
+                localX+p.width/2+
+                (Math.random()*55-27),
+
+                localY+p.height/2+
+                (Math.random()*35-15)
             );
 
-            smokeInterval=null;
-
-            return;
-
-        }
-
-        createSmoke(
-            impactX+
-            (Math.random()*55-27),
-
-            impactY+
-            (Math.random()*35-15)
-        );
-
-    },240);
+        },240);
 
     setTimeout(()=>{
 
         statusText.textContent=
             "STATUS: STRUCTURAL FAILURE";
 
+        shake(true);
+
         collapseTower(
-            tower,
-            impactX,
-            impactY
+            assembly
         );
 
     },8500);
 }
 
-function collapseTower(
-    tower,
-    impactX,
-    impactY
+function createImpact(
+    parent,
+    x,
+    y
 ){
-
-    if(
-        tower.classList.contains(
-            "towerCollapsing"
-        )
-    )
-        return;
-
-    tower.classList.add(
-        "towerCollapsing"
-    );
-
-    const rect=
-        tower.getBoundingClientRect();
-
-    const planeStartY=
-        impactY-plane.offsetHeight/2;
-
-    const planeEndY=
-        rect.bottom-
-        plane.offsetHeight/2-
-        8;
-
-    const planeX=
-        impactX-
-        plane.offsetWidth/2;
-
-    const startTime=
-        performance.now();
-
-    const duration=4000;
-
-    function movePlaneWithTower(now){
-
-        if(!crashed)return;
-
-        const progress=Math.min(
-            1,
-            (now-startTime)/duration
-        );
-
-        const eased=
-            progress*
-            progress*
-            (3-2*progress);
-
-        const newY=
-            planeStartY+
-            (planeEndY-planeStartY)*
-            eased;
-
-        const shake=
-            progress<.8
-            ? Math.sin(now/45)*3
-            : 0;
-
-        plane.style.left=
-            planeX+"px";
-
-        plane.style.top=
-            (newY+shake)+"px";
-
-        if(progress<1){
-
-            requestAnimationFrame(
-                movePlaneWithTower
-            );
-
-        }else{
-
-            plane.style.top=
-                planeEndY+"px";
-
-        }
-    }
-
-    requestAnimationFrame(
-        movePlaneWithTower
-    );
-
-    for(let i=0;i<38;i++){
-
-        const piece=
-            document.createElement("div");
-
-        piece.className=
-            "collapsePiece";
-
-        const width=
-            8+Math.random()*22;
-
-        const height=
-            7+Math.random()*20;
-
-        piece.style.width=
-            width+"px";
-
-        piece.style.height=
-            height+"px";
-
-        piece.style.left=
-            rect.left+
-            Math.random()*rect.width+
-            "px";
-
-        piece.style.top=
-            rect.top+
-            Math.random()*
-            rect.height*.8+
-            "px";
-
-        piece.style.setProperty(
-            "--dx",
-            ((Math.random()-.5)*280)+"px"
-        );
-
-        piece.style.setProperty(
-            "--dy",
-            (70+Math.random()*240)+"px"
-        );
-
-        piece.style.setProperty(
-            "--rot",
-            ((Math.random()-.5)*720)+"deg"
-        );
-
-        game.appendChild(piece);
-
-        setTimeout(()=>{
-
-            piece.remove();
-
-        },1900);
-    }
-
-    for(let i=0;i<22;i++){
-
-        setTimeout(()=>{
-
-            const dust=
-                document.createElement("div");
-
-            dust.className=
-                "collapseDust";
-
-            dust.style.left=
-                rect.left+
-                Math.random()*rect.width+
-                "px";
-
-            dust.style.top=
-                rect.bottom-20+
-                "px";
-
-            dust.style.setProperty(
-                "--dx",
-                ((Math.random()-.5)*170)+"px"
-            );
-
-            game.appendChild(dust);
-
-            setTimeout(()=>{
-
-                dust.remove();
-
-            },2800);
-
-        },i*130);
-    }
-
-    createCollapseSmoke(rect);
-
-    setTimeout(()=>{
-
-        statusText.textContent=
-            "STATUS: COLLAPSED";
-
-        clearInterval(
-            smokeInterval
-        );
-
-        smokeInterval=null;
-
-        removeAllEffects();
-
-        tower.style.visibility=
-            "hidden";
-
-        plane.style.display=
-            "none";
-
-        resetButton.style.display=
-            "block";
-
-    },4300);
-}
-
-function createImpact(x,y){
 
     const flash=
         document.createElement("div");
@@ -1625,7 +1708,9 @@ function createImpact(x,y){
     flash.style.top=
         (y-45)+"px";
 
-    game.appendChild(flash);
+    parent.appendChild(
+        flash
+    );
 
     setTimeout(()=>{
 
@@ -1657,7 +1742,9 @@ function createImpact(x,y){
             ((Math.random()-.5)*150)+"px"
         );
 
-        game.appendChild(spark);
+        parent.appendChild(
+            spark
+        );
 
         setTimeout(()=>{
 
@@ -1667,9 +1754,13 @@ function createImpact(x,y){
     }
 }
 
-function createExplosionParticles(x,y){
+function createExplosionParticles(
+    parent,
+    x,
+    y
+){
 
-    const particleClasses=[
+    const particles=[
         "#fff36b",
         "#ffb21c",
         "#ef3514",
@@ -1679,7 +1770,9 @@ function createExplosionParticles(x,y){
     for(let i=0;i<45;i++){
 
         const particle=
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         particle.className=
             "explosionParticle";
@@ -1691,10 +1784,10 @@ function createExplosionParticles(x,y){
             y+"px";
 
         particle.style.background=
-            particleClasses[
+            particles[
                 Math.floor(
                     Math.random()*
-                    particleClasses.length
+                    particles.length
                 )
             ];
 
@@ -1713,7 +1806,9 @@ function createExplosionParticles(x,y){
             ((Math.random()-.5)*720)+"deg"
         );
 
-        game.appendChild(particle);
+        parent.appendChild(
+            particle
+        );
 
         setTimeout(()=>{
 
@@ -1723,7 +1818,11 @@ function createExplosionParticles(x,y){
     }
 }
 
-function createFire(x,y){
+function createFire(
+    parent,
+    x,
+    y
+){
 
     const offsets=[
         [-24,-4,1],
@@ -1737,7 +1836,9 @@ function createFire(x,y){
     for(const o of offsets){
 
         const fire=
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         fire.className=
             "fire";
@@ -1751,10 +1852,14 @@ function createFire(x,y){
         fire.style.transform=
             "scale("+o[2]+")";
 
-        game.appendChild(fire);
+        parent.appendChild(
+            fire
+        );
 
         const glow=
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         glow.className=
             "fireGlow";
@@ -1765,14 +1870,101 @@ function createFire(x,y){
         glow.style.top=
             (y+o[1]-24)+"px";
 
-        game.appendChild(glow);
+        parent.appendChild(
+            glow
+        );
     }
 }
 
-function createSmoke(x,y){
+/*
+   Fire gradually appears at different
+   heights of the building.
+*/
+
+function spreadFire(
+    parent,
+    x,
+    y
+){
+
+    const spots=[
+        [-45,-130],
+        [40,-95],
+        [-35,-55],
+        [48,-20],
+        [-50,25],
+        [30,65],
+        [-20,105]
+    ];
+
+    spots.forEach(
+        (spot,index)=>{
+
+            setTimeout(()=>{
+
+                if(!crashed)return;
+
+                const fire=
+                    document.createElement(
+                        "div"
+                    );
+
+                fire.className=
+                    "fire spread"+(
+                        (index%3)+1
+                    );
+
+                fire.style.left=
+                    (x+spot[0])+"px";
+
+                fire.style.top=
+                    (y+spot[1])+"px";
+
+                const scale=
+                    .65+
+                    Math.random()*.6;
+
+                fire.style.transform=
+                    "scale("+scale+")";
+
+                parent.appendChild(
+                    fire
+                );
+
+                const glow=
+                    document.createElement(
+                        "div"
+                    );
+
+                glow.className=
+                    "fireGlow";
+
+                glow.style.left=
+                    (x+spot[0]-15)+"px";
+
+                glow.style.top=
+                    (y+spot[1]+8)+"px";
+
+                parent.appendChild(
+                    glow
+                );
+
+            },900+index*650);
+
+        }
+    );
+}
+
+function createSmoke(
+    parent,
+    x,
+    y
+){
 
     const smoke=
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     smoke.className=
         "smoke";
@@ -1783,12 +1975,19 @@ function createSmoke(x,y){
     smoke.style.top=
         (y-18)+"px";
 
+    /*
+       Every smoke cloud gets a different
+       wind direction.
+    */
+
     smoke.style.setProperty(
         "--drift",
-        ((Math.random()-.5)*85)+"px"
+        ((Math.random()-.5)*130)+"px"
     );
 
-    game.appendChild(smoke);
+    parent.appendChild(
+        smoke
+    );
 
     setTimeout(()=>{
 
@@ -1797,51 +1996,46 @@ function createSmoke(x,y){
     },4100);
 }
 
-function createSmokeCloud(x,y){
+function createSmokeCloud(
+    parent,
+    x,
+    y
+){
 
     for(let i=0;i<9;i++){
 
         createSmoke(
-            x+(Math.random()*55-27),
-            y+(Math.random()*35-12)
+            parent,
+            x+
+            (Math.random()*55-27),
+
+            y+
+            (Math.random()*35-12)
         );
     }
 }
 
-function createCollapseSmoke(rect){
-
-    for(let i=0;i<18;i++){
-
-        setTimeout(()=>{
-
-            if(!crashed)return;
-
-            createSmoke(
-                rect.left+
-                rect.width/2+
-                (Math.random()-.5)*
-                rect.width,
-
-                rect.bottom-
-                Math.random()*140
-            );
-
-        },i*160);
-    }
-}
-
-function createDebris(x,y){
+function createDebris(
+    parent,
+    x,
+    y
+){
 
     for(let i=0;i<20;i++){
 
         const d=
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         d.className=
             "debris";
 
-        d.style.left=x+"px";
-        d.style.top=y+"px";
+        d.style.left=
+            x+"px";
+
+        d.style.top=
+            y+"px";
 
         d.style.setProperty(
             "--dx",
@@ -1853,7 +2047,9 @@ function createDebris(x,y){
             ((Math.random()-.8)*150)+"px"
         );
 
-        game.appendChild(d);
+        parent.appendChild(
+            d
+        );
 
         setTimeout(()=>{
 
@@ -1861,6 +2057,181 @@ function createDebris(x,y){
 
         },950);
     }
+}
+
+function createCollapseSmoke(
+    parent
+){
+
+    const width=
+        parent.offsetWidth;
+
+    const height=
+        parent.offsetHeight;
+
+    for(let i=0;i<25;i++){
+
+        setTimeout(()=>{
+
+            if(!crashed)return;
+
+            createSmoke(
+                parent,
+
+                width/2+
+                (Math.random()-.5)*
+                width,
+
+                height-
+                Math.random()*300
+            );
+
+        },i*140);
+    }
+}
+
+function collapseTower(
+    assembly
+){
+
+    if(
+        assembly.classList.contains(
+            "towerCollapsing"
+        )
+    )
+        return;
+
+    assembly.classList.add(
+        "towerCollapsing"
+    );
+
+    const rect=
+        assembly.getBoundingClientRect();
+
+    createCollapseSmoke(
+        assembly
+    );
+
+    /*
+       Falling building pieces stay
+       attached to the assembly.
+    */
+
+    for(let i=0;i<38;i++){
+
+        const piece=
+            document.createElement(
+                "div"
+            );
+
+        piece.className=
+            "collapsePiece";
+
+        piece.style.width=
+            (8+Math.random()*22)+"px";
+
+        piece.style.height=
+            (7+Math.random()*20)+"px";
+
+        piece.style.left=
+            Math.random()*
+            assembly.offsetWidth+
+            "px";
+
+        piece.style.top=
+            Math.random()*
+            assembly.offsetHeight*.8+
+            "px";
+
+        piece.style.setProperty(
+            "--dx",
+            ((Math.random()-.5)*280)+"px"
+        );
+
+        piece.style.setProperty(
+            "--dy",
+            (70+Math.random()*240)+"px"
+        );
+
+        piece.style.setProperty(
+            "--rot",
+            ((Math.random()-.5)*720)+"deg"
+        );
+
+        assembly.appendChild(
+            piece
+        );
+
+        setTimeout(()=>{
+
+            piece.remove();
+
+        },1900);
+    }
+
+    for(let i=0;i<22;i++){
+
+        setTimeout(()=>{
+
+            const dust=
+                document.createElement(
+                    "div"
+                );
+
+            dust.className=
+                "collapseDust";
+
+            dust.style.left=
+                Math.random()*
+                assembly.offsetWidth+
+                "px";
+
+            dust.style.top=
+                assembly.offsetHeight-
+                20+
+                "px";
+
+            dust.style.setProperty(
+                "--dx",
+                ((Math.random()-.5)*170)+"px"
+            );
+
+            assembly.appendChild(
+                dust
+            );
+
+            setTimeout(()=>{
+
+                dust.remove();
+
+            },2800);
+
+        },i*130);
+    }
+
+    setTimeout(()=>{
+
+        statusText.textContent=
+            "STATUS: COLLAPSED";
+
+        clearInterval(
+            smokeInterval
+        );
+
+        smokeInterval=null;
+
+        removeAllEffects();
+
+        assembly.style.visibility=
+            "hidden";
+
+        plane.style.display=
+            "none";
+
+        resetButton.style.display=
+            "block";
+
+    },4300);
 }
 
 function removeAllEffects(){
@@ -1888,6 +2259,8 @@ resetButton.addEventListener(
 
         crashed=false;
 
+        crashAssembly=null;
+
         clearInterval(
             smokeInterval
         );
@@ -1896,22 +2269,46 @@ resetButton.addEventListener(
 
         removeAllEffects();
 
-        tower1.classList.remove(
+        towerAssembly1.classList.remove(
             "towerCollapsing"
         );
 
-        tower2.classList.remove(
+        towerAssembly2.classList.remove(
             "towerCollapsing"
         );
 
-        tower1.style.visibility=
+        towerAssembly1.style.visibility=
             "visible";
 
-        tower2.style.visibility=
+        towerAssembly2.style.visibility=
             "visible";
+
+        game.classList.remove(
+            "shake",
+            "bigShake"
+        );
+
+        if(
+            plane.parentElement !== game
+        ){
+
+            game.appendChild(
+                plane
+            );
+
+        }
 
         plane.style.display=
             "block";
+
+        plane.style.position=
+            "absolute";
+
+        plane.style.zIndex=
+            "80";
+
+        plane.style.filter=
+            "drop-shadow(5px 6px 0 rgba(0,0,0,.22))";
 
         statusText.textContent=
             "STATUS: FLYING";
@@ -1921,7 +2318,8 @@ resetButton.addEventListener(
 
         setStartPosition();
 
-        backgroundMusic.currentTime=0;
+        backgroundMusic.currentTime=
+            0;
 
         musicStarted=false;
 
@@ -1948,8 +2346,9 @@ function loop(){
 
     updatePlane();
 
-    requestAnimationFrame(loop);
-
+    requestAnimationFrame(
+        loop
+    );
 }
 
 loop();
