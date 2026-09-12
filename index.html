@@ -235,7 +235,9 @@ html,body{
     z-index:20;
 }
 
-#towerAssembly1{left:27%}
+#towerAssembly1{
+    left:27%;
+}
 
 #towerAssembly2{
     right:27%;
@@ -372,6 +374,7 @@ html,body{
     z-index:50;
     transform-origin:50% 50%;
     pointer-events:none;
+    will-change:left,top,transform;
 }
 
 .planeBody{
@@ -472,8 +475,15 @@ html,body{
 }
 
 @keyframes engineSmoke{
-    0%{transform:translate(0,0) scale(.5);opacity:.8}
-    100%{transform:translate(-45px,10px) scale(2.8);opacity:0}
+    0%{
+        transform:translate(0,0) scale(.5);
+        opacity:.8;
+    }
+
+    100%{
+        transform:translate(-45px,10px) scale(2.8);
+        opacity:0;
+    }
 }
 
 /* IMPACT */
@@ -493,6 +503,7 @@ html,body{
         );
     filter:contrast(1.3);
     transform:rotate(-8deg);
+    pointer-events:none;
 }
 
 .impactFlash{
@@ -511,8 +522,15 @@ html,body{
 }
 
 @keyframes flash{
-    0%{transform:scale(.2);opacity:1}
-    100%{transform:scale(2.2);opacity:0}
+    0%{
+        transform:scale(.2);
+        opacity:1;
+    }
+
+    100%{
+        transform:scale(2.2);
+        opacity:0;
+    }
 }
 
 .fire{
@@ -521,9 +539,16 @@ html,body{
     height:38px;
     background:#ff6a16;
     border:3px solid #a82d12;
-    clip-path:polygon(50% 0,100% 45%,72% 100%,25% 85%,0 45%);
+    clip-path:polygon(
+        50% 0,
+        100% 45%,
+        72% 100%,
+        25% 85%,
+        0 45%
+    );
     z-index:45;
     animation:fireFlicker .25s infinite alternate;
+    pointer-events:none;
 }
 
 .fire:after{
@@ -534,12 +559,23 @@ html,body{
     width:9px;
     height:20px;
     background:#ffd34e;
-    clip-path:polygon(50% 0,100% 55%,70% 100%,25% 82%,0 45%);
+    clip-path:polygon(
+        50% 0,
+        100% 55%,
+        70% 100%,
+        25% 82%,
+        0 45%
+    );
 }
 
 @keyframes fireFlicker{
-    from{transform:scale(.9) rotate(-2deg)}
-    to{transform:scale(1.12) rotate(3deg)}
+    from{
+        transform:scale(.9) rotate(-2deg);
+    }
+
+    to{
+        transform:scale(1.12) rotate(3deg);
+    }
 }
 
 .smoke{
@@ -551,6 +587,7 @@ html,body{
     opacity:.8;
     z-index:40;
     animation:smokeRise 4s linear forwards;
+    pointer-events:none;
 }
 
 .lightSmoke{
@@ -562,16 +599,31 @@ html,body{
     opacity:.55;
     z-index:39;
     animation:lightSmokeRise 6s linear forwards;
+    pointer-events:none;
 }
 
 @keyframes smokeRise{
-    0%{transform:translate(0,0) scale(.5);opacity:.85}
-    100%{transform:translate(var(--sx),-240px) scale(3);opacity:0}
+    0%{
+        transform:translate(0,0) scale(.5);
+        opacity:.85;
+    }
+
+    100%{
+        transform:translate(var(--sx),-240px) scale(3);
+        opacity:0;
+    }
 }
 
 @keyframes lightSmokeRise{
-    0%{transform:translate(0,0) scale(.4);opacity:.5}
-    100%{transform:translate(var(--sx),-380px) scale(4);opacity:0}
+    0%{
+        transform:translate(0,0) scale(.4);
+        opacity:.5;
+    }
+
+    100%{
+        transform:translate(var(--sx),-380px) scale(4);
+        opacity:0;
+    }
 }
 
 .glass{
@@ -582,6 +634,7 @@ html,body{
     border:1px solid #6f99a2;
     z-index:70;
     animation:glassFly 1.1s ease-out forwards;
+    pointer-events:none;
 }
 
 @keyframes glassFly{
@@ -589,8 +642,11 @@ html,body{
         transform:translate(0,0) rotate(0);
         opacity:1;
     }
+
     100%{
-        transform:translate(var(--gx),var(--gy)) rotate(var(--gr));
+        transform:
+            translate(var(--gx),var(--gy))
+            rotate(var(--gr));
         opacity:0;
     }
 }
@@ -608,14 +664,18 @@ html,body{
     border:3px solid #7b858a;
     box-shadow:inset 0 0 8px rgba(0,0,0,.25);
     animation:chunkFall var(--ct) cubic-bezier(.2,.7,.2,1) forwards;
+    pointer-events:none;
 }
 
 @keyframes chunkFall{
     0%{
         transform:translate(0,0) rotate(0);
     }
+
     100%{
-        transform:translate(var(--cx),var(--cy)) rotate(var(--cr));
+        transform:
+            translate(var(--cx),var(--cy))
+            rotate(var(--cr));
     }
 }
 
@@ -626,6 +686,7 @@ html,body{
     background:#ffe77d;
     z-index:85;
     animation:windowFall var(--wt) ease-in forwards;
+    pointer-events:none;
 }
 
 @keyframes windowFall{
@@ -633,8 +694,11 @@ html,body{
         transform:translate(0,0) rotate(0);
         opacity:.8;
     }
+
     100%{
-        transform:translate(var(--wx),var(--wy)) rotate(var(--wr));
+        transform:
+            translate(var(--wx),var(--wy))
+            rotate(var(--wr));
         opacity:0;
     }
 }
@@ -648,12 +712,22 @@ html,body{
     opacity:.55;
     z-index:200;
     animation:dustCloud 2.3s ease-out forwards;
+    pointer-events:none;
 }
 
 @keyframes dustCloud{
-    0%{transform:scale(.2);opacity:.7}
-    100%{transform:scale(5) translateY(-25px);opacity:0}
+    0%{
+        transform:scale(.2);
+        opacity:.7;
+    }
+
+    100%{
+        transform:scale(5) translateY(-25px);
+        opacity:0;
+    }
 }
+
+/* COLLAPSING SECTIONS */
 
 .collapsePieces{
     position:absolute;
@@ -677,12 +751,13 @@ html,body{
     box-shadow:
         14px 0 0 rgba(48,58,65,.22),
         inset 0 0 30px rgba(70,80,90,.16);
+    will-change:transform;
 }
 
 .collapseSection:before{
     content:"";
     position:absolute;
-    inset:0;
+    inset:18px 12px;
     background:
         repeating-linear-gradient(
             to bottom,
@@ -697,7 +772,7 @@ html,body{
 .collapseSection:after{
     content:"";
     position:absolute;
-    inset:0;
+    inset:25px 19px;
     background:
         repeating-linear-gradient(
             to right,
@@ -716,19 +791,26 @@ html,body{
 }
 
 .collapseSection{
-    animation:sectionCollapse var(--st) cubic-bezier(.18,.7,.22,1) forwards;
+    animation:
+        sectionCollapse
+        var(--st)
+        cubic-bezier(.18,.7,.22,1)
+        forwards;
 }
 
 @keyframes sectionCollapse{
     0%{
         transform:translate(0,0) rotate(0);
     }
+
     100%{
         transform:
             translate(var(--sx),var(--sy))
             rotate(var(--sr));
     }
 }
+
+/* MESSAGE */
 
 #message{
     position:absolute;
@@ -743,6 +825,8 @@ html,body{
     text-shadow:3px 3px #27343b;
     pointer-events:none;
 }
+
+/* MOBILE */
 
 #mobileControls{
     position:absolute;
@@ -765,10 +849,25 @@ html,body{
     touch-action:none;
 }
 
-#leftBtn{left:18px;bottom:25px}
-#rightBtn{left:88px;bottom:25px}
-#upBtn{right:88px;bottom:25px}
-#downBtn{right:18px;bottom:25px}
+#leftBtn{
+    left:18px;
+    bottom:25px;
+}
+
+#rightBtn{
+    left:88px;
+    bottom:25px;
+}
+
+#upBtn{
+    right:88px;
+    bottom:25px;
+}
+
+#downBtn{
+    right:18px;
+    bottom:25px;
+}
 
 @media(min-width:800px){
     #mobileControls{
@@ -777,13 +876,16 @@ html,body{
 }
 
 @media(max-width:600px){
+
     .towerAssembly{
         width:115px;
         height:125%;
         bottom:-43%;
     }
 
-    #towerAssembly1{left:16%}
+    #towerAssembly1{
+        left:16%;
+    }
 
     #towerAssembly2{
         right:16%;
@@ -801,7 +903,6 @@ html,body{
 
     #plane{
         transform-origin:50% 50%;
-        scale:.75;
     }
 
     #planeOptions{
@@ -848,64 +949,80 @@ html,body{
 
     <div id="gameUI">
         <div id="title">PIXEL SKY CRASH</div>
-        <div id="status">FLY TOWARD THE BUILDINGS</div>
+        <div id="status">W / ▲ TO ACCELERATE</div>
     </div>
 
     <button id="planeButton">✈ PLANES</button>
 
     <div id="planeMenu">
+
         <h2>SELECT AIRCRAFT</h2>
 
         <div id="planeOptions">
 
             <button class="planeOption" data-plane="small">
                 <div class="planeName">Small Jet</div>
-                <div class="planeStats">Fast acceleration • Easy turning</div>
+                <div class="planeStats">
+                    Fast acceleration • Easy turning
+                </div>
             </button>
 
             <button class="planeOption" data-plane="airliner">
                 <div class="planeName">Airliner</div>
-                <div class="planeStats">Balanced • Stable</div>
+                <div class="planeStats">
+                    Balanced • Stable
+                </div>
             </button>
 
             <button class="planeOption" data-plane="large">
                 <div class="planeName">Large Airliner</div>
-                <div class="planeStats">Heavy • Powerful • Slow turning</div>
+                <div class="planeStats">
+                    Heavy • Powerful • Slow turning
+                </div>
             </button>
 
             <button class="planeOption" data-plane="cargo">
                 <div class="planeName">Cargo Plane</div>
-                <div class="planeStats">Very heavy • Strong braking</div>
+                <div class="planeStats">
+                    Very heavy • Strong braking
+                </div>
             </button>
 
             <button class="planeOption" data-plane="fighter">
                 <div class="planeName">Fighter Jet</div>
-                <div class="planeStats">Extremely fast • Sharp turning</div>
+                <div class="planeStats">
+                    Extremely fast • Sharp turning
+                </div>
             </button>
 
         </div>
 
         <button id="closeMenu">CLOSE</button>
+
     </div>
 
     <div id="message"></div>
 
-    <!-- ORIGINAL TOWER STRUCTURE -->
+    <!-- ORIGINAL TOWERS -->
 
     <div id="towerAssembly1" class="towerAssembly">
+
         <div id="tower1" class="tower">
             <div class="windowGrid"></div>
             <div class="roof"></div>
             <div class="antenna"></div>
         </div>
+
     </div>
 
     <div id="towerAssembly2" class="towerAssembly">
+
         <div id="tower2" class="tower">
             <div class="windowGrid"></div>
             <div class="roof"></div>
             <div class="antenna"></div>
         </div>
+
     </div>
 
     <!-- PLANE -->
@@ -913,694 +1030,1403 @@ html,body{
     <div id="plane">
 
         <div class="planeTail"></div>
+
         <div class="tailFin"></div>
 
         <div class="planeBody"></div>
+
         <div class="planeNose"></div>
 
         <div class="planeWing"></div>
+
         <div class="planeWing2"></div>
 
         <div class="engine engine1"></div>
+
         <div class="engine engine2"></div>
 
     </div>
 
+    <!-- MOBILE CONTROLS -->
+
     <div id="mobileControls">
-        <button id="leftBtn" class="control">◀</button>
-        <button id="rightBtn" class="control">▶</button>
-        <button id="upBtn" class="control">▲</button>
-        <button id="downBtn" class="control">▼</button>
+
+        <button id="leftBtn" class="control">
+            ◀
+        </button>
+
+        <button id="rightBtn" class="control">
+            ▶
+        </button>
+
+        <button id="upBtn" class="control">
+            ▲
+        </button>
+
+        <button id="downBtn" class="control">
+            ▼
+        </button>
+
     </div>
 
 </div>
 
 <script>
-const game = document.getElementById("game");
-const plane = document.getElementById("plane");
-const towerAssembly1 = document.getElementById("towerAssembly1");
-const towerAssembly2 = document.getElementById("towerAssembly2");
-const tower1 = document.getElementById("tower1");
-const tower2 = document.getElementById("tower2");
+"use strict";
 
-const statusText = document.getElementById("status");
-const message = document.getElementById("message");
+/* =========================
+   ELEMENTS
+========================= */
 
-const planeButton = document.getElementById("planeButton");
-const planeMenu = document.getElementById("planeMenu");
-const closeMenu = document.getElementById("closeMenu");
+const game =
+    document.getElementById("game");
+
+const plane =
+    document.getElementById("plane");
+
+const towerAssembly1 =
+    document.getElementById("towerAssembly1");
+
+const towerAssembly2 =
+    document.getElementById("towerAssembly2");
+
+const tower1 =
+    document.getElementById("tower1");
+
+const tower2 =
+    document.getElementById("tower2");
+
+const statusText =
+    document.getElementById("status");
+
+const message =
+    document.getElementById("message");
+
+const planeButton =
+    document.getElementById("planeButton");
+
+const planeMenu =
+    document.getElementById("planeMenu");
+
+const closeMenu =
+    document.getElementById("closeMenu");
+
+
+/* =========================
+   PLANES
+========================= */
 
 const planeData = {
+
     small:{
         name:"Small Jet",
-        maxSpeed:8.2,
-        acceleration:.11,
-        braking:.18,
-        turn:.085,
-        stall:1.0,
-        width:150,
-        height:70
+        maxSpeed:7.5,
+        acceleration:2.8,
+        braking:4.5,
+        turn:170,
+        climb:145,
+        stall:.32
     },
 
     airliner:{
         name:"Airliner",
-        maxSpeed:6.3,
-        acceleration:.075,
-        braking:.13,
-        turn:.055,
-        stall:.72,
-        width:190,
-        height:82
+        maxSpeed:5.5,
+        acceleration:1.8,
+        braking:3.0,
+        turn:105,
+        climb:100,
+        stall:.26
     },
 
     large:{
         name:"Large Airliner",
-        maxSpeed:5.4,
-        acceleration:.055,
-        braking:.12,
-        turn:.042,
-        stall:.62,
-        width:215,
-        height:90
+        maxSpeed:4.7,
+        acceleration:1.35,
+        braking:2.7,
+        turn:82,
+        climb:82,
+        stall:.23
     },
 
     cargo:{
         name:"Cargo Plane",
-        maxSpeed:4.8,
-        acceleration:.045,
-        braking:.2,
-        turn:.035,
-        stall:.58,
-        width:220,
-        height:95
+        maxSpeed:4.2,
+        acceleration:1.1,
+        braking:3.8,
+        turn:70,
+        climb:70,
+        stall:.21
     },
 
     fighter:{
         name:"Fighter Jet",
-        maxSpeed:11,
-        acceleration:.16,
-        braking:.22,
-        turn:.13,
-        stall:.82,
-        width:155,
-        height:68
+        maxSpeed:10,
+        acceleration:3.8,
+        braking:5.5,
+        turn:240,
+        climb:190,
+        stall:.36
     }
+
 };
 
-let selectedPlane = "airliner";
-let stats = planeData[selectedPlane];
+let selectedPlane =
+    "airliner";
+
+let stats =
+    planeData[selectedPlane];
+
+
+/* =========================
+   PHYSICS
+========================= */
 
 let px = 3.5;
 let py = 35;
 
 let velocity = 0;
+
 let verticalVelocity = 0;
 
 let pitch = 0;
-let targetPitch = 0;
-
-let left = false;
-let right = false;
-let up = false;
-let down = false;
-let braking = false;
 
 let crashed = false;
+
+let crashCooldown = false;
+
 let hitTower1 = false;
 let hitTower2 = false;
 
 let tower1Destroyed = false;
 let tower2Destroyed = false;
 
-let crashCooldown = false;
+let roundComplete = false;
+
+let firstCrashFinished = false;
 
 let engine1Damaged = false;
 let engine2Damaged = false;
 
-let currentTower = 1;
+let inputLocked = false;
 
-let roundComplete = false;
 
-let audio;
-let musicStarted = false;
+/* =========================
+   INPUT
+========================= */
 
 const keys = {};
 
-document.addEventListener("keydown",e=>{
-    keys[e.key.toLowerCase()] = true;
+let left = false;
+let right = false;
+let up = false;
+let down = false;
 
-    if(e.key.toLowerCase()==="p"){
-        planeMenu.style.display =
-            planeMenu.style.display==="block" ? "none" : "block";
-    }
+let lastTime =
+    performance.now();
 
-    if(e.key==="ArrowLeft") left=true;
-    if(e.key==="ArrowRight") right=true;
-    if(e.key==="ArrowUp") up=true;
-    if(e.key==="ArrowDown") down=true;
 
-    if(e.key===" "){
-        braking=true;
-        e.preventDefault();
-    }
+document.addEventListener(
+    "keydown",
+    function(event){
 
-    startMusic();
-});
+        const key =
+            event.key.toLowerCase();
 
-document.addEventListener("keyup",e=>{
-    keys[e.key.toLowerCase()] = false;
+        keys[key] = true;
 
-    if(e.key==="ArrowLeft") left=false;
-    if(e.key==="ArrowRight") right=false;
-    if(e.key==="ArrowUp") up=false;
-    if(e.key==="ArrowDown") down=false;
-
-    if(e.key===" ") braking=false;
-});
-
-function startMusic(){
-    if(musicStarted) return;
-
-    musicStarted=true;
-
-    audio=new Audio("towersong.mp3");
-    audio.loop=true;
-    audio.volume=.38;
-
-    audio.play().catch(()=>{});
-}
-
-planeButton.onclick=()=>{
-    planeMenu.style.display="block";
-    startMusic();
-};
-
-closeMenu.onclick=()=>{
-    planeMenu.style.display="none";
-};
-
-document.querySelectorAll(".planeOption").forEach(button=>{
-    button.addEventListener("click",()=>{
-        selectPlane(button.dataset.plane);
-    });
-});
-
-function selectPlane(type){
-    selectedPlane=type;
-    stats=planeData[type];
-
-    plane.style.width=stats.width+"px";
-    plane.style.height=stats.height+"px";
-
-    velocity=Math.min(velocity,stats.maxSpeed*.65);
-
-    document.querySelectorAll(".planeOption").forEach(b=>{
-        b.classList.toggle(
-            "selected",
-            b.dataset.plane===type
-        );
-    });
-
-    planeMenu.style.display="none";
-
-    message.textContent=stats.name+" SELECTED";
-
-    setTimeout(()=>{
-        if(!crashed) message.textContent="";
-    },1200);
-
-    createPlaneAppearance(type);
-}
-
-function createPlaneAppearance(type){
-
-    plane.style.filter="";
-
-    if(type==="fighter"){
-        plane.style.filter="contrast(1.25)";
-    }
-
-    if(type==="cargo"){
-        plane.style.filter="brightness(.92)";
-    }
-
-    if(type==="large"){
-        plane.style.filter="brightness(1.02)";
-    }
-}
-
-function setMobileButton(id,downValue){
-    const btn=document.getElementById(id);
-
-    btn.addEventListener("pointerdown",e=>{
-        e.preventDefault();
         startMusic();
-        window[downValue]=true;
-    });
 
-    btn.addEventListener("pointerup",e=>{
-        e.preventDefault();
-        window[downValue]=false;
-    });
+        if(
+            key === "p" &&
+            !crashed &&
+            !roundComplete
+        ){
 
-    btn.addEventListener("pointercancel",()=>{
-        window[downValue]=false;
-    });
+            togglePlaneMenu();
 
-    btn.addEventListener("pointerleave",()=>{
-        window[downValue]=false;
-    });
-}
+            event.preventDefault();
+        }
 
-setMobileButton("leftBtn","left");
-setMobileButton("rightBtn","right");
-setMobileButton("upBtn","up");
-setMobileButton("downBtn","down");
+        if(
+            key === "r" &&
+            roundComplete
+        ){
 
-function getPlaneRect(){
-    return plane.getBoundingClientRect();
-}
+            resetGame();
 
-function getTowerRect(tower){
-    return tower.getBoundingClientRect();
-}
+            event.preventDefault();
+        }
 
-function rectsOverlap(a,b){
-    return !(
-        a.right < b.left ||
-        a.left > b.right ||
-        a.bottom < b.top ||
-        a.top > b.bottom
+        if(event.key === "ArrowLeft"){
+            left=true;
+            event.preventDefault();
+        }
+
+        if(event.key === "ArrowRight"){
+            right=true;
+            event.preventDefault();
+        }
+
+        if(event.key === "ArrowUp"){
+            up=true;
+            event.preventDefault();
+        }
+
+        if(event.key === "ArrowDown"){
+            down=true;
+            event.preventDefault();
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keyup",
+    function(event){
+
+        const key =
+            event.key.toLowerCase();
+
+        keys[key] = false;
+
+        if(event.key === "ArrowLeft"){
+            left=false;
+        }
+
+        if(event.key === "ArrowRight"){
+            right=false;
+        }
+
+        if(event.key === "ArrowUp"){
+            up=false;
+        }
+
+        if(event.key === "ArrowDown"){
+            down=false;
+        }
+
+    }
+);
+
+
+/* =========================
+   MOBILE INPUT
+========================= */
+
+function mobileControl(
+    id,
+    setter
+){
+
+    const button =
+        document.getElementById(id);
+
+    button.addEventListener(
+        "pointerdown",
+        function(event){
+
+            event.preventDefault();
+
+            startMusic();
+
+            setter(true);
+
+        }
+    );
+
+    button.addEventListener(
+        "pointerup",
+        function(event){
+
+            event.preventDefault();
+
+            setter(false);
+
+        }
+    );
+
+    button.addEventListener(
+        "pointercancel",
+        function(){
+
+            setter(false);
+
+        }
+    );
+
+    button.addEventListener(
+        "pointerleave",
+        function(){
+
+            setter(false);
+
+        }
     );
 }
 
-function checkCollision(){
 
-    if(crashed || crashCooldown) return;
+mobileControl(
+    "leftBtn",
+    value => left=value
+);
 
-    const p=getPlaneRect();
+mobileControl(
+    "rightBtn",
+    value => right=value
+);
 
-    const t1=getTowerRect(tower1);
-    const t2=getTowerRect(tower2);
+mobileControl(
+    "upBtn",
+    value => up=value
+);
 
-    if(!hitTower1 && rectsOverlap(p,t1)){
-        hitTower1=true;
-        currentTower=1;
+mobileControl(
+    "downBtn",
+    value => down=value
+);
 
-        crash(p,tower1,towerAssembly1,1);
 
+/* =========================
+   MUSIC
+========================= */
+
+let audio = null;
+
+let musicStarted = false;
+
+function startMusic(){
+
+    if(musicStarted){
         return;
     }
 
-    if(hitTower1 && !hitTower2 && !tower2Destroyed && rectsOverlap(p,t2)){
-        hitTower2=true;
-        currentTower=2;
+    musicStarted=true;
 
-        crash(p,tower2,towerAssembly2,2);
+    audio =
+        new Audio("towersong.mp3");
+
+    audio.loop=true;
+
+    audio.volume=.38;
+
+    audio.play().catch(
+        function(){}
+    );
+}
+
+
+/* =========================
+   PLANE MENU
+========================= */
+
+function togglePlaneMenu(){
+
+    if(inputLocked){
+        return;
+    }
+
+    if(
+        planeMenu.style.display ===
+        "block"
+    ){
+
+        planeMenu.style.display =
+            "none";
+
+    }else{
+
+        planeMenu.style.display =
+            "block";
+
     }
 }
 
-function crash(planeRect,tower,towerAssembly,number){
 
-    crashed=true;
-    crashCooldown=true;
+planeButton.addEventListener(
+    "click",
+    function(){
 
-    velocity*=.35;
+        if(
+            crashed ||
+            roundComplete ||
+            inputLocked
+        ){
+            return;
+        }
 
-    targetPitch=number===1 ? -4 : 4;
+        startMusic();
 
-    statusText.textContent=
-        "IMPACT — BUILDING DAMAGE DETECTED";
+        togglePlaneMenu();
 
-    message.textContent=
-        "IMPACT";
+    }
+);
 
-    createImpactEffects(
-        planeRect,
-        tower,
-        towerAssembly,
-        number
-    );
 
-    damageEngine();
+closeMenu.addEventListener(
+    "click",
+    function(){
 
-    plane.style.zIndex="90";
+        planeMenu.style.display =
+            "none";
 
-    tower.style.visibility="hidden";
+    }
+);
 
-    createCollapsePieces(
-        towerAssembly,
-        tower,
-        number
-    );
 
-    setTimeout(()=>{
-        startTowerCollapse(
-            towerAssembly,
-            number
+document
+.querySelectorAll(".planeOption")
+.forEach(
+    function(button){
+
+        button.addEventListener(
+            "click",
+            function(){
+
+                if(
+                    crashed ||
+                    roundComplete ||
+                    inputLocked
+                ){
+                    return;
+                }
+
+                selectPlane(
+                    button.dataset.plane
+                );
+
+            }
         );
-    },700);
 
-    setTimeout(()=>{
-        crashed=false;
-        crashCooldown=false;
+    }
+);
 
-        if(number===1){
-            tower1Destroyed=true;
 
-            statusText.textContent=
-                "FIRST BUILDING DESTROYED — CHOOSE YOUR NEXT PLANE";
+function selectPlane(type){
 
-            message.textContent=
-                "CHOOSE YOUR PLANE";
+    if(!planeData[type]){
+        return;
+    }
 
-            resetPlaneForSecondRun();
-        }else{
-            tower2Destroyed=true;
+    selectedPlane=type;
 
-            statusText.textContent=
-                "ROUND COMPLETE";
+    stats =
+        planeData[type];
 
-            message.textContent=
-                "ROUND COMPLETE";
+    /*
+       IMPORTANT:
+       Switching aircraft does NOT
+       teleport the player.
+    */
 
-            roundComplete=true;
+    velocity =
+        Math.min(
+            velocity,
+            stats.maxSpeed
+        );
 
-            setTimeout(()=>{
-                message.textContent="FLY AGAIN";
-            },1600);
+    /*
+       Reset vertical momentum so
+       changing aircraft doesn't make
+       the new aircraft instantly dive.
+    */
+
+    verticalVelocity=0;
+
+    /*
+       Keep the aircraft where it was.
+    */
+
+    plane.style.left =
+        px+"%";
+
+    plane.style.top =
+        py+"%";
+
+    document
+    .querySelectorAll(".planeOption")
+    .forEach(
+        function(button){
+
+            button.classList.toggle(
+                "selected",
+                button.dataset.plane ===
+                type
+            );
+
         }
+    );
 
-    },7200);
+    planeMenu.style.display =
+        "none";
+
+    message.textContent =
+        stats.name+" SELECTED";
+
+    setTimeout(
+        function(){
+
+            if(
+                !crashed &&
+                !roundComplete
+            ){
+                message.textContent="";
+            }
+
+        },
+        1000
+    );
 }
 
-function damageEngine(){
 
-    const damaged =
-        Math.random()<.5 ? 1 : 2;
+/* =========================
+   RECTANGLE COLLISION
+========================= */
 
-    const engine=
-        damaged===1
-            ? document.querySelector(".engine1")
-            : document.querySelector(".engine2");
+function getPlaneRect(){
 
-    if(damaged===1) engine1Damaged=true;
-    else engine2Damaged=true;
+    return plane.getBoundingClientRect();
 
-    const smoke=document.createElement("div");
-
-    smoke.className="engineSmoke";
-
-    smoke.style.left=
-        (damaged===1 ? 67 : 105)+"px";
-
-    smoke.style.top="48px";
-
-    plane.appendChild(smoke);
-
-    setInterval(()=>{
-        if(crashed || damaged===1 && engine1Damaged || damaged===2 && engine2Damaged){
-            const s=document.createElement("div");
-            s.className="engineSmoke";
-            s.style.left=
-                (damaged===1 ? 67 : 105)+"px";
-            s.style.top="48px";
-            plane.appendChild(s);
-
-            setTimeout(()=>{
-                s.remove();
-            },900);
-        }
-    },280);
 }
 
-function createImpactEffects(
+
+function getTowerRect(tower){
+
+    return tower.getBoundingClientRect();
+
+}
+
+
+function rectsOverlap(a,b){
+
+    return !(
+        a.right <= b.left ||
+        a.left >= b.right ||
+        a.bottom <= b.top ||
+        a.top >= b.bottom
+    );
+
+}
+
+
+/* =========================
+   COLLISION
+========================= */
+
+function checkCollision(){
+
+    if(
+        crashed ||
+        crashCooldown ||
+        inputLocked
+    ){
+        return;
+    }
+
+    const p =
+        getPlaneRect();
+
+    /*
+       Only collide with the actual
+       visible tower element.
+    */
+
+    if(
+        !hitTower1 &&
+        !tower1Destroyed &&
+        tower1.style.visibility !==
+            "hidden"
+    ){
+
+        const t1 =
+            getTowerRect(tower1);
+
+        if(rectsOverlap(p,t1)){
+
+            hitTower1=true;
+
+            crash(
+                p,
+                tower1,
+                towerAssembly1,
+                1
+            );
+
+            return;
+        }
+    }
+
+    if(
+        hitTower1 &&
+        !hitTower2 &&
+        !tower2Destroyed &&
+        tower2.style.visibility !==
+            "hidden"
+    ){
+
+        const t2 =
+            getTowerRect(tower2);
+
+        if(rectsOverlap(p,t2)){
+
+            hitTower2=true;
+
+            crash(
+                p,
+                tower2,
+                towerAssembly2,
+                2
+            );
+
+        }
+    }
+}
+
+
+/* =========================
+   CRASH
+========================= */
+
+function crash(
     planeRect,
     tower,
     towerAssembly,
     number
 ){
 
-    const gameRect=game.getBoundingClientRect();
+    if(crashed){
+        return;
+    }
 
-    const impactX=
-        planeRect.left-gameRect.left+
-        planeRect.width*.7;
+    crashed=true;
 
-    const impactY=
-        planeRect.top-gameRect.top+
+    crashCooldown=true;
+
+    inputLocked=true;
+
+    planeMenu.style.display =
+        "none";
+
+    /*
+       Kill movement.
+    */
+
+    velocity *= .15;
+
+    verticalVelocity =
+        number === 1
+        ? .15
+        : -.15;
+
+    statusText.textContent =
+        "IMPACT — BUILDING DAMAGE";
+
+    message.textContent =
+        "IMPACT";
+
+    createImpactEffects(
+        planeRect,
+        number
+    );
+
+    damageEngine();
+
+    /*
+       The original tower is hidden
+       only after the impact effects
+       are placed.
+    */
+
+    createCollapsePieces(
+        towerAssembly,
+        number
+    );
+
+    tower.style.visibility =
+        "hidden";
+
+    /*
+       Start collapse after a short
+       impact pause.
+    */
+
+    setTimeout(
+        function(){
+
+            startTowerCollapse(
+                towerAssembly,
+                number
+            );
+
+        },
+        500
+    );
+
+    /*
+       Finish crash sequence.
+    */
+
+    setTimeout(
+        function(){
+
+            crashCooldown=false;
+
+            if(number===1){
+
+                tower1Destroyed=true;
+
+                firstCrashFinished=true;
+
+                prepareSecondFlight();
+
+            }else{
+
+                tower2Destroyed=true;
+
+                finishRound();
+
+            }
+
+        },
+        6500
+    );
+}
+
+
+/* =========================
+   IMPACT EFFECTS
+========================= */
+
+function createImpactEffects(
+    planeRect,
+    number
+){
+
+    const gameRect =
+        game.getBoundingClientRect();
+
+    const impactX =
+        planeRect.left -
+        gameRect.left +
+        planeRect.width*.72;
+
+    const impactY =
+        planeRect.top -
+        gameRect.top +
         planeRect.height*.5;
 
-    const mark=document.createElement("div");
+    const mark =
+        document.createElement(
+            "div"
+        );
 
-    mark.className="damageMark";
+    mark.className =
+        "damageMark";
 
-    mark.style.left=(impactX-30)+"px";
-    mark.style.top=(impactY-40)+"px";
+    mark.style.left =
+        (impactX-30)+"px";
+
+    mark.style.top =
+        (impactY-40)+"px";
 
     game.appendChild(mark);
 
-    createFlash(impactX,impactY);
+    setTimeout(
+        function(){
+            mark.remove();
+        },
+        10000
+    );
 
-    for(let i=0;i<12;i++){
-        createGlass(impactX,impactY);
-    }
+    createFlash(
+        impactX,
+        impactY
+    );
 
-    for(let i=0;i<10;i++){
-        createFire(
-            impactX+(Math.random()*60-30),
-            impactY+(Math.random()*100-50)
+    /*
+       Glass
+    */
+
+    for(
+        let i=0;
+        i<18;
+        i++
+    ){
+
+        createGlass(
+            impactX,
+            impactY
         );
+
     }
 
-    for(let i=0;i<9;i++){
+    /*
+       Fire near impact.
+    */
+
+    for(
+        let i=0;
+        i<13;
+        i++
+    ){
+
+        createFire(
+            impactX+
+            random(-45,45),
+
+            impactY+
+            random(-70,70)
+        );
+
+    }
+
+    /*
+       Dark smoke near impact.
+    */
+
+    for(
+        let i=0;
+        i<11;
+        i++
+    ){
+
         createSmoke(
-            impactX+(Math.random()*50-25),
-            impactY+(Math.random()*50-25),
+            impactX+
+            random(-35,35),
+
+            impactY+
+            random(-40,40),
+
             false
         );
+
     }
 
-    for(let i=0;i<7;i++){
+    /*
+       Lighter smoke higher up.
+    */
+
+    for(
+        let i=0;
+        i<9;
+        i++
+    ){
+
         createSmoke(
-            impactX+(Math.random()*80-40),
-            impactY-70-Math.random()*120,
+            impactX+
+            random(-65,65),
+
+            impactY-
+            random(60,180),
+
             true
         );
+
     }
 
-    for(let i=0;i<10;i++){
+    /*
+       Building chunks.
+    */
+
+    for(
+        let i=0;
+        i<12;
+        i++
+    ){
+
         createChunk(
-            impactX+(Math.random()*70-35),
-            impactY+(Math.random()*100-50)
+            impactX+
+            random(-45,45),
+
+            impactY+
+            random(-50,70)
         );
+
     }
 }
+
+
+function random(min,max){
+
+    return Math.random()*
+        (max-min)+min;
+
+}
+
+
+/* =========================
+   FLASH
+========================= */
 
 function createFlash(x,y){
 
-    const f=document.createElement("div");
+    const flash =
+        document.createElement(
+            "div"
+        );
 
-    f.className="impactFlash";
+    flash.className =
+        "impactFlash";
 
-    f.style.left=(x-60)+"px";
-    f.style.top=(y-60)+"px";
+    flash.style.left =
+        (x-60)+"px";
 
-    game.appendChild(f);
+    flash.style.top =
+        (y-60)+"px";
 
-    setTimeout(()=>{
-        f.remove();
-    },400);
+    game.appendChild(flash);
+
+    setTimeout(
+        function(){
+            flash.remove();
+        },
+        450
+    );
 }
+
+
+/* =========================
+   GLASS
+========================= */
 
 function createGlass(x,y){
 
-    const g=document.createElement("div");
+    const glass =
+        document.createElement(
+            "div"
+        );
 
-    g.className="glass";
+    glass.className =
+        "glass";
 
-    g.style.left=x+"px";
-    g.style.top=y+"px";
+    glass.style.left =
+        x+"px";
 
-    g.style.setProperty(
+    glass.style.top =
+        y+"px";
+
+    glass.style.setProperty(
         "--gx",
-        (Math.random()*240-120)+"px"
+        random(-150,150)+"px"
     );
 
-    g.style.setProperty(
+    glass.style.setProperty(
         "--gy",
-        (Math.random()*180-70)+"px"
+        random(-100,220)+"px"
     );
 
-    g.style.setProperty(
+    glass.style.setProperty(
         "--gr",
-        (Math.random()*720-360)+"deg"
+        random(-500,500)+"deg"
     );
 
-    game.appendChild(g);
+    game.appendChild(glass);
 
-    setTimeout(()=>{
-        g.remove();
-    },1200);
+    setTimeout(
+        function(){
+            glass.remove();
+        },
+        1300
+    );
 }
+
+
+/* =========================
+   CHUNKS
+========================= */
 
 function createChunk(x,y){
 
-    const c=document.createElement("div");
+    const chunk =
+        document.createElement(
+            "div"
+        );
 
-    c.className="buildingChunk";
+    chunk.className =
+        "buildingChunk";
 
-    const w=20+Math.random()*35;
-    const h=25+Math.random()*70;
+    chunk.style.width =
+        random(18,48)+"px";
 
-    c.style.width=w+"px";
-    c.style.height=h+"px";
+    chunk.style.height =
+        random(25,80)+"px";
 
-    c.style.left=x+"px";
-    c.style.top=y+"px";
+    chunk.style.left =
+        x+"px";
 
-    c.style.setProperty(
+    chunk.style.top =
+        y+"px";
+
+    chunk.style.setProperty(
         "--cx",
-        (Math.random()*260-130)+"px"
+        random(-160,160)+"px"
     );
 
-    c.style.setProperty(
+    chunk.style.setProperty(
         "--cy",
-        (130+Math.random()*360)+"px"
+        random(180,480)+"px"
     );
 
-    c.style.setProperty(
+    chunk.style.setProperty(
         "--cr",
-        (Math.random()*100-50)+"deg"
+        random(-70,70)+"deg"
     );
 
-    c.style.setProperty(
+    chunk.style.setProperty(
         "--ct",
-        (1.2+Math.random()*2)+"s"
+        random(1.5,3.2)+"s"
     );
 
-    game.appendChild(c);
+    game.appendChild(chunk);
 
-    setTimeout(()=>{
-        c.remove();
-    },4000);
+    setTimeout(
+        function(){
+            chunk.remove();
+        },
+        4500
+    );
 }
+
+
+/* =========================
+   FIRE
+========================= */
 
 function createFire(x,y){
 
-    const fire=document.createElement("div");
+    const fire =
+        document.createElement(
+            "div"
+        );
 
-    fire.className="fire";
+    fire.className =
+        "fire";
 
-    fire.style.left=x+"px";
-    fire.style.top=y+"px";
+    fire.style.left =
+        x+"px";
+
+    fire.style.top =
+        y+"px";
 
     game.appendChild(fire);
 
-    setTimeout(()=>{
-        fire.remove();
-    },5000);
-}
+    /*
+       Fire eventually disappears,
+       preventing unlimited DOM growth.
+    */
 
-function createSmoke(x,y,light){
-
-    const smoke=document.createElement(
-        "div"
+    setTimeout(
+        function(){
+            fire.remove();
+        },
+        4800
     );
 
-    smoke.className=
-        light ? "lightSmoke" : "smoke";
+    /*
+       Fire spreads vertically.
+    */
 
-    smoke.style.left=x+"px";
-    smoke.style.top=y+"px";
+    setTimeout(
+        function(){
+
+            if(
+                document.body.contains(fire)
+            ){
+
+                createFire(
+                    x+random(-25,25),
+                    y+random(-55,55)
+                );
+
+            }
+
+        },
+        random(450,900)
+    );
+}
+
+
+/* =========================
+   SMOKE
+========================= */
+
+function createSmoke(
+    x,
+    y,
+    light
+){
+
+    const smoke =
+        document.createElement(
+            "div"
+        );
+
+    smoke.className =
+        light
+        ? "lightSmoke"
+        : "smoke";
+
+    smoke.style.left =
+        x+"px";
+
+    smoke.style.top =
+        y+"px";
 
     smoke.style.setProperty(
         "--sx",
-        (Math.random()*100-50)+"px"
+        random(-70,70)+"px"
     );
 
     game.appendChild(smoke);
 
-    setTimeout(()=>{
-        smoke.remove();
-    },6500);
+    setTimeout(
+        function(){
+            smoke.remove();
+        },
+        light ? 6500 : 4500
+    );
 }
+
+
+/* =========================
+   ENGINE DAMAGE
+========================= */
+
+function damageEngine(){
+
+    /*
+       Don't repeatedly damage engines.
+    */
+
+    if(
+        engine1Damaged ||
+        engine2Damaged
+    ){
+        return;
+    }
+
+    const damaged =
+        Math.random()<.5
+        ? 1
+        : 2;
+
+    if(damaged===1){
+        engine1Damaged=true;
+    }else{
+        engine2Damaged=true;
+    }
+
+    /*
+       One controlled smoke loop.
+    */
+
+    let smokeCount=0;
+
+    const smokeTimer =
+        setInterval(
+            function(){
+
+                if(
+                    smokeCount>=14 ||
+                    !crashed
+                ){
+
+                    clearInterval(
+                        smokeTimer
+                    );
+
+                    return;
+                }
+
+                const smoke =
+                    document.createElement(
+                        "div"
+                    );
+
+                smoke.className =
+                    "engineSmoke";
+
+                smoke.style.left =
+                    damaged===1
+                    ? "67px"
+                    : "105px";
+
+                smoke.style.top =
+                    "48px";
+
+                plane.appendChild(smoke);
+
+                setTimeout(
+                    function(){
+                        smoke.remove();
+                    },
+                    900
+                );
+
+                smokeCount++;
+
+            },
+            220
+        );
+}
+
+
+/* =========================
+   COLLAPSE PIECES
+========================= */
 
 function createCollapsePieces(
     assembly,
-    originalTower,
     number
 ){
 
-    const old=assembly.querySelector(
-        ".collapsePieces"
-    );
+    const old =
+        assembly.querySelector(
+            ".collapsePieces"
+        );
 
-    if(old) old.remove();
+    if(old){
+        old.remove();
+    }
 
-    const pieces=document.createElement("div");
-
-    pieces.className="collapsePieces";
-
-    assembly.appendChild(pieces);
-
-    const width=assembly.clientWidth;
-    const height=assembly.clientHeight;
-
-    const sectionHeight=height/4;
-
-    for(let i=0;i<4;i++){
-
-        const section=document.createElement(
+    const pieces =
+        document.createElement(
             "div"
         );
 
-        section.className="collapseSection";
+    pieces.className =
+        "collapsePieces";
 
-        section.style.left="0";
-        section.style.top=
+    assembly.appendChild(pieces);
+
+    const width =
+        assembly.clientWidth;
+
+    const height =
+        assembly.clientHeight;
+
+    const sectionHeight =
+        height/4;
+
+    /*
+       Four large sections.
+    */
+
+    for(
+        let i=0;
+        i<4;
+        i++
+    ){
+
+        const section =
+            document.createElement(
+                "div"
+            );
+
+        section.className =
+            "collapseSection";
+
+        section.style.left =
+            "0px";
+
+        section.style.top =
             (i*sectionHeight)+"px";
 
-        section.style.width=width+"px";
-        section.style.height=
-            (sectionHeight+3)+"px";
+        section.style.width =
+            width+"px";
 
-        section.style.clipPath=
-            `inset(0 0 0 0)`;
+        section.style.height =
+            (sectionHeight+4)+"px";
+
+        /*
+           Each section gets a different
+           direction.
+        */
+
+        let horizontal =
+            (i-1.5)*(
+                number===1
+                ? 75
+                : 95
+            );
+
+        horizontal +=
+            random(-30,30);
+
+        let vertical =
+            120+
+            i*95+
+            random(-25,60);
+
+        let rotation =
+            random(-35,35);
 
         section.style.setProperty(
             "--sx",
-            (
-                (i-1.5)*(
-                    number===1 ? 90 : 110
-                )
-            )+"px"
+            horizontal+"px"
         );
 
         section.style.setProperty(
             "--sy",
-            (
-                130+
-                i*90+
-                Math.random()*100
-            )+"px"
+            vertical+"px"
         );
 
         section.style.setProperty(
             "--sr",
-            (
-                (Math.random()-.5)*(
-                    number===1 ? 28 : 35
-                )
-            )+"deg"
+            rotation+"deg"
         );
 
         section.style.setProperty(
             "--st",
-            (2.2+Math.random()*1.3)+"s"
+            random(2.2,3.7)+"s"
         );
 
-        pieces.appendChild(section);
+        /*
+           Top section gets a roof-like
+           strip so the collapse still
+           resembles the original tower.
+        */
+
+        if(i===0){
+
+            const roof =
+                document.createElement(
+                    "div"
+                );
+
+            roof.style.position =
+                "absolute";
+
+            roof.style.left =
+                "-8px";
+
+            roof.style.top =
+                "-10px";
+
+            roof.style.width =
+                "calc(100% + 16px)";
+
+            roof.style.height =
+                "10px";
+
+            roof.style.background =
+                "#858e94";
+
+            roof.style.border =
+                "3px solid #5e676d";
+
+            roof.style.zIndex =
+                "5";
+
+            section.appendChild(
+                roof
+            );
+
+        }
+
+        pieces.appendChild(
+            section
+        );
     }
 
     createFallingWindows(
@@ -1608,11 +2434,12 @@ function createCollapsePieces(
         width,
         height
     );
-
-    setTimeout(()=>{
-        originalTower.style.visibility="hidden";
-    },50);
 }
+
+
+/* =========================
+   FALLING WINDOWS
+========================= */
 
 function createFallingWindows(
     assembly,
@@ -1620,362 +2447,829 @@ function createFallingWindows(
     height
 ){
 
-    const count=Math.floor(
-        width/18
-    )*Math.floor(
-        height/65
-    );
+    /*
+       Keep count reasonable so
+       mobile devices don't get flooded.
+    */
 
-    for(let i=0;i<count;i++){
-
-        const w=document.createElement(
-            "div"
+    const columns =
+        Math.max(
+            4,
+            Math.floor(width/18)
         );
 
-        w.className="fallingWindow";
+    const rows =
+        Math.max(
+            8,
+            Math.floor(height/65)
+        );
 
-        const x=
-            14+
-            Math.random()*
-            Math.max(10,width-28);
+    const count =
+        Math.min(
+            columns*rows,
+            75
+        );
 
-        const y=
-            25+
-            Math.random()*
-            Math.max(10,height-50);
+    for(
+        let i=0;
+        i<count;
+        i++
+    ){
 
-        w.style.left=x+"px";
-        w.style.top=y+"px";
+        const window =
+            document.createElement(
+                "div"
+            );
 
-        w.style.setProperty(
+        window.className =
+            "fallingWindow";
+
+        window.style.left =
+            random(
+                15,
+                Math.max(20,width-15)
+            )+"px";
+
+        window.style.top =
+            random(
+                25,
+                Math.max(30,height-25)
+            )+"px";
+
+        window.style.setProperty(
             "--wx",
-            (Math.random()*260-130)+"px"
+            random(-180,180)+"px"
         );
 
-        w.style.setProperty(
+        window.style.setProperty(
             "--wy",
-            (170+Math.random()*430)+"px"
+            random(180,600)+"px"
         );
 
-        w.style.setProperty(
+        window.style.setProperty(
             "--wr",
-            (Math.random()*720-360)+"deg"
+            random(-500,500)+"deg"
         );
 
-        w.style.setProperty(
+        window.style.setProperty(
             "--wt",
-            (1.5+Math.random()*3)+"s"
+            random(1.5,4)+"s"
         );
 
-        assembly.appendChild(w);
+        assembly.appendChild(
+            window
+        );
 
-        setTimeout(()=>{
-            w.remove();
-        },5000);
+        setTimeout(
+            function(){
+                window.remove();
+            },
+            5200
+        );
     }
 }
+
+
+/* =========================
+   START COLLAPSE
+========================= */
 
 function startTowerCollapse(
     assembly,
     number
 ){
 
-    assembly.style.zIndex="15";
-
-    const sections=
+    const sections =
         assembly.querySelectorAll(
             ".collapseSection"
         );
 
-    sections.forEach((section,i)=>{
+    /*
+       Sections already have their
+       animation. Force browser to
+       recognize it immediately.
+    */
 
-        section.style.animationPlayState=
-            "running";
+    sections.forEach(
+        function(section){
 
-        if(i===2 || i===3){
-            createDustAtBottom(
-                assembly,
-                i
-            );
+            void section.offsetWidth;
+
+            section.style.animationPlayState =
+                "running";
+
         }
-    });
-
-    setTimeout(()=>{
-        createDustAtBottom(
-            assembly,
-            0
-        );
-    },1800);
-}
-
-function createDustAtBottom(
-    assembly,
-    index
-){
-
-    const rect=
-        assembly.getBoundingClientRect();
-
-    const gameRect=
-        game.getBoundingClientRect();
-
-    const dust=document.createElement(
-        "div"
     );
 
-    dust.className="dust";
+    /*
+       Dust appears later, when pieces
+       reach the ground.
+    */
 
-    dust.style.left=
-        (
-            rect.left-gameRect.left+
-            rect.width*(.2+.2*index)
-        )+"px";
+    setTimeout(
+        function(){
 
-    dust.style.top=
-        (
-            rect.bottom-gameRect.top-40
-        )+"px";
+            createDustAtBottom(
+                assembly
+            );
 
-    game.appendChild(dust);
+        },
+        1700
+    );
 
-    setTimeout(()=>{
-        dust.remove();
-    },2500);
+    setTimeout(
+        function(){
+
+            createDustAtBottom(
+                assembly
+            );
+
+        },
+        2400
+    );
 }
 
-function resetPlaneForSecondRun(){
 
-    setTimeout(()=>{
+/* =========================
+   DUST
+========================= */
 
-        px=3.5;
-        py=35;
+function createDustAtBottom(
+    assembly
+){
 
-        velocity=0;
-        verticalVelocity=0;
+    const rect =
+        assembly.getBoundingClientRect();
 
-        pitch=0;
-        targetPitch=0;
+    const gameRect =
+        game.getBoundingClientRect();
 
-        plane.style.left=px+"%";
-        plane.style.top=py+"%";
-        plane.style.transform=
-            "rotate(0deg)";
+    for(
+        let i=0;
+        i<4;
+        i++
+    ){
 
-        message.textContent=
-            "CHOOSE YOUR PLANE";
+        const dust =
+            document.createElement(
+                "div"
+            );
 
-        crashed=false;
-        crashCooldown=false;
+        dust.className =
+            "dust";
 
-    },900);
+        dust.style.left =
+            (
+                rect.left-
+                gameRect.left+
+                random(0,rect.width)
+            )+"px";
+
+        dust.style.top =
+            (
+                rect.bottom-
+                gameRect.top-
+                random(15,55)
+            )+"px";
+
+        game.appendChild(
+            dust
+        );
+
+        setTimeout(
+            function(){
+                dust.remove();
+            },
+            2500
+        );
+    }
 }
+
+
+/* =========================
+   SECOND FLIGHT
+========================= */
+
+function prepareSecondFlight(){
+
+    setTimeout(
+        function(){
+
+            px=3.5;
+
+            py=35;
+
+            velocity=0;
+
+            verticalVelocity=0;
+
+            pitch=0;
+
+            crashed=false;
+
+            crashCooldown=false;
+
+            inputLocked=false;
+
+            plane.style.left =
+                px+"%";
+
+            plane.style.top =
+                py+"%";
+
+            plane.style.transform =
+                "rotate(0deg)";
+
+            statusText.textContent =
+                "SECOND RUN — CHOOSE A PLANE";
+
+            message.textContent =
+                "CHOOSE YOUR PLANE";
+
+        },
+        300
+    );
+}
+
+
+/* =========================
+   ROUND COMPLETE
+========================= */
+
+function finishRound(){
+
+    crashed=false;
+
+    crashCooldown=false;
+
+    inputLocked=true;
+
+    roundComplete=true;
+
+    velocity=0;
+
+    verticalVelocity=0;
+
+    statusText.textContent =
+        "ROUND COMPLETE";
+
+    message.innerHTML =
+        "ROUND COMPLETE<br><small>PRESS R OR TAP FLY AGAIN</small>";
+
+    /*
+       Add a real Fly Again button.
+    */
+
+    const again =
+        document.createElement(
+            "button"
+        );
+
+    again.id =
+        "flyAgainButton";
+
+    again.textContent =
+        "FLY AGAIN";
+
+    again.style.position =
+        "absolute";
+
+    again.style.left =
+        "50%";
+
+    again.style.top =
+        "calc(18% + 60px)";
+
+    again.style.transform =
+        "translateX(-50%)";
+
+    again.style.zIndex =
+        "1500";
+
+    again.style.padding =
+        "12px 22px";
+
+    again.style.border =
+        "3px solid #24343d";
+
+    again.style.background =
+        "#f0f0f0";
+
+    again.style.fontWeight =
+        "bold";
+
+    again.style.cursor =
+        "pointer";
+
+    again.onclick =
+        function(){
+
+            again.remove();
+
+            resetGame();
+
+        };
+
+    game.appendChild(
+        again
+    );
+}
+
+
+/* =========================
+   RESET
+========================= */
 
 function resetGame(){
 
+    document
+    .querySelectorAll(
+        ".fallingWindow,"+
+        ".buildingChunk,"+
+        ".glass,"+
+        ".fire,"+
+        ".smoke,"+
+        ".lightSmoke,"+
+        ".dust,"+
+        ".damageMark,"+
+        ".impactFlash"
+    )
+    .forEach(
+        function(element){
+            element.remove();
+        }
+    );
+
+    towerAssembly1
+        .querySelector(
+            ".collapsePieces"
+        )
+        ?.remove();
+
+    towerAssembly2
+        .querySelector(
+            ".collapsePieces"
+        )
+        ?.remove();
+
+    towerAssembly1.style.transform =
+        "";
+
+    towerAssembly2.style.transform =
+        "";
+
+    tower1.style.visibility =
+        "visible";
+
+    tower2.style.visibility =
+        "visible";
+
+    px=3.5;
+
+    py=35;
+
+    velocity=0;
+
+    verticalVelocity=0;
+
+    pitch=0;
+
+    crashed=false;
+
+    crashCooldown=false;
+
+    inputLocked=false;
+
     hitTower1=false;
+
     hitTower2=false;
 
     tower1Destroyed=false;
+
     tower2Destroyed=false;
 
     roundComplete=false;
 
-    towerAssembly1.style.transform="";
-    towerAssembly2.style.transform="";
+    firstCrashFinished=false;
 
-    tower1.style.visibility="visible";
-    tower2.style.visibility="visible";
+    engine1Damaged=false;
 
-    towerAssembly1.querySelector(
-        ".collapsePieces"
-    )?.remove();
+    engine2Damaged=false;
 
-    towerAssembly2.querySelector(
-        ".collapsePieces"
-    )?.remove();
+    plane.style.left =
+        px+"%";
 
-    document.querySelectorAll(
-        ".fallingWindow,.buildingChunk,.glass,.fire,.smoke,.lightSmoke,.dust,.damageMark,.impactFlash"
-    ).forEach(e=>e.remove());
+    plane.style.top =
+        py+"%";
 
-    px=3.5;
-    py=35;
+    plane.style.transform =
+        "rotate(0deg)";
 
-    velocity=0;
-    verticalVelocity=0;
+    planeMenu.style.display =
+        "none";
 
-    pitch=0;
-    targetPitch=0;
+    const again =
+        document.getElementById(
+            "flyAgainButton"
+        );
 
-    crashed=false;
-    crashCooldown=false;
+    if(again){
+        again.remove();
+    }
 
-    plane.style.left=px+"%";
-    plane.style.top=py+"%";
-    plane.style.transform="rotate(0deg)";
+    statusText.textContent =
+        "W / ▲ TO ACCELERATE";
 
-    statusText.textContent=
-        "FLY TOWARD THE BUILDINGS";
+    message.textContent =
+        "";
 
-    message.textContent="";
-
-    currentTower=1;
 }
 
-function physics(){
 
-    if(roundComplete){
+/* =========================
+   FLIGHT PHYSICS
+========================= */
 
-        if(keys["r"]){
-            resetGame();
-        }
+function updatePhysics(dt){
 
+    if(
+        crashed ||
+        roundComplete ||
+        inputLocked ||
+        planeMenu.style.display ===
+            "block"
+    ){
         return;
     }
 
-    if(crashed) return;
+    /*
+       Desktop W / S.
+    */
 
-    const acceleration=
-        stats.acceleration;
+    const accelerate =
+        up ||
+        keys["w"];
 
-    if(up){
-        verticalVelocity-=.055;
-        targetPitch=-12;
-    }else if(down){
-        verticalVelocity+=.055;
-        targetPitch=12;
-    }else{
-        targetPitch*=.94;
-        verticalVelocity*=.96;
-    }
+    const brake =
+        down ||
+        keys["s"] ||
+        keys[" "];
 
-    if(left){
-        px-=stats.turn;
-        targetPitch-=7;
-    }
-
-    if(right){
-        px+=stats.turn;
-        targetPitch+=7;
-    }
-
-    if(braking){
-        velocity-=stats.braking;
-    }else{
-        velocity+=acceleration;
-    }
-
-    velocity=Math.max(
-        0,
-        Math.min(
-            velocity,
-            stats.maxSpeed
-        )
-    );
-
-    verticalVelocity=
-        Math.max(
-            -3,
-            Math.min(
-                verticalVelocity,
-                3
-            )
-        );
-
-    py+=verticalVelocity*.12;
 
     /*
-        STALL PHYSICS
-        If the aircraft is too slow while
-        pitched upward, it begins losing altitude.
+       A / D.
+    */
+
+    const turnLeft =
+        left ||
+        keys["a"];
+
+    const turnRight =
+        right ||
+        keys["d"];
+
+
+    /*
+       ACCELERATION
+
+       IMPORTANT:
+       There is NO automatic acceleration.
+
+       The plane stays still until the
+       player presses W / UP.
+    */
+
+    if(accelerate){
+
+        velocity +=
+            stats.acceleration*
+            dt;
+
+    }else if(brake){
+
+        velocity -=
+            stats.braking*
+            dt;
+
+    }
+
+
+    /*
+       Natural drag.
+       Very small, so releasing W
+       doesn't instantly stop the plane.
     */
 
     if(
-        targetPitch < -5 &&
-        velocity < stats.maxSpeed*stats.stall
+        !accelerate &&
+        !brake
     ){
 
-        verticalVelocity+=.025;
+        velocity -=
+            .22*
+            dt;
 
-        statusText.textContent=
-            "STALL — LOWER THE NOSE";
-
-    }else if(!hitTower1){
-
-        statusText.textContent=
-            "FLY TOWARD THE BUILDINGS";
     }
 
+
+    velocity =
+        Math.max(
+            0,
+            Math.min(
+                velocity,
+                stats.maxSpeed
+            )
+        );
+
+
     /*
-        Natural forward motion.
+       TURNING
     */
 
-    px+=velocity*.055;
+    let horizontalTurn=0;
+
+    if(turnLeft){
+        horizontalTurn -=
+            stats.turn*
+            dt;
+    }
+
+    if(turnRight){
+        horizontalTurn +=
+            stats.turn*
+            dt;
+    }
+
+    px +=
+        horizontalTurn*
+        velocity/
+        Math.max(
+            stats.maxSpeed,
+            .1
+        );
+
 
     /*
-        Keep aircraft in playable sky.
+       VERTICAL FLIGHT
+
+       Up = climb
+       Down = descend
+    */
+
+    if(accelerate && !brake){
+
+        /*
+           Small natural climb only while
+           the player is actually accelerating.
+        */
+
+        if(keys["w"] || up){
+            verticalVelocity -=
+                stats.climb*
+                .00045*
+                dt;
+        }
+
+    }
+
+    if(
+        keys["s"] ||
+        down
+    ){
+
+        verticalVelocity +=
+            stats.climb*
+            .00065*
+            dt;
+
+    }
+
+
+    /*
+       If no vertical input, velocity
+       slowly returns toward level.
+    */
+
+    if(
+        !keys["w"] &&
+        !up &&
+        !keys["s"] &&
+        !down
+    ){
+
+        verticalVelocity *=
+            Math.pow(
+                .90,
+                dt
+            );
+
+    }
+
+
+    /*
+       Stall.
+
+       A slow aircraft cannot climb
+       forever.
+    */
+
+    if(
+        (keys["w"] || up) &&
+        velocity <
+            stats.maxSpeed*
+            stats.stall
+    ){
+
+        verticalVelocity +=
+            25*
+            dt;
+
+        statusText.textContent =
+            "STALL — TOO SLOW";
+
+    }else{
+
+        if(
+            !hitTower1 &&
+            !hitTower2
+        ){
+
+            statusText.textContent =
+                velocity <= .05
+                ? "W / ▲ TO ACCELERATE"
+                : "FLY TOWARD THE BUILDINGS";
+
+        }
+
+    }
+
+
+    /*
+       Limit vertical speed.
+    */
+
+    verticalVelocity =
+        Math.max(
+            -2.8,
+            Math.min(
+                verticalVelocity,
+                2.8
+            )
+        );
+
+
+    /*
+       Convert vertical velocity
+       into screen position.
+    */
+
+    py +=
+        verticalVelocity*
+        dt;
+
+
+    /*
+       Screen boundaries.
     */
 
     if(py<5){
+
         py=5;
-        verticalVelocity=Math.max(
-            verticalVelocity,
-            0
+
+        verticalVelocity=
+            Math.max(
+                verticalVelocity,
+                0
+            );
+
+    }
+
+    if(py>76){
+
+        py=76;
+
+        verticalVelocity=
+            Math.min(
+                verticalVelocity,
+                0
+            );
+
+    }
+
+
+    /*
+       Keep the plane within the
+       horizontal playable area.
+
+       It does NOT wrap around anymore.
+    */
+
+    if(px>96){
+
+        px=96;
+
+        velocity=0;
+
+    }
+
+    if(px<0){
+
+        px=0;
+
+        velocity=0;
+
+    }
+
+
+    /*
+       Plane banking.
+
+       Turning left/right makes the
+       aircraft visually bank.
+    */
+
+    let targetPitch=0;
+
+    if(turnLeft){
+        targetPitch=-12;
+    }
+
+    if(turnRight){
+        targetPitch=12;
+    }
+
+    if(accelerate && velocity>1){
+        targetPitch +=
+            verticalVelocity*
+            4;
+    }
+
+    pitch +=
+        (
+            targetPitch-
+            pitch
+        )*
+        Math.min(
+            1,
+            .12*dt
         );
-    }
 
-    if(py>72){
-        py=72;
-        verticalVelocity=Math.min(
-            verticalVelocity,
-            0
-        );
-    }
 
-    if(px>105){
-        px=-18;
-    }
+    /*
+       Render.
+    */
 
-    if(px<-25){
-        px=105;
-    }
+    plane.style.left =
+        px+"%";
 
-    pitch+=(targetPitch-pitch)*.09;
+    plane.style.top =
+        py+"%";
 
-    plane.style.left=px+"%";
-    plane.style.top=py+"%";
-
-    plane.style.transform=
-        `rotate(${pitch}deg)`;
+    plane.style.transform =
+        "rotate("+pitch+"deg)";
 }
 
-let last=performance.now();
 
-function loop(now){
+/* =========================
+   MAIN LOOP
+========================= */
 
-    const dt=
+function gameLoop(now){
+
+    const dt =
         Math.min(
-            50,
-            now-last
+            .05,
+            (now-lastTime)/
+            1000
         );
 
-    last=now;
+    lastTime=now;
 
-    physics();
+    updatePhysics(
+        dt
+    );
+
     checkCollision();
 
-    requestAnimationFrame(loop);
+    requestAnimationFrame(
+        gameLoop
+    );
 }
 
-selectPlane("airliner");
 
-requestAnimationFrame(loop);
+/* =========================
+   START
+========================= */
 
-/*
-    Start a little movement automatically so
-    the aircraft does not sit completely still.
-*/
-velocity=.8;
+selectPlane(
+    "airliner"
+);
+
+velocity=0;
+
+requestAnimationFrame(
+    gameLoop
+);
 
 </script>
 
