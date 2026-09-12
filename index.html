@@ -1,296 +1,312 @@
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
-<html>
+```html
+<!DOCTYPE html>
+<html lang="en">
 <head>
-
-<title>Steven</title>
-
-<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>STEVEN</title>
+
 <style>
+    * {
+        box-sizing: border-box;
+    }
 
-body {
-    background: #ffffff;
-    color: #000000;
-    font-family: "Times New Roman", Times, serif;
-    font-size: 13px;
-    margin: 20px;
-}
+    body {
+        margin: 0;
+        padding: 10px;
+        background: #ffffff;
+        color: #000000;
+        font-family: "Times New Roman", serif;
+        font-size: 16px;
+    }
 
-table {
-    border-collapse: collapse;
-}
+    .main {
+        width: 600px;
+        max-width: 100%;
+        margin: 20px auto;
+        border: 2px solid #000000;
+        background: #eeeeee;
+    }
 
-.main {
-    width: 600px;
-    max-width: 95%;
-    margin: auto;
-    border: 2px solid #000000;
-}
+    .header {
+        background: #c0c0c0;
+        border-bottom: 2px solid #000000;
+        padding: 8px;
+        font-size: 24px;
+        font-weight: bold;
+        color: #000080;
+    }
 
-.header {
-    background: #c0c0c0;
-    color: #000000;
-    padding: 4px;
-    border-bottom: 2px solid #000000;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    font-weight: bold;
-}
+    .content {
+        padding: 15px;
+    }
 
-.content {
-    padding: 15px;
-}
+    .login {
+        width: 100%;
+        max-width: 400px;
+        margin: 10px auto 25px auto;
+        border: 2px solid #000000;
+        background: #d4d0c8;
+        padding: 15px;
+    }
 
-.login {
-    width: 320px;
-    max-width: 95%;
-    margin: 20px auto;
-    border: 2px solid #000000;
-}
+    .login-title {
+        background: #000080;
+        color: white;
+        padding: 4px;
+        font-weight: bold;
+        margin-bottom: 12px;
+    }
 
-.loginheader {
-    background: #000080;
-    color: #ffffff;
-    padding: 3px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    font-weight: bold;
-}
+    label {
+        display: block;
+        margin-top: 8px;
+        margin-bottom: 3px;
+        font-weight: bold;
+    }
 
-.loginbody {
-    background: #c0c0c0;
-    padding: 15px;
-}
+    input {
+        width: 100%;
+        padding: 7px;
+        border: 2px inset #ffffff;
+        background: white;
+        font-family: "Times New Roman", serif;
+        font-size: 16px;
+    }
 
-input {
-    width: 160px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    border: 2px inset #ffffff;
-}
+    button {
+        margin-top: 12px;
+        padding: 5px 18px;
+        border: 2px outset #ffffff;
+        background: #c0c0c0;
+        font-family: "Times New Roman", serif;
+        font-size: 16px;
+        cursor: pointer;
+    }
 
-button {
-    background: #c0c0c0;
-    color: #000000;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 11px;
-    padding: 3px 18px;
+    button:active {
+        border: 2px inset #ffffff;
+    }
 
-    border-top: 2px solid #ffffff;
-    border-left: 2px solid #ffffff;
-    border-right: 2px solid #000000;
-    border-bottom: 2px solid #000000;
-}
+    #message {
+        margin-top: 12px;
+        font-weight: bold;
+        min-height: 20px;
+    }
 
-button:active {
-    border-top: 2px solid #000000;
-    border-left: 2px solid #000000;
-    border-right: 2px solid #ffffff;
-    border-bottom: 2px solid #ffffff;
-}
+    .photos {
+        width: 100%;
+        text-align: center;
+    }
 
-.photos {
-    text-align: center;
-}
+    .photos img {
+        width: 30%;
+        max-width: 170px;
+        margin: 5px;
+        border: 1px solid #000000;
+    }
 
-.photos img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border: 1px solid #000000;
-    margin: 3px;
-}
+    .footer {
+        border-top: 2px solid #000000;
+        background: #c0c0c0;
+        padding: 7px;
+        font-size: 12px;
+    }
 
-.small {
-    font-size: 10px;
-}
+    /* CREEPY SCREEN */
+    #creepyScreen {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: #000000;
+        color: #ffffff;
+        z-index: 9999;
+        text-align: center;
+        padding: 30px 15px;
+        font-family: "Courier New", monospace;
+    }
 
+    #creepyScreen h1 {
+        margin-top: 20vh;
+        font-size: clamp(30px, 8vw, 70px);
+    }
+
+    #creepyScreen p {
+        font-size: clamp(14px, 4vw, 22px);
+    }
+
+    #countdown {
+        font-size: 20px;
+    }
+
+    @media (max-width: 500px) {
+        body {
+            padding: 5px;
+            font-size: 15px;
+        }
+
+        .main {
+            margin: 5px auto;
+        }
+
+        .header {
+            font-size: 20px;
+        }
+
+        .content {
+            padding: 8px;
+        }
+
+        .login {
+            padding: 10px;
+        }
+
+        .photos img {
+            width: 45%;
+            margin: 3px;
+        }
+
+        input {
+            font-size: 16px;
+        }
+    }
 </style>
-
 </head>
 
 <body>
 
-<table class="main" cellpadding="0" cellspacing="0">
+<div class="main" id="mainPage">
 
-<tr>
-<td>
+    <div class="header">
+        STEVEN
+    </div>
 
-<div class="header">
-Steven
-</div>
+    <div class="content">
 
-<div class="content">
+        <div class="login">
 
-<center>
+            <div class="login-title">
+                LOGIN
+            </div>
 
-<font size="5">
-<b>Steven</b>
-</font>
+            <label for="username">USERNAME:</label>
+            <input type="text" id="username" autocomplete="off">
 
-<br><br>
+            <label for="password">PASSWORD:</label>
+            <input type="password" id="password" autocomplete="off">
 
-<font size="2">
-Please enter your username and password.
-</font>
+            <button onclick="login()">LOGIN</button>
 
-</center>
+            <div id="message"></div>
 
+            <div id="countdown">
+                20 seconds remaining
+            </div>
 
-<table class="login" cellpadding="0" cellspacing="0">
+        </div>
 
-<tr>
-<td>
+        <div class="photos">
+            <img src="IMG_0226.jpeg">
+            <img src="IMG_0333.jpeg">
+            <img src="IMG_0751.jpeg">
+            <img src="IMG_0752.jpeg">
+            <img src="IMG_0753.jpeg">
+            <img src="IMG_0754.jpeg">
+        </div>
 
-<div class="loginheader">
-Login
-</div>
+    </div>
 
-<div class="loginbody">
-
-<center>
-
-<table cellpadding="4">
-
-<tr>
-
-<td align="right">
-<b>USERNAME:</b>
-</td>
-
-<td>
-<input type="text" id="username">
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-<b>PASSWORD:</b>
-</td>
-
-<td>
-<input type="password" id="password">
-</td>
-
-</tr>
-
-<tr>
-
-<td colspan="2" align="center">
-
-<br>
-
-<button onclick="login()">
-LOGIN
-</button>
-
-</td>
-
-</tr>
-
-</table>
-
-<div id="result"></div>
-
-</center>
+    <div class="footer">
+        This page requires a computer.
+    </div>
 
 </div>
 
-</td>
-</tr>
 
-</table>
+<div id="creepyScreen">
+    <h1>ACCESS DENIED</h1>
 
+    <p>you took too long.</p>
 
-<center>
+    <p>steven was expecting you.</p>
 
-<font size="2">
-Pictures
-</font>
-
-<br><br>
-
-<div class="photos">
-
-<img src="IMG_0226.jpeg">
-<img src="IMG_0333.jpeg">
-<img src="IMG_0751.jpeg">
-
-<br>
-
-<img src="IMG_0752.jpeg">
-<img src="IMG_0753.jpeg">
-<img src="IMG_0754.jpeg">
-
+    <p id="countdown"></p>
 </div>
-
-<br>
-
-<font class="small">
-Best viewed with Internet Explorer 5.0<br>
-800 x 600 recommended
-</font>
-
-</center>
-
-</div>
-
-</td>
-</tr>
-
-</table>
 
 
 <audio id="music" loop>
-
-<source src="backgound music.mp3" type="audio/mpeg">
-
+    <source src="backgound music.mp3" type="audio/mpeg">
 </audio>
 
 
 <script>
 
-var music = document.getElementById("music");
+let timeLeft = 20;
+let allowed = false;
 
-document.addEventListener("click", function () {
+const timer = setInterval(function() {
 
-    music.volume = 0.35;
+    if (allowed) {
+        clearInterval(timer);
+        return;
+    }
 
-    music.play().catch(function () {});
+    timeLeft--;
 
-}, { once: true });
+    const countdowns = document.querySelectorAll("#countdown");
+
+    countdowns.forEach(function(element) {
+        element.textContent = timeLeft + " seconds remaining";
+    });
+
+    if (timeLeft <= 0) {
+        clearInterval(timer);
+        showCreepyScreen();
+    }
+
+}, 1000);
 
 
 function login() {
 
-    var username =
-        document.getElementById("username").value;
+    const username = document.getElementById("username").value.toLowerCase();
+    const password = document.getElementById("password").value.toLowerCase();
+    const message = document.getElementById("message");
 
-    var password =
-        document.getElementById("password").value;
+    if (username.includes("steven") || password.includes("steven")) {
 
-    var result =
-        document.getElementById("result");
+        allowed = true;
 
-    var text =
-        (username + " " + password).toLowerCase();
+        message.style.color = "green";
+        message.textContent = "LOGIN ACCEPTED.";
 
-    if (text.indexOf("steven") !== -1) {
+        document.getElementById("countdown").textContent = "";
 
-        result.innerHTML =
-            "<br><font color='green'><b>LOGIN ACCEPTED</b></font>";
+        clearInterval(timer);
 
     } else {
 
-        result.innerHTML =
-            "<br><font color='red'><b>LOGIN FAILED</b></font>";
+        message.style.color = "red";
+        message.textContent = "ACCESS DENIED.";
 
     }
+
+    const music = document.getElementById("music");
+
+    music.play().catch(function() {});
+
+}
+
+
+function showCreepyScreen() {
+
+    document.getElementById("mainPage").style.display = "none";
+    document.getElementById("creepyScreen").style.display = "block";
+
+    const music = document.getElementById("music");
+
+    music.play().catch(function() {});
 
 }
 
@@ -298,4 +314,3 @@ function login() {
 
 </body>
 </html>
-
