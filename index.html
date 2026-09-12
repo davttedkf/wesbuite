@@ -1,134 +1,443 @@
-```html
+
 <!DOCTYPE html>
 <html>
 <head>
-<title>Steven</title>
+<meta charset="windows-1252">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>STEVEN</title>
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #000000;
+    color: #ffffff;
+}
+
+body {
+    font-family: "Times New Roman", serif;
+    font-size: 14px;
+
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            #000000 0px,
+            #000000 2px,
+            #080808 2px,
+            #080808 4px
+        );
+}
+
+.page {
+    width: 760px;
+    max-width: 96%;
+    margin: 10px auto;
+    background: #050505;
+
+    border-top: 6px ridge #999999;
+    border-left: 6px ridge #999999;
+    border-right: 6px ridge #444444;
+    border-bottom: 6px ridge #444444;
+}
+
+.header {
+    text-align: center;
+    background: #180000;
+    padding: 8px;
+
+    border-bottom: 4px double #ff0000;
+}
+
+.header h1 {
+    margin: 0;
+    padding: 0;
+
+    font-family: "Courier New", monospace;
+    font-size: 42px;
+
+    color: #ff0000;
+    text-shadow: 2px 2px #550000;
+}
+
+.sub {
+    color: #ffff00;
+    font-size: 12px;
+}
+
+.marquee {
+    background: #111111;
+    color: #ff0000;
+    border-bottom: 2px solid #555555;
+
+    font-family: "Courier New", monospace;
+    font-weight: bold;
+}
+
+.content {
+    padding: 10px;
+}
+
+.warning {
+    text-align: center;
+    color: #ffff00;
+    font-weight: bold;
+}
+
+.photos {
+    text-align: center;
+    padding: 5px;
+}
+
+.photos img {
+    width: 110px;
+    height: 110px;
+
+    object-fit: cover;
+
+    margin: 3px;
+
+    border-top: 4px outset #aaaaaa;
+    border-left: 4px outset #aaaaaa;
+    border-right: 4px inset #444444;
+    border-bottom: 4px inset #444444;
+
+    background: #222222;
+}
+
+.login {
+    width: 360px;
+    max-width: 90%;
+    margin: 15px auto;
+
+    padding: 10px;
+
+    background: #111111;
+
+    border-top: 5px outset #888888;
+    border-left: 5px outset #888888;
+    border-right: 5px inset #333333;
+    border-bottom: 5px inset #333333;
+
+    text-align: center;
+}
+
+.login-title {
+    color: #ff0000;
+    font-family: "Courier New", monospace;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+label {
+    display: block;
+    color: #ffffff;
+    margin-top: 8px;
+}
+
+input {
+    width: 90%;
+    max-width: 260px;
+
+    box-sizing: border-box;
+
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+
+    background: #dddddd;
+    color: #000000;
+
+    border-top: 3px inset #555555;
+    border-left: 3px inset #555555;
+    border-right: 3px outset #eeeeee;
+    border-bottom: 3px outset #eeeeee;
+}
+
+button {
+    margin-top: 12px;
+
+    font-family: "Times New Roman", serif;
+    font-weight: bold;
+
+    background: #c0c0c0;
+    color: #000000;
+
+    border-top: 3px outset #eeeeee;
+    border-left: 3px outset #eeeeee;
+    border-right: 3px inset #555555;
+    border-bottom: 3px inset #555555;
+
+    padding: 3px 15px;
+
+    cursor: pointer;
+}
+
+button:active {
+    border-top: 3px inset #555555;
+    border-left: 3px inset #555555;
+    border-right: 3px outset #eeeeee;
+    border-bottom: 3px outset #eeeeee;
+}
+
+#message {
+    min-height: 25px;
+    margin-top: 10px;
+
+    font-family: "Courier New", monospace;
+    font-weight: bold;
+}
+
+.granted {
+    color: #00ff00;
+}
+
+.denied {
+    color: #ff0000;
+}
+
+.blink {
+    animation: blink 0.7s steps(1, end) infinite;
+}
+
+@keyframes blink {
+    50% {
+        visibility: hidden;
+    }
+}
+
+.oldstuff {
+    text-align: center;
+    font-family: "Courier New", monospace;
+    font-size: 10px;
+    color: #777777;
+}
+
+.counter {
+    color: #00ff00;
+    font-family: "Courier New", monospace;
+}
+
+.log-button {
+    position: fixed;
+    right: 6px;
+    bottom: 6px;
+
+    margin: 0;
+
+    font-size: 11px;
+    padding: 3px 7px;
+}
+
+hr {
+    border: 0;
+    border-top: 2px ridge #777777;
+}
+
+@media (max-width: 600px) {
+
+    .page {
+        width: 96%;
+        margin: 4px auto;
+    }
+
+    .header h1 {
+        font-size: 30px;
+    }
+
+    .photos img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .login {
+        width: 90%;
+    }
+
+    body {
+        font-size: 13px;
+    }
+}
+</style>
 </head>
 
-<body bgcolor="#000000" text="#FFFFFF" link="#FF0000" vlink="#800000">
+<body>
 
 <center>
 
-<table width="760" border="4" cellpadding="6" cellspacing="0" bgcolor="#111111" bordercolor="#666666">
-<tr>
-<td>
+<div class="page">
 
-<center>
+    <div class="header">
+        <h1>STEVEN</h1>
 
-<font face="Times New Roman" size="7" color="#FF0000">
-<b>STEVEN</b>
-</font>
+        <div class="sub">
+            *** PRIVATE PERSONAL DATABASE ***
+        </div>
 
-<br>
+        <div class="sub">
+            LAST UPDATED: 1999
+        </div>
+    </div>
 
-<font face="Times New Roman" size="2" color="#AAAAAA">
-----------------------------------------
-</font>
+    <div class="marquee">
+        <marquee scrollamount="5">
+            >>> WELCOME TO STEVEN'S SECRET PAGE <<< &nbsp;&nbsp;&nbsp;
+            >>> UNAUTHORIZED USERS WILL BE DENIED <<<
+        </marquee>
+    </div>
 
-<br><br>
+    <div class="content">
 
-<table border="3" cellpadding="5" cellspacing="2" bgcolor="#222222">
-<tr>
-<td align="center">
+        <div class="warning">
+            <blink>!!! WARNING !!!</blink>
+            <br>
+            YOU HAVE ENTERED A RESTRICTED AREA
+        </div>
 
-<font face="Arial" size="2" color="#FF0000">
-<b>ENTER YOUR USERNAME AND PASSWORD</b>
-</font>
+        <hr>
 
-<br><br>
+        <div class="photos">
 
-<table border="1" cellpadding="4" cellspacing="0" bgcolor="#CCCCCC">
-<tr>
-<td>
-<font face="Arial" size="2" color="#000000">
-USERNAME:
-</font>
-</td>
+            <img src="IMG_0226.jpeg" alt="IMG_0226">
+            <img src="IMG_0333.jpeg" alt="IMG_0333">
+            <img src="IMG_0751.jpeg" alt="IMG_0751">
+            <img src="IMG_0752.jpeg" alt="IMG_0752">
+            <img src="IMG_0753.jpeg" alt="IMG_0753">
+            <img src="IMG_0754.jpeg" alt="IMG_0754">
 
-<td>
-<input type="text" size="25">
-</td>
-</tr>
+        </div>
 
-<tr>
-<td>
-<font face="Arial" size="2" color="#000000">
-PASSWORD:
-</font>
-</td>
+        <hr>
 
-<td>
-<input type="password" size="25">
-</td>
-</tr>
+        <div class="login">
 
-<tr>
-<td colspan="2" align="center">
-<input type="button" value=" ENTER ">
-</td>
-</tr>
-</table>
+            <div class="login-title">
+                ENTER USERNAME AND PASSWORD
+            </div>
 
-</td>
-</tr>
-</table>
+            <br>
 
-<br><br>
+            <label>
+                USERNAME:
+            </label>
 
-<table border="2" cellpadding="3" cellspacing="2">
-<tr>
+            <input
+                type="text"
+                id="username"
+                autocomplete="off"
+            >
 
-<td>
-<img src="IMG_0226" width="120" height="120" border="3">
-</td>
+            <label>
+                PASSWORD:
+            </label>
 
-<td>
-<img src="IMG_0333" width="120" height="120" border="3">
-</td>
+            <input
+                type="password"
+                id="password"
+                autocomplete="off"
+            >
 
-<td>
-<img src="IMG_0751" width="120" height="120" border="3">
-</td>
+            <br>
 
-</tr>
+            <button onclick="login()">
+                ENTER
+            </button>
 
-<tr>
+            <div id="message"></div>
 
-<td>
-<img src="IMG_0752" width="120" height="120" border="3">
-</td>
+        </div>
 
-<td>
-<img src="IMG_0753" width="120" height="120" border="3">
-</td>
+        <hr>
 
-<td>
-<img src="IMG_0754" width="120" height="120" border="3">
-</td>
+        <div class="oldstuff">
 
-</tr>
-</table>
+            <div class="counter">
+                VISITORS: <span id="counter">000001</span>
+            </div>
 
-<br>
+            <br>
 
-<font face="Times New Roman" size="2" color="#777777">
-Last Updated: 1999
-</font>
+            BEST VIEWED WITH NETSCAPE NAVIGATOR 4.0
 
-<br><br>
+            <br>
 
-<font face="Arial" size="1" color="#555555">
-This page is best viewed at 800x600
-</font>
+            800x600 RESOLUTION RECOMMENDED
+
+            <br><br>
+
+            <font color="#ff0000">
+                NO COPYRIGHT &copy; 1999 STEVEN
+            </font>
+
+        </div>
+
+    </div>
+
+</div>
 
 </center>
 
-</td>
-</tr>
-</table>
 
-</center>
+<button
+    class="log-button"
+    onclick="showLog()"
+>
+    LOG
+</button>
+
+
+<script>
+
+let attempts = 0;
+
+function login() {
+
+    attempts++;
+
+    const username =
+        document.getElementById("username").value;
+
+    const password =
+        document.getElementById("password").value;
+
+    const combined =
+        (username + " " + password).toLowerCase();
+
+    const message =
+        document.getElementById("message");
+
+    if (combined.includes("steven")) {
+
+        message.className = "granted";
+
+        message.innerHTML =
+            '<span class="blink">ACCESS GRANTED</span><br>' +
+            'STEVEN DETECTED';
+
+    } else {
+
+        message.className = "denied";
+
+        message.innerHTML =
+            'ACCESS DENIED';
+
+    }
+}
+
+
+function showLog() {
+
+    alert(
+        "SYSTEM LOG\n\n" +
+        "LOGIN ATTEMPTS: " + attempts + "\n\n" +
+        "STEVEN DETECTED: " +
+        (attempts > 0 ? "CHECKED" : "NO") +
+        "\n\n" +
+        "USERNAMES OR PASSWORDS ARE STORED."
+    );
+
+}
+
+</script>
 
 </body>
 </html>
-```
