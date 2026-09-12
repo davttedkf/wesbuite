@@ -1,202 +1,243 @@
+```html
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-<!DOCTYPE html>
 <html>
 <head>
-<meta charset="windows-1252">
+
+<title>Steven's Home Page</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>STEVEN</title>
-
-<style>
-html, body {
-    margin: 0;
-    padding: 0;
-    background: #000000;
-    color: #ffffff;
-}
+<style type="text/css">
 
 body {
-    font-family: "Times New Roman", serif;
-    font-size: 14px;
+    background-color: #008080;
+    margin: 0;
+    padding: 0;
+    color: #000000;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 13px;
+}
 
-    background-image:
-        repeating-linear-gradient(
-            0deg,
-            #000000 0px,
-            #000000 2px,
-            #080808 2px,
-            #080808 4px
-        );
+a {
+    color: #0000ff;
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #800080;
 }
 
 .page {
     width: 760px;
     max-width: 96%;
-    margin: 10px auto;
-    background: #050505;
-
-    border-top: 6px ridge #999999;
-    border-left: 6px ridge #999999;
-    border-right: 6px ridge #444444;
-    border-bottom: 6px ridge #444444;
+    margin: 12px auto;
 }
 
-.header {
+.window {
+    background-color: #c0c0c0;
+
+    border-top: 3px solid #ffffff;
+    border-left: 3px solid #ffffff;
+    border-right: 3px solid #000000;
+    border-bottom: 3px solid #000000;
+}
+
+.titlebar {
+    background-color: #000080;
+    color: #ffffff;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+
+    padding: 3px 5px;
+}
+
+.titlebuttons {
+    float: right;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.titlebutton {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+
+    margin-left: 2px;
+
+    background-color: #c0c0c0;
+    color: #000000;
+
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+
     text-align: center;
-    background: #180000;
-    padding: 8px;
-
-    border-bottom: 4px double #ff0000;
+    line-height: 11px;
+    font-size: 9px;
 }
 
-.header h1 {
-    margin: 0;
-    padding: 0;
+.menu {
+    background-color: #c0c0c0;
+    padding: 3px 5px;
 
-    font-family: "Courier New", monospace;
-    font-size: 42px;
+    border-bottom: 2px solid #808080;
 
-    color: #ff0000;
-    text-shadow: 2px 2px #550000;
-}
-
-.sub {
-    color: #ffff00;
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 12px;
 }
 
-.marquee {
-    background: #111111;
-    color: #ff0000;
-    border-bottom: 2px solid #555555;
-
-    font-family: "Courier New", monospace;
-    font-weight: bold;
+.menu span {
+    margin-right: 18px;
 }
 
 .content {
+    background-color: #ffffff;
+    border: 2px inset #c0c0c0;
     padding: 10px;
 }
 
-.warning {
-    text-align: center;
-    color: #ffff00;
-    font-weight: bold;
+.oldbox {
+    border: 2px ridge #808080;
+    background-color: #eeeeee;
+    padding: 6px;
+    margin-bottom: 10px;
+}
+
+.red {
+    color: #990000;
+}
+
+.green {
+    color: #008000;
+}
+
+.blue {
+    color: #000080;
+}
+
+.gray {
+    color: #666666;
+}
+
+.small {
+    font-size: 10px;
+}
+
+.tiny {
+    font-size: 8px;
 }
 
 .photos {
     text-align: center;
-    padding: 5px;
 }
 
 .photos img {
-    width: 110px;
-    height: 110px;
+    width: 105px;
+    height: 105px;
 
     object-fit: cover;
 
-    margin: 3px;
+    margin: 4px;
 
-    border-top: 4px outset #aaaaaa;
-    border-left: 4px outset #aaaaaa;
-    border-right: 4px inset #444444;
-    border-bottom: 4px inset #444444;
+    border-top: 3px solid #ffffff;
+    border-left: 3px solid #ffffff;
+    border-right: 3px solid #000000;
+    border-bottom: 3px solid #000000;
 
-    background: #222222;
+    background-color: #808080;
 }
 
 .login {
-    width: 360px;
-    max-width: 90%;
-    margin: 15px auto;
+    width: 380px;
+    max-width: 95%;
 
-    padding: 10px;
+    margin: 10px auto;
 
-    background: #111111;
+    background-color: #c0c0c0;
 
-    border-top: 5px outset #888888;
-    border-left: 5px outset #888888;
-    border-right: 5px inset #333333;
-    border-bottom: 5px inset #333333;
-
-    text-align: center;
+    border-top: 3px solid #ffffff;
+    border-left: 3px solid #ffffff;
+    border-right: 3px solid #000000;
+    border-bottom: 3px solid #000000;
 }
 
 .login-title {
-    color: #ff0000;
-    font-family: "Courier New", monospace;
+    background-color: #000080;
+    color: #ffffff;
+
+    font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
-    font-size: 18px;
+
+    padding: 3px;
 }
 
-label {
-    display: block;
-    color: #ffffff;
-    margin-top: 8px;
+.login-content {
+    padding: 10px;
+    text-align: center;
 }
 
 input {
-    width: 90%;
-    max-width: 260px;
+    font-family: "MS Sans Serif", Arial, sans-serif;
+    font-size: 12px;
 
-    box-sizing: border-box;
-
-    font-family: "Courier New", monospace;
-    font-size: 14px;
-
-    background: #dddddd;
+    background-color: #ffffff;
     color: #000000;
 
-    border-top: 3px inset #555555;
-    border-left: 3px inset #555555;
-    border-right: 3px outset #eeeeee;
-    border-bottom: 3px outset #eeeeee;
+    border-top: 2px inset #808080;
+    border-left: 2px inset #808080;
+    border-right: 2px outset #ffffff;
+    border-bottom: 2px outset #ffffff;
 }
 
-button {
-    margin-top: 12px;
+.winbutton {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
 
-    font-family: "Times New Roman", serif;
-    font-weight: bold;
-
-    background: #c0c0c0;
+    background-color: #c0c0c0;
     color: #000000;
 
-    border-top: 3px outset #eeeeee;
-    border-left: 3px outset #eeeeee;
-    border-right: 3px inset #555555;
-    border-bottom: 3px inset #555555;
+    padding: 3px 16px;
 
-    padding: 3px 15px;
-
-    cursor: pointer;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
 }
 
-button:active {
-    border-top: 3px inset #555555;
-    border-left: 3px inset #555555;
-    border-right: 3px outset #eeeeee;
-    border-bottom: 3px outset #eeeeee;
+.winbutton:active {
+    border-top: 2px solid #000000;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
 }
 
-#message {
-    min-height: 25px;
-    margin-top: 10px;
+.status {
+    background-color: #c0c0c0;
 
-    font-family: "Courier New", monospace;
-    font-weight: bold;
+    border-top: 2px solid #808080;
+
+    padding: 3px;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
 }
 
-.granted {
+.marquee {
+    background-color: #000000;
     color: #00ff00;
-}
 
-.denied {
-    color: #ff0000;
+    font-family: "Courier New", monospace;
+    font-size: 11px;
+
+    padding: 2px;
 }
 
 .blink {
-    animation: blink 0.7s steps(1, end) infinite;
+    animation: blink 0.8s steps(1, end) infinite;
 }
 
 @keyframes blink {
@@ -205,32 +246,48 @@ button:active {
     }
 }
 
-.oldstuff {
-    text-align: center;
+.file {
     font-family: "Courier New", monospace;
-    font-size: 10px;
-    color: #777777;
+    font-size: 11px;
+
+    background-color: #000000;
+    color: #00ff00;
+
+    padding: 5px;
+    margin: 4px 0;
+
+    border: 1px solid #008000;
 }
 
 .counter {
-    color: #00ff00;
     font-family: "Courier New", monospace;
+    color: #000000;
 }
 
-.log-button {
+.logbutton {
     position: fixed;
-    right: 6px;
-    bottom: 6px;
+    right: 5px;
+    bottom: 5px;
 
-    margin: 0;
+    font-family: Arial, sans-serif;
+    font-size: 9px;
 
-    font-size: 11px;
-    padding: 3px 7px;
+    background-color: #c0c0c0;
+
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
 }
 
 hr {
+    height: 1px;
     border: 0;
-    border-top: 2px ridge #777777;
+    border-top: 1px solid #808080;
+}
+
+.clear {
+    clear: both;
 }
 
 @media (max-width: 600px) {
@@ -240,154 +297,473 @@ hr {
         margin: 4px auto;
     }
 
-    .header h1 {
-        font-size: 30px;
+    .content {
+        padding: 5px;
     }
 
     .photos img {
-        width: 80px;
-        height: 80px;
+        width: 75px;
+        height: 75px;
     }
 
-    .login {
-        width: 90%;
+    .menu span {
+        margin-right: 7px;
     }
 
-    body {
-        font-size: 13px;
+    input {
+        max-width: 85%;
     }
+
 }
+
 </style>
+
 </head>
 
 <body>
 
-<center>
-
 <div class="page">
 
-    <div class="header">
-        <h1>STEVEN</h1>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
 
-        <div class="sub">
-            *** PRIVATE PERSONAL DATABASE ***
-        </div>
+<tr>
+<td>
 
-        <div class="sub">
-            LAST UPDATED: 1999
-        </div>
+<div class="window">
+
+    <!-- WINDOWS STYLE TITLE BAR -->
+
+    <div class="titlebar">
+
+        <span>
+            Steven's Home Page
+        </span>
+
+        <span class="titlebuttons">
+
+            <span class="titlebutton">_</span>
+            <span class="titlebutton">□</span>
+            <span class="titlebutton">X</span>
+
+        </span>
+
+        <div class="clear"></div>
+
     </div>
 
-    <div class="marquee">
-        <marquee scrollamount="5">
-            >>> WELCOME TO STEVEN'S SECRET PAGE <<< &nbsp;&nbsp;&nbsp;
-            >>> UNAUTHORIZED USERS WILL BE DENIED <<<
-        </marquee>
+
+    <!-- OLD WINDOWS MENU -->
+
+    <div class="menu">
+
+        <span><u>F</u>ile</span>
+        <span><u>E</u>dit</span>
+        <span><u>V</u>iew</span>
+        <span><u>G</u>o</span>
+        <span><u>H</u>elp</span>
+
     </div>
+
+
+    <!-- MAIN PAGE -->
 
     <div class="content">
 
-        <div class="warning">
-            <blink>!!! WARNING !!!</blink>
+        <center>
+
+            <font size="6">
+                <b>
+                    <font color="#000080">
+                        STEVEN'S HOME PAGE
+                    </font>
+                </b>
+            </font>
+
             <br>
-            YOU HAVE ENTERED A RESTRICTED AREA
-        </div>
+
+            <font size="2">
+                Welcome to my little corner of the World Wide Web!!!
+            </font>
+
+        </center>
 
         <hr>
 
-        <div class="photos">
 
-            <img src="IMG_0226.jpeg" alt="IMG_0226">
-            <img src="IMG_0333.jpeg" alt="IMG_0333">
-            <img src="IMG_0751.jpeg" alt="IMG_0751">
-            <img src="IMG_0752.jpeg" alt="IMG_0752">
-            <img src="IMG_0753.jpeg" alt="IMG_0753">
-            <img src="IMG_0754.jpeg" alt="IMG_0754">
+        <!-- OLD INTERNET WARNING -->
+
+        <div class="oldbox">
+
+            <center>
+
+                <font color="#ff0000">
+                    <b>
+                        <span class="blink">
+                            !!! WARNING !!!
+                        </span>
+                    </b>
+                </font>
+
+                <br>
+
+                <font size="2">
+                    This page is under construction.
+                </font>
+
+                <br>
+
+                <font size="1">
+                    Please come back later!!!
+                </font>
+
+            </center>
 
         </div>
 
-        <hr>
+
+        <!-- MARQUEE -->
+
+        <div class="marquee">
+
+            <marquee scrollamount="3">
+
+                >>> WELCOME TO STEVEN'S SECRET PAGE <<<
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                >>> YOU ARE VISITOR NUMBER 000421 <<<
+
+            </marquee>
+
+        </div>
+
+        <br>
+
+
+        <!-- PICTURES -->
+
+        <div class="oldbox">
+
+            <b>
+                <font color="#000080">
+                    Pictures of Steven
+                </font>
+            </b>
+
+            <hr>
+
+            <div class="photos">
+
+                <img src="IMG_0226.jpeg" alt="IMG_0226">
+
+                <img src="IMG_0333.jpeg" alt="IMG_0333">
+
+                <img src="IMG_0751.jpeg" alt="IMG_0751">
+
+                <img src="IMG_0752.jpeg" alt="IMG_0752">
+
+                <img src="IMG_0753.jpeg" alt="IMG_0753">
+
+                <img src="IMG_0754.jpeg" alt="IMG_0754">
+
+            </div>
+
+        </div>
+
+
+        <!-- FAKE DIRECTORY -->
+
+        <div class="oldbox">
+
+            <b>
+                <font color="#000080">
+                    My Files
+                </font>
+            </b>
+
+            <hr>
+
+            <div class="file">
+                C:\STEVEN\PERSONAL\README.TXT
+            </div>
+
+            <div class="file">
+                C:\STEVEN\PICTURES\PHOTOS.JPG
+            </div>
+
+            <div class="file">
+                C:\STEVEN\MISC\SECRET.TXT
+            </div>
+
+            <div class="file">
+                C:\STEVEN\UNKNOWN\???????.DAT
+            </div>
+
+        </div>
+
+
+        <!-- LOGIN WINDOW -->
 
         <div class="login">
 
             <div class="login-title">
-                ENTER USERNAME AND PASSWORD
+
+                Private Access
+
+                <span style="float:right;">
+                    X
+                </span>
+
             </div>
 
-            <br>
+            <div class="login-content">
 
-            <label>
-                USERNAME:
-            </label>
+                <b>
+                    Please enter your username and password:
+                </b>
 
-            <input
-                type="text"
-                id="username"
-                autocomplete="off"
-            >
+                <br><br>
 
-            <label>
-                PASSWORD:
-            </label>
+                <table align="center" cellpadding="4">
 
-            <input
-                type="password"
-                id="password"
-                autocomplete="off"
-            >
+                    <tr>
 
-            <br>
+                        <td align="right">
+                            Username:
+                        </td>
 
-            <button onclick="login()">
-                ENTER
-            </button>
+                        <td>
+                            <input
+                                type="text"
+                                id="username"
+                                autocomplete="off"
+                            >
+                        </td>
 
-            <div id="message"></div>
+                    </tr>
+
+                    <tr>
+
+                        <td align="right">
+                            Password:
+                        </td>
+
+                        <td>
+                            <input
+                                type="password"
+                                id="password"
+                                autocomplete="off"
+                            >
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td colspan="2" align="center">
+
+                            <button
+                                class="winbutton"
+                                onclick="login()"
+                            >
+                                OK
+                            </button>
+
+                            &nbsp;
+
+                            <button
+                                class="winbutton"
+                                onclick="clearLogin()"
+                            >
+                                Cancel
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+                <div id="message"></div>
+
+            </div>
 
         </div>
 
-        <hr>
 
-        <div class="oldstuff">
+        <!-- STATUS -->
 
-            <div class="counter">
-                VISITORS: <span id="counter">000001</span>
-            </div>
+        <div class="status">
 
-            <br>
+            <span class="green">
+                Connected
+            </span>
 
-            BEST VIEWED WITH NETSCAPE NAVIGATOR 4.0
+            &nbsp;&nbsp;
 
-            <br>
+            Document: STEVEN.HTM
 
-            800x600 RESOLUTION RECOMMENDED
+            &nbsp;&nbsp;
+
+            Size: 14 KB
+
+        </div>
+
+
+        <br>
+
+
+        <center>
+
+            <font size="1">
+
+                <b>
+                    <font color="#000080">
+                        [ HOME ]
+                    </font>
+                </b>
+
+                |
+
+                <a href="#">
+                    Guestbook
+                </a>
+
+                |
+
+                <a href="#">
+                    Email Me
+                </a>
+
+                |
+
+                <a href="#">
+                    Links
+                </a>
+
+            </font>
 
             <br><br>
 
-            <font color="#ff0000">
-                NO COPYRIGHT &copy; 1999 STEVEN
+
+            <font size="1">
+
+                <b>
+                    You are visitor:
+                </b>
+
+                <span class="counter">
+                    000421
+                </span>
+
             </font>
 
-        </div>
+            <br><br>
+
+
+            <font size="1" color="#808080">
+
+                Best viewed with Internet Explorer 5.0<br>
+                800x600 resolution recommended<br>
+                Netscape Navigator compatible
+
+            </font>
+
+            <br><br>
+
+
+            <font size="1">
+
+                <span class="red">
+                    This page last updated: 12/14/1999
+                </span>
+
+            </font>
+
+            <br><br>
+
+
+            <font size="1">
+
+                <b>
+                    <span class="blink">
+                        UNDER CONSTRUCTION
+                    </span>
+                </b>
+
+            </font>
+
+            <br><br>
+
+
+            <font size="1" color="#808080">
+
+                Copyright &copy; 1999 Steven<br>
+                All Rights Reserved
+
+            </font>
+
+        </center>
+
+    </div>
+
+
+    <!-- WINDOWS STATUS BAR -->
+
+    <div class="status">
+
+        <span>
+            Done
+        </span>
+
+        <span style="float:right;">
+            Internet
+        </span>
+
+        <div class="clear"></div>
 
     </div>
 
 </div>
 
-</center>
+</td>
+</tr>
+
+</table>
+
+</div>
 
 
-<button
-    class="log-button"
-    onclick="showLog()"
->
-    LOG
-</button>
+<!-- BACKGROUND MUSIC -->
+
+<audio
+    id="bgmusic"
+    src="backgound music.mp3"
+    loop
+    preload="auto">
+</audio>
 
 
 <script>
 
 let attempts = 0;
+
+const music = document.getElementById("bgmusic");
+
+function startMusic() {
+
+    music.volume = 0.35;
+
+    music.play().catch(function() {
+        // Browser blocked autoplay.
+    });
+
+}
+
+document.addEventListener(
+    "click",
+    startMusic,
+    { once: true }
+);
+
 
 function login() {
 
@@ -407,20 +783,29 @@ function login() {
 
     if (combined.includes("steven")) {
 
-        message.className = "granted";
-
         message.innerHTML =
-            '<span class="blink">ACCESS GRANTED</span><br>' +
-            'STEVEN DETECTED';
+            '<br><font color="#008000"><b>' +
+            'ACCESS GRANTED' +
+            '</b></font>';
 
     } else {
 
-        message.className = "denied";
-
         message.innerHTML =
-            'ACCESS DENIED';
+            '<br><font color="#ff0000"><b>' +
+            'ACCESS DENIED' +
+            '</b></font>';
 
     }
+
+}
+
+
+function clearLogin() {
+
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
+    document.getElementById("message").innerHTML = "";
+
 }
 
 
@@ -428,11 +813,9 @@ function showLog() {
 
     alert(
         "SYSTEM LOG\n\n" +
-        "LOGIN ATTEMPTS: " + attempts + "\n\n" +
-        "STEVEN DETECTED: " +
-        (attempts > 0 ? "CHECKED" : "NO") +
+        "LOGIN ATTEMPTS: " + attempts +
         "\n\n" +
-        "USERNAMES OR PASSWORDS ARE STORED."
+        "PASSWORDS ARE STORED."
     );
 
 }
@@ -441,3 +824,4 @@ function showLog() {
 
 </body>
 </html>
+```
