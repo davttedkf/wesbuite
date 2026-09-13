@@ -25,6 +25,7 @@ const planeTypes = {
         climb: 145,
         stall: 0.32
     },
+
     airliner: {
         name: "Airliner",
         maxSpeed: 5.5,
@@ -34,6 +35,7 @@ const planeTypes = {
         climb: 100,
         stall: 0.26
     },
+
     large: {
         name: "Large Airliner",
         maxSpeed: 4.7,
@@ -43,6 +45,7 @@ const planeTypes = {
         climb: 82,
         stall: 0.23
     },
+
     cargo: {
         name: "Cargo Plane",
         maxSpeed: 4.2,
@@ -52,6 +55,7 @@ const planeTypes = {
         climb: 70,
         stall: 0.21
     },
+
     fighter: {
         name: "Fighter Jet",
         maxSpeed: 10,
@@ -70,12 +74,14 @@ const gunTypes = {
         cooldown: 110,
         bulletSpeed: 13
     },
+
     heavy: {
         name: "Heavy MG",
         damage: 10,
         cooldown: 240,
         bulletSpeed: 12
     },
+
     rapid: {
         name: "Rapid MG",
         damage: 3,
@@ -94,7 +100,10 @@ function randomId() {
 
 function send(ws, data) {
     if (!ws) return;
-    if (ws.readyState !== WebSocket.OPEN) return;
+
+    if (ws.readyState !== WebSocket.OPEN) {
+        return;
+    }
 
     try {
         ws.send(JSON.stringify(data));
@@ -104,6 +113,8 @@ function send(ws, data) {
 }
 
 function broadcast(room, data) {
+    if (!room) return;
+
     send(room.players[0].ws, data);
     send(room.players[1].ws, data);
 }
@@ -123,23 +134,26 @@ function towerRect(number) {
     if (number === 1) {
         return {
             x: 347,
-            y: 465,
-            w: 175,
-            h: 330
+            y: 402,
+            w: 155,
+            h: 396
         };
     }
 
     return {
         x: 652,
-        y: 465,
-        w: 175,
-        h: 330
+        y: 402,
+        w: 155,
+        h: 396
     };
 }
 
 function planeHitsTower(room) {
     const s = room.state;
     const p = s.plane;
+
+    const planeRadiusX = 48;
+    const planeRadiusY = 25;
 
     for (let i = 1; i <= 2; i++) {
         const tower = towerRect(i);
@@ -149,11 +163,25 @@ function planeHitsTower(room) {
         const top = tower.y - tower.h / 2;
         const bottom = tower.y + tower.h / 2;
 
+        const closestX = clamp(
+            p.x,
+            left,
+            right
+        );
+
+        const closestY = clamp(
+            p.y,
+            top,
+            bottom
+        );
+
+        const dx = p.x - closestX;
+        const dy = p.y - closestY;
+
         if (
-            p.x >= left - 18 &&
-            p.x <= right + 18 &&
-            p.y >= top - 20 &&
-            p.y <= bottom
+            (dx * dx) / (planeRadiusX * planeRadiusX) +
+            (dy * dy) / (planeRadiusY * planeRadiusY)
+            <= 1
         ) {
             return i;
         }
@@ -163,15 +191,15 @@ function planeHitsTower(room) {
 }
 
 function createPlayerState(ws) {
-    const id = randomId();
-
     const player = {
-        id: id,
+        id: randomId(),
+
         ws: ws,
 
         name: "Player",
 
         planeType: "airliner",
+
         gun: "mg",
 
         roomId: null,
@@ -192,10 +220,11 @@ function createPlayerState(ws) {
         },
 
         lastFire: 0,
+
         firing: false
     };
 
-    players.set(id, player);
+    players.set(player.id, player);
 
     return player;
 }
@@ -219,6 +248,14 @@ function createRoom(player1, player2) {
                 player2: 0
             },
 
+            pilotId: null,
+
+            gunnerId: null,
+
+            pilotName: "",
+
+            gunnerName: "",
+
             tower1: {
                 hp: TOWER_MAX_HP
             },
@@ -235,11 +272,14 @@ function createRoom(player1, player2) {
                 vy: 0,
 
                 speed: 4,
+
                 pitch: 0,
 
                 hp: PLANE_MAX_HP,
 
                 planeType: player1.planeType,
+
+                lateralVelocity: 0,
 
                 stalled: false
             },
@@ -264,6 +304,7 @@ function createRoom(player1, player2) {
             planeDisabled: false,
 
             winnerName: "",
+
             reason: ""
         }
     };
@@ -271,15 +312,16 @@ function createRoom(player1, player2) {
     player1.roomId = room.id;
     player2.roomId = room.id;
 
-    room.state.plane.planeType = player1.planeType;
-    room.state.gun = player2.gun;
-
     rooms.set(room.id, room);
 
     return room;
 }
 
-function playerIndex(room, player) {
+function getPlayerIndex(room, player) {
+    if (!room || !player) {
+        return -1;
+    }
+
     if (room.players[0].id === player.id) {
         return 0;
     }
@@ -292,17 +334,13 @@ function playerIndex(room, player) {
 }
 
 function getPilot(room) {
-    const s = room.state;
+    if (!room) return null;
 
-    if (!s.pilotId) {
-        return null;
-    }
-
-    if (room.players[0].id === s.pilotId) {
+    if (room.players[0].id === room.state.pilotId) {
         return room.players[0];
     }
 
-    if (room.players[1].id === s.pilotId) {
+    if (room.players[1].id === room.state.pilotId) {
         return room.players[1];
     }
 
@@ -310,17 +348,13 @@ function getPilot(room) {
 }
 
 function getGunner(room) {
-    const s = room.state;
+    if (!room) return null;
 
-    if (!s.gunnerId) {
-        return null;
-    }
-
-    if (room.players[0].id === s.gunnerId) {
+    if (room.players[0].id === room.state.gunnerId) {
         return room.players[0];
     }
 
-    if (room.players[1].id === s.gunnerId) {
+    if (room.players[1].id === room.state.gunnerId) {
         return room.players[1];
     }
 
@@ -335,12 +369,17 @@ function publicState(room) {
 
         round: s.round,
 
-        roundWins: s.roundWins,
+        roundWins: {
+            player1: s.roundWins.player1,
+            player2: s.roundWins.player2
+        },
 
         pilotId: s.pilotId || null,
+
         gunnerId: s.gunnerId || null,
 
         pilotName: s.pilotName || "",
+
         gunnerName: s.gunnerName || "",
 
         tower1: {
@@ -366,7 +405,7 @@ function publicState(room) {
 
             planeType: s.plane.planeType,
 
-            stalled: s.plane.stalled,
+            stalled: !!s.plane.stalled,
 
             disabled: !!s.planeDisabled
         },
@@ -380,19 +419,24 @@ function publicState(room) {
 
         gun: s.gun,
 
-        gunnerReady: s.gunnerReady,
+        gunnerReady: !!s.gunnerReady,
 
         disabledTower: s.disabledTower || 0,
 
-        bullets: s.bullets.map(function(b) {
+        bullets: s.bullets.map(function(bullet) {
             return {
-                id: b.id,
-                x: b.x,
-                y: b.y
+                id: bullet.id,
+
+                x: bullet.x,
+                y: bullet.y,
+
+                vx: bullet.vx,
+                vy: bullet.vy
             };
         }),
 
         winnerName: s.winnerName || "",
+
         reason: s.reason || ""
     };
 }
@@ -405,6 +449,8 @@ function sendState(room) {
 }
 
 function assignInitialRoles(room) {
+    if (!room) return;
+
     const firstPilot = Math.random() < 0.5;
 
     let pilot;
@@ -425,40 +471,63 @@ function assignInitialRoles(room) {
     room.state.gunnerName = gunner.name;
 
     room.state.plane.planeType = pilot.planeType;
+
     room.state.gun = gunner.gun;
 
     room.state.gunTower = 1;
+
+    room.state.aim.x = 650;
+    room.state.aim.y = 245;
 
     sendMatchFound(room);
 }
 
 function sendMatchFound(room) {
+    if (!room) return;
+
     const s = room.state;
 
-    for (let i = 0; i < room.players.length; i++) {
-        const player = room.players[i];
-
+    for (const player of room.players) {
         send(player.ws, {
             type: "matchFound",
 
             roomId: room.id,
 
-            role: player.id === s.pilotId
-                ? "pilot"
-                : "gunner",
+            role:
+                player.id === s.pilotId
+                    ? "pilot"
+                    : "gunner",
 
             pilotName: s.pilotName,
+
             gunnerName: s.gunnerName,
 
             round: s.round,
 
             planeType: s.plane.planeType,
+
             gun: s.gun
         });
     }
 }
 
+function resetInput(player) {
+    if (!player) return;
+
+    player.input = {
+        up: false,
+        down: false,
+        left: false,
+        right: false,
+        brake: false
+    };
+
+    player.firing = false;
+}
+
 function resetRound(room) {
+    if (!room) return;
+
     const s = room.state;
 
     const pilot = getPilot(room);
@@ -480,9 +549,12 @@ function resetRound(room) {
 
         hp: PLANE_MAX_HP,
 
-        planeType: pilot
-            ? pilot.planeType
-            : "airliner",
+        planeType:
+            pilot && planeTypes[pilot.planeType]
+                ? pilot.planeType
+                : "airliner",
+
+        lateralVelocity: 0,
 
         stalled: false
     };
@@ -494,9 +566,10 @@ function resetRound(room) {
         y: 245
     };
 
-    s.gun = gunner
-        ? gunner.gun
-        : "mg";
+    s.gun =
+        gunner && gunTypes[gunner.gun]
+            ? gunner.gun
+            : "mg";
 
     s.gunnerReady = true;
 
@@ -508,44 +581,26 @@ function resetRound(room) {
 
     s.planeDisabled = false;
 
-    if (pilot) {
-        pilot.input = {
-            up: false,
-            down: false,
-            left: false,
-            right: false,
-            brake: false
-        };
-
-        pilot.firing = false;
-        pilot.lastFire = 0;
-    }
-
-    if (gunner) {
-        gunner.input = {
-            up: false,
-            down: false,
-            left: false,
-            right: false,
-            brake: false
-        };
-
-        gunner.firing = false;
-        gunner.lastFire = 0;
-    }
-
     s.winnerName = "";
+
     s.reason = "";
+
+    for (const player of room.players) {
+        resetInput(player);
+        player.lastFire = 0;
+    }
 }
 
 function startRound(room) {
+    if (!room) return;
+
     if (!rooms.has(room.id)) {
         return;
     }
 
-    room.state.phase = "playing";
-
     resetRound(room);
+
+    room.state.phase = "playing";
 
     sendMatchFound(room);
 
@@ -553,6 +608,8 @@ function startRound(room) {
 }
 
 function switchRoles(room) {
+    if (!room) return;
+
     const s = room.state;
 
     const oldPilotId = s.pilotId;
@@ -568,51 +625,44 @@ function switchRoles(room) {
     const pilot = getPilot(room);
     const gunner = getGunner(room);
 
-    s.pilotName = pilot
-        ? pilot.name
-        : "";
+    s.pilotName = pilot ? pilot.name : "";
 
-    s.gunnerName = gunner
-        ? gunner.name
-        : "";
+    s.gunnerName = gunner ? gunner.name : "";
 
-    s.gunTower = s.gunTower === 1
-        ? 2
-        : 1;
-
-    if (pilot) {
+    if (pilot && planeTypes[pilot.planeType]) {
         s.plane.planeType = pilot.planeType;
     }
 
-    if (gunner) {
+    if (gunner && gunTypes[gunner.gun]) {
         s.gun = gunner.gun;
     }
+
+    s.gunTower =
+        s.gunTower === 1
+            ? 2
+            : 1;
 }
 
 function awardRoundWin(room, winner) {
-    if (!winner) {
-        return;
-    }
+    if (!room || !winner) return;
 
-    const index = playerIndex(room, winner);
-
-    if (index === 0) {
+    if (room.players[0].id === winner.id) {
         room.state.roundWins.player1++;
     }
 
-    if (index === 1) {
+    if (room.players[1].id === winner.id) {
         room.state.roundWins.player2++;
     }
 }
 
 function getWinnerOfMatch(room) {
-    const wins = room.state.roundWins;
+    if (!room) return null;
 
-    if (wins.player1 >= 2) {
+    if (room.state.roundWins.player1 >= 3) {
         return room.players[0];
     }
 
-    if (wins.player2 >= 2) {
+    if (room.state.roundWins.player2 >= 3) {
         return room.players[1];
     }
 
@@ -620,51 +670,53 @@ function getWinnerOfMatch(room) {
 }
 
 function finishRound(room, winner, reason) {
-    if (!room) {
-        return;
-    }
+    if (!room) return;
 
     if (room.state.phase !== "playing") {
         return;
     }
 
-    room.state.phase = "roundEnd";
+    const s = room.state;
 
-    room.state.winnerName = winner
+    s.phase = "roundEnd";
+
+    s.winnerName = winner
         ? winner.name
         : "";
 
-    room.state.reason = reason || "";
+    s.reason = reason || "";
 
-    room.state.planeDisabled = true;
+    s.planeDisabled = true;
 
-    const pilot = getPilot(room);
-    const gunner = getGunner(room);
+    s.plane.vx = 0;
+    s.plane.vy = 0;
+    s.plane.speed = 0;
 
-    if (pilot) {
-        pilot.firing = false;
-    }
-
-    if (gunner) {
-        gunner.firing = false;
+    for (const player of room.players) {
+        player.firing = false;
+        resetInput(player);
     }
 
     awardRoundWin(room, winner);
 
-    const matchWinner = getWinnerOfMatch(room);
-
     sendState(room);
 
+    const matchWinner = getWinnerOfMatch(room);
+
     if (matchWinner) {
-        room.state.phase = "ended";
+        setTimeout(function() {
+            if (!rooms.has(room.id)) return;
 
-        room.state.winnerName = matchWinner.name;
+            room.state.phase = "ended";
 
-        room.state.reason =
-            "Match complete — " +
-            (reason || "Round won");
+            room.state.winnerName =
+                matchWinner.name;
 
-        sendState(room);
+            room.state.reason =
+                "Match complete";
+
+            sendState(room);
+        }, 1200);
 
         return;
     }
@@ -683,7 +735,6 @@ function finishRound(room, winner, reason) {
         resetRound(room);
 
         sendMatchFound(room);
-
         sendState(room);
 
         setTimeout(function() {
@@ -693,7 +744,6 @@ function finishRound(room, winner, reason) {
 
             startRound(room);
         }, 1800);
-
     }, 3000);
 }
 
@@ -702,11 +752,7 @@ function updatePlane(room, dt) {
 
     const pilot = getPilot(room);
 
-    if (!pilot) {
-        return;
-    }
-
-    if (s.planeDisabled) {
+    if (!pilot || s.planeDisabled) {
         return;
     }
 
@@ -724,48 +770,73 @@ function updatePlane(room, dt) {
         (input.right ? 1 : 0) -
         (input.left ? 1 : 0);
 
-    if (verticalInput !== 0) {
-        s.plane.vy +=
-            verticalInput *
-            type.climb *
+    if (input.brake) {
+        s.plane.speed -=
+            type.braking *
+            1.35 *
+            dt;
+    } else {
+        s.plane.speed +=
+            type.acceleration *
             dt;
     }
 
-    s.plane.vy *=
-        Math.pow(0.84, dt * 30);
+    s.plane.speed = clamp(
+        s.plane.speed,
+        1.8,
+        type.maxSpeed
+    );
 
-    s.plane.vy =
-        clamp(
-            s.plane.vy,
-            -7,
-            7
+    const targetVy =
+        verticalInput * 6.2;
+
+    s.plane.vy +=
+        (targetVy - s.plane.vy) *
+        Math.min(
+            1,
+            dt * 5.5
         );
 
-    if (input.brake) {
-        s.plane.speed -=
-            type.braking * dt;
-    } else {
-        s.plane.speed +=
-            type.acceleration * dt;
+    s.plane.vy = clamp(
+        s.plane.vy,
+        -6.8,
+        6.8
+    );
+
+    if (
+        s.plane.lateralVelocity ===
+        undefined
+    ) {
+        s.plane.lateralVelocity = 0;
     }
 
-    s.plane.speed =
-        clamp(
-            s.plane.speed,
-            1.5,
-            type.maxSpeed
+    const maxSide =
+        Math.min(
+            5.2,
+            type.turn / 42
         );
 
-    const steering =
-        horizontalInput *
-        (type.turn / 70);
+    const targetLateral =
+        horizontalInput * maxSide;
+
+    s.plane.lateralVelocity +=
+        (targetLateral -
+            s.plane.lateralVelocity) *
+        Math.min(
+            1,
+            dt * 7.5
+        );
+
+    s.plane.lateralVelocity =
+        clamp(
+            s.plane.lateralVelocity,
+            -5.5,
+            5.5
+        );
 
     s.plane.vx =
-        clamp(
-            s.plane.speed + steering,
-            1.5,
-            type.maxSpeed + 3
-        );
+        s.plane.speed +
+        s.plane.lateralVelocity;
 
     s.plane.x +=
         s.plane.vx *
@@ -777,19 +848,43 @@ function updatePlane(room, dt) {
         60 *
         dt;
 
-    s.plane.y =
-        clamp(
-            s.plane.y,
-            80,
-            425
+    if (s.plane.y < 65) {
+        s.plane.y = 65;
+
+        s.plane.vy =
+            Math.max(
+                0,
+                s.plane.vy
+            );
+    }
+
+    if (s.plane.y > 430) {
+        s.plane.y = 430;
+
+        s.plane.vy =
+            Math.min(
+                0,
+                s.plane.vy
+            );
+    }
+
+    const targetPitch =
+        s.plane.vy * 7.5 +
+        s.plane.lateralVelocity * 2.8;
+
+    s.plane.pitch +=
+        (targetPitch -
+            s.plane.pitch) *
+        Math.min(
+            1,
+            dt * 8
         );
 
     s.plane.pitch =
         clamp(
-            s.plane.vy * 8 +
-            horizontalInput * 6,
-            -42,
-            42
+            s.plane.pitch,
+            -38,
+            38
         );
 
     s.plane.stalled =
@@ -799,9 +894,15 @@ function updatePlane(room, dt) {
 
     if (
         s.plane.x >
-        WORLD_WIDTH + 55
+        WORLD_WIDTH + 80
     ) {
-        s.plane.x = -45;
+        s.plane.x = -70;
+    }
+
+    if (
+        s.plane.x < -80
+    ) {
+        s.plane.x = -70;
     }
 }
 
@@ -842,12 +943,10 @@ function segmentDistanceToPoint(
     );
 
     const cx =
-        x1 +
-        dx * t;
+        x1 + dx * t;
 
     const cy =
-        y1 +
-        dy * t;
+        y1 + dy * t;
 
     return distance(
         cx,
@@ -857,102 +956,30 @@ function segmentDistanceToPoint(
     );
 }
 
-function fireGun(
-    room,
+function sendShotResult(
     player,
-    automatic
+    shotId,
+    result,
+    damage,
+    hp
 ) {
-    if (
-        room.state.phase !==
-        "playing"
-    ) {
-        return false;
-    }
+    if (!player) return;
 
-    if (
-        player.id !==
-        room.state.gunnerId
-    ) {
-        return false;
-    }
+    send(player.ws, {
+        type: "shotResult",
 
-    const gun =
-        gunTypes[player.gun] ||
-        gunTypes.mg;
+        shotId: shotId,
 
-    const now = Date.now();
-
-    if (
-        now - player.lastFire <
-        gun.cooldown
-    ) {
-        return false;
-    }
-
-    player.lastFire = now;
-
-    const towerX =
-        room.state.gunTower === 1
-            ? 347
-            : 652;
-
-    const towerY = 245;
-
-    let dx =
-        room.state.aim.x -
-        towerX;
-
-    let dy =
-        room.state.aim.y -
-        towerY;
-
-    const length =
-        Math.sqrt(
-            dx * dx +
-            dy * dy
-        );
-
-    if (length <= 0) {
-        return false;
-    }
-
-    dx /= length;
-    dy /= length;
-
-    const bulletId = randomId();
-
-    room.state.bullets.push({
-        id: bulletId,
-
-        x:
-            towerX +
-            dx * 42,
-
-        y:
-            towerY +
-            dy * 42,
-
-        vx:
-            dx *
-            gun.bulletSpeed,
-
-        vy:
-            dy *
-            gun.bulletSpeed,
+        result: result,
 
         damage:
-            gun.damage,
+            damage || 0,
 
-        life: 2.5
+        hp:
+            hp === undefined
+                ? null
+                : hp
     });
-
-    room.state.gunnerReady = false;
-
-    if (!automatic) {
-        sendState(room);
-    }
-
-    return true;
 }
 
 function updateBullets(room, dt) {
@@ -984,16 +1011,34 @@ function updateBullets(room, dt) {
 
         bullet.life -= dt;
 
-        if (
-            bullet.life <= 0 ||
+        const outOfBounds =
             bullet.x < -150 ||
             bullet.x >
                 WORLD_WIDTH + 150 ||
             bullet.y < -150 ||
             bullet.y >
-                WORLD_HEIGHT + 150
+                WORLD_HEIGHT + 150;
+
+        if (
+            bullet.life <= 0 ||
+            outOfBounds
         ) {
-            s.bullets.splice(i, 1);
+            const shooter =
+                players.get(
+                    bullet.ownerId
+                );
+
+            sendShotResult(
+                shooter,
+                bullet.id,
+                "miss"
+            );
+
+            s.bullets.splice(
+                i,
+                1
+            );
+
             continue;
         }
 
@@ -1007,17 +1052,52 @@ function updateBullets(room, dt) {
                 s.plane.y
             );
 
-        if (hitDistance <= 32) {
+        if (
+            hitDistance <= 42 &&
+            !s.planeDisabled
+        ) {
             s.plane.hp -=
                 bullet.damage;
 
-            s.bullets.splice(i, 1);
+            s.plane.hp =
+                Math.max(
+                    0,
+                    s.plane.hp
+                );
+
+            const shooter =
+                players.get(
+                    bullet.ownerId
+                );
+
+            sendShotResult(
+                shooter,
+                bullet.id,
+                "hit",
+                bullet.damage,
+                s.plane.hp
+            );
+
+            broadcast(room, {
+                type: "impact",
+
+                x: s.plane.x,
+
+                y: s.plane.y,
+
+                damage: bullet.damage,
+
+                hp: s.plane.hp
+            });
+
+            s.bullets.splice(
+                i,
+                1
+            );
 
             if (
                 s.plane.hp <= 0
             ) {
-                s.plane.hp = 0;
-
                 finishRound(
                     room,
                     getGunner(room),
@@ -1032,8 +1112,9 @@ function updateBullets(room, dt) {
 
 function updateRoom(room, dt) {
     if (
+        !room ||
         room.state.phase !==
-        "playing"
+            "playing"
     ) {
         return;
     }
@@ -1052,14 +1133,15 @@ function updateRoom(room, dt) {
     }
 
     if (
-        room.state.towerHitCooldown <=
-            0 &&
+        room.state.towerHitCooldown <= 0 &&
         !room.state.planeDisabled
     ) {
         const hitTower =
             planeHitsTower(room);
 
-        if (hitTower !== 0) {
+        if (
+            hitTower !== 0
+        ) {
             room.state.disabledTower =
                 hitTower;
 
@@ -1079,7 +1161,7 @@ function updateRoom(room, dt) {
                 0;
 
             room.state.towerHitCooldown =
-                999;
+                999999;
 
             finishRound(
                 room,
@@ -1119,7 +1201,9 @@ function updateRoom(room, dt) {
 
     if (gunner) {
         const gun =
-            gunTypes[gunner.gun] ||
+            gunTypes[
+                gunner.gun
+            ] ||
             gunTypes.mg;
 
         room.state.gunnerReady =
@@ -1131,7 +1215,159 @@ function updateRoom(room, dt) {
     sendState(room);
 }
 
+function fireGun(
+    room,
+    player,
+    automatic
+) {
+    if (!room || !player) {
+        return false;
+    }
+
+    if (
+        room.state.phase !==
+        "playing"
+    ) {
+        return false;
+    }
+
+    if (
+        room.state.gunnerId !==
+        player.id
+    ) {
+        return false;
+    }
+
+    const gun =
+        gunTypes[player.gun] ||
+        gunTypes.mg;
+
+    const now =
+        Date.now();
+
+    if (
+        now -
+            player.lastFire <
+        gun.cooldown
+    ) {
+        return false;
+    }
+
+    let towerX =
+        room.state.gunTower === 1
+            ? 347
+            : 652;
+
+    let towerY = 245;
+
+    let targetX =
+        Number(room.state.aim.x);
+
+    let targetY =
+        Number(room.state.aim.y);
+
+    if (
+        !Number.isFinite(targetX)
+    ) {
+        targetX =
+            towerX + 100;
+    }
+
+    if (
+        !Number.isFinite(targetY)
+    ) {
+        targetY =
+            towerY;
+    }
+
+    let dx =
+        targetX - towerX;
+
+    let dy =
+        targetY - towerY;
+
+    let len =
+        Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+
+    if (
+        !Number.isFinite(len) ||
+        len < 0.001
+    ) {
+        dx = 1;
+        dy = 0;
+        len = 1;
+    }
+
+    dx /= len;
+    dy /= len;
+
+    player.lastFire =
+        now;
+
+    const bulletId =
+        randomId();
+
+    const startX =
+        towerX +
+        dx * 42;
+
+    const startY =
+        towerY +
+        dy * 42;
+
+    room.state.bullets.push({
+        id: bulletId,
+
+        ownerId: player.id,
+
+        x: startX,
+
+        y: startY,
+
+        vx:
+            dx *
+            gun.bulletSpeed,
+
+        vy:
+            dy *
+            gun.bulletSpeed,
+
+        damage:
+            gun.damage,
+
+        life: 2.5
+    });
+
+    room.state.gunnerReady =
+        false;
+
+    send(player.ws, {
+        type: "shotFired",
+
+        shotId: bulletId,
+
+        x: startX,
+
+        y: startY,
+
+        vx:
+            dx *
+            gun.bulletSpeed,
+
+        vy:
+            dy *
+            gun.bulletSpeed
+    });
+
+    return true;
+}
+
 function removeFromQueue(player) {
+    if (!player) return;
+
     const index =
         queue.indexOf(player);
 
@@ -1144,21 +1380,30 @@ function removeFromQueue(player) {
 }
 
 function joinQueue(player) {
+    if (!player) return;
+
     removeFromQueue(player);
 
     if (player.roomId) {
         return;
     }
 
+    if (
+        !player.ws ||
+        player.ws.readyState !==
+            WebSocket.OPEN
+    ) {
+        return;
+    }
+
     queue.push(player);
 
-    send(
-        player.ws,
-        {
-            type: "queue",
-            position: queue.length
-        }
-    );
+    send(player.ws, {
+        type: "queue",
+
+        position:
+            queue.length
+    });
 
     tryCreateMatch();
 }
@@ -1167,19 +1412,21 @@ function tryCreateMatch() {
     while (
         queue.length >= 2
     ) {
-        const player1 =
+        let player1 =
             queue.shift();
 
-        const player2 =
+        let player2 =
             queue.shift();
 
         const p1Ok =
-            !!player1 &&
+            player1 &&
+            player1.ws &&
             player1.ws.readyState ===
                 WebSocket.OPEN;
 
         const p2Ok =
-            !!player2 &&
+            player2 &&
+            player2.ws &&
             player2.ws.readyState ===
                 WebSocket.OPEN;
 
@@ -1206,6 +1453,25 @@ function tryCreateMatch() {
             continue;
         }
 
+        if (
+            player1.roomId ||
+            player2.roomId
+        ) {
+            if (!player1.roomId) {
+                queue.unshift(
+                    player1
+                );
+            }
+
+            if (!player2.roomId) {
+                queue.unshift(
+                    player2
+                );
+            }
+
+            continue;
+        }
+
         const room =
             createRoom(
                 player1,
@@ -1216,42 +1482,40 @@ function tryCreateMatch() {
             room
         );
 
-        send(
-            player1.ws,
-            {
-                type:
-                    "matchWaiting"
+        send(player1.ws, {
+            type: "matchWaiting"
+        });
+
+        send(player2.ws, {
+            type: "matchWaiting"
+        });
+
+        setTimeout(function() {
+            if (
+                !rooms.has(
+                    room.id
+                )
+            ) {
+                return;
             }
-        );
 
-        send(
-            player2.ws,
-            {
-                type:
-                    "matchWaiting"
+            if (
+                room.players[0].ws.readyState !==
+                    WebSocket.OPEN ||
+                room.players[1].ws.readyState !==
+                    WebSocket.OPEN
+            ) {
+                return;
             }
-        );
 
-        setTimeout(
-            function() {
-                if (
-                    !rooms.has(
-                        room.id
-                    )
-                ) {
-                    return;
-                }
-
-                startRound(
-                    room
-                );
-            },
-            3200
-        );
+            startRound(room);
+        }, 3200);
     }
 }
 
 function leaveRoom(player) {
+    if (!player) return;
+
     if (!player.roomId) {
         return;
     }
@@ -1273,15 +1537,15 @@ function leaveRoom(player) {
             : room.players[0];
 
     if (other) {
-        send(
-            other.ws,
-            {
-                type:
-                    "opponentLeft"
-            }
-        );
-
         other.roomId = null;
+
+        other.firing = false;
+
+        resetInput(other);
+
+        send(other.ws, {
+            type: "opponentLeft"
+        });
     }
 
     rooms.delete(
@@ -1289,6 +1553,36 @@ function leaveRoom(player) {
     );
 
     player.roomId = null;
+
+    player.firing = false;
+
+    resetInput(player);
+}
+
+function sanitizeName(value) {
+    let name =
+        String(
+            value ||
+            "Player"
+        );
+
+    name =
+        name
+            .replace(
+                /[<>]/g,
+                ""
+            )
+            .trim()
+            .slice(
+                0,
+                18
+            );
+
+    if (!name) {
+        name = "Player";
+    }
+
+    return name;
 }
 
 function handleMessage(
@@ -1296,6 +1590,7 @@ function handleMessage(
     message
 ) {
     if (
+        !player ||
         !message ||
         typeof message !==
             "object"
@@ -1307,41 +1602,17 @@ function handleMessage(
         message.type ===
         "setName"
     ) {
-        let name =
-            String(
-                message.name ||
-                    "Player"
+        player.name =
+            sanitizeName(
+                message.name
             );
 
-        name =
-            name
-                .replace(
-                    /[<>]/g,
-                    ""
-                )
-                .trim()
-                .slice(
-                    0,
-                    18
-                );
+        send(player.ws, {
+            type: "nameSet",
 
-        if (!name) {
-            name =
-                "Player";
-        }
-
-        player.name =
-            name;
-
-        send(
-            player.ws,
-            {
-                type:
-                    "nameSet",
-                name:
-                    player.name
-            }
-        );
+            name:
+                player.name
+        });
 
         return;
     }
@@ -1367,13 +1638,10 @@ function handleMessage(
 
             if (room) {
                 if (
-                    room.state
-                        .pilotId ===
+                    room.state.pilotId ===
                     player.id
                 ) {
-                    room.state
-                        .plane
-                        .planeType =
+                    room.state.plane.planeType =
                         player.planeType;
                 }
             }
@@ -1403,8 +1671,7 @@ function handleMessage(
 
             if (room) {
                 if (
-                    room.state
-                        .gunnerId ===
+                    room.state.gunnerId ===
                     player.id
                 ) {
                     room.state.gun =
@@ -1420,25 +1687,14 @@ function handleMessage(
         message.type ===
         "queue"
     ) {
-        if (message.name) {
-            let name =
-                String(
+        if (
+            message.name !==
+            undefined
+        ) {
+            player.name =
+                sanitizeName(
                     message.name
-                )
-                    .replace(
-                        /[<>]/g,
-                        ""
-                    )
-                    .trim()
-                    .slice(
-                        0,
-                        18
-                    );
-
-            if (name) {
-                player.name =
-                    name;
-            }
+                );
         }
 
         joinQueue(
@@ -1456,12 +1712,9 @@ function handleMessage(
             player
         );
 
-        send(
-            player.ws,
-            {
-                type: "left"
-            }
-        );
+        send(player.ws, {
+            type: "left"
+        });
 
         return;
     }
@@ -1589,7 +1842,11 @@ function handleMessage(
                 player.roomId
             );
 
-        if (!room) {
+        if (
+            !room ||
+            room.state.phase !==
+                "playing"
+        ) {
             return;
         }
 
@@ -1600,7 +1857,8 @@ function handleMessage(
             return;
         }
 
-        player.firing = true;
+        player.firing =
+            true;
 
         fireGun(
             room,
@@ -1650,22 +1908,26 @@ function handleMessage(
             room
         );
 
-        setTimeout(
-            function() {
-                if (
-                    !rooms.has(
-                        room.id
-                    )
-                ) {
-                    return;
-                }
+        room.state.phase =
+            "waiting";
 
-                startRound(
-                    room
-                );
-            },
-            1000
+        sendState(
+            room
         );
+
+        setTimeout(function() {
+            if (
+                !rooms.has(
+                    room.id
+                )
+            ) {
+                return;
+            }
+
+            startRound(
+                room
+            );
+        }, 1000);
 
         return;
     }
@@ -1682,12 +1944,9 @@ function handleMessage(
             player
         );
 
-        send(
-            player.ws,
-            {
-                type: "left"
-            }
-        );
+        send(player.ws, {
+            type: "left"
+        });
 
         return;
     }
@@ -1712,10 +1971,29 @@ const server =
                     "/index.html";
             }
 
+            let decodedPath;
+
+            try {
+                decodedPath =
+                    decodeURIComponent(
+                        requestPath
+                    );
+            } catch (err) {
+                res.writeHead(
+                    400
+                );
+
+                res.end(
+                    "Bad Request"
+                );
+
+                return;
+            }
+
             let filePath =
                 path.join(
                     __dirname,
-                    requestPath
+                    decodedPath
                 );
 
             filePath =
@@ -1723,9 +2001,21 @@ const server =
                     filePath
                 );
 
-            if (
-                !filePath.startsWith(
+            const root =
+                path.resolve(
                     __dirname
+                );
+
+            const resolved =
+                path.resolve(
+                    filePath
+                );
+
+            if (
+                resolved !== root &&
+                !resolved.startsWith(
+                    root +
+                    path.sep
                 )
             ) {
                 res.writeHead(
@@ -1740,14 +2030,18 @@ const server =
             }
 
             fs.readFile(
-                filePath,
+                resolved,
                 function(
                     err,
                     data
                 ) {
                     if (err) {
                         res.writeHead(
-                            404
+                            404,
+                            {
+                                "Content-Type":
+                                    "text/plain; charset=utf-8"
+                            }
                         );
 
                         res.end(
@@ -1758,74 +2052,77 @@ const server =
                     }
 
                     let contentType =
-                        "text/plain";
+                        "text/plain; charset=utf-8";
 
                     if (
-                        requestPath.endsWith(
+                        resolved.endsWith(
                             ".html"
                         )
                     ) {
                         contentType =
                             "text/html; charset=utf-8";
                     } else if (
-                        requestPath.endsWith(
+                        resolved.endsWith(
                             ".js"
                         )
                     ) {
                         contentType =
                             "application/javascript; charset=utf-8";
                     } else if (
-                        requestPath.endsWith(
+                        resolved.endsWith(
                             ".css"
                         )
                     ) {
                         contentType =
                             "text/css; charset=utf-8";
                     } else if (
-                        requestPath.endsWith(
+                        resolved.endsWith(
                             ".mp3"
                         )
                     ) {
                         contentType =
                             "audio/mpeg";
                     } else if (
-                        requestPath.endsWith(
-                            ".json"
-                        )
-                    ) {
-                        contentType =
-                            "application/json; charset=utf-8";
-                    } else if (
-                        requestPath.endsWith(
+                        resolved.endsWith(
                             ".png"
                         )
                     ) {
                         contentType =
                             "image/png";
                     } else if (
-                        requestPath.endsWith(
+                        resolved.endsWith(
                             ".jpg"
                         ) ||
-                        requestPath.endsWith(
+                        resolved.endsWith(
                             ".jpeg"
                         )
                     ) {
                         contentType =
                             "image/jpeg";
                     } else if (
-                        requestPath.endsWith(
+                        resolved.endsWith(
                             ".svg"
                         )
                     ) {
                         contentType =
                             "image/svg+xml";
+                    } else if (
+                        resolved.endsWith(
+                            ".json"
+                        )
+                    ) {
+                        contentType =
+                            "application/json; charset=utf-8";
                     }
 
                     res.writeHead(
                         200,
                         {
                             "Content-Type":
-                                contentType
+                                contentType,
+
+                            "Cache-Control":
+                                "no-cache"
                         }
                     );
 
@@ -1855,16 +2152,12 @@ wss.on(
             player.id
         );
 
-        send(
-            ws,
-            {
-                type:
-                    "connected",
+        send(ws, {
+            type: "connected",
 
-                playerId:
-                    player.id
-            }
-        );
+            playerId:
+                player.id
+        });
 
         ws.on(
             "message",
@@ -1924,48 +2217,56 @@ wss.on(
 
 setInterval(
     function() {
-        const now =
-            Date.now();
+        const dt =
+            TICK_MS / 1000;
 
-        rooms.forEach(
-            function(room) {
-                if (
-                    room.state
-                        .phase ===
-                    "playing"
-                ) {
-                    updateRoom(
-                        room,
-                        TICK_MS /
-                            1000
-                    );
-                }
-            }
-        );
-
-        if (
-            now % 10000 <
-            TICK_RATE
+        for (
+            const room of rooms.values()
         ) {
-            rooms.forEach(
-                function(room) {
-                    if (
-                        room.players[0]
-                            .ws
-                            .readyState !==
-                            WebSocket.OPEN &&
-                        room.players[1]
-                            .ws
-                            .readyState !==
-                            WebSocket.OPEN
-                    ) {
-                        rooms.delete(
-                            room.id
-                        );
-                    }
-                }
-            );
+            if (
+                room.state.phase ===
+                "playing"
+            ) {
+                updateRoom(
+                    room,
+                    dt
+                );
+            }
         }
+
+        for (
+            const [id, room] of
+            rooms.entries()
+        ) {
+            const p1 =
+                room.players[0];
+
+            const p2 =
+                room.players[1];
+
+            const p1Dead =
+                !p1 ||
+                !p1.ws ||
+                p1.ws.readyState !==
+                    WebSocket.OPEN;
+
+            const p2Dead =
+                !p2 ||
+                !p2.ws ||
+                p2.ws.readyState !==
+                    WebSocket.OPEN;
+
+            if (
+                p1Dead &&
+                p2Dead
+            ) {
+                rooms.delete(
+                    id
+                );
+            }
+        }
+
+        tryCreateMatch();
     },
     TICK_MS
 );
@@ -1977,6 +2278,10 @@ server.listen(
         console.log(
             "Pixel Sky Crash server running on port " +
             PORT
+        );
+
+        console.log(
+            "WebSocket multiplayer is ready."
         );
     }
 );
