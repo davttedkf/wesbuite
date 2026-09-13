@@ -1,24 +1,33 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
 <title>Pixel Sky Crash</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+ box-sizing:border-box;
+ -webkit-tap-highlight-color:transparent;
+}
+
 html,body{
  margin:0;
  width:100%;
  height:100%;
  overflow:hidden;
- background:#10182b;
- font-family:Arial,sans-serif;
- user-select:none
+ background:#09111f;
+ font-family:monospace;
+ color:white;
 }
-body{color:white}
-button,input{font:inherit}
+
+body{
+ image-rendering:pixelated;
+}
+
+.hidden{
+ display:none!important;
+}
 
 .screen{
  position:absolute;
@@ -26,490 +35,467 @@ button,input{font:inherit}
  display:flex;
  align-items:center;
  justify-content:center;
- background:linear-gradient(#172642,#0c1324);
- z-index:20
+ background:
+ linear-gradient(#142541,#0b1527);
+ z-index:50;
 }
 
 .panel{
- width:min(92vw,520px);
+ width:min(92vw,620px);
  padding:30px;
- border:4px solid #fff;
  background:#17233d;
- box-shadow:10px 10px 0 #080d18;
- text-align:center
+ border:4px solid white;
+ box-shadow:10px 10px #050a12;
+ text-align:center;
 }
 
 h1{
+ margin:0 0 10px;
  font-size:42px;
- margin:0 0 8px;
- text-shadow:4px 4px #000
 }
 
-h2{margin:8px 0 20px}
+h2{
+ margin:12px 0;
+}
 
 .sub{
  color:#aebbd4;
- margin-bottom:22px
+ margin-bottom:22px;
 }
 
 input{
  width:100%;
- padding:14px;
- background:#0b1220;
- color:#fff;
- border:3px solid #6d7d9c;
+ padding:15px;
+ border:3px solid white;
+ background:#0b1424;
+ color:white;
+ font:inherit;
+ font-size:18px;
  outline:none;
- margin-bottom:12px
 }
 
 button{
- border:3px solid #fff;
- background:#2e74c9;
- color:#fff;
- padding:12px 18px;
- cursor:pointer;
+ margin-top:14px;
+ width:100%;
+ padding:15px;
+ border:3px solid white;
+ background:#263957;
+ color:white;
+ font:inherit;
  font-weight:bold;
- box-shadow:4px 4px 0 #080d18
+ cursor:pointer;
 }
 
-button:hover{filter:brightness(1.15)}
-
-button:active{
- transform:translate(3px,3px);
- box-shadow:1px 1px 0 #080d18
+button:hover{
+ background:#344a70;
 }
 
-.hidden{display:none!important}
+#countdown{
+ font-size:65px;
+ font-weight:bold;
+ margin-top:15px;
+}
+
+#matchStatus{
+ margin-top:10px;
+ color:#aebbd4;
+}
 
 #game{
  position:absolute;
  inset:0;
  overflow:hidden;
- background:linear-gradient(#66c7f5 0%,#a9e6ff 58%,#d7f5ff 100%)
+ background:
+ linear-gradient(
+  #63b8e8 0%,
+  #9bd5f0 58%,
+  #6fbd67 58%,
+  #4d934d 100%
+ );
 }
 
 #sun{
  position:absolute;
- width:100px;
- height:100px;
+ width:80px;
+ height:80px;
  border-radius:50%;
- background:#fff2a8;
- right:11%;
+ background:#fff09a;
+ right:8%;
  top:8%;
- box-shadow:0 0 45px #fff3a0
 }
 
 .cloud{
  position:absolute;
- width:170px;
- height:45px;
+ width:120px;
+ height:32px;
  background:#fff;
- border-radius:50px;
- opacity:.82
+ opacity:.8;
 }
 
-.cloud:before,.cloud:after{
+.cloud:before,
+.cloud:after{
  content:"";
  position:absolute;
  background:#fff;
- border-radius:50%
+ border-radius:50%;
 }
 
 .cloud:before{
- width:70px;
- height:70px;
- left:25px;
- top:-35px
+ width:45px;
+ height:45px;
+ left:18px;
+ top:-22px;
 }
 
 .cloud:after{
- width:85px;
- height:85px;
- right:20px;
- top:-45px
+ width:55px;
+ height:55px;
+ right:15px;
+ top:-28px;
 }
 
-.c1{left:7%;top:14%}
-.c2{left:55%;top:23%;transform:scale(.7)}
-.c3{left:30%;top:8%;transform:scale(.5)}
+.c1{
+ left:8%;
+ top:15%;
+}
+
+.c2{
+ left:48%;
+ top:25%;
+ transform:scale(.7);
+}
+
+.c3{
+ right:8%;
+ top:40%;
+ transform:scale(.8);
+}
 
 #city{
  position:absolute;
  left:0;
  right:0;
- bottom:0;
- height:35%;
- background:repeating-linear-gradient(
-  90deg,
-  #26364e 0 45px,
-  #1d2c42 45px 70px
- )
+ bottom:35%;
+ height:25%;
+ display:flex;
+ align-items:flex-end;
+ gap:5px;
+ padding:0 5%;
 }
 
 .building{
- position:absolute;
- bottom:0;
- width:17.5%;
+ flex:1;
  height:55%;
- background:linear-gradient(
-  90deg,
-  #303d52,
-  #51627b 48%,
-  #27364b
- );
- border:3px solid #172235;
- box-shadow:inset 10px 0 rgba(255,255,255,.08)
+ background:#66758a;
+ border:3px solid #435064;
 }
 
-.building:nth-child(1){left:8%;height:40%}
-.building:nth-child(2){left:27%;height:62%}
-.building:nth-child(3){right:27%;height:52%}
-.building:nth-child(4){right:8%;height:39%}
+.building:nth-child(2){
+ height:80%;
+}
+
+.building:nth-child(3){
+ height:65%;
+}
+
+.building:nth-child(4){
+ height:90%;
+}
 
 #arena{
  position:absolute;
- inset:0
+ inset:0;
+ z-index:5;
 }
 
 .tower{
  position:absolute;
  bottom:0;
- width:17.5%;
+ width:175px;
  height:55%;
- background:linear-gradient(
+ background:
+ repeating-linear-gradient(
   90deg,
-  #26364d 0%,
-  #627692 48%,
-  #27364b 100%
+  #69788e 0px,
+  #69788e 16px,
+  #536175 16px,
+  #536175 22px
  );
- border:4px solid #101a2b;
- box-shadow:
-  inset 14px 0 rgba(255,255,255,.06),
-  inset -10px 0 rgba(0,0,0,.2);
- overflow:visible
+ border:5px solid #303c4f;
+ box-shadow:10px 0 #202a3a;
 }
 
-.tower.left{left:26%}
-.tower.right{left:56.5%}
+.tower.left{
+ left:calc(34.7% - 87px);
+}
 
-.tower .roof{
+.tower.right{
+ left:calc(65.2% - 87px);
+}
+
+.tower.destroyed{
+ opacity:.3;
+ transform:translateY(20px);
+}
+
+.roof{
  position:absolute;
- top:-12px;
- left:-7px;
- right:-7px;
- height:15px;
- background:#152237;
- border:3px solid #0c1525
+ top:-18px;
+ left:-5px;
+ right:-5px;
+ height:18px;
+ background:#374457;
+ border:3px solid #263144;
 }
 
 .windows{
  position:absolute;
- inset:25px 15px 10px;
- background:repeating-linear-gradient(
+ inset:25px 18px 50px;
+ background:
+ repeating-linear-gradient(
   90deg,
-  transparent 0 14px,
-  #9fd9eb 14px 20px,
-  transparent 20px 32px
+  #9bd7e9 0 13px,
+  transparent 13px 25px
+ ),
+ repeating-linear-gradient(
+  0deg,
+  #9bd7e9 0 10px,
+  transparent 10px 20px
  );
- opacity:.55
-}
-
-.tower.destroyed{
- opacity:.28;
- filter:grayscale(1)
-}
-
-.health{
- position:absolute;
- top:-42px;
- left:0;
- width:100%;
- height:16px;
- background:#111;
- border:3px solid #fff
-}
-
-.health div{
- height:100%;
- background:#51e46d;
- width:100%
+ opacity:.65;
 }
 
 .tower-name{
  position:absolute;
- top:-72px;
- width:100%;
+ bottom:18px;
+ left:0;
+ right:0;
  text-align:center;
+ font-size:13px;
  font-weight:bold;
- text-shadow:3px 3px #000;
- font-size:14px
+}
+
+.health{
+ position:absolute;
+ bottom:3px;
+ left:10px;
+ right:10px;
+ height:9px;
+ background:#202938;
+ border:2px solid white;
+}
+
+.health div{
+ width:100%;
+ height:100%;
+ background:#6be06b;
 }
 
 #plane{
  position:absolute;
  width:78px;
  height:30px;
- z-index:8;
- transform-origin:center;
- pointer-events:none
+ z-index:12;
+ transition:
+  left .08s linear,
+  top .08s linear,
+  transform .08s linear;
 }
 
-#plane .body{
+#planeBody{
  position:absolute;
- left:5px;
+ left:10px;
  top:9px;
- width:63px;
- height:12px;
- background:#f1f3f6;
- border:3px solid #202a39;
- border-radius:5px
+ width:55px;
+ height:13px;
+ background:white;
+ border:3px solid #293548;
 }
 
-#plane .nose{
+#planeNose{
  position:absolute;
- left:66px;
- top:10px;
- border-left:17px solid #202a39;
- border-top:5px solid transparent;
- border-bottom:5px solid transparent
+ right:0;
+ top:9px;
+ width:20px;
+ height:13px;
+ background:#dfe8f3;
+ border-top:3px solid #293548;
+ border-right:3px solid #293548;
+ border-bottom:3px solid #293548;
+ transform:skewX(25deg);
 }
 
-#plane .wing{
+#planeWing{
  position:absolute;
- left:24px;
- top:2px;
- width:30px;
- height:28px;
- background:#c8d1dd;
- clip-path:polygon(0 50%,100% 0,78% 100%)
-}
-
-#plane .tail{
- position:absolute;
- left:9px;
+ left:22px;
  top:0;
- width:17px;
- height:15px;
- background:#b9c4d2;
- clip-path:polygon(0 100%,100% 0,100% 100%)
+ width:32px;
+ height:30px;
+ background:#e7eef5;
+ border:3px solid #293548;
+ clip-path:polygon(0 45%,100% 0,80% 100%);
 }
 
-#plane .firetrail{
- position:absolute;
- left:-25px;
- top:12px;
- width:28px;
- height:7px;
- background:linear-gradient(
-  90deg,
-  transparent,
-  #ffdb55,
-  #ff7138
- )
+#plane.stalled{
+ filter:brightness(.65);
 }
-
-#plane.stalled{opacity:.65}
 
 #turret{
  position:absolute;
  width:60px;
- height:55px;
- z-index:9;
- transform-origin:30px 45px;
- pointer-events:none
+ height:60px;
+ z-index:11;
 }
 
-.tbase{
+#turretBase{
  position:absolute;
- left:5px;
- bottom:0;
- width:50px;
- height:22px;
- background:#242b36;
- border:4px solid #111;
- border-radius:8px
+ left:12px;
+ top:27px;
+ width:38px;
+ height:25px;
+ background:#303c4e;
+ border:4px solid #202938;
 }
 
-.barrel{
+#turret .barrel{
  position:absolute;
- left:27px;
- bottom:17px;
+ left:28px;
+ top:29px;
  width:58px;
  height:10px;
- background:#171c25;
- border:3px solid #090c11;
- transform-origin:left center
+ background:#202938;
+ border:2px solid #111823;
+ transform-origin:0 50%;
 }
 
-.gunbody{
+#turretHead{
  position:absolute;
- left:17px;
- bottom:16px;
- width:27px;
+ left:18px;
+ top:17px;
+ width:28px;
  height:28px;
- background:#303a48;
- border:3px solid #10151d;
- border-radius:5px
+ background:#526177;
+ border:4px solid #202938;
+ border-radius:50%;
 }
 
 .bullet{
  position:absolute;
- width:13px;
- height:5px;
- background:#fff6a1;
- border:1px solid #ff9c3d;
- z-index:7;
- box-shadow:0 0 9px #ffb13d;
- pointer-events:none
+ width:12px;
+ height:4px;
+ background:#fff3a2;
+ z-index:15;
+ box-shadow:0 0 8px #fff;
 }
 
 #hud{
  position:absolute;
- left:12px;
- right:12px;
- top:12px;
- z-index:15;
+ left:15px;
+ right:15px;
+ top:15px;
+ z-index:20;
  display:flex;
  justify-content:space-between;
  gap:10px;
- pointer-events:none
+ pointer-events:none;
 }
 
 .hudbox{
- background:rgba(12,19,32,.82);
- border:3px solid #fff;
- padding:8px 12px;
- text-shadow:2px 2px #000;
- min-width:150px
+ min-width:180px;
+ background:rgba(10,18,32,.82);
+ border:3px solid white;
+ padding:9px;
+ box-shadow:5px 5px rgba(0,0,0,.25);
+}
+
+.hudtitle{
+ color:#aebbd4;
+ font-size:12px;
+}
+
+.hudvalue{
+ margin-top:3px;
+ font-size:15px;
+ font-weight:bold;
 }
 
 .bar{
- height:11px;
- background:#111;
- border:2px solid #fff;
- margin-top:5px
+ height:10px;
+ margin-top:6px;
+ background:#202938;
+ border:2px solid white;
 }
 
 .bar div{
  height:100%;
- background:#52e56c;
- width:100%
+ width:100%;
+ background:#6be06b;
 }
 
-#planeBar div{background:#55a8ff}
-
 #roundText{
- text-align:center;
- font-size:20px;
- font-weight:bold
+ position:absolute;
+ top:15px;
+ left:50%;
+ transform:translateX(-50%);
+ z-index:21;
+ background:rgba(10,18,32,.85);
+ border:3px solid white;
+ padding:8px 14px;
+ font-weight:bold;
 }
 
 #bottom{
  position:absolute;
- left:0;
- right:0;
+ left:15px;
+ right:15px;
  bottom:15px;
- z-index:16;
+ z-index:20;
  display:flex;
- justify-content:center;
- gap:10px;
- pointer-events:none
+ justify-content:space-between;
+ pointer-events:none;
 }
 
 .control{
- pointer-events:auto;
- min-width:65px;
- background:rgba(15,23,38,.82);
+ min-width:170px;
+ background:rgba(10,18,32,.82);
  border:3px solid white;
- padding:12px;
- text-align:center;
- font-weight:bold
-}
-
-#gunMenu,#planeMenu{
- position:absolute;
- z-index:30;
- inset:0;
- background:rgba(5,10,20,.78);
- display:flex;
- align-items:center;
- justify-content:center
-}
-
-.selection{
- width:min(94vw,650px);
- background:#17233d;
- border:4px solid white;
- box-shadow:10px 10px #080d18;
- padding:24px;
- text-align:center
-}
-
-.cards{
- display:flex;
- flex-wrap:wrap;
- gap:10px;
- justify-content:center
-}
-
-.card{
- width:180px;
- background:#0e1728;
- border:3px solid #657795;
- padding:14px;
- cursor:pointer
-}
-
-.card:hover{
- filter:brightness(1.2)
-}
-
-.card h3{
- margin:4px 0 8px
-}
-
-.card p{
- font-size:12px;
- color:#b9c6dc
+ padding:10px;
 }
 
 #mobile{
  position:absolute;
- bottom:15px;
  left:15px;
  right:15px;
- z-index:17;
+ bottom:15px;
+ z-index:25;
  display:none;
  justify-content:space-between;
- pointer-events:none
+ pointer-events:none;
 }
 
 .mobileGroup{
  display:flex;
- gap:8px
+ gap:8px;
 }
 
 .mobileBtn{
- pointer-events:auto;
  width:62px;
  height:62px;
- border:3px solid #fff;
- background:rgba(15,23,38,.8);
- color:#fff;
- font-size:20px;
- font-weight:bold
+ pointer-events:auto;
+ margin:0;
+ padding:0;
 }
 
-.fire{
- width:95px;
- background:#8e2730
+.mobileBtn.fire{
+ width:100px;
+ background:#8e2730;
 }
 
 #effects{
  position:absolute;
  inset:0;
- z-index:25;
- pointer-events:none
+ z-index:30;
+ pointer-events:none;
 }
 
 .flash{
@@ -518,13 +504,13 @@ button:active{
  height:70px;
  border-radius:50%;
  background:#fff7a0;
- animation:flash .2s forwards
+ animation:flash .2s forwards;
 }
 
 @keyframes flash{
  to{
   opacity:0;
-  transform:scale(2)
+  transform:scale(2);
  }
 }
 
@@ -535,50 +521,99 @@ button:active{
  border-radius:50%;
  background:#555;
  opacity:.7;
- animation:smoke 1s forwards
+ animation:smoke 1s forwards;
 }
 
 @keyframes smoke{
  to{
   opacity:0;
-  transform:translateY(-45px) scale(1.8)
+  transform:translateY(-45px) scale(1.8);
  }
 }
 
-.chunk{
+#gunMenu,
+#planeMenu{
  position:absolute;
- width:15px;
- height:15px;
- background:#313d4e;
- animation:chunk 1s forwards
+ inset:0;
+ z-index:40;
+ background:rgba(5,10,20,.78);
+ display:flex;
+ align-items:center;
+ justify-content:center;
 }
 
-@keyframes chunk{
- to{
-  transform:
-   translate(var(--dx),var(--dy))
-   rotate(260deg);
-  opacity:0
- }
+.selection{
+ width:min(94vw,650px);
+ background:#17233d;
+ border:4px solid white;
+ box-shadow:10px 10px #080d18;
+ padding:24px;
+ text-align:center;
 }
 
-#matchStatus{
- margin-top:8px;
- color:#aebbd4;
- font-size:15px
+.cards{
+ display:flex;
+ flex-wrap:wrap;
+ gap:10px;
+ justify-content:center;
+}
+
+.card{
+ width:180px;
+ background:#0e1728;
+ border:3px solid #657795;
+ padding:14px;
+ cursor:pointer;
+}
+
+.card h3{
+ margin:4px 0 8px;
+}
+
+.card p{
+ font-size:12px;
+ color:#b9c6dc;
 }
 
 @media(max-width:700px){
- h1{font-size:31px}
- .panel{padding:20px}
- #hud{font-size:11px}
+
+ h1{
+  font-size:31px;
+ }
+
+ .panel{
+  padding:20px;
+ }
+
+ #hud{
+  font-size:11px;
+ }
+
  .hudbox{
   min-width:105px;
-  padding:6px
+  padding:6px;
  }
- #mobile{display:flex}
- #bottom{display:none}
- .tower{height:48%}
+
+ #mobile{
+  display:flex;
+ }
+
+ #bottom{
+  display:none;
+ }
+
+ .tower{
+  height:48%;
+  width:130px;
+ }
+
+ .tower.left{
+  left:calc(34.7% - 65px);
+ }
+
+ .tower.right{
+  left:calc(65.2% - 65px);
+ }
 }
 </style>
 </head>
@@ -618,12 +653,12 @@ button:active{
 <div id="matchScreen" class="screen hidden">
  <div class="panel">
   <h1>MATCH FOUND</h1>
-  <h2 id="roles"></h2>
 
-  <div
-   id="countdown"
-   style="font-size:55px;font-weight:bold"
-  >3</div>
+  <h2 id="roles">
+   MATCH FOUND
+  </h2>
+
+  <div id="countdown">3</div>
 
   <div id="matchStatus">
    Get ready...
@@ -649,139 +684,187 @@ button:active{
  <div id="arena">
 
   <div class="tower left" id="tower1">
+
    <div class="roof"></div>
    <div class="windows"></div>
 
    <div
     class="tower-name"
     id="tower1Name"
-   >TOWER 1</div>
+   >
+    TOWER 1
+   </div>
 
    <div class="health">
     <div id="tower1HP"></div>
    </div>
+
   </div>
 
   <div class="tower right" id="tower2">
+
    <div class="roof"></div>
    <div class="windows"></div>
 
    <div
     class="tower-name"
     id="tower2Name"
-   >TOWER 2</div>
+   >
+    TOWER 2
+   </div>
 
    <div class="health">
     <div id="tower2HP"></div>
    </div>
+
   </div>
 
   <div id="plane">
-   <div class="firetrail"></div>
-   <div class="tail"></div>
-   <div class="wing"></div>
-   <div class="body"></div>
-   <div class="nose"></div>
+
+   <div id="planeWing"></div>
+   <div id="planeBody"></div>
+   <div id="planeNose"></div>
+
   </div>
 
   <div id="turret">
-   <div class="tbase"></div>
-   <div class="gunbody"></div>
+
+   <div id="turretBase"></div>
+   <div id="turretHead"></div>
    <div class="barrel"></div>
+
+  </div>
+
+ </div>
+
+ <div id="hud">
+
+  <div class="hudbox">
+
+   <div class="hudtitle">
+    PLANE
+   </div>
+
+   <div
+    id="pilotLabel"
+    class="hudvalue"
+   >
+    PILOT
+   </div>
+
+   <div
+    id="planeBar"
+    class="bar"
+   >
+    <div></div>
+   </div>
+
+  </div>
+
+  <div class="hudbox">
+
+   <div class="hudtitle">
+    GUNNER
+   </div>
+
+   <div
+    id="gunnerLabel"
+    class="hudvalue"
+   >
+    GUNNER
+   </div>
+
+   <div
+    id="gunLabel"
+    class="hudvalue"
+   >
+    MACHINE GUN
+   </div>
+
+   <div
+    id="gunBar"
+    class="bar"
+   >
+    <div></div>
+   </div>
+
+  </div>
+
+ </div>
+
+ <div id="roundText">
+  ROUND 1 · 0 - 0
+ </div>
+
+ <div id="bottom">
+
+  <div class="control">
+   W / S = CLIMB<br>
+   A / D = TURN<br>
+   SPACE = BRAKE
+  </div>
+
+  <div class="control">
+   P = PLANE<br>
+   G = GUN<br>
+   CLICK = FIRE
+  </div>
+
+ </div>
+
+ <div id="mobile">
+
+  <div class="mobileGroup">
+
+   <button
+    class="mobileBtn"
+    data-key="up"
+   >
+    ▲
+   </button>
+
+   <button
+    class="mobileBtn"
+    data-key="down"
+   >
+    ▼
+   </button>
+
+  </div>
+
+  <div class="mobileGroup">
+
+   <button
+    class="mobileBtn"
+    data-key="left"
+   >
+    ◀
+   </button>
+
+   <button
+    class="mobileBtn"
+    data-key="right"
+   >
+    ▶
+   </button>
+
+   <button
+    class="mobileBtn fire"
+    id="mobileFire"
+   >
+    FIRE
+   </button>
+
   </div>
 
  </div>
 
  <div id="effects"></div>
 
- <div id="hud">
-
-  <div class="hudbox">
-   <div id="pilotLabel">PILOT</div>
-   <div>PLANE</div>
-
-   <div
-    class="bar"
-    id="planeBar"
-   >
-    <div></div>
-   </div>
-  </div>
-
-  <div
-   class="hudbox"
-   id="roundText"
-  >ROUND 1</div>
-
-  <div class="hudbox">
-   <div id="gunnerLabel">GUNNER</div>
-   <div id="gunLabel">GUN</div>
-
-   <div class="bar">
-    <div id="gunBar"></div>
-   </div>
-  </div>
-
- </div>
-
- <div id="bottom">
-  <div class="control">
-   W / ↑<br>CLIMB
-  </div>
-
-  <div class="control">
-   S / ↓<br>DESCEND
-  </div>
-
-  <div class="control">
-   A / D<br>STEER
-  </div>
-
-  <div class="control">
-   SPACE<br>BRAKE
-  </div>
-
-  <div class="control">
-   P<br>PLANE
-  </div>
- </div>
-
- <div id="mobile">
-
-  <div class="mobileGroup">
-   <button
-    class="mobileBtn"
-    data-key="up"
-   >▲</button>
-
-   <button
-    class="mobileBtn"
-    data-key="down"
-   >▼</button>
-  </div>
-
-  <button
-   class="mobileBtn fire"
-   id="mobileFire"
-  >FIRE</button>
-
-  <div class="mobileGroup">
-   <button
-    class="mobileBtn"
-    data-key="left"
-   >◀</button>
-
-   <button
-    class="mobileBtn"
-    data-key="right"
-   >▶</button>
-  </div>
-
- </div>
-
 </div>
 
 <div id="planeMenu" class="hidden">
+
  <div class="selection">
 
   <h2>SELECT PLANE</h2>
@@ -829,10 +912,13 @@ button:active{
    </div>
 
   </div>
+
  </div>
+
 </div>
 
 <div id="gunMenu" class="hidden">
+
  <div class="selection">
 
   <h2>SELECT MACHINE GUN</h2>
@@ -844,7 +930,7 @@ button:active{
     data-gun="mg"
    >
     <h3>MACHINE GUN</h3>
-    <p>Fast fire rate · balanced damage</p>
+    <p>Balanced</p>
    </div>
 
    <div
@@ -852,7 +938,7 @@ button:active{
     data-gun="heavy"
    >
     <h3>HEAVY MG</h3>
-    <p>Higher damage · slower fire rate</p>
+    <p>High damage</p>
    </div>
 
    <div
@@ -860,17 +946,22 @@ button:active{
     data-gun="rapid"
    >
     <h3>RAPID MG</h3>
-    <p>Very fast fire rate · lower damage</p>
+    <p>Very fast fire rate</p>
    </div>
 
   </div>
+
  </div>
+
 </div>
 
 <div id="endScreen" class="screen hidden">
+
  <div class="panel">
 
-  <h1 id="endTitle">GAME OVER</h1>
+  <h1 id="endTitle">
+   GAME OVER
+  </h1>
 
   <h2 id="endReason"></h2>
 
@@ -883,365 +974,1032 @@ button:active{
   </button>
 
  </div>
+
 </div>
 
 <script>
-const $ = id => document.getElementById(id);
+
+const $ =
+ id => document.getElementById(id);
 
 let ws = null;
+
 let myName = "";
+
 let myRole = "";
+
 let state = null;
+
 let selectedPlane = "airliner";
+
 let selectedGun = "mg";
-let keys = {up:false,down:false,left:false,right:false,brake:false};
-let countdownTimer = null;
+
 let firing = false;
-let fireTimer = null;
+
+let keys = {
+ up:false,
+ down:false,
+ left:false,
+ right:false,
+ brake:false
+};
+
 let audioStarted = false;
-let lastTowerHP = [100,100];
-let lastPlaneHP = 100;
+
+let countdownTimer = null;
 
 const planeNames = {
- small:"Small Jet", airliner:"Airliner", large:"Large Airliner", cargo:"Cargo Plane", fighter:"Fighter Jet"
+ small:"Small Jet",
+ airliner:"Airliner",
+ large:"Large Airliner",
+ cargo:"Cargo Plane",
+ fighter:"Fighter Jet"
 };
-const gunNames = {mg:"Machine Gun", heavy:"Heavy MG", rapid:"Rapid MG"};
+
+const gunNames = {
+ mg:"Machine Gun",
+ heavy:"Heavy MG",
+ rapid:"Rapid MG"
+};
 
 function show(id){
- ["nameScreen","queueScreen","matchScreen","game","endScreen"].forEach(x=>$(x).classList.add("hidden"));
+
+ [
+  "nameScreen",
+  "queueScreen",
+  "matchScreen",
+  "game",
+  "endScreen"
+ ].forEach(x=>{
+  $(x).classList.add("hidden");
+ });
+
  $(id).classList.remove("hidden");
 }
 
-function send(data){
- if(ws && ws.readyState===WebSocket.OPEN) ws.send(JSON.stringify(data));
-}
-
 function startMusic(){
- if(audioStarted) return;
- audioStarted=true;
- const a=new Audio("towersong.mp3");
- a.loop=true;
- a.volume=.45;
+
+ if(audioStarted){
+  return;
+ }
+
+ audioStarted = true;
+
+ const a =
+  new Audio("towersong.mp3");
+
+ a.loop = true;
+ a.volume = .45;
+
  a.play().catch(()=>{});
- window.gameMusic=a;
+
+ window.gameMusic = a;
 }
 
 function startCountdown(){
- stopCountdown();
- let n=3;
- $("countdown").textContent=n;
- $("matchStatus").textContent="Get ready...";
- countdownTimer=setInterval(()=>{
-  n--;
-  if(n>0){
-   $("countdown").textContent=n;
-  }else{
-   $("countdown").textContent="START!";
-   $("matchStatus").textContent="";
+
+ if(countdownTimer){
+  clearInterval(countdownTimer);
+ }
+
+ let n = 3;
+
+ $("countdown").textContent = n;
+ $("matchStatus").textContent = "Get ready...";
+
+ countdownTimer =
+  setInterval(()=>{
+
+   n--;
+
+   if(n > 0){
+
+    $("countdown").textContent = n;
+
+    return;
+   }
+
+   $("countdown").textContent = "START!";
+   $("matchStatus").textContent = "";
+
    clearInterval(countdownTimer);
-   countdownTimer=null;
-  }
- },1000);
+   countdownTimer = null;
+
+  },1000);
 }
 
 function stopCountdown(){
- if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null;}
+
+ if(countdownTimer){
+
+  clearInterval(countdownTimer);
+
+  countdownTimer = null;
+ }
 }
 
 function connect(){
- if(ws && (ws.readyState===WebSocket.OPEN || ws.readyState===WebSocket.CONNECTING)) return;
- const protocol=location.protocol==="https:"?"wss":"ws";
- ws=new WebSocket(protocol+"://"+location.host);
 
- ws.onopen=()=>{
-  send({type:"setName",name:myName});
-  send({type:"selectPlane",planeType:selectedPlane});
-  send({type:"selectGun",gun:selectedGun});
-  send({type:"queue"});
+ const protocol =
+  location.protocol === "https:"
+   ? "wss"
+   : "ws";
+
+ ws =
+  new WebSocket(
+   protocol + "://" + location.host
+  );
+
+ ws.onopen = ()=>{
+
+  send({
+   type:"setName",
+   name:myName
+  });
+
+  send({
+   type:"selectPlane",
+   planeType:selectedPlane
+  });
+
+  send({
+   type:"selectGun",
+   gun:selectedGun
+  });
+
+  send({
+   type:"queue"
+  });
  };
 
- ws.onmessage=e=>{
+ ws.onmessage = e=>{
+
   let msg;
-  try{msg=JSON.parse(e.data);}catch{return;}
 
-  if(msg.type==="connected") return;
+  try{
+   msg = JSON.parse(e.data);
+  }catch{
+   return;
+  }
 
-  if(msg.type==="nameSet") return;
+  console.log("SERVER:",msg);
 
-  if(msg.type==="queue"){
+  if(msg.type === "connected"){
+   console.log(
+    "Connected as",
+    msg.playerId
+   );
+  }
+
+  if(msg.type === "queue"){
+
    show("queueScreen");
-   $("queueText").textContent="Searching for an opponent...";
-   return;
+
+   $("queueText").textContent =
+    "Searching for an opponent...";
   }
 
-  if(msg.type==="matchWaiting"){
+  if(msg.type === "matchWaiting"){
+
    show("matchScreen");
-   $("roles").textContent="MATCH FOUND";
+
+   $("roles").textContent =
+    "MATCH FOUND";
+
    startMusic();
+
    startCountdown();
-   return;
   }
 
-  if(msg.type==="matchFound"){
-   myRole=String(msg.role||"").toLowerCase()==="pilot"?"Pilot":"Gunner";
-   $("roles").textContent="YOU ARE THE "+myRole.toUpperCase();
-   if(msg.planeType) selectedPlane=msg.planeType;
-   if(msg.gun) selectedGun=msg.gun;
-   show("matchScreen");
-   return;
+  if(msg.type === "matchFound"){
+
+   myRole =
+    String(msg.role || "")
+     .toLowerCase() === "pilot"
+      ? "Pilot"
+      : "Gunner";
+
+   $("roles").textContent =
+    "YOU ARE THE " +
+    myRole.toUpperCase();
+
+   startMusic();
   }
 
-  if(msg.type==="state"){
-   state=msg.state;
-   if(msg.state.phase==="playing"){
+  if(msg.type === "state"){
+
+   state = msg;
+
+   console.log(
+    "GAME STATE:",
+    msg.phase
+   );
+
+   if(msg.phase === "playing"){
+
     stopCountdown();
+
     show("game");
-    render(msg.state);
-   }else if(msg.state.phase==="roundEnd"){
-    render(msg.state);
-   }else if(msg.state.phase==="ended"){
-    stopCountdown();
-    render(msg.state);
-    showEnd(msg.state);
+
+    render(msg);
    }
-   return;
+
+   if(msg.phase === "ended"){
+
+    stopCountdown();
+
+    render(msg);
+
+    showEnd(msg);
+   }
+
+   if(msg.phase === "roundEnd"){
+
+    render(msg);
+   }
   }
 
-  if(msg.type==="opponentLeft"){
+  if(msg.type === "opponentLeft"){
+
    stopCountdown();
-   stopFiring();
-   $("endTitle").textContent="YOU WIN!";
-   $("endReason").textContent="Your opponent left.";
+
+   $("endTitle").textContent =
+    "YOU WIN!";
+
+   $("endReason").textContent =
+    "Your opponent left.";
+
    show("endScreen");
-   return;
   }
 
-  if(msg.type==="left"){
-   stopCountdown();
-   stopFiring();
-   show("nameScreen");
-   return;
+  if(msg.type === "error"){
+
+   $("nameError").textContent =
+    msg.message ||
+    "Server error";
   }
 
-  if(msg.type==="error") $("nameError").textContent=msg.message||"Server error";
  };
 
- ws.onerror=()=>{};
- ws.onclose=()=>{
+ ws.onclose = ()=>{
+
   stopCountdown();
-  stopFiring();
-  if(!$("endScreen").classList.contains("hidden")) return;
-  if(!$("nameScreen").classList.contains("hidden")) return;
-  $("queueText").textContent="Connection lost. Refresh to reconnect.";
+
+  $("queueText").textContent =
+   "Connection lost. Refresh to reconnect.";
  };
 }
 
-$("nameBtn").onclick=()=>{
- const name=$("nameInput").value.trim().slice(0,16);
- if(!name){$("nameError").textContent="Enter a name.";return;}
- myName=name;
- $("nameError").textContent="";
+function send(data){
+
+ if(
+  ws &&
+  ws.readyState === WebSocket.OPEN
+ ){
+
+  ws.send(
+   JSON.stringify(data)
+  );
+ }
+}
+
+$("nameBtn").onclick = ()=>{
+
+ const name =
+  $("nameInput").value.trim();
+
+ if(!name){
+
+  $("nameError").textContent =
+   "Enter a name.";
+
+  return;
+ }
+
+ myName =
+  name.slice(0,16);
+
  startMusic();
+
  show("queueScreen");
+
  connect();
 };
 
-$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter") $("nameBtn").click();});
+$("nameInput").addEventListener(
+ "keydown",
+ e=>{
+  if(e.key === "Enter"){
+   $("nameBtn").click();
+  }
+ }
+);
 
-$("cancelBtn").onclick=()=>{
+$("cancelBtn").onclick = ()=>{
+
  stopCountdown();
- stopFiring();
- send({type:"cancelQueue"});
+
+ send({
+  type:"leave"
+ });
+
  show("nameScreen");
 };
 
-$("rematchBtn").onclick=()=>{
+$("rematchBtn").onclick = ()=>{
+
  stopCountdown();
- stopFiring();
- send({type:"rematch"});
- show("matchScreen");
- $("roles").textContent="MATCH FOUND";
- startCountdown();
+
+ show("queueScreen");
+
+ send({
+  type:"rematch"
+ });
 };
 
-$("menuBtn").onclick=()=>{
+$("menuBtn").onclick = ()=>{
+
  stopCountdown();
- stopFiring();
- send({type:"leave"});
+
+ send({
+  type:"leave"
+ });
+
  show("nameScreen");
 };
 
-document.querySelectorAll("[data-plane]").forEach(card=>{
- card.onclick=()=>{
-  selectedPlane=card.dataset.plane;
-  send({type:"selectPlane",planeType:selectedPlane});
-  $("planeMenu").classList.add("hidden");
- };
-});
+document
+ .querySelectorAll("[data-plane]")
+ .forEach(card=>{
 
-document.querySelectorAll("[data-gun]").forEach(card=>{
- card.onclick=()=>{
-  selectedGun=card.dataset.gun;
-  send({type:"selectGun",gun:selectedGun});
-  $("gunMenu").classList.add("hidden");
- };
-});
+  card.onclick = ()=>{
 
-function openPlaneMenu(){if(myRole==="Pilot") $("planeMenu").classList.remove("hidden");}
-function openGunMenu(){if(myRole==="Gunner") $("gunMenu").classList.remove("hidden");}
+   selectedPlane =
+    card.dataset.plane;
 
-window.addEventListener("keydown",e=>{
- if(e.key.toLowerCase()==="p"){openPlaneMenu();return;}
- if(e.key.toLowerCase()==="g"){openGunMenu();return;}
- if(e.code==="Space"){keys.brake=true;e.preventDefault();}
- if(["w","ArrowUp"].includes(e.key)) keys.up=true;
- if(["s","ArrowDown"].includes(e.key)) keys.down=true;
- if(["a","ArrowLeft"].includes(e.key)) keys.left=true;
- if(["d","ArrowRight"].includes(e.key)) keys.right=true;
-});
+   send({
+    type:"selectPlane",
+    planeType:selectedPlane
+   });
 
-window.addEventListener("keyup",e=>{
- if(e.code==="Space") keys.brake=false;
- if(["w","ArrowUp"].includes(e.key)) keys.up=false;
- if(["s","ArrowDown"].includes(e.key)) keys.down=false;
- if(["a","ArrowLeft"].includes(e.key)) keys.left=false;
- if(["d","ArrowRight"].includes(e.key)) keys.right=false;
-});
+   $("planeMenu")
+    .classList.add("hidden");
+  };
 
-setInterval(()=>{
- if(myRole==="Pilot") send({type:"input",input:keys});
-},50);
+ });
+
+document
+ .querySelectorAll("[data-gun]")
+ .forEach(card=>{
+
+  card.onclick = ()=>{
+
+   selectedGun =
+    card.dataset.gun;
+
+   send({
+    type:"selectGun",
+    gun:selectedGun
+   });
+
+   $("gunMenu")
+    .classList.add("hidden");
+  };
+
+ });
+
+function openPlaneMenu(){
+
+ if(myRole === "Pilot"){
+
+  $("planeMenu")
+   .classList.remove("hidden");
+ }
+}
+
+function openGunMenu(){
+
+ if(myRole === "Gunner"){
+
+  $("gunMenu")
+   .classList.remove("hidden");
+ }
+}
+
+window.addEventListener(
+ "keydown",
+ e=>{
+
+  if(e.key.toLowerCase() === "p"){
+   openPlaneMenu();
+  }
+
+  if(e.key.toLowerCase() === "g"){
+   openGunMenu();
+  }
+
+  if(e.code === "Space"){
+
+   keys.brake = true;
+
+   e.preventDefault();
+  }
+
+  if(
+   ["w","ArrowUp"].includes(e.key)
+  ){
+   keys.up = true;
+  }
+
+  if(
+   ["s","ArrowDown"].includes(e.key)
+  ){
+   keys.down = true;
+  }
+
+  if(
+   ["a","ArrowLeft"].includes(e.key)
+  ){
+   keys.left = true;
+  }
+
+  if(
+   ["d","ArrowRight"].includes(e.key)
+  ){
+   keys.right = true;
+  }
+
+ });
+
+window.addEventListener(
+ "keyup",
+ e=>{
+
+  if(e.code === "Space"){
+   keys.brake = false;
+  }
+
+  if(
+   ["w","ArrowUp"].includes(e.key)
+  ){
+   keys.up = false;
+  }
+
+  if(
+   ["s","ArrowDown"].includes(e.key)
+  ){
+   keys.down = false;
+  }
+
+  if(
+   ["a","ArrowLeft"].includes(e.key)
+  ){
+   keys.left = false;
+  }
+
+  if(
+   ["d","ArrowRight"].includes(e.key)
+  ){
+   keys.right = false;
+  }
+
+ });
+
+function sendInput(){
+
+ if(myRole !== "Pilot"){
+  return;
+ }
+
+ send({
+  type:"input",
+  input:{
+   up:keys.up,
+   down:keys.down,
+   left:keys.left,
+   right:keys.right,
+   brake:keys.brake
+  }
+ });
+}
+
+setInterval(
+ sendInput,
+ 50
+);
 
 function aim(e){
- if(myRole!=="Gunner") return;
- const r=$("game").getBoundingClientRect();
- const x=(e.clientX-r.left)/r.width*1000;
- const y=(e.clientY-r.top)/r.height*600;
- send({type:"aim",x,y});
+
+ if(myRole !== "Gunner"){
+  return;
+ }
+
+ const r =
+  $("game").getBoundingClientRect();
+
+ const x =
+  (e.clientX-r.left) /
+  r.width *
+  1000;
+
+ const y =
+  (e.clientY-r.top) /
+  r.height *
+  600;
+
+ send({
+  type:"aim",
+  x:x,
+  y:y
+ });
 }
 
-$("game").addEventListener("pointermove",aim);
+$("game").addEventListener(
+ "pointermove",
+ aim
+);
 
-function startFiring(){
- if(myRole!=="Gunner") return;
- if(firing) return;
- firing=true;
- send({type:"fire"});
- fireTimer=setInterval(()=>send({type:"fire"}),60);
+$("game").addEventListener(
+ "pointerdown",
+ e=>{
+
+  if(myRole === "Gunner"){
+
+   firing = true;
+
+   send({
+    type:"fire",
+    down:true
+   });
+  }
+
+ });
+
+window.addEventListener(
+ "pointerup",
+ ()=>{
+
+  if(firing){
+
+   firing = false;
+
+   send({
+    type:"fire",
+    down:false
+   });
+  }
+
+ });
+
+$("mobileFire").addEventListener(
+ "pointerdown",
+ e=>{
+
+  e.preventDefault();
+
+  firing = true;
+
+  send({
+   type:"fire",
+   down:true
+  });
+
+ });
+
+$("mobileFire").addEventListener(
+ "pointerup",
+ e=>{
+
+  e.preventDefault();
+
+  firing = false;
+
+  send({
+   type:"fire",
+   down:false
+  });
+
+ });
+
+document
+ .querySelectorAll(".mobileBtn[data-key]")
+ .forEach(btn=>{
+
+  const k =
+   btn.dataset.key;
+
+  const set = v=>{
+
+   if(k === "up"){
+    keys.up = v;
+   }
+
+   if(k === "down"){
+    keys.down = v;
+   }
+
+   if(k === "left"){
+    keys.left = v;
+   }
+
+   if(k === "right"){
+    keys.right = v;
+   }
+
+   sendInput();
+  };
+
+  btn.addEventListener(
+   "pointerdown",
+   e=>{
+    e.preventDefault();
+    set(true);
+   }
+  );
+
+  btn.addEventListener(
+   "pointerup",
+   e=>{
+    e.preventDefault();
+    set(false);
+   }
+  );
+
+  btn.addEventListener(
+   "pointercancel",
+   ()=>{
+    set(false);
+   }
+  );
+
+ });
+
+function pct(v,max=100){
+
+ return Math.max(
+  0,
+  Math.min(
+   100,
+   v / max * 100
+  )
+ ) + "%";
 }
-function stopFiring(){
- firing=false;
- if(fireTimer){clearInterval(fireTimer);fireTimer=null;}
+
+function worldToScreenX(x){
+
+ return (
+  x / 1000 *
+  innerWidth
+ );
 }
 
-$("game").addEventListener("pointerdown",e=>{if(myRole==="Gunner") startFiring();});
-window.addEventListener("pointerup",stopFiring);
-$("mobileFire").addEventListener("pointerdown",e=>{e.preventDefault();startFiring();});
-$("mobileFire").addEventListener("pointerup",e=>{e.preventDefault();stopFiring();});
-$("mobileFire").addEventListener("pointercancel",stopFiring);
+function worldToScreenY(y){
 
-document.querySelectorAll(".mobileBtn[data-key]").forEach(btn=>{
- const k=btn.dataset.key;
- const set=v=>{keys[k]=v;if(myRole==="Pilot") send({type:"input",input:keys});};
- btn.addEventListener("pointerdown",e=>{e.preventDefault();set(true);});
- btn.addEventListener("pointerup",e=>{e.preventDefault();set(false);});
- btn.addEventListener("pointercancel",()=>set(false));
-});
-
-function pct(v,max=100){return Math.max(0,Math.min(100,v/max*100))+"%";}
-function worldToScreenX(x){return x/1000*innerWidth;}
-function worldToScreenY(y){return y/600*innerHeight;}
+ return (
+  y / 600 *
+  innerHeight
+ );
+}
 
 function render(s){
- state=s;
- const t1=s.tower1||{hp:100};
- const t2=s.tower2||{hp:100};
- const rw=s.roundWins||{player1:0,player2:0};
 
- $("tower1HP").style.width=pct(t1.hp);
- $("tower2HP").style.width=pct(t2.hp);
- $("planeBar").firstElementChild.style.width=pct(s.plane.hp);
- $("gunBar").style.width=s.gunnerReady?"100%":"25%";
+ state = s;
 
- $("tower1Name").textContent="TOWER 1";
- $("tower2Name").textContent="TOWER 2";
- $("roundText").textContent=`ROUND ${s.round} · ${rw.player1} - ${rw.player2}`;
- $("pilotLabel").textContent=`PILOT: ${s.pilotName||""}`;
- $("gunnerLabel").textContent=`GUNNER: ${s.gunnerName||""}`;
- $("gunLabel").textContent=gunNames[s.gun]||"GUN";
+ const tower1 =
+  s.tower1 || {hp:0};
 
- $("tower1").classList.toggle("destroyed",t1.hp<=0);
- $("tower2").classList.toggle("destroyed",t2.hp<=0);
+ const tower2 =
+  s.tower2 || {hp:0};
 
- const px=worldToScreenX(s.plane.x), py=worldToScreenY(s.plane.y);
- $("plane").style.left=(px-39)+"px";
- $("plane").style.top=(py-15)+"px";
- $("plane").style.transform=`rotate(${s.plane.pitch}deg)`;
- $("plane").classList.toggle("stalled",!!s.plane.stalled);
+ const plane =
+  s.plane || {
+   x:80,
+   y:270,
+   pitch:0,
+   hp:0,
+   stalled:false
+  };
 
- const towerX=s.gunTower===1?347:652;
- const tx=worldToScreenX(towerX), ty=worldToScreenY(245);
- $("turret").style.left=(tx-30)+"px";
- $("turret").style.top=(ty-45)+"px";
- const angle=Math.atan2(s.aim.y-245,s.aim.x-towerX)*180/Math.PI;
- $("turret .barrel").style.transform=`rotate(${angle}deg)`;
+ $("tower1HP").style.width =
+  pct(tower1.hp);
 
- renderBullets(s.bullets||[]);
+ $("tower2HP").style.width =
+  pct(tower2.hp);
+
+ $("planeBar")
+  .firstElementChild
+  .style.width =
+   pct(plane.hp);
+
+ $("gunBar")
+  .firstElementChild
+  .style.width =
+   s.gunnerReady
+    ? "100%"
+    : "25%";
+
+ $("tower1Name").textContent =
+  s.gunnerName
+   ? "TOWER 1"
+   : "TOWER 1";
+
+ $("tower2Name").textContent =
+  "TOWER 2";
+
+ const wins =
+  s.roundWins || {
+   player1:0,
+   player2:0
+  };
+
+ $("roundText").textContent =
+  "ROUND " +
+  s.round +
+  " · " +
+  wins.player1 +
+  " - " +
+  wins.player2;
+
+ $("pilotLabel").textContent =
+  "PILOT: " +
+  (s.pilotName || "Player");
+
+ $("gunnerLabel").textContent =
+  "GUNNER: " +
+  (s.gunnerName || "Player");
+
+ $("gunLabel").textContent =
+  gunNames[s.gun] ||
+  "GUN";
+
+ $("tower1").classList.toggle(
+  "destroyed",
+  tower1.hp <= 0
+ );
+
+ $("tower2").classList.toggle(
+  "destroyed",
+  tower2.hp <= 0
+ );
+
+ const px =
+  worldToScreenX(plane.x);
+
+ const py =
+  worldToScreenY(plane.y);
+
+ $("plane").style.left =
+  (px - 39) + "px";
+
+ $("plane").style.top =
+  (py - 15) + "px";
+
+ $("plane").style.transform =
+  "rotate(" +
+  plane.pitch +
+  "deg)";
+
+ $("plane").classList.toggle(
+  "stalled",
+  !!plane.stalled
+ );
+
+ const towerX =
+  s.gunTower === 1
+   ? 347
+   : 652;
+
+ const tx =
+  worldToScreenX(towerX);
+
+ const ty =
+  worldToScreenY(245);
+
+ $("turret").style.left =
+  (tx - 30) + "px";
+
+ $("turret").style.top =
+  (ty - 45) + "px";
+
+ const aim =
+  s.aim || {
+   x:towerX,
+   y:245
+  };
+
+ const angle =
+  Math.atan2(
+   aim.y - 245,
+   aim.x - towerX
+  ) *
+  180 /
+  Math.PI;
+
+ $("turret .barrel")
+  .style.transform =
+   "rotate(" +
+   angle +
+   "deg)";
+
+ renderBullets(
+  s.bullets || []
+ );
+
  detectHits(s);
 }
 
 function renderBullets(bullets){
- const active=new Set();
+
+ const active =
+  new Set();
+
  bullets.forEach(b=>{
-  const id=String(b.id);
+
+  const id = b.id;
+
   active.add(id);
-  let el=document.querySelector(`.bullet[data-id="${CSS.escape(id)}"]`);
+
+  let el =
+   document.querySelector(
+    '.bullet[data-id="' +
+    id +
+    '"]'
+   );
+
   if(!el){
-   el=document.createElement("div");
-   el.className="bullet";
-   el.dataset.id=id;
+
+   el =
+    document.createElement(
+     "div"
+    );
+
+   el.className = "bullet";
+
+   el.dataset.id = id;
+
    $("arena").appendChild(el);
   }
-  el.style.left=(worldToScreenX(b.x)-6)+"px";
-  el.style.top=(worldToScreenY(b.y)-2)+"px";
-  el.style.transform=`rotate(${Math.atan2(b.vy,b.vx)*180/Math.PI}deg)`;
+
+  el.style.left =
+   (worldToScreenX(b.x)-6) +
+   "px";
+
+  el.style.top =
+   (worldToScreenY(b.y)-2) +
+   "px";
+
+  el.style.transform =
+   "rotate(" +
+   (
+    Math.atan2(
+     b.vy,
+     b.vx
+    ) *
+    180 /
+    Math.PI
+   ) +
+   "deg)";
  });
- document.querySelectorAll(".bullet").forEach(el=>{if(!active.has(String(el.dataset.id))) el.remove();});
+
+ document
+  .querySelectorAll(".bullet")
+  .forEach(el=>{
+
+   if(
+    !active.has(
+     el.dataset.id
+    )
+   ){
+    el.remove();
+   }
+
+  });
 }
 
+let lastTowerHP = [
+  100,
+  100
+];
+
+let lastPlaneHP = 100;
+
 function detectHits(s){
- if(s.tower1.hp<lastTowerHP[0]) effectAt(347,465);
- if(s.tower2.hp<lastTowerHP[1]) effectAt(652,465);
- if(s.plane.hp<lastPlaneHP) effectAt(s.plane.x,s.plane.y);
- lastTowerHP=[s.tower1.hp,s.tower2.hp];
- lastPlaneHP=s.plane.hp;
+
+ const t1 =
+  s.tower1?.hp ?? 0;
+
+ const t2 =
+  s.tower2?.hp ?? 0;
+
+ const ph =
+  s.plane?.hp ?? 0;
+
+ if(t1 < lastTowerHP[0]){
+  effectAt(347,465);
+ }
+
+ if(t2 < lastTowerHP[1]){
+  effectAt(652,465);
+ }
+
+ if(ph < lastPlaneHP){
+  effectAt(
+   s.plane.x,
+   s.plane.y
+  );
+ }
+
+ lastTowerHP = [
+  t1,
+  t2
+ ];
+
+ lastPlaneHP = ph;
 }
 
 function effectAt(x,y){
- const e=$("effects"),px=worldToScreenX(x),py=worldToScreenY(y);
- const flash=document.createElement("div");
- flash.className="flash";
- flash.style.left=(px-35)+"px";
- flash.style.top=(py-35)+"px";
+
+ const e =
+  $("effects");
+
+ const px =
+  worldToScreenX(x);
+
+ const py =
+  worldToScreenY(y);
+
+ const flash =
+  document.createElement(
+   "div"
+  );
+
+ flash.className =
+  "flash";
+
+ flash.style.left =
+  (px-35) + "px";
+
+ flash.style.top =
+  (py-35) + "px";
+
  e.appendChild(flash);
- setTimeout(()=>flash.remove(),250);
- for(let i=0;i<4;i++){
-  const smoke=document.createElement("div");
-  smoke.className="smoke";
-  smoke.style.left=(px-17+Math.random()*34)+"px";
-  smoke.style.top=(py-17+Math.random()*34)+"px";
+
+ setTimeout(
+  ()=>flash.remove(),
+  250
+ );
+
+ for(
+  let i=0;
+  i<4;
+  i++
+ ){
+
+  const smoke =
+   document.createElement(
+    "div"
+   );
+
+  smoke.className =
+   "smoke";
+
+  smoke.style.left =
+   (
+    px - 17 +
+    Math.random()*34
+   ) + "px";
+
+  smoke.style.top =
+   (
+    py - 17 +
+    Math.random()*34
+   ) + "px";
+
   e.appendChild(smoke);
-  setTimeout(()=>smoke.remove(),1100);
+
+  setTimeout(
+   ()=>smoke.remove(),
+   1100
+  );
  }
 }
 
 function showEnd(s){
- $("endTitle").textContent=s.winnerName===myName?"YOU WIN!":"YOU LOSE!";
- $("endReason").textContent=s.reason||"Match complete";
+
+ $("endTitle").textContent =
+  s.winnerName === myName
+   ? "YOU WIN!"
+   : "YOU LOSE!";
+
+ $("endReason").textContent =
+  s.reason ||
+  "Match complete";
+
  show("endScreen");
 }
 
 show("nameScreen");
+
 </script>
 
 </body>
