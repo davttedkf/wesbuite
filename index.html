@@ -1,5 +1,5 @@
-<!DOCTYPE html>
 
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -8,74 +8,157 @@
 
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#10182b;font-family:Arial,sans-serif;user-select:none}
+html,body{
+ margin:0;
+ width:100%;
+ height:100%;
+ overflow:hidden;
+ background:#10182b;
+ font-family:Arial,sans-serif;
+ user-select:none
+}
 body{color:white}
 button,input{font:inherit}
 
 .screen{
-position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-background:linear-gradient(#172642,#0c1324);
-z-index:20
+ position:absolute;
+ inset:0;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:linear-gradient(#172642,#0c1324);
+ z-index:20
 }
 
 .panel{
-width:min(92vw,520px);padding:30px;border:4px solid #fff;background:#17233d;
-box-shadow:10px 10px 0 #080d18;text-align:center
+ width:min(92vw,520px);
+ padding:30px;
+ border:4px solid #fff;
+ background:#17233d;
+ box-shadow:10px 10px 0 #080d18;
+ text-align:center
 }
 
-h1{font-size:42px;margin:0 0 8px;text-shadow:4px 4px #000}
+h1{
+ font-size:42px;
+ margin:0 0 8px;
+ text-shadow:4px 4px #000
+}
+
 h2{margin:8px 0 20px}
-.sub{color:#aebbd4;margin-bottom:22px}
+
+.sub{
+ color:#aebbd4;
+ margin-bottom:22px
+}
 
 input{
-width:100%;padding:14px;background:#0b1220;color:#fff;border:3px solid #6d7d9c;
-outline:none;margin-bottom:12px
+ width:100%;
+ padding:14px;
+ background:#0b1220;
+ color:#fff;
+ border:3px solid #6d7d9c;
+ outline:none;
+ margin-bottom:12px
 }
 
 button{
-border:3px solid #fff;background:#2e74c9;color:#fff;padding:12px 18px;
-cursor:pointer;font-weight:bold;box-shadow:4px 4px 0 #080d18
+ border:3px solid #fff;
+ background:#2e74c9;
+ color:#fff;
+ padding:12px 18px;
+ cursor:pointer;
+ font-weight:bold;
+ box-shadow:4px 4px 0 #080d18
 }
 
 button:hover{filter:brightness(1.15)}
-button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 #080d18}
+
+button:active{
+ transform:translate(3px,3px);
+ box-shadow:1px 1px 0 #080d18
+}
+
 .hidden{display:none!important}
 
 #game{
-position:absolute;inset:0;overflow:hidden;
-background:linear-gradient(#66c7f5 0%,#a9e6ff 58%,#d7f5ff 100%)
+ position:absolute;
+ inset:0;
+ overflow:hidden;
+ background:linear-gradient(#66c7f5 0%,#a9e6ff 58%,#d7f5ff 100%)
 }
 
 #sun{
-position:absolute;width:100px;height:100px;border-radius:50%;
-background:#fff2a8;right:11%;top:8%;box-shadow:0 0 45px #fff3a0
+ position:absolute;
+ width:100px;
+ height:100px;
+ border-radius:50%;
+ background:#fff2a8;
+ right:11%;
+ top:8%;
+ box-shadow:0 0 45px #fff3a0
 }
 
 .cloud{
-position:absolute;width:170px;height:45px;background:#fff;border-radius:50px;opacity:.82
+ position:absolute;
+ width:170px;
+ height:45px;
+ background:#fff;
+ border-radius:50px;
+ opacity:.82
 }
 
 .cloud:before,.cloud:after{
-content:"";position:absolute;background:#fff;border-radius:50%
+ content:"";
+ position:absolute;
+ background:#fff;
+ border-radius:50%
 }
 
-.cloud:before{width:70px;height:70px;left:25px;top:-35px}
-.cloud:after{width:85px;height:85px;right:20px;top:-45px}
+.cloud:before{
+ width:70px;
+ height:70px;
+ left:25px;
+ top:-35px
+}
+
+.cloud:after{
+ width:85px;
+ height:85px;
+ right:20px;
+ top:-45px
+}
 
 .c1{left:7%;top:14%}
 .c2{left:55%;top:23%;transform:scale(.7)}
 .c3{left:30%;top:8%;transform:scale(.5)}
 
 #city{
-position:absolute;left:0;right:0;bottom:0;height:35%;
-background:repeating-linear-gradient(90deg,#26364e 0 45px,#1d2c42 45px 70px)
+ position:absolute;
+ left:0;
+ right:0;
+ bottom:0;
+ height:35%;
+ background:repeating-linear-gradient(
+  90deg,
+  #26364e 0 45px,
+  #1d2c42 45px 70px
+ )
 }
 
 .building{
-position:absolute;bottom:0;width:17.5%;height:55%;
-background:linear-gradient(90deg,#303d52,#51627b 48%,#27364b);
-border:3px solid #172235;
-box-shadow:inset 10px 0 rgba(255,255,255,.08)
+ position:absolute;
+ bottom:0;
+ width:17.5%;
+ height:55%;
+ background:linear-gradient(
+  90deg,
+  #303d52,
+  #51627b 48%,
+  #27364b
+ );
+ border:3px solid #172235;
+ box-shadow:inset 10px 0 rgba(255,255,255,.08)
 }
 
 .building:nth-child(1){left:8%;height:40%}
@@ -84,444 +167,722 @@ box-shadow:inset 10px 0 rgba(255,255,255,.08)
 .building:nth-child(4){right:8%;height:39%}
 
 #arena{
-position:absolute;inset:0;
+ position:absolute;
+ inset:0
 }
 
 .tower{
-position:absolute;bottom:0;width:17.5%;height:55%;
-background:linear-gradient(90deg,#26364d 0%,#627692 48%,#27364b 100%);
-border:4px solid #101a2b;
-box-shadow:inset 14px 0 rgba(255,255,255,.06),inset -10px 0 rgba(0,0,0,.2);
-overflow:visible
+ position:absolute;
+ bottom:0;
+ width:17.5%;
+ height:55%;
+ background:linear-gradient(
+  90deg,
+  #26364d 0%,
+  #627692 48%,
+  #27364b 100%
+ );
+ border:4px solid #101a2b;
+ box-shadow:
+  inset 14px 0 rgba(255,255,255,.06),
+  inset -10px 0 rgba(0,0,0,.2);
+ overflow:visible
 }
 
 .tower.left{left:26%}
 .tower.right{left:56.5%}
 
 .tower .roof{
-position:absolute;top:-12px;left:-7px;right:-7px;height:15px;
-background:#152237;border:3px solid #0c1525
+ position:absolute;
+ top:-12px;
+ left:-7px;
+ right:-7px;
+ height:15px;
+ background:#152237;
+ border:3px solid #0c1525
 }
 
 .windows{
-position:absolute;inset:25px 15px 10px;
-background:repeating-linear-gradient(90deg,transparent 0 14px,#9fd9eb 14px 20px,transparent 20px 32px);
-opacity:.55
+ position:absolute;
+ inset:25px 15px 10px;
+ background:repeating-linear-gradient(
+  90deg,
+  transparent 0 14px,
+  #9fd9eb 14px 20px,
+  transparent 20px 32px
+ );
+ opacity:.55
 }
 
-.tower.destroyed{opacity:.28;filter:grayscale(1)}
+.tower.destroyed{
+ opacity:.28;
+ filter:grayscale(1)
+}
 
 .health{
-position:absolute;top:-42px;left:0;width:100%;height:16px;background:#111;
-border:3px solid #fff
+ position:absolute;
+ top:-42px;
+ left:0;
+ width:100%;
+ height:16px;
+ background:#111;
+ border:3px solid #fff
 }
 
-.health div{height:100%;background:#51e46d;width:100%}
+.health div{
+ height:100%;
+ background:#51e46d;
+ width:100%
+}
 
 .tower-name{
-position:absolute;top:-72px;width:100%;text-align:center;font-weight:bold;
-text-shadow:3px 3px #000;font-size:14px
+ position:absolute;
+ top:-72px;
+ width:100%;
+ text-align:center;
+ font-weight:bold;
+ text-shadow:3px 3px #000;
+ font-size:14px
 }
 
 #plane{
-position:absolute;width:78px;height:30px;z-index:8;transform-origin:center;
-pointer-events:none
+ position:absolute;
+ width:78px;
+ height:30px;
+ z-index:8;
+ transform-origin:center;
+ pointer-events:none
 }
 
 #plane .body{
-position:absolute;left:5px;top:9px;width:63px;height:12px;background:#f1f3f6;
-border:3px solid #202a39;border-radius:5px
+ position:absolute;
+ left:5px;
+ top:9px;
+ width:63px;
+ height:12px;
+ background:#f1f3f6;
+ border:3px solid #202a39;
+ border-radius:5px
 }
 
 #plane .nose{
-position:absolute;left:66px;top:10px;border-left:17px solid #202a39;
-border-top:5px solid transparent;border-bottom:5px solid transparent
+ position:absolute;
+ left:66px;
+ top:10px;
+ border-left:17px solid #202a39;
+ border-top:5px solid transparent;
+ border-bottom:5px solid transparent
 }
 
 #plane .wing{
-position:absolute;left:24px;top:2px;width:30px;height:28px;
-background:#c8d1dd;clip-path:polygon(0 50%,100% 0,78% 100%)
+ position:absolute;
+ left:24px;
+ top:2px;
+ width:30px;
+ height:28px;
+ background:#c8d1dd;
+ clip-path:polygon(0 50%,100% 0,78% 100%)
 }
 
 #plane .tail{
-position:absolute;left:9px;top:0;width:17px;height:15px;
-background:#b9c4d2;clip-path:polygon(0 100%,100% 0,100% 100%)
+ position:absolute;
+ left:9px;
+ top:0;
+ width:17px;
+ height:15px;
+ background:#b9c4d2;
+ clip-path:polygon(0 100%,100% 0,100% 100%)
 }
 
 #plane .firetrail{
-position:absolute;left:-25px;top:12px;width:28px;height:7px;
-background:linear-gradient(90deg,transparent,#ffdb55,#ff7138)
+ position:absolute;
+ left:-25px;
+ top:12px;
+ width:28px;
+ height:7px;
+ background:linear-gradient(
+  90deg,
+  transparent,
+  #ffdb55,
+  #ff7138
+ )
 }
 
 #plane.stalled{opacity:.65}
 
 #turret{
-position:absolute;width:60px;height:55px;z-index:9;transform-origin:30px 45px;
-pointer-events:none
+ position:absolute;
+ width:60px;
+ height:55px;
+ z-index:9;
+ transform-origin:30px 45px;
+ pointer-events:none
 }
 
 .tbase{
-position:absolute;left:5px;bottom:0;width:50px;height:22px;
-background:#242b36;border:4px solid #111;border-radius:8px
+ position:absolute;
+ left:5px;
+ bottom:0;
+ width:50px;
+ height:22px;
+ background:#242b36;
+ border:4px solid #111;
+ border-radius:8px
 }
 
 .barrel{
-position:absolute;left:27px;bottom:17px;width:58px;height:10px;
-background:#171c25;border:3px solid #090c11;transform-origin:left center
+ position:absolute;
+ left:27px;
+ bottom:17px;
+ width:58px;
+ height:10px;
+ background:#171c25;
+ border:3px solid #090c11;
+ transform-origin:left center
 }
 
 .gunbody{
-position:absolute;left:17px;bottom:16px;width:27px;height:28px;
-background:#303a48;border:3px solid #10151d;border-radius:5px
+ position:absolute;
+ left:17px;
+ bottom:16px;
+ width:27px;
+ height:28px;
+ background:#303a48;
+ border:3px solid #10151d;
+ border-radius:5px
 }
 
 .bullet{
-position:absolute;width:13px;height:5px;background:#fff6a1;
-border:1px solid #ff9c3d;z-index:7;box-shadow:0 0 9px #ffb13d;
-pointer-events:none
+ position:absolute;
+ width:13px;
+ height:5px;
+ background:#fff6a1;
+ border:1px solid #ff9c3d;
+ z-index:7;
+ box-shadow:0 0 9px #ffb13d;
+ pointer-events:none
 }
 
 #hud{
-position:absolute;left:12px;right:12px;top:12px;z-index:15;
-display:flex;justify-content:space-between;gap:10px;pointer-events:none
+ position:absolute;
+ left:12px;
+ right:12px;
+ top:12px;
+ z-index:15;
+ display:flex;
+ justify-content:space-between;
+ gap:10px;
+ pointer-events:none
 }
 
 .hudbox{
-background:rgba(12,19,32,.82);border:3px solid #fff;padding:8px 12px;
-text-shadow:2px 2px #000;min-width:150px
+ background:rgba(12,19,32,.82);
+ border:3px solid #fff;
+ padding:8px 12px;
+ text-shadow:2px 2px #000;
+ min-width:150px
 }
 
-.bar{height:11px;background:#111;border:2px solid #fff;margin-top:5px}
-.bar div{height:100%;background:#52e56c;width:100%}
+.bar{
+ height:11px;
+ background:#111;
+ border:2px solid #fff;
+ margin-top:5px
+}
+
+.bar div{
+ height:100%;
+ background:#52e56c;
+ width:100%
+}
+
 #planeBar div{background:#55a8ff}
-#roundText{text-align:center;font-size:20px;font-weight:bold}
+
+#roundText{
+ text-align:center;
+ font-size:20px;
+ font-weight:bold
+}
 
 #bottom{
-position:absolute;left:0;right:0;bottom:15px;z-index:16;
-display:flex;justify-content:center;gap:10px;pointer-events:none
+ position:absolute;
+ left:0;
+ right:0;
+ bottom:15px;
+ z-index:16;
+ display:flex;
+ justify-content:center;
+ gap:10px;
+ pointer-events:none
 }
 
 .control{
-pointer-events:auto;min-width:65px;background:rgba(15,23,38,.82);
-border:3px solid white;padding:12px;text-align:center;font-weight:bold
+ pointer-events:auto;
+ min-width:65px;
+ background:rgba(15,23,38,.82);
+ border:3px solid white;
+ padding:12px;
+ text-align:center;
+ font-weight:bold
 }
 
 #gunMenu,#planeMenu{
-position:absolute;z-index:30;inset:0;background:rgba(5,10,20,.78);
-display:flex;align-items:center;justify-content:center
+ position:absolute;
+ z-index:30;
+ inset:0;
+ background:rgba(5,10,20,.78);
+ display:flex;
+ align-items:center;
+ justify-content:center
 }
 
 .selection{
-width:min(94vw,650px);background:#17233d;border:4px solid white;
-box-shadow:10px 10px #080d18;padding:24px;text-align:center
+ width:min(94vw,650px);
+ background:#17233d;
+ border:4px solid white;
+ box-shadow:10px 10px #080d18;
+ padding:24px;
+ text-align:center
 }
 
-.cards{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.cards{
+ display:flex;
+ flex-wrap:wrap;
+ gap:10px;
+ justify-content:center
+}
 
 .card{
-width:180px;background:#0e1728;border:3px solid #657795;padding:14px;
-cursor:pointer
+ width:180px;
+ background:#0e1728;
+ border:3px solid #657795;
+ padding:14px;
+ cursor:pointer
 }
 
-.card:hover{filter:brightness(1.2)}
+.card:hover{
+ filter:brightness(1.2)
+}
 
-.card h3{margin:4px 0 8px}
-.card p{font-size:12px;color:#b9c6dc}
+.card h3{
+ margin:4px 0 8px
+}
+
+.card p{
+ font-size:12px;
+ color:#b9c6dc
+}
 
 #mobile{
-position:absolute;bottom:15px;left:15px;right:15px;z-index:17;
-display:none;justify-content:space-between;pointer-events:none
+ position:absolute;
+ bottom:15px;
+ left:15px;
+ right:15px;
+ z-index:17;
+ display:none;
+ justify-content:space-between;
+ pointer-events:none
 }
 
-.mobileGroup{display:flex;gap:8px}
+.mobileGroup{
+ display:flex;
+ gap:8px
+}
 
 .mobileBtn{
-pointer-events:auto;width:62px;height:62px;border:3px solid #fff;
-background:rgba(15,23,38,.8);color:#fff;font-size:20px;font-weight:bold
+ pointer-events:auto;
+ width:62px;
+ height:62px;
+ border:3px solid #fff;
+ background:rgba(15,23,38,.8);
+ color:#fff;
+ font-size:20px;
+ font-weight:bold
 }
 
-.fire{width:95px;background:#8e2730}
+.fire{
+ width:95px;
+ background:#8e2730
+}
 
 #effects{
-position:absolute;inset:0;z-index:25;pointer-events:none
+ position:absolute;
+ inset:0;
+ z-index:25;
+ pointer-events:none
 }
 
 .flash{
-position:absolute;width:70px;height:70px;border-radius:50%;
-background:#fff7a0;animation:flash .2s forwards
+ position:absolute;
+ width:70px;
+ height:70px;
+ border-radius:50%;
+ background:#fff7a0;
+ animation:flash .2s forwards
 }
 
 @keyframes flash{
-to{opacity:0;transform:scale(2)}
+ to{
+  opacity:0;
+  transform:scale(2)
+ }
 }
 
 .smoke{
-position:absolute;width:35px;height:35px;border-radius:50%;
-background:#555;opacity:.7;animation:smoke 1s forwards
+ position:absolute;
+ width:35px;
+ height:35px;
+ border-radius:50%;
+ background:#555;
+ opacity:.7;
+ animation:smoke 1s forwards
 }
 
 @keyframes smoke{
-to{opacity:0;transform:translateY(-45px) scale(1.8)}
+ to{
+  opacity:0;
+  transform:translateY(-45px) scale(1.8)
+ }
 }
 
 .chunk{
-position:absolute;width:15px;height:15px;background:#313d4e;
-animation:chunk 1s forwards
+ position:absolute;
+ width:15px;
+ height:15px;
+ background:#313d4e;
+ animation:chunk 1s forwards
 }
 
 @keyframes chunk{
-to{transform:translate(var(--dx),var(--dy)) rotate(260deg);opacity:0}
-}
-
-#countdown{
-font-size:70px;
-font-weight:bold;
-min-height:85px;
-text-shadow:5px 5px #000;
-margin-top:10px;
+ to{
+  transform:
+   translate(var(--dx),var(--dy))
+   rotate(260deg);
+  opacity:0
+ }
 }
 
 #matchStatus{
-font-size:15px;
-color:#aebbd4;
-margin-top:10px;
+ margin-top:8px;
+ color:#aebbd4;
+ font-size:15px
 }
 
 @media(max-width:700px){
-h1{font-size:31px}
-.panel{padding:20px}
-#hud{font-size:11px}
-.hudbox{min-width:105px;padding:6px}
-#mobile{display:flex}
-#bottom{display:none}
-.tower{height:48%}
+ h1{font-size:31px}
+ .panel{padding:20px}
+ #hud{font-size:11px}
+ .hudbox{
+  min-width:105px;
+  padding:6px
+ }
+ #mobile{display:flex}
+ #bottom{display:none}
+ .tower{height:48%}
 }
 </style>
-
 </head>
 
 <body>
 
 <div id="nameScreen" class="screen">
-<div class="panel">
-<h1>PIXEL SKY CRASH</h1>
-<div class="sub">1V1 PILOT VS GUNNER</div>
-<input id="nameInput" maxlength="16" placeholder="Enter your name">
-<button id="nameBtn">ENTER</button>
-<div id="nameError" style="color:#ff7272;margin-top:12px"></div>
-</div>
+ <div class="panel">
+  <h1>PIXEL SKY CRASH</h1>
+  <div class="sub">1V1 PILOT VS GUNNER</div>
+
+  <input
+   id="nameInput"
+   maxlength="16"
+   placeholder="Enter your name"
+  >
+
+  <button id="nameBtn">ENTER</button>
+
+  <div
+   id="nameError"
+   style="color:#ff7272;margin-top:12px"
+  ></div>
+ </div>
 </div>
 
 <div id="queueScreen" class="screen hidden">
-<div class="panel">
-<h1>1V1</h1>
-<div id="queueText" class="sub">Searching for an opponent...</div>
-<button id="cancelBtn">CANCEL</button>
-</div>
+ <div class="panel">
+  <h1>1V1</h1>
+  <div id="queueText" class="sub">
+   Searching for an opponent...
+  </div>
+  <button id="cancelBtn">CANCEL</button>
+ </div>
 </div>
 
 <div id="matchScreen" class="screen hidden">
-<div class="panel">
-<h1>MATCH FOUND</h1>
-<h2 id="roles"></h2>
-<div id="countdown">3</div>
-<div id="matchStatus">Get ready...</div>
-</div>
+ <div class="panel">
+  <h1>MATCH FOUND</h1>
+  <h2 id="roles"></h2>
+
+  <div
+   id="countdown"
+   style="font-size:55px;font-weight:bold"
+  >3</div>
+
+  <div id="matchStatus">
+   Get ready...
+  </div>
+ </div>
 </div>
 
 <div id="game" class="hidden">
 
-<div id="sun"></div>
+ <div id="sun"></div>
 
-<div class="cloud c1"></div>
-<div class="cloud c2"></div>
-<div class="cloud c3"></div>
+ <div class="cloud c1"></div>
+ <div class="cloud c2"></div>
+ <div class="cloud c3"></div>
 
-<div id="city">
-<div class="building"></div>
-<div class="building"></div>
-<div class="building"></div>
-<div class="building"></div>
-</div>
+ <div id="city">
+  <div class="building"></div>
+  <div class="building"></div>
+  <div class="building"></div>
+  <div class="building"></div>
+ </div>
 
-<div id="arena">
+ <div id="arena">
 
-<div class="tower left" id="tower1">
-<div class="roof"></div>
-<div class="windows"></div>
-<div class="tower-name" id="tower1Name">TOWER 1</div>
-<div class="health"><div id="tower1HP"></div></div>
-</div>
+  <div class="tower left" id="tower1">
+   <div class="roof"></div>
+   <div class="windows"></div>
 
-<div class="tower right" id="tower2">
-<div class="roof"></div>
-<div class="windows"></div>
-<div class="tower-name" id="tower2Name">TOWER 2</div>
-<div class="health"><div id="tower2HP"></div></div>
-</div>
+   <div
+    class="tower-name"
+    id="tower1Name"
+   >TOWER 1</div>
 
-<div id="plane">
-<div class="firetrail"></div>
-<div class="tail"></div>
-<div class="wing"></div>
-<div class="body"></div>
-<div class="nose"></div>
-</div>
+   <div class="health">
+    <div id="tower1HP"></div>
+   </div>
+  </div>
 
-<div id="turret">
-<div class="tbase"></div>
-<div class="gunbody"></div>
-<div class="barrel"></div>
-</div>
+  <div class="tower right" id="tower2">
+   <div class="roof"></div>
+   <div class="windows"></div>
 
-</div>
+   <div
+    class="tower-name"
+    id="tower2Name"
+   >TOWER 2</div>
 
-<div id="effects"></div>
+   <div class="health">
+    <div id="tower2HP"></div>
+   </div>
+  </div>
 
-<div id="hud">
+  <div id="plane">
+   <div class="firetrail"></div>
+   <div class="tail"></div>
+   <div class="wing"></div>
+   <div class="body"></div>
+   <div class="nose"></div>
+  </div>
 
-<div class="hudbox">
-<div id="pilotLabel">PILOT</div>
-<div>PLANE</div>
-<div class="bar" id="planeBar">
-<div></div>
-</div>
-</div>
+  <div id="turret">
+   <div class="tbase"></div>
+   <div class="gunbody"></div>
+   <div class="barrel"></div>
+  </div>
 
-<div class="hudbox" id="roundText">
-ROUND 1
-</div>
+ </div>
 
-<div class="hudbox">
-<div id="gunnerLabel">GUNNER</div>
-<div id="gunLabel">GUN</div>
-<div class="bar">
-<div id="gunBar"></div>
-</div>
-</div>
+ <div id="effects"></div>
 
-</div>
+ <div id="hud">
 
-<div id="bottom">
+  <div class="hudbox">
+   <div id="pilotLabel">PILOT</div>
+   <div>PLANE</div>
 
-<div class="control">
-W / ↑<br>CLIMB
-</div>
+   <div
+    class="bar"
+    id="planeBar"
+   >
+    <div></div>
+   </div>
+  </div>
 
-<div class="control">
-S / ↓<br>DESCEND
-</div>
+  <div
+   class="hudbox"
+   id="roundText"
+  >ROUND 1</div>
 
-<div class="control">
-A / D<br>STEER
-</div>
+  <div class="hudbox">
+   <div id="gunnerLabel">GUNNER</div>
+   <div id="gunLabel">GUN</div>
 
-<div class="control">
-SPACE<br>BRAKE
-</div>
+   <div class="bar">
+    <div id="gunBar"></div>
+   </div>
+  </div>
 
-<div class="control">
-P<br>PLANE
-</div>
+ </div>
 
-</div>
+ <div id="bottom">
+  <div class="control">
+   W / ↑<br>CLIMB
+  </div>
 
-<div id="mobile">
+  <div class="control">
+   S / ↓<br>DESCEND
+  </div>
 
-<div class="mobileGroup">
-<button class="mobileBtn" data-key="up">▲</button>
-<button class="mobileBtn" data-key="down">▼</button>
-</div>
+  <div class="control">
+   A / D<br>STEER
+  </div>
 
-<button class="mobileBtn fire" id="mobileFire">FIRE</button>
+  <div class="control">
+   SPACE<br>BRAKE
+  </div>
 
-<div class="mobileGroup">
-<button class="mobileBtn" data-key="left">◀</button>
-<button class="mobileBtn" data-key="right">▶</button>
-</div>
+  <div class="control">
+   P<br>PLANE
+  </div>
+ </div>
 
-</div>
+ <div id="mobile">
+
+  <div class="mobileGroup">
+   <button
+    class="mobileBtn"
+    data-key="up"
+   >▲</button>
+
+   <button
+    class="mobileBtn"
+    data-key="down"
+   >▼</button>
+  </div>
+
+  <button
+   class="mobileBtn fire"
+   id="mobileFire"
+  >FIRE</button>
+
+  <div class="mobileGroup">
+   <button
+    class="mobileBtn"
+    data-key="left"
+   >◀</button>
+
+   <button
+    class="mobileBtn"
+    data-key="right"
+   >▶</button>
+  </div>
+
+ </div>
 
 </div>
 
 <div id="planeMenu" class="hidden">
+ <div class="selection">
 
-<div class="selection">
+  <h2>SELECT PLANE</h2>
 
-<h2>SELECT PLANE</h2>
+  <div class="cards">
 
-<div class="cards">
+   <div
+    class="card"
+    data-plane="small"
+   >
+    <h3>SMALL JET</h3>
+    <p>Fast and agile</p>
+   </div>
 
-<div class="card" data-plane="small">
-<h3>SMALL JET</h3>
-<p>Fast and agile</p>
-</div>
+   <div
+    class="card"
+    data-plane="airliner"
+   >
+    <h3>AIRLINER</h3>
+    <p>Balanced</p>
+   </div>
 
-<div class="card" data-plane="airliner">
-<h3>AIRLINER</h3>
-<p>Balanced</p>
-</div>
+   <div
+    class="card"
+    data-plane="large"
+   >
+    <h3>LARGE AIRLINER</h3>
+    <p>Heavy and steady</p>
+   </div>
 
-<div class="card" data-plane="large">
-<h3>LARGE AIRLINER</h3>
-<p>Heavy and steady</p>
-</div>
+   <div
+    class="card"
+    data-plane="cargo"
+   >
+    <h3>CARGO PLANE</h3>
+    <p>Slow but tough</p>
+   </div>
 
-<div class="card" data-plane="cargo">
-<h3>CARGO PLANE</h3>
-<p>Slow but tough</p>
-</div>
+   <div
+    class="card"
+    data-plane="fighter"
+   >
+    <h3>FIGHTER JET</h3>
+    <p>Very fast</p>
+   </div>
 
-<div class="card" data-plane="fighter">
-<h3>FIGHTER JET</h3>
-<p>Very fast</p>
-</div>
-
-</div>
-</div>
+  </div>
+ </div>
 </div>
 
 <div id="gunMenu" class="hidden">
+ <div class="selection">
 
-<div class="selection">
+  <h2>SELECT MACHINE GUN</h2>
 
-<h2>SELECT MACHINE GUN</h2>
+  <div class="cards">
 
-<div class="cards">
+   <div
+    class="card"
+    data-gun="mg"
+   >
+    <h3>MACHINE GUN</h3>
+    <p>Fast fire rate · balanced damage</p>
+   </div>
 
-<div class="card" data-gun="mg">
-<h3>MACHINE GUN</h3>
-<p>Fast fire rate · balanced damage</p>
-</div>
+   <div
+    class="card"
+    data-gun="heavy"
+   >
+    <h3>HEAVY MG</h3>
+    <p>Higher damage · slower fire rate</p>
+   </div>
 
-<div class="card" data-gun="heavy">
-<h3>HEAVY MG</h3>
-<p>Higher damage · slower fire rate</p>
-</div>
+   <div
+    class="card"
+    data-gun="rapid"
+   >
+    <h3>RAPID MG</h3>
+    <p>Very fast fire rate · lower damage</p>
+   </div>
 
-<div class="card" data-gun="rapid">
-<h3>RAPID MG</h3>
-<p>Very fast fire rate · lower damage</p>
-</div>
-
-</div>
-</div>
+  </div>
+ </div>
 </div>
 
 <div id="endScreen" class="screen hidden">
+ <div class="panel">
 
-<div class="panel">
+  <h1 id="endTitle">GAME OVER</h1>
 
-<h1 id="endTitle">GAME OVER</h1>
+  <h2 id="endReason"></h2>
 
-<h2 id="endReason"></h2>
+  <button id="rematchBtn">
+   REMATCH
+  </button>
 
-<button id="rematchBtn">REMATCH</button>
+  <button id="menuBtn">
+   MENU
+  </button>
 
-<button id="menuBtn">MENU</button>
-
-</div>
-
+ </div>
 </div>
 
 <script>
@@ -539,858 +900,913 @@ let selectedGun="mg";
 let firing=false;
 
 let keys={
-up:false,
-down:false,
-left:false,
-right:false,
-brake:false
+ up:false,
+ down:false,
+ left:false,
+ right:false,
+ brake:false
 };
 
 let previousBullets=new Map();
 
 let audioStarted=false;
+
 let countdownTimer=null;
 
 const planeNames={
-small:"Small Jet",
-airliner:"Airliner",
-large:"Large Airliner",
-cargo:"Cargo Plane",
-fighter:"Fighter Jet"
+ small:"Small Jet",
+ airliner:"Airliner",
+ large:"Large Airliner",
+ cargo:"Cargo Plane",
+ fighter:"Fighter Jet"
 };
 
 const gunNames={
-mg:"Machine Gun",
-heavy:"Heavy MG",
-rapid:"Rapid MG"
+ mg:"Machine Gun",
+ heavy:"Heavy MG",
+ rapid:"Rapid MG"
 };
 
 function show(id){
 
-[
-"nameScreen",
-"queueScreen",
-"matchScreen",
-"game",
-"endScreen"
-].forEach(x=>{
-$(x).classList.add("hidden");
-});
+ [
+  "nameScreen",
+  "queueScreen",
+  "matchScreen",
+  "game",
+  "endScreen"
+ ].forEach(x=>{
+  $(x).classList.add("hidden");
+ });
 
-$(id).classList.remove("hidden");
-
+ $(id).classList.remove("hidden");
 }
 
 function startMusic(){
 
-if(audioStarted)return;
+ if(audioStarted)return;
 
-audioStarted=true;
+ audioStarted=true;
 
-const a=new Audio("towersong.mp3");
+ const a=new Audio("towersong.mp3");
 
-a.loop=true;
-a.volume=.45;
+ a.loop=true;
+ a.volume=.45;
 
-a.play().catch(()=>{});
+ a.play().catch(()=>{});
 
-window.gameMusic=a;
-
-}
-
-function connect(){
-
-const protocol=location.protocol==="https:"?"wss":"ws";
-
-const host=
-location.hostname==="localhost"||
-location.hostname==="127.0.0.1"
-?location.host
-:location.host;
-
-ws=new WebSocket(protocol+"://"+host);
-
-ws.onopen=()=>{
-
-if(myName){
-
-send({
-type:"queue",
-name:myName
-});
-
-}
-
-};
-
-ws.onmessage=e=>{
-
-let msg;
-
-try{
-msg=JSON.parse(e.data);
-}catch{
-return;
-}
-
-if(msg.type==="matchFound"){
-
-myRole=msg.role;
-
-$("roles").textContent=
-"YOU ARE THE "+myRole.toUpperCase();
-
-show("matchScreen");
-
-startMusic();
-
-startCountdown();
-
-}
-
-if(msg.type==="state"){
-
-state=msg;
-
-if(msg.phase==="playing"){
-
-if(countdownTimer){
-
-clearInterval(countdownTimer);
-countdownTimer=null;
-
-}
-
-if($("game").classList.contains("hidden")){
-
-show("game");
-
-}
-
-render(msg);
-
-}
-
-if(msg.phase==="ended"){
-
-if(countdownTimer){
-
-clearInterval(countdownTimer);
-countdownTimer=null;
-
-}
-
-render(msg);
-
-showEnd(msg);
-
-}
-
-}
-
-if(msg.type==="opponentLeft"){
-
-if(countdownTimer){
-
-clearInterval(countdownTimer);
-countdownTimer=null;
-
-}
-
-$("endTitle").textContent="YOU WIN!";
-$("endReason").textContent="Your opponent left.";
-
-show("endScreen");
-
-}
-
-if(msg.type==="error"){
-
-$("nameError").textContent=
-msg.message||"Server error";
-
-}
-
-};
-
-ws.onclose=()=>{
-
-if(!$("endScreen").classList.contains("hidden"))return;
-
-$("queueText").textContent=
-"Connection lost. Refresh to reconnect.";
-
-};
-
+ window.gameMusic=a;
 }
 
 function startCountdown(){
 
-if(countdownTimer){
+ if(countdownTimer){
+  clearInterval(countdownTimer);
+  countdownTimer=null;
+ }
 
-clearInterval(countdownTimer);
-countdownTimer=null;
+ let n=3;
 
+ $("countdown").textContent=n;
+ $("matchStatus").textContent="Get ready...";
+
+ countdownTimer=setInterval(()=>{
+
+  n--;
+
+  if(n>0){
+
+   $("countdown").textContent=n;
+
+   return;
+  }
+
+  $("countdown").textContent="START!";
+  $("matchStatus").textContent="";
+
+  clearInterval(countdownTimer);
+  countdownTimer=null;
+
+ },1000);
 }
 
-let n=3;
+function stopCountdown(){
 
-$("countdown").textContent=n;
-$("matchStatus").textContent="Get ready...";
-
-countdownTimer=setInterval(()=>{
-
-n--;
-
-if(n>0){
-
-$("countdown").textContent=n;
-
-return;
-
+ if(countdownTimer){
+  clearInterval(countdownTimer);
+  countdownTimer=null;
+ }
 }
 
-if(n===0){
+function connect(){
 
-$("countdown").textContent="START!";
-$("matchStatus").textContent="GO!";
+ const protocol=
+  location.protocol==="https:"
+   ?"wss"
+   :"ws";
 
-return;
+ const host=
+  location.hostname==="localhost"||
+  location.hostname==="127.0.0.1"
+   ?location.host
+   :location.host;
 
-}
+ ws=new WebSocket(
+  protocol+"://"+host
+ );
 
-clearInterval(countdownTimer);
-countdownTimer=null;
+ ws.onopen=()=>{
 
-},1000);
+  if(myName){
+   send({
+    type:"queue",
+    name:myName
+   });
+  }
 
+ };
+
+ ws.onmessage=e=>{
+
+  let msg;
+
+  try{
+   msg=JSON.parse(e.data);
+  }catch{
+   return;
+  }
+
+  /*
+   * The server sends matchWaiting
+   * while its 3.2 second countdown
+   * is running.
+   *
+   * Start our visual countdown here,
+   * instead of waiting for matchFound.
+   */
+  if(msg.type==="matchWaiting"){
+
+   show("matchScreen");
+
+   $("roles").textContent="MATCH FOUND";
+
+   startMusic();
+
+   startCountdown();
+  }
+
+  /*
+   * matchFound contains our actual role.
+   */
+  if(msg.type==="matchFound"){
+
+   /*
+    * Server uses lowercase:
+    * pilot / gunner
+    *
+    * Convert it so the rest of
+    * the client can use Pilot/Gunner.
+    */
+   myRole=
+    String(msg.role||"")
+     .toLowerCase()==="pilot"
+      ?"Pilot"
+      :"Gunner";
+
+   $("roles").textContent=
+    "YOU ARE THE "+myRole.toUpperCase();
+
+   startMusic();
+
+   /*
+    * Do NOT restart the countdown.
+    *
+    * The countdown already started
+    * when matchWaiting arrived.
+    */
+
+   if($("game").classList.contains("hidden")){
+    show("matchScreen");
+   }
+  }
+
+  /*
+   * This is the important part.
+   *
+   * When the server says phase=playing,
+   * immediately switch from the countdown
+   * screen to the actual game.
+   */
+  if(msg.type==="state"){
+
+   state=msg;
+
+   if(msg.phase==="playing"){
+
+    stopCountdown();
+
+    show("game");
+
+    render(msg);
+   }
+
+   if(msg.phase==="ended"){
+
+    stopCountdown();
+
+    render(msg);
+
+    showEnd(msg);
+   }
+  }
+
+  if(msg.type==="opponentLeft"){
+
+   stopCountdown();
+
+   $("endTitle").textContent="YOU WIN!";
+   $("endReason").textContent="Your opponent left.";
+
+   show("endScreen");
+  }
+
+  if(msg.type==="error"){
+
+   $("nameError").textContent=
+    msg.message||"Server error";
+  }
+
+ };
+
+ ws.onclose=()=>{
+
+  stopCountdown();
+
+  if(!$("endScreen").classList.contains("hidden")){
+   return;
+  }
+
+  $("queueText").textContent=
+   "Connection lost. Refresh to reconnect.";
+ };
 }
 
 function send(data){
 
-if(ws&&ws.readyState===WebSocket.OPEN){
-
-ws.send(JSON.stringify(data));
-
-}
-
+ if(
+  ws&&
+  ws.readyState===WebSocket.OPEN
+ ){
+  ws.send(JSON.stringify(data));
+ }
 }
 
 $("nameBtn").onclick=()=>{
 
-const name=$("nameInput").value.trim();
+ const name=
+  $("nameInput").value.trim();
 
-if(!name){
+ if(!name){
 
-$("nameError").textContent="Enter a name.";
+  $("nameError").textContent=
+   "Enter a name.";
 
-return;
+  return;
+ }
 
-}
+ myName=name.slice(0,16);
 
-myName=name.slice(0,16);
+ startMusic();
 
-$("nameError").textContent="";
+ show("queueScreen");
 
-startMusic();
-
-show("queueScreen");
-
-connect();
-
+ connect();
 };
 
-$("nameInput").addEventListener("keydown",e=>{
-
-if(e.key==="Enter"){
-
-$("nameBtn").click();
-
-}
-
-});
+$("nameInput").addEventListener(
+ "keydown",
+ e=>{
+  if(e.key==="Enter"){
+   $("nameBtn").click();
+  }
+ }
+);
 
 $("cancelBtn").onclick=()=>{
 
-send({
-type:"cancelQueue"
-});
+ stopCountdown();
 
-show("nameScreen");
+ send({
+  type:"cancelQueue"
+ });
 
+ show("nameScreen");
 };
 
 $("rematchBtn").onclick=()=>{
 
-$("endScreen").classList.add("hidden");
+ stopCountdown();
 
-show("queueScreen");
+ $("endScreen").classList.add("hidden");
 
-send({
-type:"queue",
-name:myName
-});
+ show("queueScreen");
 
+ send({
+  type:"queue",
+  name:myName
+ });
 };
 
 $("menuBtn").onclick=()=>{
 
-send({
-type:"leaveRoom"
-});
+ stopCountdown();
 
-show("nameScreen");
+ send({
+  type:"leaveRoom"
+ });
 
+ show("nameScreen");
 };
 
-document.querySelectorAll("[data-plane]").forEach(card=>{
+document
+ .querySelectorAll("[data-plane]")
+ .forEach(card=>{
 
-card.onclick=()=>{
+  card.onclick=()=>{
 
-selectedPlane=card.dataset.plane;
+   selectedPlane=
+    card.dataset.plane;
 
-send({
-type:"selectPlane",
-plane:selectedPlane
-});
+   send({
+    type:"selectPlane",
+    plane:selectedPlane
+   });
 
-$("planeMenu").classList.add("hidden");
+   $("planeMenu")
+    .classList.add("hidden");
+  };
 
-};
+ });
 
-});
+document
+ .querySelectorAll("[data-gun]")
+ .forEach(card=>{
 
-document.querySelectorAll("[data-gun]").forEach(card=>{
+  card.onclick=()=>{
 
-card.onclick=()=>{
+   selectedGun=
+    card.dataset.gun;
 
-selectedGun=card.dataset.gun;
+   send({
+    type:"selectGun",
+    gun:selectedGun
+   });
 
-send({
-type:"selectGun",
-gun:selectedGun
-});
+   $("gunMenu")
+    .classList.add("hidden");
+  };
 
-$("gunMenu").classList.add("hidden");
-
-};
-
-});
+ });
 
 function openPlaneMenu(){
 
-if(myRole==="Pilot"){
+ if(myRole==="Pilot"){
 
-$("planeMenu").classList.remove("hidden");
-
-}
-
+  $("planeMenu")
+   .classList.remove("hidden");
+ }
 }
 
 function openGunMenu(){
 
-if(myRole==="Gunner"){
+ if(myRole==="Gunner"){
 
-$("gunMenu").classList.remove("hidden");
-
+  $("gunMenu")
+   .classList.remove("hidden");
+ }
 }
 
-}
+window.addEventListener(
+ "keydown",
+ e=>{
 
-window.addEventListener("keydown",e=>{
+  if(e.key.toLowerCase()==="p"){
+   openPlaneMenu();
+  }
 
-if(e.key.toLowerCase()==="p"){
+  if(e.key.toLowerCase()==="g"){
+   openGunMenu();
+  }
 
-openPlaneMenu();
+  if(e.code==="Space"){
+   keys.brake=true;
+   e.preventDefault();
+  }
 
-}
+  if(
+   ["w","ArrowUp"]
+    .includes(e.key)
+  ){
+   keys.up=true;
+  }
 
-if(e.key.toLowerCase()==="g"){
+  if(
+   ["s","ArrowDown"]
+    .includes(e.key)
+  ){
+   keys.down=true;
+  }
 
-openGunMenu();
+  if(
+   ["a","ArrowLeft"]
+    .includes(e.key)
+  ){
+   keys.left=true;
+  }
 
-}
+  if(
+   ["d","ArrowRight"]
+    .includes(e.key)
+  ){
+   keys.right=true;
+  }
 
-if(e.code==="Space"){
+ });
 
-keys.brake=true;
+window.addEventListener(
+ "keyup",
+ e=>{
 
-e.preventDefault();
+  if(e.code==="Space"){
+   keys.brake=false;
+  }
 
-}
+  if(
+   ["w","ArrowUp"]
+    .includes(e.key)
+  ){
+   keys.up=false;
+  }
 
-if(["w","ArrowUp"].includes(e.key)){
+  if(
+   ["s","ArrowDown"]
+    .includes(e.key)
+  ){
+   keys.down=false;
+  }
 
-keys.up=true;
+  if(
+   ["a","ArrowLeft"]
+    .includes(e.key)
+  ){
+   keys.left=false;
+  }
 
-}
+  if(
+   ["d","ArrowRight"]
+    .includes(e.key)
+  ){
+   keys.right=false;
+  }
 
-if(["s","ArrowDown"].includes(e.key)){
-
-keys.down=true;
-
-}
-
-if(["a","ArrowLeft"].includes(e.key)){
-
-keys.left=true;
-
-}
-
-if(["d","ArrowRight"].includes(e.key)){
-
-keys.right=true;
-
-}
-
-});
-
-window.addEventListener("keyup",e=>{
-
-if(e.code==="Space"){
-
-keys.brake=false;
-
-}
-
-if(["w","ArrowUp"].includes(e.key)){
-
-keys.up=false;
-
-}
-
-if(["s","ArrowDown"].includes(e.key)){
-
-keys.down=false;
-
-}
-
-if(["a","ArrowLeft"].includes(e.key)){
-
-keys.left=false;
-
-}
-
-if(["d","ArrowRight"].includes(e.key)){
-
-keys.right=false;
-
-}
-
-});
+ });
 
 function sendInput(){
 
-if(myRole!=="Pilot")return;
+ if(myRole!=="Pilot"){
+  return;
+ }
 
-send({
-type:"input",
-...keys
-});
-
+ send({
+  type:"input",
+  ...keys
+ });
 }
 
-setInterval(sendInput,50);
+setInterval(
+ sendInput,
+ 50
+);
 
 function aim(e){
 
-if(myRole!=="Gunner")return;
+ if(myRole!=="Gunner"){
+  return;
+ }
 
-const r=$("game").getBoundingClientRect();
+ const r=
+  $("game").getBoundingClientRect();
 
-const x=(e.clientX-r.left)/r.width*1000;
+ const x=
+  (e.clientX-r.left)/
+  r.width*
+  1000;
 
-const y=(e.clientY-r.top)/r.height*600;
+ const y=
+  (e.clientY-r.top)/
+  r.height*
+  600;
 
-send({
-type:"aim",
-x,
-y
-});
-
+ send({
+  type:"aim",
+  x:x,
+  y:y
+ });
 }
 
-$("game").addEventListener("pointermove",aim);
+$("game").addEventListener(
+ "pointermove",
+ aim
+);
 
-$("game").addEventListener("pointerdown",e=>{
+$("game").addEventListener(
+ "pointerdown",
+ e=>{
 
-if(myRole==="Gunner"){
+  if(myRole==="Gunner"){
 
-firing=true;
+   firing=true;
 
-send({
-type:"fire",
-down:true
-});
+   send({
+    type:"fire",
+    down:true
+   });
+  }
 
-}
+ });
 
-});
+window.addEventListener(
+ "pointerup",
+ ()=>{
 
-window.addEventListener("pointerup",()=>{
+  if(firing){
 
-if(firing){
+   firing=false;
 
-firing=false;
+   send({
+    type:"fire",
+    down:false
+   });
+  }
 
-send({
-type:"fire",
-down:false
-});
+ });
 
-}
+$("mobileFire").addEventListener(
+ "pointerdown",
+ ()=>{
 
-});
+  firing=true;
 
-$("mobileFire").addEventListener("pointerdown",e=>{
+  send({
+   type:"fire",
+   down:true
+  });
 
-e.preventDefault();
+ });
 
-firing=true;
+$("mobileFire").addEventListener(
+ "pointerup",
+ ()=>{
 
-send({
-type:"fire",
-down:true
-});
+  firing=false;
 
-});
+  send({
+   type:"fire",
+   down:false
+  });
 
-$("mobileFire").addEventListener("pointerup",e=>{
+ });
 
-e.preventDefault();
+document
+ .querySelectorAll(".mobileBtn[data-key]")
+ .forEach(btn=>{
 
-firing=false;
+  const k=btn.dataset.key;
 
-send({
-type:"fire",
-down:false
-});
+  const set=v=>{
 
-});
+   if(k==="up")keys.up=v;
+   if(k==="down")keys.down=v;
+   if(k==="left")keys.left=v;
+   if(k==="right")keys.right=v;
 
-$("mobileFire").addEventListener("pointercancel",()=>{
+   sendInput();
+  };
 
-firing=false;
+  btn.addEventListener(
+   "pointerdown",
+   e=>{
+    e.preventDefault();
+    set(true);
+   }
+  );
 
-send({
-type:"fire",
-down:false
-});
+  btn.addEventListener(
+   "pointerup",
+   e=>{
+    e.preventDefault();
+    set(false);
+   }
+  );
 
-});
+  btn.addEventListener(
+   "pointercancel",
+   ()=>{
+    set(false);
+   }
+  );
 
-document.querySelectorAll(".mobileBtn[data-key]").forEach(btn=>{
-
-const k=btn.dataset.key;
-
-const set=v=>{
-
-if(k==="up")keys.up=v;
-if(k==="down")keys.down=v;
-if(k==="left")keys.left=v;
-if(k==="right")keys.right=v;
-
-sendInput();
-
-};
-
-btn.addEventListener("pointerdown",e=>{
-
-e.preventDefault();
-
-set(true);
-
-});
-
-btn.addEventListener("pointerup",e=>{
-
-e.preventDefault();
-
-set(false);
-
-});
-
-btn.addEventListener("pointercancel",()=>{
-
-set(false);
-
-});
-
-});
+ });
 
 function pct(v,max=100){
 
-return Math.max(
-0,
-Math.min(100,v/max*100)
-)+"%";
-
+ return Math.max(
+  0,
+  Math.min(
+   100,
+   v/max*100
+  )
+ )+"%";
 }
 
 function worldToScreenX(x){
 
-return x/1000*innerWidth;
-
+ return x/1000*innerWidth;
 }
 
 function worldToScreenY(y){
 
-return y/600*innerHeight;
-
+ return y/600*innerHeight;
 }
 
 function render(s){
 
-state=s;
+ state=s;
 
-$("tower1HP").style.width=
-pct(s.towers[0].hp);
+ $("tower1HP").style.width=
+  pct(s.towers[0].hp);
 
-$("tower2HP").style.width=
-pct(s.towers[1].hp);
+ $("tower2HP").style.width=
+  pct(s.towers[1].hp);
 
-$("planeBar").firstElementChild.style.width=
-pct(s.plane.hp);
+ $("planeBar")
+  .firstElementChild
+  .style.width=
+  pct(s.plane.hp);
 
-$("gunBar").style.width=
-s.gunnerReady?"100%":"25%";
+ $("gunBar").style.width=
+  s.gunnerReady
+   ?"100%"
+   :"25%";
 
-$("tower1Name").textContent=
-s.players.tower1||"TOWER 1";
+ $("tower1Name").textContent=
+  s.players.tower1||"TOWER 1";
 
-$("tower2Name").textContent=
-s.players.tower2||"TOWER 2";
+ $("tower2Name").textContent=
+  s.players.tower2||"TOWER 2";
 
-$("roundText").textContent=
-"ROUND "+
-s.round+
-" · "+
-s.roundWins[0]+
-" - "+
-s.roundWins[1];
+ $("roundText").textContent=
+  `ROUND ${s.round} · ${s.roundWins[0]} - ${s.roundWins[1]}`;
 
-$("pilotLabel").textContent=
-"PILOT: "+
-s.pilotName;
+ $("pilotLabel").textContent=
+  `PILOT: ${s.pilotName}`;
 
-$("gunnerLabel").textContent=
-"GUNNER: "+
-s.gunnerName;
+ $("gunnerLabel").textContent=
+  `GUNNER: ${s.gunnerName}`;
 
-$("gunLabel").textContent=
-gunNames[s.gun]||"GUN";
+ $("gunLabel").textContent=
+  gunNames[s.gun]||"GUN";
 
-$("tower1").classList.toggle(
-"destroyed",
-s.towers[0].hp<=0
-);
+ $("tower1").classList.toggle(
+  "destroyed",
+  s.towers[0].hp<=0
+ );
 
-$("tower2").classList.toggle(
-"destroyed",
-s.towers[1].hp<=0
-);
+ $("tower2").classList.toggle(
+  "destroyed",
+  s.towers[1].hp<=0
+ );
 
-const px=
-worldToScreenX(s.plane.x);
+ const px=
+  worldToScreenX(s.plane.x);
 
-const py=
-worldToScreenY(s.plane.y);
+ const py=
+  worldToScreenY(s.plane.y);
 
-$("plane").style.left=
-(px-39)+"px";
+ $("plane").style.left=
+  (px-39)+"px";
 
-$("plane").style.top=
-(py-15)+"px";
+ $("plane").style.top=
+  (py-15)+"px";
 
-$("plane").style.transform=
-"rotate("+s.plane.pitch+"deg)";
+ $("plane").style.transform=
+  `rotate(${s.plane.pitch}deg)`;
 
-$("plane").classList.toggle(
-"stalled",
-s.plane.stalled
-);
+ $("plane").classList.toggle(
+  "stalled",
+  s.plane.stalled
+ );
 
-const gunX=
-s.gunTower===1?347:652;
+ const tx=
+  worldToScreenX(
+   s.gunTower===1
+    ?347
+    :652
+  );
 
-const gunY=245;
+ const ty=
+  worldToScreenY(245);
 
-const tx=
-worldToScreenX(gunX);
+ $("turret").style.left=
+  (tx-30)+"px";
 
-const ty=
-worldToScreenY(gunY);
+ $("turret").style.top=
+  (ty-45)+"px";
 
-$("turret").style.left=
-(tx-30)+"px";
+ const angle=
+  Math.atan2(
+   s.aim.y-245,
+   s.aim.x-
+    (s.gunTower===1?347:652)
+  )*
+  180/
+  Math.PI;
 
-$("turret").style.top=
-(ty-45)+"px";
+ $("turret .barrel").style.transform=
+  `rotate(${angle}deg)`;
 
-const angle=
-Math.atan2(
-s.aim.y-gunY,
-s.aim.x-gunX
-)*180/Math.PI;
+ renderBullets(
+  s.bullets||[]
+ );
 
-$("turret .barrel").style.transform=
-"rotate("+angle+"deg)";
-
-renderBullets(s.bullets||[]);
-
-detectHits(s);
-
+ detectHits(s);
 }
 
 function renderBullets(bullets){
 
-const active=new Set();
+ const active=new Set();
 
-bullets.forEach(b=>{
+ bullets.forEach(b=>{
 
-const id=b.id;
+  const id=b.id;
 
-active.add(id);
+  active.add(id);
 
-let el=
-document.querySelector(
-'.bullet[data-id="'+id+'"]'
-);
+  let el=
+   document.querySelector(
+    `.bullet[data-id="${id}"]`
+   );
 
-if(!el){
+  if(!el){
 
-el=document.createElement("div");
+   el=
+    document.createElement("div");
 
-el.className="bullet";
+   el.className="bullet";
 
-el.dataset.id=id;
+   el.dataset.id=id;
 
-$("arena").appendChild(el);
+   $("arena").appendChild(el);
+  }
 
+  el.style.left=
+   (worldToScreenX(b.x)-6)+"px";
+
+  el.style.top=
+   (worldToScreenY(b.y)-2)+"px";
+
+  el.style.transform=
+   `rotate(${
+    Math.atan2(
+     b.vy,
+     b.vx
+    )*
+    180/
+    Math.PI
+   }deg)`;
+ });
+
+ document
+  .querySelectorAll(".bullet")
+  .forEach(el=>{
+
+   if(
+    !active.has(
+     Number(el.dataset.id)
+    )
+   ){
+    el.remove();
+   }
+
+  });
 }
 
-el.style.left=
-(worldToScreenX(b.x)-6)+"px";
-
-el.style.top=
-(worldToScreenY(b.y)-2)+"px";
-
-el.style.transform=
-"rotate("+
-Math.atan2(b.vy,b.vx)*180/Math.PI+
-"deg)";
-
-});
-
-document.querySelectorAll(".bullet").forEach(el=>{
-
-if(!active.has(Number(el.dataset.id))){
-
-el.remove();
-
-}
-
-});
-
-}
-
-let lastTowerHP=[100,100];
+let lastTowerHP=[
+  100,
+  100
+];
 
 let lastPlaneHP=100;
 
 function detectHits(s){
 
-if(s.towers[0].hp<lastTowerHP[0]){
+ if(
+  s.towers[0].hp<
+  lastTowerHP[0]
+ ){
+  effectAt(347,465);
+ }
 
-effectAt(347,465);
+ if(
+  s.towers[1].hp<
+  lastTowerHP[1]
+ ){
+  effectAt(652,465);
+ }
 
-}
+ if(
+  s.plane.hp<
+  lastPlaneHP
+ ){
+  effectAt(
+   s.plane.x,
+   s.plane.y
+  );
+ }
 
-if(s.towers[1].hp<lastTowerHP[1]){
+ lastTowerHP=[
+  s.towers[0].hp,
+  s.towers[1].hp
+ ];
 
-effectAt(652,465);
-
-}
-
-if(s.plane.hp<lastPlaneHP){
-
-effectAt(
-s.plane.x,
-s.plane.y
-);
-
-}
-
-lastTowerHP=[
-s.towers[0].hp,
-s.towers[1].hp
-];
-
-lastPlaneHP=s.plane.hp;
-
+ lastPlaneHP=
+  s.plane.hp;
 }
 
 function effectAt(x,y){
 
-const e=$("effects");
+ const e=$("effects");
 
-const px=
-worldToScreenX(x);
+ const px=
+  worldToScreenX(x);
 
-const py=
-worldToScreenY(y);
+ const py=
+  worldToScreenY(y);
 
-const flash=
-document.createElement("div");
+ const flash=
+  document.createElement("div");
 
-flash.className="flash";
+ flash.className="flash";
 
-flash.style.left=
-(px-35)+"px";
+ flash.style.left=
+  (px-35)+"px";
 
-flash.style.top=
-(py-35)+"px";
+ flash.style.top=
+  (py-35)+"px";
 
-e.appendChild(flash);
+ e.appendChild(flash);
 
-setTimeout(()=>flash.remove(),250);
+ setTimeout(
+  ()=>flash.remove(),
+  250
+ );
 
-for(let i=0;i<4;i++){
+ for(let i=0;i<4;i++){
 
-const smoke=
-document.createElement("div");
+  const smoke=
+   document.createElement("div");
 
-smoke.className="smoke";
+  smoke.className="smoke";
 
-smoke.style.left=
-(px-17+Math.random()*34)+"px";
+  smoke.style.left=
+   (px-17+
+    Math.random()*34)+"px";
 
-smoke.style.top=
-(py-17+Math.random()*34)+"px";
+  smoke.style.top=
+   (py-17+
+    Math.random()*34)+"px";
 
-e.appendChild(smoke);
+  e.appendChild(smoke);
 
-setTimeout(
-()=>smoke.remove(),
-1100
-);
-
-}
-
+  setTimeout(
+   ()=>smoke.remove(),
+   1100
+  );
+ }
 }
 
 function showEnd(s){
 
-$("endTitle").textContent=
-s.winnerName===myName
-?"YOU WIN!"
-:"YOU LOSE!";
+ $("endTitle").textContent=
+  s.winnerName===myName
+   ?"YOU WIN!"
+   :"YOU LOSE!";
 
-$("endReason").textContent=
-s.reason||"Match complete";
+ $("endReason").textContent=
+  s.reason||
+  "Match complete";
 
-show("endScreen");
-
+ show("endScreen");
 }
 
 show("nameScreen");
@@ -1399,3 +1815,4 @@ show("nameScreen");
 
 </body>
 </html>
+
