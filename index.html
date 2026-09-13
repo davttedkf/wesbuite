@@ -1,3286 +1,1464 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Pixel Sky Crash</title>
 
 <style>
-*{
-    box-sizing:border-box;
-    image-rendering:pixelated;
+*{box-sizing:border-box}
+html,body{
+ margin:0;
+ width:100%;
+ height:100%;
+ overflow:hidden;
+ background:#10182b;
+ font-family:Arial,sans-serif;
+ user-select:none
+}
+body{color:white}
+button,input{font:inherit}
+
+.screen{
+ position:absolute;
+ inset:0;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:linear-gradient(#172642,#0c1324);
+ z-index:20
 }
 
-html,body{
-    margin:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    font-family:monospace;
-    background:#79c8f0;
+.panel{
+ width:min(92vw,520px);
+ padding:30px;
+ border:4px solid #fff;
+ background:#17233d;
+ box-shadow:10px 10px 0 #080d18;
+ text-align:center
+}
+
+h1{
+ font-size:42px;
+ margin:0 0 8px;
+ text-shadow:4px 4px #000
+}
+
+h2{margin:8px 0 20px}
+
+.sub{
+ color:#aebbd4;
+ margin-bottom:22px
+}
+
+input{
+ width:100%;
+ padding:14px;
+ background:#0b1220;
+ color:#fff;
+ border:3px solid #6d7d9c;
+ outline:none;
+ margin-bottom:12px
 }
 
 button{
-    font-family:monospace;
+ border:3px solid #fff;
+ background:#2e74c9;
+ color:#fff;
+ padding:12px 18px;
+ cursor:pointer;
+ font-weight:bold;
+ box-shadow:4px 4px 0 #080d18
 }
+
+button:hover{filter:brightness(1.15)}
+
+button:active{
+ transform:translate(3px,3px);
+ box-shadow:1px 1px 0 #080d18
+}
+
+.hidden{display:none!important}
 
 #game{
-    position:relative;
-    width:100vw;
-    height:100vh;
-    overflow:hidden;
-    background:
-        linear-gradient(
-            to bottom,
-            #266da9 0%,
-            #428fc7 22%,
-            #78badc 48%,
-            #b9dce7 75%,
-            #d9e9e9 100%
-        );
+ position:absolute;
+ inset:0;
+ overflow:hidden;
+ background:linear-gradient(#66c7f5 0%,#a9e6ff 58%,#d7f5ff 100%)
 }
-
-#game.shake{
-    animation:screenShake .5s steps(8);
-}
-
-#game.bigShake{
-    animation:bigScreenShake .9s steps(12);
-}
-
-@keyframes screenShake{
-    0%{transform:translate(0,0)}
-    15%{transform:translate(-7px,4px)}
-    30%{transform:translate(6px,-5px)}
-    45%{transform:translate(-5px,-4px)}
-    60%{transform:translate(5px,6px)}
-    75%{transform:translate(-4px,2px)}
-    100%{transform:translate(0,0)}
-}
-
-@keyframes bigScreenShake{
-    0%{transform:translate(0,0)}
-    10%{transform:translate(-13px,8px)}
-    20%{transform:translate(11px,-9px)}
-    30%{transform:translate(-10px,-7px)}
-    40%{transform:translate(12px,8px)}
-    50%{transform:translate(-9px,5px)}
-    60%{transform:translate(8px,-7px)}
-    70%{transform:translate(-6px,4px)}
-    80%{transform:translate(5px,-3px)}
-    90%{transform:translate(-3px,2px)}
-    100%{transform:translate(0,0)}
-}
-
-/* MENU */
-
-#planeMenu{
-    position:absolute;
-    inset:0;
-    z-index:500;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:
-        linear-gradient(
-            rgba(15,28,40,.72),
-            rgba(15,28,40,.82)
-        );
-}
-
-.menuBox{
-    width:min(850px,92vw);
-    max-height:90vh;
-    overflow:auto;
-    padding:25px;
-    background:#202d36;
-    border:5px solid white;
-    box-shadow:10px 10px 0 rgba(0,0,0,.4);
-    text-align:center;
-}
-
-.menuTitle{
-    color:white;
-    font-size:30px;
-    font-weight:bold;
-    text-shadow:5px 5px 0 #111a20;
-    margin-bottom:8px;
-}
-
-.menuSubtitle{
-    color:#b9dce7;
-    font-size:13px;
-    margin-bottom:20px;
-}
-
-.planeChoices{
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:10px;
-}
-
-.planeChoice{
-    min-height:175px;
-    padding:10px 6px;
-    color:white;
-    background:#30414c;
-    border:3px solid #647783;
-    cursor:pointer;
-    transition:.12s;
-}
-
-.planeChoice:hover{
-    transform:translateY(-4px);
-    background:#3d525f;
-}
-
-.planeChoice.selected{
-    border-color:#fff36b;
-    box-shadow:
-        0 0 0 3px #e0b72e,
-        6px 6px 0 rgba(0,0,0,.25);
-}
-
-.previewPlane{
-    position:relative;
-    width:100px;
-    height:52px;
-    margin:8px auto 15px;
-    transform:scale(.75);
-}
-
-.planeName{
-    font-size:14px;
-    font-weight:bold;
-    margin-bottom:8px;
-}
-
-.planeDescription{
-    color:#b9c7ce;
-    font-size:10px;
-    line-height:1.4;
-}
-
-.stat{
-    text-align:left;
-    margin-top:7px;
-    font-size:9px;
-    color:#dce7eb;
-}
-
-.statBar{
-    width:100%;
-    height:6px;
-    margin-top:3px;
-    background:#152027;
-    border:1px solid #6d7c84;
-}
-
-.statFill{
-    height:100%;
-    background:#ffe35c;
-}
-
-#startButton{
-    margin-top:22px;
-    padding:13px 30px;
-    color:white;
-    background:#39515e;
-    border:4px solid white;
-    box-shadow:6px 6px 0 rgba(0,0,0,.3);
-    font-size:17px;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-#startButton:hover{
-    background:#4d6877;
-    transform:translateY(-2px);
-}
-
-/* SUN */
 
 #sun{
-    position:absolute;
-    width:90px;
-    height:90px;
-    right:10%;
-    top:8%;
-    border-radius:50%;
-    background:#fff0a3;
-    box-shadow:
-        0 0 0 14px rgba(255,240,163,.18),
-        0 0 0 30px rgba(255,240,163,.08),
-        0 0 50px rgba(255,220,120,.25);
-    z-index:1;
+ position:absolute;
+ width:100px;
+ height:100px;
+ border-radius:50%;
+ background:#fff2a8;
+ right:11%;
+ top:8%;
+ box-shadow:0 0 45px #fff3a0
 }
-
-/* CLOUDS */
 
 .cloud{
-    position:absolute;
-    height:20px;
-    width:100px;
-    background:#fff;
-    opacity:.78;
-    box-shadow:
-        20px -16px 0 #fff,
-        47px -22px 0 #fff,
-        73px -8px 0 #fff,
-        96px 0 0 #fff;
-    z-index:3;
+ position:absolute;
+ width:170px;
+ height:45px;
+ background:#fff;
+ border-radius:50px;
+ opacity:.82
 }
 
-.cloud1{
-    top:13%;
-    left:-180px;
-    animation:cloudMove 45s linear infinite;
+.cloud:before,.cloud:after{
+ content:"";
+ position:absolute;
+ background:#fff;
+ border-radius:50%
 }
 
-.cloud2{
-    top:29%;
-    left:-250px;
-    transform:scale(.8);
-    animation:cloudMove 60s linear infinite;
-    animation-delay:8s;
+.cloud:before{
+ width:70px;
+ height:70px;
+ left:25px;
+ top:-35px
 }
 
-.cloud3{
-    top:5%;
-    left:-300px;
-    transform:scale(.6);
-    animation:cloudMove 75s linear infinite;
-    animation-delay:20s;
+.cloud:after{
+ width:85px;
+ height:85px;
+ right:20px;
+ top:-45px
 }
 
-.cloud4{
-    top:41%;
-    left:-220px;
-    transform:scale(.9);
-    animation:cloudMove 70s linear infinite;
-    animation-delay:30s;
-}
-
-.cloud5{
-    top:20%;
-    left:-350px;
-    transform:scale(.45);
-    opacity:.5;
-    animation:cloudMove 90s linear infinite;
-    animation-delay:12s;
-}
-
-@keyframes cloudMove{
-    from{left:-400px}
-    to{left:110vw}
-}
-
-/* DISTANT CITY */
-
-#distantCity{
-    position:absolute;
-    left:0;
-    bottom:-15%;
-    width:100%;
-    height:55%;
-    z-index:2;
-    opacity:.22;
-}
-
-.distantBuilding{
-    position:absolute;
-    bottom:0;
-    background:#506d81;
-    border-top:4px solid #70899a;
-}
-
-.distantBuilding:after{
-    content:"";
-    position:absolute;
-    inset:9px 6px;
-    background:
-        repeating-linear-gradient(
-            to right,
-            rgba(210,235,245,.65) 0 4px,
-            transparent 4px 12px
-        ),
-        repeating-linear-gradient(
-            to bottom,
-            rgba(210,235,245,.6) 0 4px,
-            transparent 4px 13px
-        );
-}
-
-.db1{left:0;width:6%;height:48%}
-.db2{left:6%;width:4%;height:67%}
-.db3{left:11%;width:7%;height:42%}
-.db4{left:18%;width:5%;height:72%}
-.db5{left:24%;width:8%;height:55%}
-.db6{left:33%;width:5%;height:78%}
-.db7{left:39%;width:7%;height:47%}
-.db8{left:47%;width:5%;height:69%}
-.db9{left:54%;width:8%;height:51%}
-.db10{left:63%;width:5%;height:75%}
-.db11{left:69%;width:8%;height:43%}
-.db12{left:78%;width:5%;height:66%}
-.db13{left:84%;width:7%;height:53%}
-.db14{left:92%;width:8%;height:71%}
-
-/* CITY */
+.c1{left:7%;top:14%}
+.c2{left:55%;top:23%;transform:scale(.7)}
+.c3{left:30%;top:8%;transform:scale(.5)}
 
 #city{
-    position:absolute;
-    inset:0;
-    z-index:8;
+ position:absolute;
+ left:0;
+ right:0;
+ bottom:0;
+ height:35%;
+ background:repeating-linear-gradient(
+  90deg,
+  #26364e 0 45px,
+  #1d2c42 45px 70px
+ )
 }
 
-.towerAssembly{
-    position:absolute;
-    width:175px;
-    height:125%;
-    bottom:-43%;
-    transform-origin:50% 100%;
+.building{
+ position:absolute;
+ bottom:0;
+ width:17.5%;
+ height:55%;
+ background:linear-gradient(
+  90deg,
+  #303d52,
+  #51627b 48%,
+  #27364b
+ );
+ border:3px solid #172235;
+ box-shadow:inset 10px 0 rgba(255,255,255,.08)
 }
 
-#towerAssembly1{
-    left:27%;
-}
+.building:nth-child(1){left:8%;height:40%}
+.building:nth-child(2){left:27%;height:62%}
+.building:nth-child(3){right:27%;height:52%}
+.building:nth-child(4){right:8%;height:39%}
 
-#towerAssembly2{
-    right:27%;
-    height:128%;
-    bottom:-46%;
+#arena{
+ position:absolute;
+ inset:0
 }
 
 .tower{
-    position:absolute;
-    inset:0;
-    overflow:visible;
+ position:absolute;
+ bottom:0;
+ width:17.5%;
+ height:55%;
+ background:linear-gradient(
+  90deg,
+  #26364d 0%,
+  #627692 48%,
+  #27364b 100%
+ );
+ border:4px solid #101a2b;
+ box-shadow:
+  inset 14px 0 rgba(255,255,255,.06),
+  inset -10px 0 rgba(0,0,0,.2);
+ overflow:visible
 }
 
-.towerSection{
-    position:absolute;
-    left:0;
-    width:100%;
-    background:
-        repeating-linear-gradient(
-            to right,
-            #f7f8f8 0 15px,
-            #d0d5d8 15px 19px,
-            #ffffff 19px 35px
-        );
-    border-left:6px solid #a7afb4;
-    border-right:6px solid #a7afb4;
-    box-shadow:
-        10px 0 0 rgba(48,58,65,.18),
-        inset 0 0 25px rgba(70,80,90,.14);
+.tower.left{left:26%}
+.tower.right{left:56.5%}
+
+.tower .roof{
+ position:absolute;
+ top:-12px;
+ left:-7px;
+ right:-7px;
+ height:15px;
+ background:#152237;
+ border:3px solid #0c1525
 }
 
-.section1{
-    top:0;
-    height:25%;
+.windows{
+ position:absolute;
+ inset:25px 15px 10px;
+ background:repeating-linear-gradient(
+  90deg,
+  transparent 0 14px,
+  #9fd9eb 14px 20px,
+  transparent 20px 32px
+ );
+ opacity:.55
 }
 
-.section2{
-    top:25%;
-    height:25%;
+.tower.destroyed{
+ opacity:.28;
+ filter:grayscale(1)
 }
 
-.section3{
-    top:50%;
-    height:25%;
+.health{
+ position:absolute;
+ top:-42px;
+ left:0;
+ width:100%;
+ height:16px;
+ background:#111;
+ border:3px solid #fff
 }
 
-.section4{
-    top:75%;
-    height:25%;
+.health div{
+ height:100%;
+ background:#51e46d;
+ width:100%
 }
 
-.sectionWindows{
-    position:absolute;
-    inset:18px 13px;
-    background:
-        repeating-linear-gradient(
-            to right,
-            transparent 0 17px,
-            rgba(255,235,130,.8) 17px 24px,
-            transparent 24px 34px
-        ),
-        repeating-linear-gradient(
-            to bottom,
-            transparent 0 22px,
-            rgba(255,235,130,.65) 22px 29px,
-            transparent 29px 39px
-        );
-    opacity:.5;
-    animation:windowFlicker 2.8s steps(5) infinite;
+.tower-name{
+ position:absolute;
+ top:-72px;
+ width:100%;
+ text-align:center;
+ font-weight:bold;
+ text-shadow:3px 3px #000;
+ font-size:14px
 }
-
-@keyframes windowFlicker{
-    0%,100%{opacity:.4}
-    20%{opacity:.7}
-    35%{opacity:.5}
-    53%{opacity:.75}
-    72%{opacity:.45}
-}
-
-/* ROOF */
-
-.roof{
-    position:absolute;
-    top:-10px;
-    left:-8px;
-    width:calc(100% + 16px);
-    height:10px;
-    background:#858e94;
-    border:3px solid #5e676d;
-    z-index:20;
-}
-
-.antenna{
-    position:absolute;
-    bottom:100%;
-    left:50%;
-    width:5px;
-    height:115px;
-    transform:translateX(-50%);
-    background:#5b646a;
-    z-index:21;
-}
-
-.antenna:before{
-    content:"";
-    position:absolute;
-    top:25px;
-    left:-12px;
-    width:29px;
-    height:4px;
-    background:#5b646a;
-}
-
-.antenna:after{
-    content:"";
-    position:absolute;
-    top:60px;
-    left:-5px;
-    width:15px;
-    height:4px;
-    background:#5b646a;
-}
-
-/* DAMAGE */
-
-.damageMark{
-    position:absolute;
-    width:75px;
-    height:60px;
-    z-index:30;
-    display:none;
-}
-
-.damageMark:before,
-.damageMark:after{
-    content:"";
-    position:absolute;
-    background:#4c5357;
-}
-
-.damageMark:before{
-    left:7px;
-    top:25px;
-    width:62px;
-    height:8px;
-    transform:rotate(-12deg);
-}
-
-.damageMark:after{
-    left:30px;
-    top:2px;
-    width:8px;
-    height:57px;
-    transform:rotate(25deg);
-}
-
-.damageMark.active{
-    display:block;
-}
-
-/* WINDOWS THAT FALL */
-
-.fallingWindow{
-    position:absolute;
-    width:7px;
-    height:5px;
-    background:#ffe96a;
-    border:1px solid #52636c;
-    z-index:60;
-    animation:windowFall 1.8s cubic-bezier(.2,.2,.4,1) forwards;
-}
-
-@keyframes windowFall{
-    0%{
-        transform:translate(0,0) rotate(0);
-        opacity:1;
-    }
-
-    30%{
-        transform:
-            translate(var(--dx1),var(--dy1))
-            rotate(80deg);
-    }
-
-    100%{
-        transform:
-            translate(var(--dx),var(--dy))
-            rotate(var(--rot));
-        opacity:0;
-    }
-}
-
-/* PLANE */
 
 #plane{
-    position:absolute;
-    width:100px;
-    height:52px;
-    z-index:80;
-    filter:drop-shadow(5px 6px 0 rgba(0,0,0,.25));
+ position:absolute;
+ width:78px;
+ height:30px;
+ z-index:8;
+ transform-origin:center;
+ pointer-events:none
 }
 
-.fuselage{
-    position:absolute;
-    left:4px;
-    top:18px;
-    width:91px;
-    height:17px;
-    background:#f2f3f3;
-    border:4px solid #303a40;
-    z-index:4;
+#plane .body{
+ position:absolute;
+ left:5px;
+ top:9px;
+ width:63px;
+ height:12px;
+ background:#f1f3f6;
+ border:3px solid #202a39;
+ border-radius:5px
 }
 
-.fuselage:after{
-    content:"";
-    position:absolute;
-    right:-15px;
-    top:1px;
-    width:15px;
-    height:11px;
-    background:#303a40;
-    clip-path:polygon(
-        0 0,
-        100% 50%,
-        0 100%
-    );
+#plane .nose{
+ position:absolute;
+ left:66px;
+ top:10px;
+ border-left:17px solid #202a39;
+ border-top:5px solid transparent;
+ border-bottom:5px solid transparent
 }
 
-.cockpit{
-    position:absolute;
-    left:70px;
-    top:21px;
-    width:17px;
-    height:9px;
-    background:#263f52;
-    border:2px solid #202b31;
-    z-index:8;
+#plane .wing{
+ position:absolute;
+ left:24px;
+ top:2px;
+ width:30px;
+ height:28px;
+ background:#c8d1dd;
+ clip-path:polygon(0 50%,100% 0,78% 100%)
 }
 
-.window{
-    position:absolute;
-    top:22px;
-    width:6px;
-    height:5px;
-    background:#5bb6e8;
-    border:1px solid #26343b;
-    z-index:9;
+#plane .tail{
+ position:absolute;
+ left:9px;
+ top:0;
+ width:17px;
+ height:15px;
+ background:#b9c4d2;
+ clip-path:polygon(0 100%,100% 0,100% 100%)
 }
 
-.w1{left:23px}
-.w2{left:32px}
-.w3{left:41px}
-.w4{left:50px}
-.w5{left:59px}
-
-.mainWing{
-    position:absolute;
-    left:34px;
-    top:6px;
-    width:48px;
-    height:23px;
-    background:#d5dadd;
-    border:4px solid #303a40;
-    clip-path:polygon(
-        0 100%,
-        28% 0,
-        100% 0,
-        66% 100%
-    );
-    z-index:2;
+#plane .firetrail{
+ position:absolute;
+ left:-25px;
+ top:12px;
+ width:28px;
+ height:7px;
+ background:linear-gradient(
+  90deg,
+  transparent,
+  #ffdb55,
+  #ff7138
+ )
 }
 
-.lowerWing{
-    position:absolute;
-    left:38px;
-    top:31px;
-    width:43px;
-    height:18px;
-    background:#cbd1d4;
-    border:4px solid #303a40;
-    clip-path:polygon(
-        0 0,
-        100% 0,
-        68% 100%,
-        28% 100%
-    );
-    z-index:2;
+#plane.stalled{opacity:.65}
+
+#turret{
+ position:absolute;
+ width:60px;
+ height:55px;
+ z-index:9;
+ transform-origin:30px 45px;
+ pointer-events:none
 }
 
-.tailFin{
-    position:absolute;
-    left:8px;
-    top:3px;
-    width:22px;
-    height:25px;
-    background:#d8dcde;
-    border:4px solid #303a40;
-    clip-path:polygon(
-        0 100%,
-        25% 15%,
-        100% 0,
-        100% 100%
-    );
-    z-index:7;
+.tbase{
+ position:absolute;
+ left:5px;
+ bottom:0;
+ width:50px;
+ height:22px;
+ background:#242b36;
+ border:4px solid #111;
+ border-radius:8px
 }
 
-.tailWing{
-    position:absolute;
-    left:5px;
-    top:12px;
-    width:25px;
-    height:16px;
-    background:#cbd0d3;
-    border:3px solid #303a40;
-    clip-path:polygon(
-        0 45%,
-        100% 0,
-        82% 100%
-    );
-    z-index:3;
+.barrel{
+ position:absolute;
+ left:27px;
+ bottom:17px;
+ width:58px;
+ height:10px;
+ background:#171c25;
+ border:3px solid #090c11;
+ transform-origin:left center
 }
 
-.engine{
-    position:absolute;
-    width:15px;
-    height:11px;
-    background:#68747a;
-    border:3px solid #303a40;
-    z-index:7;
+.gunbody{
+ position:absolute;
+ left:17px;
+ bottom:16px;
+ width:27px;
+ height:28px;
+ background:#303a48;
+ border:3px solid #10151d;
+ border-radius:5px
 }
 
-.engine:after{
-    content:"";
-    position:absolute;
-    left:2px;
-    top:2px;
-    width:5px;
-    height:5px;
-    background:#202a2f;
+.bullet{
+ position:absolute;
+ width:13px;
+ height:5px;
+ background:#fff6a1;
+ border:1px solid #ff9c3d;
+ z-index:7;
+ box-shadow:0 0 9px #ffb13d;
+ pointer-events:none
 }
 
-.engine1{
-    left:48px;
-    top:12px;
+#hud{
+ position:absolute;
+ left:12px;
+ right:12px;
+ top:12px;
+ z-index:15;
+ display:flex;
+ justify-content:space-between;
+ gap:10px;
+ pointer-events:none
 }
 
-.engine2{
-    left:48px;
-    top:35px;
+.hudbox{
+ background:rgba(12,19,32,.82);
+ border:3px solid #fff;
+ padding:8px 12px;
+ text-shadow:2px 2px #000;
+ min-width:150px
 }
 
-.engineSmoke{
-    position:absolute;
-    width:12px;
-    height:9px;
-    left:-9px;
-    background:#272c30;
-    opacity:.8;
-    box-shadow:
-        -9px -2px 0 #3a4044,
-        -17px 1px 0 #4a5054;
-    animation:engineSmoke .7s steps(4) infinite;
-    z-index:1;
+.bar{
+ height:11px;
+ background:#111;
+ border:2px solid #fff;
+ margin-top:5px
 }
 
-@keyframes engineSmoke{
-    from{
-        transform:translateX(0);
-        opacity:.9;
-    }
-    to{
-        transform:translateX(-18px);
-        opacity:0;
-    }
+.bar div{
+ height:100%;
+ background:#52e56c;
+ width:100%
 }
 
-/* EFFECTS */
+#planeBar div{background:#55a8ff}
 
-.impactFlash{
-    position:absolute;
-    width:90px;
-    height:90px;
-    z-index:90;
-    background:#fff5a0;
-    clip-path:polygon(
-        50% 0,
-        63% 29%,
-        100% 18%,
-        72% 50%,
-        100% 68%,
-        60% 65%,
-        52% 100%,
-        42% 66%,
-        0 80%,
-        28% 51%,
-        0 35%,
-        39% 38%
-    );
-    animation:flash .22s steps(3) forwards;
+#roundText{
+ text-align:center;
+ font-size:20px;
+ font-weight:bold
 }
 
-@keyframes flash{
-    from{
-        transform:scale(.25);
-        opacity:1;
-    }
-    to{
-        transform:scale(2);
-        opacity:0;
-    }
+#bottom{
+ position:absolute;
+ left:0;
+ right:0;
+ bottom:15px;
+ z-index:16;
+ display:flex;
+ justify-content:center;
+ gap:10px;
+ pointer-events:none
+}
+
+.control{
+ pointer-events:auto;
+ min-width:65px;
+ background:rgba(15,23,38,.82);
+ border:3px solid white;
+ padding:12px;
+ text-align:center;
+ font-weight:bold
+}
+
+#gunMenu,#planeMenu{
+ position:absolute;
+ z-index:30;
+ inset:0;
+ background:rgba(5,10,20,.78);
+ display:flex;
+ align-items:center;
+ justify-content:center
+}
+
+.selection{
+ width:min(94vw,650px);
+ background:#17233d;
+ border:4px solid white;
+ box-shadow:10px 10px #080d18;
+ padding:24px;
+ text-align:center
+}
+
+.cards{
+ display:flex;
+ flex-wrap:wrap;
+ gap:10px;
+ justify-content:center
+}
+
+.card{
+ width:180px;
+ background:#0e1728;
+ border:3px solid #657795;
+ padding:14px;
+ cursor:pointer
+}
+
+.card:hover{
+ filter:brightness(1.2)
+}
+
+.card h3{
+ margin:4px 0 8px
+}
+
+.card p{
+ font-size:12px;
+ color:#b9c6dc
+}
+
+#mobile{
+ position:absolute;
+ bottom:15px;
+ left:15px;
+ right:15px;
+ z-index:17;
+ display:none;
+ justify-content:space-between;
+ pointer-events:none
+}
+
+.mobileGroup{
+ display:flex;
+ gap:8px
+}
+
+.mobileBtn{
+ pointer-events:auto;
+ width:62px;
+ height:62px;
+ border:3px solid #fff;
+ background:rgba(15,23,38,.8);
+ color:#fff;
+ font-size:20px;
+ font-weight:bold
 }
 
 .fire{
-    position:absolute;
-    width:32px;
-    height:44px;
-    z-index:35;
-    animation:flicker .12s steps(2) infinite alternate;
+ width:95px;
+ background:#8e2730
 }
 
-.fire:before{
-    content:"";
-    position:absolute;
-    left:5px;
-    bottom:0;
-    width:22px;
-    height:40px;
-    background:#ef3514;
-    clip-path:polygon(
-        50% 0,
-        70% 20%,
-        100% 40%,
-        82% 100%,
-        15% 100%,
-        0 60%,
-        29% 42%
-    );
+#crosshair{position:absolute;width:34px;height:34px;margin-left:-17px;margin-top:-17px;z-index:14;pointer-events:none;opacity:0}
+#crosshair:before,#crosshair:after{content:"";position:absolute;background:#fff;box-shadow:0 0 5px #000}
+#crosshair:before{left:15px;top:0;width:4px;height:34px}
+#crosshair:after{left:0;top:15px;width:34px;height:4px}
+#crosshair.active{opacity:1}
+#combatMessage{position:absolute;left:50%;top:22%;transform:translateX(-50%);z-index:18;padding:9px 15px;background:rgba(8,13,24,.88);border:3px solid #fff;font-size:18px;font-weight:bold;text-shadow:2px 2px #000;opacity:0;pointer-events:none}
+#combatMessage.show{animation:combatMsg .55s ease-out forwards}
+#combatMessage.hit{color:#76ff8a;border-color:#76ff8a}
+#combatMessage.miss{color:#ff8d8d;border-color:#ff8d8d}
+#combatMessage.fire{color:#fff2a1;border-color:#fff2a1}
+@keyframes combatMsg{0%{opacity:0;transform:translate(-50%,8px) scale(.85)}20%{opacity:1;transform:translate(-50%,0) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-12px) scale(1.05)}}
+#flightStatus{position:absolute;left:50%;bottom:92px;transform:translateX(-50%);z-index:16;padding:7px 12px;background:rgba(10,16,28,.72);border:2px solid rgba(255,255,255,.75);font-size:13px;font-weight:bold;text-shadow:2px 2px #000;pointer-events:none}
+#gunStatus{font-size:11px;margin-top:4px;font-weight:bold}
+#effects{
+ position:absolute;
+ inset:0;
+ z-index:25;
+ pointer-events:none
 }
 
-.fire:after{
-    content:"";
-    position:absolute;
-    left:11px;
-    bottom:3px;
-    width:12px;
-    height:26px;
-    background:#ffd62b;
-    clip-path:polygon(
-        50% 0,
-        100% 50%,
-        72% 100%,
-        15% 100%,
-        0 55%
-    );
+.flash{
+ position:absolute;
+ width:70px;
+ height:70px;
+ border-radius:50%;
+ background:#fff7a0;
+ animation:flash .2s forwards
 }
 
-@keyframes flicker{
-    from{transform:scale(1)}
-    to{
-        transform:
-            scale(1.1,.93)
-            translateY(-2px);
-    }
+@keyframes flash{
+ to{
+  opacity:0;
+  transform:scale(2)
+ }
 }
-
-.fireGlow{
-    position:absolute;
-    width:65px;
-    height:50px;
-    background:#ff5217;
-    opacity:.24;
-    filter:blur(8px);
-    z-index:30;
-}
-
-/* SMOKE */
 
 .smoke{
-    position:absolute;
-    width:38px;
-    height:31px;
-    background:#111416;
-    opacity:.96;
-    z-index:40;
-    box-shadow:
-        25px 5px 0 #1a1d20,
-        -21px 9px 0 #0c0f11,
-        13px -13px 0 #202428,
-        -8px -18px 0 #171a1d,
-        36px -10px 0 #25292c,
-        -27px -3px 0 #131618;
-    animation:smokeRise 4s steps(12) forwards;
+ position:absolute;
+ width:35px;
+ height:35px;
+ border-radius:50%;
+ background:#555;
+ opacity:.7;
+ animation:smoke 1s forwards
 }
 
-.lightSmoke{
-    background:#72797c;
-    opacity:.65;
-    box-shadow:
-        25px 5px 0 #858b8e,
-        -21px 9px 0 #686e71,
-        13px -13px 0 #979c9f,
-        -8px -18px 0 #7c8285;
+@keyframes smoke{
+ to{
+  opacity:0;
+  transform:translateY(-45px) scale(1.8)
+ }
 }
 
-@keyframes smokeRise{
-    0%{
-        transform:translate(0,0) scale(.55);
-        opacity:1;
-    }
-
-    25%{
-        transform:
-            translate(
-                calc(var(--drift)*.35),
-                -40px
-            )
-            scale(.9);
-        opacity:.98;
-    }
-
-    55%{
-        transform:
-            translate(
-                calc(var(--drift)*.75),
-                -105px
-            )
-            scale(1.6);
-        opacity:.8;
-    }
-
-    100%{
-        transform:
-            translate(
-                var(--drift),
-                -225px
-            )
-            scale(3);
-        opacity:0;
-    }
+.chunk{
+ position:absolute;
+ width:15px;
+ height:15px;
+ background:#313d4e;
+ animation:chunk 1s forwards
 }
 
-/* GLASS */
-
-.glass{
-    position:absolute;
-    width:5px;
-    height:10px;
-    background:#b8e9ff;
-    border:1px solid #526d78;
-    z-index:75;
-    animation:glassFly 1.1s steps(9) forwards;
+@keyframes chunk{
+ to{
+  transform:
+   translate(var(--dx),var(--dy))
+   rotate(260deg);
+  opacity:0
+ }
 }
 
-@keyframes glassFly{
-    0%{
-        transform:translate(0,0) rotate(0);
-        opacity:1;
-    }
-
-    100%{
-        transform:
-            translate(var(--gx),var(--gy))
-            rotate(var(--gr));
-        opacity:0;
-    }
-}
-
-/* CHUNKS */
-
-.buildingChunk{
-    position:absolute;
-    background:#9fa8ac;
-    border:3px solid #646d72;
-    z-index:55;
-    animation:chunkFall 2.3s cubic-bezier(.2,.1,.3,1) forwards;
-}
-
-@keyframes chunkFall{
-    0%{
-        transform:translate(0,0) rotate(0);
-        opacity:1;
-    }
-
-    45%{
-        transform:
-            translate(
-                calc(var(--cx)*.4),
-                calc(var(--cy)*.35)
-            )
-            rotate(calc(var(--cr)*.35));
-    }
-
-    100%{
-        transform:
-            translate(var(--cx),var(--cy))
-            rotate(var(--cr));
-        opacity:0;
-    }
-}
-
-/* SECTION COLLAPSE */
-
-.sectionPiece{
-    position:absolute;
-    width:100%;
-    height:25%;
-    background:
-        repeating-linear-gradient(
-            to right,
-            #d9dddf 0 15px,
-            #aeb5b9 15px 19px,
-            #f1f2f2 19px 35px
-        );
-    border:4px solid #717a7f;
-    z-index:45;
-    animation:sectionFall 3.2s cubic-bezier(.25,.1,.3,1) forwards;
-}
-
-@keyframes sectionFall{
-
-    0%{
-        transform:translate(0,0) rotate(0);
-        opacity:1;
-    }
-
-    20%{
-        transform:
-            translate(
-                calc(var(--sx)*.05),
-                calc(var(--sy)*.03)
-            )
-            rotate(calc(var(--sr)*.1));
-    }
-
-    45%{
-        transform:
-            translate(
-                calc(var(--sx)*.3),
-                calc(var(--sy)*.25)
-            )
-            rotate(calc(var(--sr)*.35));
-    }
-
-    70%{
-        transform:
-            translate(
-                calc(var(--sx)*.65),
-                calc(var(--sy)*.65)
-            )
-            rotate(calc(var(--sr)*.7));
-    }
-
-    100%{
-        transform:
-            translate(var(--sx),var(--sy))
-            rotate(var(--sr));
-        opacity:0;
-    }
-}
-
-/* DUST */
-
-.dust{
-    position:absolute;
-    width:50px;
-    height:32px;
-    background:#8b9295;
-    opacity:.75;
-    z-index:43;
-    box-shadow:
-        25px 5px 0 #777f82,
-        -22px 10px 0 #969c9f,
-        10px -13px 0 #a1a6a8;
-    animation:dustRise 2.8s steps(12) forwards;
-}
-
-@keyframes dustRise{
-    0%{
-        transform:translate(0,0) scale(.5);
-        opacity:.85;
-    }
-
-    45%{
-        transform:
-            translate(var(--dx),-50px)
-            scale(1.6);
-        opacity:.7;
-    }
-
-    100%{
-        transform:
-            translate(
-                calc(var(--dx)*1.7),
-                -150px
-            )
-            scale(3.5);
-        opacity:0;
-    }
-}
-
-/* UI */
-
-#status{
-    position:absolute;
-    top:18px;
-    left:18px;
-    padding:10px 14px;
-    color:white;
-    background:rgba(18,27,34,.84);
-    border:3px solid white;
-    font-size:14px;
-    font-weight:bold;
-    z-index:100;
-    box-shadow:5px 5px 0 rgba(0,0,0,.25);
-}
-
-#targetStatus{
-    position:absolute;
-    top:65px;
-    left:18px;
-    padding:8px 12px;
-    color:white;
-    background:rgba(18,27,34,.76);
-    border:2px solid white;
-    font-size:12px;
-    font-weight:bold;
-    z-index:100;
-}
-
-#title{
-    position:absolute;
-    top:18px;
-    left:50%;
-    transform:translateX(-50%);
-    color:white;
-    font-size:22px;
-    font-weight:bold;
-    text-shadow:4px 4px 0 #354650;
-    z-index:100;
-    white-space:nowrap;
-}
-
-#resetButton{
-    display:none;
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    z-index:150;
-    padding:15px 24px;
-    background:#222c34;
-    color:white;
-    border:4px solid white;
-    font-size:18px;
-    font-weight:bold;
-    cursor:pointer;
-    box-shadow:7px 7px 0 rgba(0,0,0,.35);
-}
-
-#resetButton:hover{
-    background:#354650;
-    transform:
-        translate(-50%,-50%)
-        scale(1.05);
-}
-
-#instructions{
-    position:absolute;
-    bottom:14px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:120;
-    padding:7px 12px;
-    background:rgba(20,30,40,.72);
-    color:white;
-    border:2px solid rgba(255,255,255,.7);
-    font-size:12px;
-    white-space:nowrap;
-}
-
-#mobileControls{
-    display:none;
+#matchStatus{
+ margin-top:8px;
+ color:#aebbd4;
+ font-size:15px
 }
 
 @media(max-width:700px){
-
-    .menuBox{
-        padding:15px;
-    }
-
-    .menuTitle{
-        font-size:22px;
-    }
-
-    .planeChoices{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .planeChoice:last-child{
-        grid-column:1/3;
-    }
-
-    #title{
-        font-size:15px;
-        top:15px;
-    }
-
-    #status{
-        top:55px;
-        left:10px;
-        font-size:10px;
-    }
-
-    #targetStatus{
-        top:88px;
-        left:10px;
-        font-size:9px;
-    }
-
-    .towerAssembly{
-        width:115px;
-        height:125%;
-        bottom:-43%;
-    }
-
-    #towerAssembly1{
-        left:16%;
-    }
-
-    #towerAssembly2{
-        right:16%;
-        height:128%;
-        bottom:-46%;
-    }
-
-    .antenna{
-        height:75px;
-    }
-
-    #instructions{
-        display:none;
-    }
-
-    #mobileControls{
-        display:flex;
-        position:absolute;
-        bottom:20px;
-        left:50%;
-        transform:translateX(-50%);
-        z-index:200;
-        gap:10px;
-    }
-
-    .control{
-        width:58px;
-        height:58px;
-        border:3px solid white;
-        background:rgba(20,30,40,.75);
-        color:white;
-        font-size:25px;
-        font-weight:bold;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        user-select:none;
-        touch-action:none;
-    }
+ h1{font-size:31px}
+ .panel{padding:20px}
+ #hud{font-size:11px}
+ .hudbox{
+  min-width:105px;
+  padding:6px
+ }
+ #mobile{display:flex}
+ #bottom{display:none}
 }
-</style>
 
+/* POLISHED MAP */
+#game{background:linear-gradient(#4fafe2 0%,#89d8f5 42%,#d7f2f7 70%,#8fb0b8 100%);touch-action:none}
+#city{height:31%;background:linear-gradient(to top,#111b2b,#1c3047);display:flex;align-items:flex-end;gap:2%;padding:0 3%;overflow:hidden;z-index:2}
+.building{position:relative!important;left:auto!important;right:auto!important;width:9%!important;height:55%!important;background:linear-gradient(90deg,#18273b,#334c67 50%,#142237)!important;border:2px solid #0b1422!important}
+.building:nth-child(1){height:46%!important}.building:nth-child(2){height:70%!important}.building:nth-child(3){height:58%!important}.building:nth-child(4){height:82%!important}
+.building:after{content:"";position:absolute;inset:10px 7px;background:repeating-linear-gradient(90deg,#d8e5ad 0 4px,transparent 4px 12px),repeating-linear-gradient(0deg,transparent 0 12px,rgba(255,220,120,.45) 12px 15px);opacity:.45}
+.tower{width:15.5%;height:66%;background:linear-gradient(90deg,#202c3d,#52657d 45%,#29384b 100%);box-shadow:inset 9px 0 rgba(255,255,255,.06),inset -12px 0 rgba(0,0,0,.18),8px 8px 0 rgba(0,0,0,.16)}
+.tower.left{left:27%}.tower.right{left:57.5%}
+.tower .roof{height:18px;top:-16px;background:#182538;box-shadow:0 -5px 0 #31445b}
+.windows{inset:25px 11px 12px;background:repeating-linear-gradient(90deg,transparent 0 9px,#9ed6e5 9px 14px,transparent 14px 24px),repeating-linear-gradient(0deg,transparent 0 18px,rgba(190,225,235,.45) 18px 23px);opacity:.62}
+.tower.disabled{opacity:.3;filter:grayscale(1);box-shadow:0 0 0 4px #e85d5d,8px 8px 0 rgba(0,0,0,.16)}
+#plane{width:96px;height:42px;filter:drop-shadow(5px 6px 0 rgba(0,0,0,.28))}
+#plane .body{left:10px;top:15px;width:72px;height:13px;background:linear-gradient(#f7fbff,#b9c8d7);border:3px solid #1a2636;border-radius:8px}
+#plane .nose{left:78px;top:16px;border-left:20px solid #1a2636;border-top:6px solid transparent;border-bottom:6px solid transparent}
+#plane .wing{left:34px;top:7px;width:39px;height:31px;background:linear-gradient(135deg,#dce7ef,#8799ad);clip-path:polygon(0 48%,100% 0,75% 100%,38% 66%)}
+#plane .tail{left:12px;top:4px;width:20px;height:20px;background:#91a4b8;clip-path:polygon(0 100%,100% 0,100% 100%)}
+#plane .firetrail{left:-33px;top:18px;width:36px;height:8px;background:linear-gradient(90deg,transparent,#ffec72 35%,#ff8a36 75%,#ff4b2b);box-shadow:0 0 9px #ff9b3d}
+#plane.disabled{filter:grayscale(1) brightness(.65) drop-shadow(4px 5px 0 rgba(0,0,0,.3));opacity:.7}
+.bullet{position:absolute!important;width:18px!important;height:6px!important;border-radius:3px!important;background:#fff2a1!important;border:2px solid #ff8d35!important;box-shadow:0 0 8px #ffd65a,0 0 16px rgba(255,125,45,.7)!important;z-index:15!important;pointer-events:none!important}
+.bullet:before{content:"";position:absolute;right:100%;top:0;width:18px;height:2px;background:linear-gradient(90deg,transparent,#ffd65a)}
+.mobileBtn{touch-action:none;border-radius:12px;box-shadow:4px 4px 0 rgba(0,0,0,.45)}
+.fire{border-radius:50%;background:#a52e35;box-shadow:0 5px 0 #57151a}.brake{background:#3b5575;font-size:11px}
+@media(max-width:700px){.building{width:13%!important}}
+
+/* ENHANCED PIXEL CITY MAP */
+#horizonGlow{position:absolute;left:0;right:0;top:34%;height:24%;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none;z-index:1}
+#mountainsBack,#mountainsFront{position:absolute;left:-5%;right:-5%;bottom:24%;height:30%;pointer-events:none;z-index:1;clip-path:polygon(0 100%,0 62%,7% 48%,13% 67%,20% 38%,27% 61%,35% 31%,43% 65%,51% 42%,59% 64%,68% 30%,76% 60%,84% 40%,92% 64%,100% 35%,100% 100%)}
+#mountainsBack{background:#5b7890;opacity:.55;transform:scaleY(.75);transform-origin:bottom}
+#mountainsFront{background:#3b566c;opacity:.7;bottom:21%;transform:scaleY(.55);transform-origin:bottom}
+#airGrid{position:absolute;left:0;right:0;bottom:27%;height:28%;opacity:.16;pointer-events:none;z-index:1;background:linear-gradient(rgba(255,255,255,.8) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.7) 1px,transparent 1px);background-size:55px 28px;transform:perspective(300px) rotateX(58deg);transform-origin:bottom}
+#city{height:31%;background:linear-gradient(to top,#0d1725,#1a2d42 75%,rgba(40,69,91,.6));display:flex;align-items:flex-end;gap:1.4%;padding:0 2%;overflow:hidden;z-index:2;box-shadow:0 -10px 25px rgba(8,19,31,.22)}
+.building{position:relative!important;left:auto!important;right:auto!important;width:10%!important;height:55%!important;background:linear-gradient(90deg,#162438,#38536c 48%,#122034)!important;border:2px solid #091321!important;box-shadow:inset 6px 0 rgba(255,255,255,.05),inset -5px 0 rgba(0,0,0,.25)!important}
+.building:nth-child(1){height:46%!important}.building:nth-child(2){height:70%!important}.building:nth-child(3){height:58%!important}.building:nth-child(4){height:82%!important}
+.building:before{content:"";position:absolute;left:12%;right:12%;top:5%;height:3px;background:#7fa8bd;box-shadow:0 8px 0 rgba(127,168,189,.5),0 16px 0 rgba(127,168,189,.35)}
+.building:after{content:"";position:absolute;inset:10px 7px;background:repeating-linear-gradient(90deg,#d8e5ad 0 4px,transparent 4px 12px),repeating-linear-gradient(0deg,transparent 0 12px,rgba(255,220,120,.45) 12px 15px);opacity:.45}
+.tower{width:15.5%;height:66%;background:linear-gradient(90deg,#1c2a3b,#526b82 45%,#26394c 100%);box-shadow:inset 9px 0 rgba(255,255,255,.06),inset -12px 0 rgba(0,0,0,.18),8px 8px 0 rgba(0,0,0,.16),0 -8px 20px rgba(18,35,50,.15)}
+.tower.left{left:27%}.tower.right{left:57.5%}
+.tower .roof{height:18px;top:-16px;background:#172537;box-shadow:0 -5px 0 #314a60}
+.windows{inset:25px 11px 12px;background:repeating-linear-gradient(90deg,transparent 0 9px,#9ed6e5 9px 14px,transparent 14px 24px),repeating-linear-gradient(0deg,transparent 0 18px,rgba(190,225,235,.45) 18px 23px);opacity:.62}
+.tower.disabled{opacity:.3;filter:grayscale(1);box-shadow:0 0 0 4px #e85d5d,8px 8px 0 rgba(0,0,0,.16)}
+#game:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:18;background:radial-gradient(ellipse at center,transparent 48%,rgba(4,10,18,.18) 100%)}
+/* NOTE: tower left/width/height are intentionally NOT overridden per
+   screen size. The server's collision rectangles (towerRect() in
+   server.js) are fixed fractions of the 1000x600 world, and #arena
+   always fills the viewport, so keeping these percentages constant
+   across breakpoints keeps the drawn towers and their hitboxes in
+   sync on every device. Only non-structural chrome (fonts, HUD size,
+   showing the on-screen d-pad) changes at the mobile breakpoint. */
+
+#game,#arena,#crosshair,.mobileBtn{touch-action:none}
+#crosshair{width:30px!important;height:30px!important;border:3px solid #fff!important;box-shadow:0 0 0 2px #111,0 0 12px rgba(255,255,255,.7)!important;pointer-events:none!important;z-index:30!important}
+#crosshair:before,#crosshair:after{content:"";position:absolute;background:#fff;box-shadow:0 0 3px #000}
+#crosshair:before{width:44px;height:2px;left:-10px;top:11px}
+#crosshair:after{width:2px;height:44px;left:11px;top:-10px}
+#combatMessage{z-index:40!important;pointer-events:none}
+
+/* POLISHED PIXEL PLANES */
+#plane{width:118px;height:58px;image-rendering:pixelated;transform-origin:50% 50%;filter:drop-shadow(6px 7px 0 rgba(0,0,0,.3))}
+#plane *{position:absolute;box-sizing:border-box}
+#plane .plane-shadow{left:20px;top:43px;width:76px;height:7px;background:rgba(10,25,40,.22);filter:blur(2px)}
+#plane .body{left:12px;top:23px;width:82px;height:15px;background:#e8edf2;border:3px solid #172333;border-radius:2px;box-shadow:inset 0 -4px #aebdca,inset 0 3px #fff}
+#plane .nose{left:91px;top:25px;width:20px;height:11px;background:#dce5ec;border:3px solid #172333;clip-path:polygon(0 0,100% 50%,0 100%);z-index:6}
+#plane .wing{background:#aabac8;border:3px solid #172333;z-index:1}
+#plane .wing-main{left:38px;top:12px;width:55px;height:34px;clip-path:polygon(0 50%,100% 0,78% 100%,34% 67%);background:#c9d4de}
+#plane .wing-back{left:21px;top:30px;width:45px;height:22px;clip-path:polygon(0 30%,100% 0,72% 100%,20% 80%);background:#93a5b5}
+#plane .tail{left:17px;top:17px;width:25px;height:20px;background:#91a4b5;border:3px solid #172333;clip-path:polygon(0 100%,40% 0,100% 0,75% 100%);z-index:2}
+#plane .tail-fin{left:16px;top:8px;width:21px;height:22px;background:#647d92;border:3px solid #172333;clip-path:polygon(0 100%,45% 0,100% 0,78% 100%);z-index:3}
+#plane .cockpit{left:75px;top:20px;width:18px;height:9px;background:#4e91b5;border:2px solid #172333;clip-path:polygon(0 100%,20% 0,100% 0,100% 100%);z-index:7}
+#plane .windows{left:43px;top:25px;width:27px;height:7px;background:repeating-linear-gradient(90deg,#3e718e 0 5px,#8dc1d6 5px 8px);border-bottom:2px solid #172333;z-index:7}
+#plane .stripe{left:13px;top:32px;width:79px;height:5px;background:#e54b4b;z-index:8;opacity:.9}
+#plane .engine{width:17px;height:10px;background:#465768;border:3px solid #172333;z-index:6}
+#plane .engine-top{left:48px;top:38px}.engine-bottom{left:70px;top:39px}
+#plane .firetrail{left:-28px;top:26px;width:32px;height:10px;background:linear-gradient(90deg,transparent,#ffea6b 25%,#ff9b32 65%,#ff3d25);box-shadow:0 0 10px #ff9b32;z-index:0;clip-path:polygon(100% 0,100% 100%,0 70%,25% 50%,0 30%)}
+#plane.plane-small{width:108px;height:50px}
+#plane.plane-small .body{left:15px;top:21px;width:73px;height:13px}
+#plane.plane-small .nose{left:84px;top:23px;width:18px;height:10px}
+#plane.plane-small .wing-main{left:39px;top:10px;width:46px;height:30px}
+#plane.plane-small .wing-back{left:25px;top:29px;width:38px;height:19px}
+#plane.plane-small .windows{display:none}
+#plane.plane-small .stripe{left:16px;top:29px;width:70px;background:#54a7e8}
+#plane.plane-small .engine-top{left:47px;top:34px;width:14px;height:8px}
+#plane.plane-small .engine-bottom{left:65px;top:34px;width:14px;height:8px}
+#plane.plane-large{width:128px;height:64px}
+#plane.plane-large .body{left:8px;top:24px;width:93px;height:17px}
+#plane.plane-large .nose{left:98px;top:26px;width:24px;height:13px}
+#plane.plane-large .wing-main{left:39px;top:8px;width:67px;height:39px}
+#plane.plane-large .wing-back{left:20px;top:35px;width:53px;height:25px}
+#plane.plane-large .windows{left:42px;top:27px;width:39px;height:8px}
+#plane.plane-large .stripe{left:10px;top:35px;width:90px;background:#4f75d8}
+#plane.plane-large .engine{width:19px;height:11px}
+#plane.plane-large .engine-top{left:52px;top:40px}.plane-large .engine-bottom{left:78px;top:40px}
+#plane.plane-cargo .body{background:#d5d9dd;border-radius:1px}
+#plane.plane-cargo .stripe{background:#e0a62d;height:7px}
+#plane.plane-cargo .cockpit{background:#6f8c9c}
+#plane.plane-cargo .windows{display:none}
+#plane.plane-cargo .tail-fin{background:#d08a25}
+#plane.plane-fighter{width:110px;height:52px}
+#plane.plane-fighter .body{left:14px;top:22px;width:73px;height:12px;background:#657484}
+#plane.plane-fighter .nose{left:82px;top:23px;width:25px;height:10px;background:#788898;clip-path:polygon(0 0,100% 50%,0 100%)}
+#plane.plane-fighter .wing-main{left:39px;top:8px;width:51px;height:31px;background:#526272;clip-path:polygon(0 52%,100% 0,75% 100%,28% 65%)}
+#plane.plane-fighter .wing-back{left:23px;top:30px;width:38px;height:17px;background:#465564}
+#plane.plane-fighter .tail-fin{background:#394856}
+#plane.plane-fighter .tail{background:#4c5e70}
+#plane.plane-fighter .cockpit{left:67px;top:19px;width:20px;height:9px;background:#5fd0e9}
+#plane.plane-fighter .windows{display:none}
+#plane.plane-fighter .stripe{left:16px;top:29px;width:71px;background:#5ed0df}
+#plane.plane-fighter .engine{background:#29343f;width:14px;height:9px}
+#plane.plane-fighter .engine-top{left:50px;top:34px}.plane-fighter .engine-bottom{left:67px;top:34px}
+#plane.plane-fighter .firetrail{height:7px;top:25px}
+#plane.stalled{animation:planeShake .14s infinite alternate}
+@keyframes planeShake{from{margin-top:-1px}to{margin-top:2px}}
+#plane.disabled .firetrail{display:none}
+#plane.disabled .body,#plane.disabled .wing,#plane.disabled .tail,#plane.disabled .tail-fin{filter:grayscale(1) brightness(.65)}
+
+</style>
 </head>
 
 <body>
 
-<div id="game">
+<div id="nameScreen" class="screen">
+ <div class="panel">
+  <h1>PIXEL SKY CRASH</h1>
+  <div class="sub">1V1 PILOT VS GUNNER</div>
 
-<audio id="backgroundMusic" loop preload="auto">
-    <source src="towersong.mp3" type="audio/mpeg">
-</audio>
+  <input
+   id="nameInput"
+   maxlength="16"
+   placeholder="Enter your name"
+  >
 
-<!-- PLANE SELECTION -->
+  <button id="nameBtn">ENTER</button>
 
-<div id="planeMenu">
-
-```
-<div class="menuBox">
-
-    <div class="menuTitle">
-        PIXEL SKY CRASH
-    </div>
-
-    <div class="menuSubtitle">
-        SELECT YOUR PLANE
-    </div>
-
-    <div class="planeChoices" id="planeChoices"></div>
-
-    <button id="startButton">
-        START FLIGHT
-    </button>
-
-</div>
-```
-
+  <div
+   id="nameError"
+   style="color:#ff7272;margin-top:12px"
+  ></div>
+ </div>
 </div>
 
-<div id="sun"></div>
+<div id="queueScreen" class="screen hidden">
+ <div class="panel">
+  <h1>1V1</h1>
+  <div id="queueText" class="sub">
+   Searching for an opponent...
+  </div>
+  <button id="cancelBtn">CANCEL</button>
+ </div>
+</div>
 
-<div class="cloud cloud1"></div>
-<div class="cloud cloud2"></div>
-<div class="cloud cloud3"></div>
-<div class="cloud cloud4"></div>
-<div class="cloud cloud5"></div>
+<div id="matchScreen" class="screen hidden">
+ <div class="panel">
+  <h1>MATCH FOUND</h1>
+  <h2 id="roles"></h2>
 
-<div id="distantCity">
+  <div
+   id="countdown"
+   style="font-size:55px;font-weight:bold"
+  >3</div>
 
-```
-<div class="distantBuilding db1"></div>
-<div class="distantBuilding db2"></div>
-<div class="distantBuilding db3"></div>
-<div class="distantBuilding db4"></div>
-<div class="distantBuilding db5"></div>
-<div class="distantBuilding db6"></div>
-<div class="distantBuilding db7"></div>
-<div class="distantBuilding db8"></div>
-<div class="distantBuilding db9"></div>
-<div class="distantBuilding db10"></div>
-<div class="distantBuilding db11"></div>
-<div class="distantBuilding db12"></div>
-<div class="distantBuilding db13"></div>
-<div class="distantBuilding db14"></div>
-```
+  <div id="matchStatus">
+   Get ready...
+  </div>
+ </div>
+</div>
+
+<div id="game" class="hidden">
+
+ <div id="sun"></div>
+ <div id="horizonGlow"></div>
+ <div id="mountainsBack"></div>
+ <div id="mountainsFront"></div>
+ <div id="airGrid"></div>
+
+ <div class="cloud c1"></div>
+ <div class="cloud c2"></div>
+ <div class="cloud c3"></div>
+
+ <div id="city">
+  <div class="building"></div>
+  <div class="building"></div>
+  <div class="building"></div>
+  <div class="building"></div>
+ </div>
+
+ <div id="arena">
+
+  <div class="tower left" id="tower1">
+   <div class="roof"></div>
+   <div class="windows"></div>
+
+   <div
+    class="tower-name"
+    id="tower1Name"
+   >TOWER 1</div>
+
+   <div class="health">
+    <div id="tower1HP"></div>
+   </div>
+  </div>
+
+  <div class="tower right" id="tower2">
+   <div class="roof"></div>
+   <div class="windows"></div>
+
+   <div
+    class="tower-name"
+    id="tower2Name"
+   >TOWER 2</div>
+
+   <div class="health">
+    <div id="tower2HP"></div>
+   </div>
+  </div>
+
+  <div id="plane" class="plane-airliner">
+   <div class="firetrail"></div>
+   <div class="plane-shadow"></div>
+   <div class="wing wing-main"></div>
+   <div class="wing wing-back"></div>
+   <div class="engine engine-top"></div>
+   <div class="engine engine-bottom"></div>
+   <div class="tail"></div>
+   <div class="tail-fin"></div>
+   <div class="body"></div>
+   <div class="cockpit"></div>
+   <div class="windows"></div>
+   <div class="stripe"></div>
+   <div class="nose"></div>
+  </div>
+
+  <div id="turret">
+   <div class="tbase"></div>
+   <div class="gunbody"></div>
+   <div class="barrel"></div>
+  </div>
+
+  <div id="crosshair"></div>
+
+ </div>
+
+ <div id="combatMessage"></div>
+ <div id="flightStatus">FLIGHT: READY</div>
+
+ <div id="effects"></div>
+
+ <div id="hud">
+
+  <div class="hudbox">
+   <div id="pilotLabel">PILOT</div>
+   <div>PLANE</div>
+
+   <div
+    class="bar"
+    id="planeBar"
+   >
+    <div></div>
+   </div>
+  </div>
+
+  <div
+   class="hudbox"
+   id="roundText"
+  >ROUND 1</div>
+
+  <div class="hudbox">
+   <div id="gunnerLabel">GUNNER</div>
+   <div id="gunLabel">GUN</div>
+   <div id="gunStatus">READY</div>
+
+   <div class="bar">
+    <div id="gunBar"></div>
+   </div>
+  </div>
+
+ </div>
+
+ <div id="bottom">
+  <div class="control">
+   W / ↑<br>CLIMB
+  </div>
+
+  <div class="control">
+   S / ↓<br>DESCEND
+  </div>
+
+  <div class="control">
+   A / D<br>STEER
+  </div>
+
+  <div class="control">
+   SPACE<br>BRAKE
+  </div>
+
+  <div class="control">
+   P<br>PLANE
+  </div>
+ </div>
+
+ <div id="mobile">
+
+  <div class="mobileGroup">
+   <button
+    class="mobileBtn"
+    data-key="up"
+   >▲</button>
+
+   <button
+    class="mobileBtn"
+    data-key="down"
+   >▼</button>
+  </div>
+
+  <button
+   class="mobileBtn fire"
+   id="mobileFire"
+  >FIRE</button>
+
+  <button
+   class="mobileBtn brake"
+   data-key="brake"
+  >BRAKE</button>
+
+  <div class="mobileGroup">
+   <button
+    class="mobileBtn"
+    data-key="left"
+   >◀</button>
+
+   <button
+    class="mobileBtn"
+    data-key="right"
+   >▶</button>
+  </div>
+
+ </div>
 
 </div>
 
-<!-- CITY -->
+<div id="planeMenu" class="hidden">
+ <div class="selection">
 
-<div id="city">
+  <h2>SELECT PLANE</h2>
 
-```
-<div
-    id="towerAssembly1"
-    class="towerAssembly"
->
+  <div class="cards">
 
-    <div class="tower">
+   <div
+    class="card"
+    data-plane="small"
+   >
+    <h3>SMALL JET</h3>
+    <p>Fast and agile</p>
+   </div>
 
-        <div class="towerSection section1">
-            <div class="sectionWindows"></div>
-        </div>
+   <div
+    class="card"
+    data-plane="airliner"
+   >
+    <h3>AIRLINER</h3>
+    <p>Balanced</p>
+   </div>
 
-        <div class="towerSection section2">
-            <div class="sectionWindows"></div>
-        </div>
+   <div
+    class="card"
+    data-plane="large"
+   >
+    <h3>LARGE AIRLINER</h3>
+    <p>Heavy and steady</p>
+   </div>
 
-        <div class="towerSection section3">
-            <div class="sectionWindows"></div>
-        </div>
+   <div
+    class="card"
+    data-plane="cargo"
+   >
+    <h3>CARGO PLANE</h3>
+    <p>Slow but tough</p>
+   </div>
 
-        <div class="towerSection section4">
-            <div class="sectionWindows"></div>
-        </div>
+   <div
+    class="card"
+    data-plane="fighter"
+   >
+    <h3>FIGHTER JET</h3>
+    <p>Very fast</p>
+   </div>
 
-        <div class="roof"></div>
-        <div class="antenna"></div>
-
-        <div class="damageMark" id="damage1"></div>
-
-    </div>
-
+  </div>
+ </div>
 </div>
 
-<div
-    id="towerAssembly2"
-    class="towerAssembly"
->
+<div id="gunMenu" class="hidden">
+ <div class="selection">
 
-    <div class="tower">
+  <h2>SELECT MACHINE GUN</h2>
 
-        <div class="towerSection section1">
-            <div class="sectionWindows"></div>
-        </div>
+  <div class="cards">
 
-        <div class="towerSection section2">
-            <div class="sectionWindows"></div>
-        </div>
+   <div
+    class="card"
+    data-gun="mg"
+   >
+    <h3>MACHINE GUN</h3>
+    <p>Fast fire rate · balanced damage</p>
+   </div>
 
-        <div class="towerSection section3">
-            <div class="sectionWindows"></div>
-        </div>
+   <div
+    class="card"
+    data-gun="heavy"
+   >
+    <h3>HEAVY MG</h3>
+    <p>Higher damage · slower fire rate</p>
+   </div>
 
-        <div class="towerSection section4">
-            <div class="sectionWindows"></div>
-        </div>
+   <div
+    class="card"
+    data-gun="rapid"
+   >
+    <h3>RAPID MG</h3>
+    <p>Very fast fire rate · lower damage</p>
+   </div>
 
-        <div class="roof"></div>
-        <div class="antenna"></div>
-
-        <div class="damageMark" id="damage2"></div>
-
-    </div>
-
-</div>
-```
-
-</div>
-
-<!-- PLANE -->
-
-<div id="plane">
-
-```
-<div class="tailWing"></div>
-<div class="mainWing"></div>
-<div class="lowerWing"></div>
-<div class="tailFin"></div>
-
-<div class="engine engine1"></div>
-<div class="engine engine2"></div>
-
-<div class="fuselage"></div>
-
-<div class="cockpit"></div>
-
-<div class="window w1"></div>
-<div class="window w2"></div>
-<div class="window w3"></div>
-<div class="window w4"></div>
-<div class="window w5"></div>
-```
-
+  </div>
+ </div>
 </div>
 
-<div id="status">
-    STATUS: SELECT A PLANE
-</div>
+<div id="endScreen" class="screen hidden">
+ <div class="panel">
 
-<div id="targetStatus">
-    TOWERS: 0 / 2 HIT
-</div>
+  <h1 id="endTitle">GAME OVER</h1>
 
-<div id="title">
-    PIXEL SKY CRASH
-</div>
+  <h2 id="endReason"></h2>
 
-<button id="resetButton">
-    FLY AGAIN
-</button>
+  <button id="rematchBtn">
+   REMATCH
+  </button>
 
-<div id="instructions">
-    W A S D / ARROW KEYS — FLY
-</div>
+  <button id="menuBtn">
+   MENU
+  </button>
 
-<div id="mobileControls">
-
-```
-<div class="control" id="left">
-    ←
-</div>
-
-<div class="control" id="up">
-    ↑
-</div>
-
-<div class="control" id="down">
-    ↓
-</div>
-
-<div class="control" id="right">
-    →
-</div>
-```
-
-</div>
-
+ </div>
 </div>
 
 <script>
+const $ = id => document.getElementById(id);
 
-const game=
-    document.getElementById("game");
+let ws = null;
+let myName = "";
+let myRole = "";
+let state = null;
+let selectedPlane = "airliner";
+let selectedGun = "mg";
+let keys = {up:false,down:false,left:false,right:false,brake:false};
+let countdownTimer = null;
+let firing = false;
+let fireTimer = null;
+let audioStarted = false;
+let lastTowerHP = [100,100];
+let lastPlaneHP = 100;
+let lastRound = 1;
+let lastDisabledTower = 0;
+let messageTimer = null;
 
-const plane=
-    document.getElementById("plane");
-
-const planeMenu=
-    document.getElementById("planeMenu");
-
-const planeChoices=
-    document.getElementById("planeChoices");
-
-const startButton=
-    document.getElementById("startButton");
-
-const statusText=
-    document.getElementById("status");
-
-const targetStatus=
-    document.getElementById("targetStatus");
-
-const resetButton=
-    document.getElementById("resetButton");
-
-const towerAssembly1=
-    document.getElementById(
-        "towerAssembly1"
-    );
-
-const towerAssembly2=
-    document.getElementById(
-        "towerAssembly2"
-    );
-
-const backgroundMusic=
-    document.getElementById(
-        "backgroundMusic"
-    );
-
-const damage1=
-    document.getElementById("damage1");
-
-const damage2=
-    document.getElementById("damage2");
-
-let x=0;
-let y=0;
-
-let vx=0;
-let vy=0;
-
-let crashed=false;
-let gameStarted=false;
-
-let hitTower1=false;
-let hitTower2=false;
-
-let currentAssembly=null;
-let smokeInterval=null;
-
-let selectedPlane="airliner";
-let musicStarted=false;
-
-const keys={};
-
-/* PLANE DATA */
-
-const planeTypes={
-
-    smalljet:{
-        name:"SMALL JET",
-        description:"Fast and agile.",
-        speed:7.5,
-        acceleration:.48,
-        turning:.46,
-        braking:.88,
-        stall:1.0
-    },
-
-    airliner:{
-        name:"AIRLINER",
-        description:"Balanced and easy to control.",
-        speed:6.7,
-        acceleration:.38,
-        turning:.34,
-        braking:.90,
-        stall:.8
-    },
-
-    largeairliner:{
-        name:"LARGE AIRLINER",
-        description:"Heavy with strong momentum.",
-        speed:6.0,
-        acceleration:.29,
-        turning:.25,
-        braking:.92,
-        stall:.65
-    },
-
-    cargo:{
-        name:"CARGO JET",
-        description:"Very heavy and slow to turn.",
-        speed:5.6,
-        acceleration:.24,
-        turning:.20,
-        braking:.94,
-        stall:.55
-    },
-
-    fighter:{
-        name:"FAST JET",
-        description:"Extremely fast and responsive.",
-        speed:9.2,
-        acceleration:.62,
-        turning:.62,
-        braking:.82,
-        stall:1.2
-    }
-
+const planeNames = {
+ small:"Small Jet", airliner:"Airliner", large:"Large Airliner", cargo:"Cargo Plane", fighter:"Fighter Jet"
 };
+const gunNames = {mg:"Machine Gun", heavy:"Heavy MG", rapid:"Rapid MG"};
 
-/* CREATE MENU */
-
-function createPlaneMenu(){
-
-    planeChoices.innerHTML="";
-
-    for(
-        const [id,data]
-        of Object.entries(planeTypes)
-    ){
-
-        const card=
-            document.createElement("div");
-
-        card.className=
-            "planeChoice";
-
-        if(id===selectedPlane)
-            card.classList.add("selected");
-
-        card.innerHTML=`
-
-            <div class="previewPlane">
-
-                <div class="tailWing"></div>
-                <div class="mainWing"></div>
-                <div class="lowerWing"></div>
-                <div class="tailFin"></div>
-
-                <div class="engine engine1"></div>
-                <div class="engine engine2"></div>
-
-                <div class="fuselage"></div>
-
-                <div class="cockpit"></div>
-
-                <div class="window w1"></div>
-                <div class="window w2"></div>
-                <div class="window w3"></div>
-                <div class="window w4"></div>
-                <div class="window w5"></div>
-
-            </div>
-
-            <div class="planeName">
-                ${data.name}
-            </div>
-
-            <div class="planeDescription">
-                ${data.description}
-            </div>
-
-            <div class="stat">
-                SPEED
-                <div class="statBar">
-                    <div
-                        class="statFill"
-                        style="width:${Math.min(data.speed/9.2*100,100)}%"
-                    ></div>
-                </div>
-            </div>
-
-            <div class="stat">
-                AGILITY
-                <div class="statBar">
-                    <div
-                        class="statFill"
-                        style="width:${Math.min(data.turning/.62*100,100)}%"
-                    ></div>
-                </div>
-            </div>
-        `;
-
-        card.addEventListener(
-            "click",
-            ()=>{
-
-                selectedPlane=id;
-
-                createPlaneMenu();
-
-            }
-        );
-
-        planeChoices.appendChild(card);
-    }
+function show(id){
+ ["nameScreen","queueScreen","matchScreen","game","endScreen"].forEach(x=>$(x).classList.add("hidden"));
+ $(id).classList.remove("hidden");
 }
 
-createPlaneMenu();
-
-/* MUSIC */
+function send(data){
+ if(ws && ws.readyState===WebSocket.OPEN) ws.send(JSON.stringify(data));
+}
 
 function startMusic(){
-
-    if(musicStarted)return;
-
-    backgroundMusic.volume=.6;
-
-    backgroundMusic.play().then(()=>{
-
-        musicStarted=true;
-
-    }).catch(()=>{
-
-        musicStarted=false;
-
-    });
+ if(audioStarted) return;
+ audioStarted=true;
+ const a=new Audio("towersong.mp3");
+ a.loop=true;
+ a.volume=.45;
+ a.play().catch(()=>{});
+ window.gameMusic=a;
 }
 
-/* START */
-
-startButton.addEventListener(
-    "click",
-    ()=>{
-
-        gameStarted=true;
-
-        planeMenu.style.display=
-            "none";
-
-        statusText.textContent=
-            "STATUS: FLYING";
-
-        setStartPosition();
-
-        startMusic();
-
-    }
-);
-
-/* POSITION */
-
-function setStartPosition(){
-
-    const w=
-        window.innerWidth;
-
-    const h=
-        window.innerHeight;
-
-    x=w*.035;
-    y=h*.35;
-
-    vx=2.5;
-    vy=0;
-
-    plane.style.position=
-        "absolute";
-
-    plane.style.left=
-        x+"px";
-
-    plane.style.top=
-        y+"px";
-
-    plane.style.zIndex=
-        "80";
-
-    plane.style.transform=
-        "rotate(0deg)";
-
-    plane.style.display=
-        "block";
-
-    if(
-        plane.parentElement !== game
-    ){
-
-        game.appendChild(
-            plane
-        );
-    }
+// durationMs comes from the server (matchFound.startsIn) so the on-screen
+// countdown always matches exactly how long until the round actually
+// starts, whether this is the first match, a rematch, or the next round.
+function startCountdown(durationMs){
+ stopCountdown();
+ const total = Math.max(1000, durationMs || 3000);
+ const totalSeconds = Math.round(total/1000);
+ let n = totalSeconds;
+ $("countdown").textContent = n;
+ $("matchStatus").textContent = "Get ready...";
+ countdownTimer = setInterval(()=>{
+  n--;
+  if(n>0){
+   $("countdown").textContent = n;
+  }else{
+   $("countdown").textContent = "START!";
+   $("matchStatus").textContent = "";
+   clearInterval(countdownTimer);
+   countdownTimer = null;
+  }
+ }, 1000);
 }
 
-/* CONTROLS */
-
-window.addEventListener(
-    "keydown",
-    e=>{
-
-        if(!gameStarted)return;
-
-        keys[
-            e.key.toLowerCase()
-        ]=true;
-
-        startMusic();
-
-    }
-);
-
-window.addEventListener(
-    "keyup",
-    e=>{
-
-        keys[
-            e.key.toLowerCase()
-        ]=false;
-
-    }
-);
-
-function holdButton(
-    element,
-    key
-){
-
-    const down=e=>{
-
-        e.preventDefault();
-
-        if(!gameStarted)return;
-
-        keys[key]=true;
-
-        startMusic();
-
-    };
-
-    const up=e=>{
-
-        e.preventDefault();
-
-        keys[key]=false;
-
-    };
-
-    element.addEventListener(
-        "pointerdown",
-        down
-    );
-
-    element.addEventListener(
-        "pointerup",
-        up
-    );
-
-    element.addEventListener(
-        "pointerleave",
-        up
-    );
-
-    element.addEventListener(
-        "pointercancel",
-        up
-    );
+function stopCountdown(){
+ if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null;}
 }
 
-holdButton(
-    document.getElementById("left"),
-    "arrowleft"
-);
+function connect(){
+ if(ws && (ws.readyState===WebSocket.OPEN || ws.readyState===WebSocket.CONNECTING)) return;
+ const protocol=location.protocol==="https:"?"wss":"ws";
+ ws=new WebSocket(protocol+"://"+location.host);
 
-holdButton(
-    document.getElementById("right"),
-    "arrowright"
-);
+ ws.onopen=()=>{
+  send({type:"setName",name:myName});
+  send({type:"selectPlane",planeType:selectedPlane});
+  send({type:"selectGun",gun:selectedGun});
+  send({type:"queue"});
+ };
 
-holdButton(
-    document.getElementById("up"),
-    "arrowup"
-);
+ ws.onmessage=e=>{
+  let msg;
+  try{msg=JSON.parse(e.data);}catch{return;}
 
-holdButton(
-    document.getElementById("down"),
-    "arrowdown"
-);
+  if(msg.type==="connected") return;
 
-/* PLANE PHYSICS */
+  if(msg.type==="nameSet") return;
 
-function updatePlane(){
+  if(msg.type==="queue"){
+   show("queueScreen");
+   $("queueText").textContent="Searching for an opponent...";
+   return;
+  }
 
-    if(
-        !gameStarted ||
-        crashed
-    )
-        return;
+  if(msg.type==="matchFound"){
+   myRole=String(msg.role||"").toLowerCase()==="pilot"?"Pilot":"Gunner";
+   $("roles").textContent="YOU ARE THE "+myRole.toUpperCase();
+   if(msg.planeType) selectedPlane=msg.planeType;
+   if(msg.gun) selectedGun=msg.gun;
+   show("matchScreen");
+   startMusic();
+   // Server tells us exactly how long until the round starts, so the
+   // countdown shown here always finishes right as the round begins.
+   startCountdown(msg.startsIn);
+   return;
+  }
 
-    const data=
-        planeTypes[selectedPlane];
+  if(msg.type==="shotFired"){
+   if(myRole==="Gunner"){muzzleFlash(msg.x,msg.y);showCombat("FIRING","fire");}
+   return;
+  }
+  if(msg.type==="shotResult"){
+   if(myRole!=="Gunner") return;
+   if(msg.result==="hit") showCombat("HIT  -"+(msg.damage||0)+" HP","hit");
+   else showCombat("MISS","miss");
+   return;
+  }
+  if(msg.type==="impact"){hitSpark(msg.x,msg.y);return;}
 
-    /*
-       Horizontal acceleration.
-    */
+  if(msg.type==="state"){
+   state=msg.state;
+   if(msg.state.phase==="playing"){
+    stopCountdown();
+    show("game");
+    render(msg.state);
+   }else if(msg.state.phase==="roundEnd"){
+    // Round is over: make sure we're not still holding down fire/inputs
+    // client-side, even if the player is physically still holding the
+    // mouse button or a movement key.
+    stopFiring();
+    clearKeys();
+    render(msg.state);
+   }else if(msg.state.phase==="ended"){
+    stopCountdown();
+    stopFiring();
+    clearKeys();
+    render(msg.state);
+    showEnd(msg.state);
+   }else if(msg.state.phase==="waiting"){
+    stopFiring();
+    clearKeys();
+   }
+   return;
+  }
 
-    if(
-        keys["arrowright"] ||
-        keys["d"]
-    ){
+  if(msg.type==="opponentLeft"){
+   stopCountdown();
+   stopFiring();
+   clearKeys();
+   $("endTitle").textContent="YOU WIN!";
+   $("endReason").textContent="Your opponent left.";
+   show("endScreen");
+   return;
+  }
 
-        vx+=data.acceleration;
+  if(msg.type==="left"){
+   stopCountdown();
+   stopFiring();
+   clearKeys();
+   show("nameScreen");
+   return;
+  }
 
-    }
+  if(msg.type==="error") $("nameError").textContent=msg.message||"Server error";
+ };
 
-    if(
-        keys["arrowleft"] ||
-        keys["a"]
-    ){
-
-        vx-=data.acceleration;
-
-    }
-
-    /*
-       Vertical acceleration.
-    */
-
-    if(
-        keys["arrowup"] ||
-        keys["w"]
-    ){
-
-        vy-=data.turning;
-
-    }
-
-    if(
-        keys["arrowdown"] ||
-        keys["s"]
-    ){
-
-        vy+=data.turning;
-
-    }
-
-    /*
-       Braking when opposite direction
-       is pressed.
-    */
-
-    if(
-        keys["arrowleft"] ||
-        keys["a"]
-    ){
-
-        if(vx>0)
-            vx*=data.braking;
-
-    }
-
-    if(
-        keys["arrowright"] ||
-        keys["d"]
-    ){
-
-        if(vx<0)
-            vx*=data.braking;
-
-    }
-
-    /*
-       Air resistance.
-    */
-
-    vx*=.965;
-    vy*=.94;
-
-    /*
-       Stall effect.
-
-       If the plane loses too much speed,
-       it becomes difficult to keep altitude.
-    */
-
-    const speed=
-        Math.sqrt(
-            vx*vx+
-            vy*vy
-        );
-
-    if(
-        speed <
-        data.stall
-    ){
-
-        vy+=.035;
-
-    }
-
-    /*
-       Speed limits.
-    */
-
-    vx=Math.max(
-        -data.speed*.65,
-        Math.min(
-            data.speed,
-            vx
-        )
-    );
-
-    vy=Math.max(
-        -data.speed*.65,
-        Math.min(
-            data.speed*.65,
-            vy
-        )
-    );
-
-    x+=vx;
-    y+=vy;
-
-    const maxX=
-        window.innerWidth-
-        plane.offsetWidth;
-
-    const maxY=
-        window.innerHeight-
-        plane.offsetHeight;
-
-    /*
-       Screen boundaries.
-    */
-
-    if(x<0){
-
-        x=0;
-        vx=Math.abs(vx)*.55;
-
-    }
-
-    if(x>maxX){
-
-        x=maxX;
-        vx=-Math.abs(vx)*.55;
-
-    }
-
-    if(y<0){
-
-        y=0;
-        vy=Math.abs(vy)*.55;
-
-    }
-
-    if(y>maxY){
-
-        y=maxY;
-        vy=-Math.abs(vy)*.55;
-
-    }
-
-    plane.style.left=
-        x+"px";
-
-    plane.style.top=
-        y+"px";
-
-    /*
-       Visual pitch.
-    */
-
-    const angle=
-        Math.max(
-            -24,
-            Math.min(
-                24,
-                vy*4.5
-            )
-        );
-
-    plane.style.transform=
-        "rotate("+angle+"deg)";
-
-    checkCollision();
+ ws.onerror=()=>{};
+ ws.onclose=()=>{
+  stopCountdown();
+  stopFiring();
+  clearKeys();
+  if(!$("endScreen").classList.contains("hidden")) return;
+  if(!$("nameScreen").classList.contains("hidden")) return;
+  $("queueText").textContent="Connection lost. Refresh to reconnect.";
+ };
 }
 
-/* COLLISION */
+$("nameBtn").onclick=()=>{
+ const name=$("nameInput").value.trim().slice(0,16);
+ if(!name){$("nameError").textContent="Enter a name.";return;}
+ myName=name;
+ $("nameError").textContent="";
+ startMusic();
+ show("queueScreen");
+ connect();
+};
 
-function checkCollision(){
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter") $("nameBtn").click();});
 
-    const p=
-        plane.getBoundingClientRect();
+$("cancelBtn").onclick=()=>{
+ stopCountdown();
+ stopFiring();
+ send({type:"cancelQueue"});
+ show("nameScreen");
+};
 
-    const targets=[
-        {
-            tower:
-                towerAssembly1.querySelector(
-                    ".tower"
-                ),
-            assembly:
-                towerAssembly1,
-            hit:
-                hitTower1,
-            damage:
-                damage1
-        },
-        {
-            tower:
-                towerAssembly2.querySelector(
-                    ".tower"
-                ),
-            assembly:
-                towerAssembly2,
-            hit:
-                hitTower2,
-            damage:
-                damage2
-        }
-    ];
+$("rematchBtn").onclick=()=>{
+ stopCountdown();
+ stopFiring();
+ send({type:"rematch"});
+ show("matchScreen");
+ $("roles").textContent="MATCH FOUND";
+ $("matchStatus").textContent="Get ready...";
+};
 
-    for(
-        const target of targets
-    ){
+$("menuBtn").onclick=()=>{
+ stopCountdown();
+ stopFiring();
+ send({type:"leave"});
+ show("nameScreen");
+};
 
-        if(target.hit)
-            continue;
+document.querySelectorAll("[data-plane]").forEach(card=>{
+ card.onclick=()=>{
+  selectedPlane=card.dataset.plane;
+  send({type:"selectPlane",planeType:selectedPlane});
+  $("planeMenu").classList.add("hidden");
+ };
+});
 
-        if(
-            target.assembly.classList.contains(
-                "towerCollapsing"
-            )
-        )
-            continue;
+document.querySelectorAll("[data-gun]").forEach(card=>{
+ card.onclick=()=>{
+  selectedGun=card.dataset.gun;
+  send({type:"selectGun",gun:selectedGun});
+  $("gunMenu").classList.add("hidden");
+ };
+});
 
-        const t=
-            target.tower.getBoundingClientRect();
+function openPlaneMenu(){if(myRole==="Pilot") $("planeMenu").classList.remove("hidden");}
+function openGunMenu(){if(myRole==="Gunner") $("gunMenu").classList.remove("hidden");}
 
-        if(
-            p.right>t.left &&
-            p.left<t.right &&
-            p.bottom>t.top &&
-            p.top<t.bottom
-        ){
-
-            crash(
-                target.tower,
-                target.assembly,
-                target.damage,
-                p
-            );
-
-            return;
-        }
-    }
+function clearKeys(){
+ keys={up:false,down:false,left:false,right:false,brake:false};
+ if(myRole==="Pilot") send({type:"input",input:keys});
 }
 
-/* SHAKE */
+window.addEventListener("keydown",e=>{
+ if(e.key.toLowerCase()==="p"){if(myRole==="Pilot") openPlaneMenu();return;}
+ if(e.key.toLowerCase()==="g"){if(myRole==="Gunner") openGunMenu();return;}
+ if(myRole!=="Pilot") return;
+ if(e.code==="Space"){keys.brake=true;e.preventDefault();}
+ if(["w","ArrowUp"].includes(e.key)) keys.up=true;
+ if(["s","ArrowDown"].includes(e.key)) keys.down=true;
+ if(["a","ArrowLeft"].includes(e.key)) keys.left=true;
+ if(["d","ArrowRight"].includes(e.key)) keys.right=true;
+});
 
-function shake(
-    strong=false
-){
+window.addEventListener("keyup",e=>{
+ if(myRole!=="Pilot") return;
+ if(e.code==="Space") keys.brake=false;
+ if(["w","ArrowUp"].includes(e.key)) keys.up=false;
+ if(["s","ArrowDown"].includes(e.key)) keys.down=false;
+ if(["a","ArrowLeft"].includes(e.key)) keys.left=false;
+ if(["d","ArrowRight"].includes(e.key)) keys.right=false;
+});
 
-    game.classList.remove(
-        "shake",
-        "bigShake"
-    );
+window.addEventListener("blur",()=>{clearKeys();stopFiring();});
 
-    void game.offsetWidth;
+setInterval(()=>{
+ if(myRole==="Pilot" && state && state.phase==="playing") send({type:"input",input:keys});
+},40);
 
-    game.classList.add(
-        strong
-        ? "bigShake"
-        : "shake"
-    );
+function aim(e){
+ if(myRole!=="Gunner" || !state || state.phase!=="playing") return;
+ const r=$("game").getBoundingClientRect();
+ const x=Math.max(0,Math.min(1000,(e.clientX-r.left)/r.width*1000));
+ const y=Math.max(0,Math.min(600,(e.clientY-r.top)/r.height*600));
+ send({type:"aim",x,y});
+ // Render the crosshair from the SAME clamped world coordinates we just
+ // sent to the server, converted back to screen space. This keeps the
+ // crosshair perfectly in sync with where the gun will actually aim, and
+ // guarantees it can never be drawn outside the play area.
+ const c=$("crosshair");
+ c.style.left=worldToScreenX(x)+"px";
+ c.style.top=worldToScreenY(y)+"px";
+ c.classList.add("active");
 }
 
-/* CRASH */
+let aimingTouch=false;
+let firePointerId=null;
+$("game").addEventListener("pointermove",e=>{
+ if(myRole!=="Gunner") return;
+ if(e.pointerType==="mouse" || aimingTouch) aim(e);
+});
 
-function crash(
-    tower,
-    assembly,
-    damage,
-    p
-){
-
-    if(crashed)return;
-
-    crashed=true;
-
-    currentAssembly=
-        assembly;
-
-    vx=0;
-    vy=0;
-
-    if(
-        assembly===towerAssembly1
-    ){
-
-        hitTower1=true;
-
-    }else{
-
-        hitTower2=true;
-
-    }
-
-    updateTargetStatus();
-
-    statusText.textContent=
-        "STATUS: IMPACT";
-
-    shake(false);
-
-    const t=
-        tower.getBoundingClientRect();
-
-    const impactX=Math.max(
-        t.left,
-        Math.min(
-            p.left+p.width/2,
-            t.right
-        )
-    );
-
-    const impactY=Math.max(
-        t.top,
-        Math.min(
-            p.top+p.height/2,
-            t.bottom
-        )
-    );
-
-    const localX=
-        impactX-
-        t.left-
-        p.width/2;
-
-    const localY=
-        impactY-
-        t.top-
-        p.height/2;
-
-    /*
-       Embed the plane inside
-       the tower assembly.
-    */
-
-    assembly.appendChild(
-        plane
-    );
-
-    plane.style.position=
-        "absolute";
-
-    plane.style.left=
-        localX+"px";
-
-    plane.style.top=
-        localY+"px";
-
-    plane.style.zIndex=
-        "25";
-
-    plane.style.transform=
-        "rotate(0deg)";
-
-    /*
-       Show physical damage.
-    */
-
-    damage.classList.add(
-        "active"
-    );
-
-    damage.style.left=
-        (localX+5)+"px";
-
-    damage.style.top=
-        (localY+5)+"px";
-
-    createImpact(
-        assembly,
-        localX+p.width/2,
-        localY+p.height/2
-    );
-
-    createGlass(
-        assembly,
-        localX+p.width/2,
-        localY+p.height/2
-    );
-
-    createChunks(
-        assembly,
-        localX+p.width/2,
-        localY+p.height/2
-    );
-
-    createFire(
-        assembly,
-        localX+p.width/2,
-        localY+p.height/2
-    );
-
-    createSmokeCloud(
-        assembly,
-        localX+p.width/2,
-        localY+p.height/2
-    );
-
-    spreadFire(
-        assembly,
-        localX+p.width/2,
-        localY+p.height/2
-    );
-
-    /*
-       Engine damage is visual only.
-    */
-
-    const engineSmoke=
-        document.createElement(
-            "div"
-        );
-
-    engineSmoke.className=
-        "engineSmoke";
-
-    engineSmoke.style.top=
-        localY+10+"px";
-
-    engineSmoke.style.left=
-        localX-5+"px";
-
-    assembly.appendChild(
-        engineSmoke
-    );
-
-    /*
-       Continuous smoke.
-    */
-
-    smokeInterval=
-        setInterval(()=>{
-
-            if(!crashed){
-
-                clearInterval(
-                    smokeInterval
-                );
-
-                smokeInterval=null;
-
-                return;
-            }
-
-            createSmoke(
-                assembly,
-
-                localX+
-                p.width/2+
-                (Math.random()*65-32),
-
-                localY+
-                p.height/2+
-                (Math.random()*40-20)
-            );
-
-        },230);
-
-    /*
-       Structural failure.
-    */
-
-    setTimeout(()=>{
-
-        statusText.textContent=
-            "STATUS: STRUCTURAL FAILURE";
-
-        shake(true);
-
-        collapseTower(
-            assembly
-        );
-
-    },6500);
+function startFiring(e){
+ if(myRole!=="Gunner" || firing || !state || state.phase!=="playing") return;
+ firing=true;
+ firePointerId=e ? e.pointerId : null;
+ showCombat("FIRING","fire");
+ if(e && e.currentTarget && e.currentTarget.setPointerCapture){
+  try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}
+ }
+ send({type:"fire"});
+ fireTimer=setInterval(()=>{
+  if(myRole==="Gunner" && state && state.phase==="playing") send({type:"fire"});
+  else stopFiring();
+ },45);
 }
 
-/* TARGET COUNTER */
-
-function updateTargetStatus(){
-
-    const count=
-        (hitTower1?1:0)+
-        (hitTower2?1:0);
-
-    targetStatus.textContent=
-        "TOWERS: "+
-        count+
-        " / 2 HIT";
+function stopFiring(){
+ if(!firing) return;
+ firing=false;
+ firePointerId=null;
+ if(fireTimer){clearInterval(fireTimer);fireTimer=null;}
+ send({type:"stopFire"});
 }
 
-/* IMPACT */
+$("game").addEventListener("pointerdown",e=>{
+ if(myRole!=="Gunner" || e.target.closest("button")) return;
+ e.preventDefault();
+ aimingTouch=true;
+ aim(e);
+ startFiring(e);
+});
 
-function createImpact(
-    parent,
-    x,
-    y
-){
+window.addEventListener("pointerup",e=>{
+ if(firePointerId===null || e.pointerId===firePointerId || e.pointerType==="mouse") stopFiring();
+ aimingTouch=false;
+});
+window.addEventListener("pointercancel",()=>{aimingTouch=false;stopFiring();});
 
-    const flash=
-        document.createElement(
-            "div"
-        );
+$("mobileFire").addEventListener("pointerdown",e=>{
+ e.preventDefault();
+ e.stopPropagation();
+ startFiring(e);
+});
+$("mobileFire").addEventListener("pointerup",e=>{
+ e.preventDefault();
+ e.stopPropagation();
+ stopFiring();
+});
 
-    flash.className=
-        "impactFlash";
+window.addEventListener("keydown",e=>{
+ if(myRole!=="Gunner") return;
+ if(e.code==="Space" || e.key.toLowerCase()==="f"){
+  e.preventDefault();
+  startFiring();
+ }
+});
+window.addEventListener("keyup",e=>{
+ if(myRole!=="Gunner") return;
+ if(e.code==="Space" || e.key.toLowerCase()==="f") stopFiring();
+});
 
-    flash.style.left=
-        (x-45)+"px";
+document.querySelectorAll(".mobileBtn[data-key]").forEach(btn=>{
+ const k=btn.dataset.key;
+ const set=v=>{if(myRole!=="Pilot") return;keys[k]=v;send({type:"input",input:keys});};
+ btn.addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();set(true);});
+ btn.addEventListener("pointerup",e=>{e.preventDefault();e.stopPropagation();set(false);});
+ btn.addEventListener("pointercancel",()=>set(false));
+ btn.addEventListener("pointerleave",()=>set(false));
+});
 
-    flash.style.top=
-        (y-45)+"px";
+function pct(v,max=100){return Math.max(0,Math.min(100,v/max*100))+"%";}
+function worldToScreenX(x){return x/1000*innerWidth;}
+function worldToScreenY(y){return y/600*innerHeight;}
 
-    parent.appendChild(
-        flash
-    );
-
-    setTimeout(
-        ()=>flash.remove(),
-        250
-    );
+function render(s){
+ state=s;
+ const t1=s.tower1||{hp:100},t2=s.tower2||{hp:100},rw=s.roundWins||{player1:0,player2:0};
+ $("tower1HP").style.width=pct(t1.hp);$("tower2HP").style.width=pct(t2.hp);$("planeBar").firstElementChild.style.width=pct(s.plane.hp);$("gunBar").style.width=s.gunnerReady?"100%":"18%";
+ $("tower1Name").textContent=s.disabledTower===1?"TOWER 1 · DISABLED":"TOWER 1";$("tower2Name").textContent=s.disabledTower===2?"TOWER 2 · DISABLED":"TOWER 2";
+ $("roundText").textContent=`ROUND ${s.round} · ${rw.player1} - ${rw.player2}`;$("pilotLabel").textContent=`PILOT: ${s.pilotName||""}`;$("gunnerLabel").textContent=`GUNNER: ${s.gunnerName||""}`;$("gunLabel").textContent=gunNames[s.gun]||"GUN";$("gunStatus").textContent=s.gunnerReady?"● READY":"● RELOADING";
+ $("tower1").classList.toggle("destroyed",t1.hp<=0);$("tower2").classList.toggle("destroyed",t2.hp<=0);$("tower1").classList.toggle("disabled",s.disabledTower===1);$("tower2").classList.toggle("disabled",s.disabledTower===2);
+ const px=worldToScreenX(s.plane.x),py=worldToScreenY(s.plane.y);const planeEl=$("plane");planeEl.style.left=(px-59)+"px";planeEl.style.top=(py-29)+"px";planeEl.style.transform=`rotate(${s.plane.pitch}deg)`;planeEl.classList.remove("plane-small","plane-airliner","plane-large","plane-cargo","plane-fighter");planeEl.classList.add("plane-"+(s.plane.planeType||"airliner"));planeEl.classList.toggle("stalled",!!s.plane.stalled);planeEl.classList.toggle("disabled",!!s.plane.disabled);
+ const speed=Math.round((s.plane.speed||0)*20);let flight="CRUISE";if(s.plane.disabled)flight="DISABLED";else if(s.plane.stalled)flight="STALL WARNING";else if(speed<65)flight="LOW SPEED";else if(speed>150)flight="HIGH SPEED";$("flightStatus").textContent=`FLIGHT: ${flight} · SPEED ${speed}`;
+ const towerX=s.gunTower===1?347:652,tx=worldToScreenX(towerX),ty=worldToScreenY(245);$("turret").style.left=(tx-30)+"px";$("turret").style.top=(ty-45)+"px";const angle=Math.atan2(s.aim.y-245,s.aim.x-towerX)*180/Math.PI;$("turret .barrel").style.transform=`rotate(${angle}deg)`;
+ renderBullets(s.bullets||[]);detectHits(s);
+}
+function renderBullets(bullets){
+ const active=new Set();
+ bullets.forEach(b=>{const id=String(b.id);active.add(id);let el=document.querySelector(`.bullet[data-id="${CSS.escape(id)}"]`);if(!el){el=document.createElement("div");el.className="bullet";el.dataset.id=id;$("arena").appendChild(el);}const angle=Math.atan2(b.vy||0,b.vx||1)*180/Math.PI;el.style.left=(worldToScreenX(b.x)-9)+"px";el.style.top=(worldToScreenY(b.y)-3)+"px";el.style.transform=`rotate(${angle}deg)`;});
+ document.querySelectorAll(".bullet").forEach(el=>{if(!active.has(String(el.dataset.id)))el.remove();});
+}
+function detectHits(s){
+ if(s.disabledTower && s.disabledTower!==lastDisabledTower) effectAt(s.disabledTower===1?347:652,390);
+ if(s.plane.hp<lastPlaneHP) effectAt(s.plane.x,s.plane.y);
+ if(s.round!==lastRound){showCombat("ROUND "+s.round,"fire");lastRound=s.round;}
+ lastPlaneHP=s.plane.hp;lastDisabledTower=s.disabledTower||0;
+}
+function effectAt(x,y){
+ const e=$("effects"),px=worldToScreenX(x),py=worldToScreenY(y);
+ const flash=document.createElement("div");
+ flash.className="flash";
+ flash.style.left=(px-35)+"px";
+ flash.style.top=(py-35)+"px";
+ e.appendChild(flash);
+ setTimeout(()=>flash.remove(),250);
+ for(let i=0;i<4;i++){
+  const smoke=document.createElement("div");
+  smoke.className="smoke";
+  smoke.style.left=(px-17+Math.random()*34)+"px";
+  smoke.style.top=(py-17+Math.random()*34)+"px";
+  e.appendChild(smoke);
+  setTimeout(()=>smoke.remove(),1100);
+ }
 }
 
-/* GLASS */
-
-function createGlass(
-    parent,
-    x,
-    y
-){
-
-    for(let i=0;i<35;i++){
-
-        const glass=
-            document.createElement(
-                "div"
-            );
-
-        glass.className=
-            "glass";
-
-        glass.style.left=
-            x+"px";
-
-        glass.style.top=
-            y+"px";
-
-        glass.style.setProperty(
-            "--gx",
-            ((Math.random()-.5)*210)+"px"
-        );
-
-        glass.style.setProperty(
-            "--gy",
-            ((Math.random()-.5)*160)+"px"
-        );
-
-        glass.style.setProperty(
-            "--gr",
-            ((Math.random()-.5)*900)+"deg"
-        );
-
-        parent.appendChild(
-            glass
-        );
-
-        setTimeout(
-            ()=>glass.remove(),
-            1200
-        );
-    }
+function muzzleFlash(x,y){
+ effectAt(x,y);
+}
+function hitSpark(x,y){
+ effectAt(x,y);
+}
+function showCombat(text,cls){
+ const el=$("combatMessage");
+ el.textContent=text;
+ el.className="";
+ void el.offsetWidth;
+ el.classList.add(cls,"show");
+ if(messageTimer) clearTimeout(messageTimer);
+ messageTimer=setTimeout(()=>el.classList.remove("show"),550);
 }
 
-/* BUILDING CHUNKS */
-
-function createChunks(
-    parent,
-    x,
-    y
-){
-
-    for(let i=0;i<18;i++){
-
-        const chunk=
-            document.createElement(
-                "div"
-            );
-
-        chunk.className=
-            "buildingChunk";
-
-        chunk.style.left=
-            x+"px";
-
-        chunk.style.top=
-            y+"px";
-
-        chunk.style.width=
-            (7+Math.random()*20)+"px";
-
-        chunk.style.height=
-            (7+Math.random()*18)+"px";
-
-        chunk.style.setProperty(
-            "--cx",
-            ((Math.random()-.5)*230)+"px"
-        );
-
-        chunk.style.setProperty(
-            "--cy",
-            ((Math.random()-.7)*170)+"px"
-        );
-
-        chunk.style.setProperty(
-            "--cr",
-            ((Math.random()-.5)*700)+"deg"
-        );
-
-        parent.appendChild(
-            chunk
-        );
-
-        setTimeout(
-            ()=>chunk.remove(),
-            2400
-        );
-    }
+function showEnd(s){
+ $("endTitle").textContent=s.winnerName===myName?"YOU WIN!":"YOU LOSE!";
+ $("endReason").textContent=s.reason||"Match complete";
+ show("endScreen");
 }
 
-/* FIRE */
-
-function createFire(
-    parent,
-    x,
-    y
-){
-
-    const offsets=[
-        [-25,-8,1],
-        [0,-5,1.3],
-        [25,-3,.9],
-        [-15,25,.85],
-        [17,27,1],
-        [0,48,.75]
-    ];
-
-    for(
-        const o of offsets
-    ){
-
-        const fire=
-            document.createElement(
-                "div"
-            );
-
-        fire.className=
-            "fire";
-
-        fire.style.left=
-            x+o[0]-16+"px";
-
-        fire.style.top=
-            y+o[1]-40+"px";
-
-        fire.style.transform=
-            "scale("+o[2]+")";
-
-        parent.appendChild(
-            fire
-        );
-
-        const glow=
-            document.createElement(
-                "div"
-            );
-
-        glow.className=
-            "fireGlow";
-
-        glow.style.left=
-            x+o[0]-32+"px";
-
-        glow.style.top=
-            y+o[1]-24+"px";
-
-        parent.appendChild(
-            glow
-        );
-    }
-}
-
-/* FIRE SPREAD */
-
-function spreadFire(
-    parent,
-    x,
-    y
-){
-
-    const spots=[
-        [-43,-160],
-        [42,-120],
-        [-38,-75],
-        [45,-30],
-        [-48,20],
-        [34,72],
-        [-22,125]
-    ];
-
-    spots.forEach(
-        (spot,index)=>{
-
-            setTimeout(()=>{
-
-                if(!crashed)return;
-
-                const fire=
-                    document.createElement(
-                        "div"
-                    );
-
-                fire.className=
-                    "fire";
-
-                fire.style.left=
-                    x+spot[0]+"px";
-
-                fire.style.top=
-                    y+spot[1]+"px";
-
-                fire.style.transform=
-                    "scale("+
-                    (.65+
-                    Math.random()*.6)+
-                    ")";
-
-                parent.appendChild(
-                    fire
-                );
-
-                const glow=
-                    document.createElement(
-                        "div"
-                    );
-
-                glow.className=
-                    "fireGlow";
-
-                glow.style.left=
-                    x+spot[0]-15+"px";
-
-                glow.style.top=
-                    y+spot[1]+8+"px";
-
-                parent.appendChild(
-                    glow
-                );
-
-            },800+index*650);
-
-        }
-    );
-}
-
-/* SMOKE */
-
-function createSmoke(
-    parent,
-    x,
-    y
-){
-
-    const smoke=
-        document.createElement(
-            "div"
-        );
-
-    smoke.className=
-        "smoke";
-
-    /*
-       Smoke close to the impact is dark.
-    */
-
-    if(
-        Math.random()>.45
-    ){
-
-        smoke.classList.add(
-            "lightSmoke"
-        );
-
-    }
-
-    smoke.style.left=
-        x-19+"px";
-
-    smoke.style.top=
-        y-18+"px";
-
-    smoke.style.setProperty(
-        "--drift",
-        ((Math.random()-.5)*150)+"px"
-    );
-
-    parent.appendChild(
-        smoke
-    );
-
-    setTimeout(
-        ()=>smoke.remove(),
-        4100
-    );
-}
-
-/* SMOKE CLOUD */
-
-function createSmokeCloud(
-    parent,
-    x,
-    y
-){
-
-    for(let i=0;i<12;i++){
-
-        createSmoke(
-            parent,
-            x+
-            (Math.random()*65-32),
-
-            y+
-            (Math.random()*45-20)
-        );
-    }
-}
-
-/* WINDOWS */
-
-function breakWindows(
-    assembly
-){
-
-    const windows=
-        assembly.querySelectorAll(
-            ".sectionWindows"
-        );
-
-    windows.forEach(
-        container=>{
-
-            const rect=
-                container.getBoundingClientRect();
-
-            for(let i=0;i<15;i++){
-
-                const win=
-                    document.createElement(
-                        "div"
-                    );
-
-                win.className=
-                    "fallingWindow";
-
-                win.style.left=
-                    (
-                        rect.left-
-                        assembly.getBoundingClientRect().left+
-                        Math.random()*
-                        rect.width
-                    )+"px";
-
-                win.style.top=
-                    (
-                        rect.top-
-                        assembly.getBoundingClientRect().top+
-                        Math.random()*
-                        rect.height
-                    )+"px";
-
-                win.style.setProperty(
-                    "--dx1",
-                    ((Math.random()-.5)*20)+"px"
-                );
-
-                win.style.setProperty(
-                    "--dy1",
-                    (10+Math.random()*35)+"px"
-                );
-
-                win.style.setProperty(
-                    "--dx",
-                    ((Math.random()-.5)*260)+"px"
-                );
-
-                win.style.setProperty(
-                    "--dy",
-                    (100+Math.random()*380)+"px"
-                );
-
-                win.style.setProperty(
-                    "--rot",
-                    ((Math.random()-.5)*900)+"deg"
-                );
-
-                assembly.appendChild(
-                    win
-                );
-
-                setTimeout(
-                    ()=>win.remove(),
-                    1900
-                );
-            }
-        }
-    );
-}
-
-/* COLLAPSE */
-
-function collapseTower(
-    assembly
-){
-
-    if(
-        assembly.classList.contains(
-            "towerCollapsing"
-        )
-    )
-        return;
-
-    assembly.classList.add(
-        "towerCollapsing"
-    );
-
-    /*
-       Break windows loose first.
-    */
-
-    breakWindows(
-        assembly
-    );
-
-    /*
-       Remove original tower sections
-       visually and replace them with
-       independently moving pieces.
-    */
-
-    const sections=
-        assembly.querySelectorAll(
-            ".towerSection"
-        );
-
-    sections.forEach(
-        (section,index)=>{
-
-            const rect=
-                section.getBoundingClientRect();
-
-            const parentRect=
-                assembly.getBoundingClientRect();
-
-            const piece=
-                document.createElement(
-                    "div"
-                );
-
-            piece.className=
-                "sectionPiece";
-
-            piece.style.left=
-                rect.left-parentRect.left+
-                "px";
-
-            piece.style.top=
-                rect.top-parentRect.top+
-                "px";
-
-            piece.style.width=
-                rect.width+"px";
-
-            piece.style.height=
-                rect.height+"px";
-
-            /*
-               Lower pieces fall farther.
-            */
-
-            piece.style.setProperty(
-                "--sx",
-                (
-                    (index%2===0?1:-1)*
-                    (80+Math.random()*150)
-                )+"px"
-            );
-
-            piece.style.setProperty(
-                "--sy",
-                (
-                    180+
-                    index*45+
-                    Math.random()*150
-                )+"px"
-            );
-
-            piece.style.setProperty(
-                "--sr",
-                (
-                    (index%2===0?1:-1)*
-                    (8+Math.random()*35)
-                )+"deg"
-            );
-
-            assembly.appendChild(
-                piece
-            );
-
-            section.style.visibility=
-                "hidden";
-
-            setTimeout(
-                ()=>piece.remove(),
-                3400
-            );
-        }
-    );
-
-    /*
-       Remove roof and antenna from the
-       original visual after pieces start.
-    */
-
-    setTimeout(()=>{
-
-        const roof=
-            assembly.querySelector(
-                ".roof"
-            );
-
-        const antenna=
-            assembly.querySelector(
-                ".antenna"
-            );
-
-        if(roof)
-            roof.style.visibility=
-                "hidden";
-
-        if(antenna)
-            antenna.style.visibility=
-                "hidden";
-
-    },500);
-
-    /*
-       Large structural chunks.
-    */
-
-    for(let i=0;i<32;i++){
-
-        setTimeout(()=>{
-
-            const chunk=
-                document.createElement(
-                    "div"
-                );
-
-            chunk.className=
-                "buildingChunk";
-
-            chunk.style.left=
-                Math.random()*
-                assembly.offsetWidth+
-                "px";
-
-            chunk.style.top=
-                Math.random()*
-                assembly.offsetHeight*.8+
-                "px";
-
-            chunk.style.width=
-                (10+Math.random()*28)+"px";
-
-            chunk.style.height=
-                (8+Math.random()*25)+"px";
-
-            chunk.style.setProperty(
-                "--cx",
-                ((Math.random()-.5)*400)+"px"
-            );
-
-            chunk.style.setProperty(
-                "--cy",
-                (120+Math.random()*400)+"px"
-            );
-
-            chunk.style.setProperty(
-                "--cr",
-                ((Math.random()-.5)*900)+"deg"
-            );
-
-            assembly.appendChild(
-                chunk
-            );
-
-            setTimeout(
-                ()=>chunk.remove(),
-                2400
-            );
-
-        },i*80);
-    }
-
-    /*
-       Dust cloud.
-    */
-
-    for(let i=0;i<35;i++){
-
-        setTimeout(()=>{
-
-            const dust=
-                document.createElement(
-                    "div"
-                );
-
-            dust.className=
-                "dust";
-
-            dust.style.left=
-                Math.random()*
-                assembly.offsetWidth+
-                "px";
-
-            dust.style.top=
-                assembly.offsetHeight-
-                25+
-                "px";
-
-            dust.style.setProperty(
-                "--dx",
-                ((Math.random()-.5)*240)+"px"
-            );
-
-            assembly.appendChild(
-                dust
-            );
-
-            setTimeout(
-                ()=>dust.remove(),
-                2900
-            );
-
-        },i*120);
-    }
-
-    /*
-       Hide the original assembly after
-       the sections have visibly separated.
-    */
-
-    setTimeout(()=>{
-
-        clearInterval(
-            smokeInterval
-        );
-
-        smokeInterval=null;
-
-        removeEffectsFrom(
-            assembly
-        );
-
-        assembly.style.visibility=
-            "hidden";
-
-        plane.style.display=
-            "none";
-
-        /*
-           One tower remaining:
-           spawn a new plane.
-        */
-
-        if(
-            hitTower1 &&
-            hitTower2
-        ){
-
-            statusText.textContent=
-                "STATUS: ROUND COMPLETE";
-
-            targetStatus.textContent=
-                "TOWERS: 2 / 2 HIT";
-
-            setTimeout(()=>{
-
-                resetButton.style.display=
-                    "block";
-
-            },1200);
-
-        }else{
-
-            statusText.textContent=
-                "STATUS: NEW PLANE READY";
-
-            setTimeout(
-                spawnNextPlane,
-                1300
-            );
-        }
-
-    },5000);
-}
-
-/* REMOVE EFFECTS */
-
-function removeEffectsFrom(
-    parent
-){
-
-    parent.querySelectorAll(
-        ".fire,"+
-        ".fireGlow,"+
-        ".smoke,"+
-        ".spark,"+
-        ".glass,"+
-        ".buildingChunk,"+
-        ".sectionPiece,"+
-        ".dust,"+
-        ".fallingWindow,"+
-        ".engineSmoke,"+
-        ".impactFlash"
-    ).forEach(
-        el=>el.remove()
-    );
-}
-
-/* NEXT PLANE */
-
-function spawnNextPlane(){
-
-    crashed=false;
-
-    currentAssembly=null;
-
-    clearInterval(
-        smokeInterval
-    );
-
-    smokeInterval=null;
-
-    if(
-        plane.parentElement !== game
-    ){
-
-        game.appendChild(
-            plane
-        );
-    }
-
-    plane.style.display=
-        "block";
-
-    plane.style.position=
-        "absolute";
-
-    plane.style.zIndex=
-        "80";
-
-    plane.style.filter=
-        "drop-shadow(5px 6px 0 rgba(0,0,0,.25))";
-
-    statusText.textContent=
-        hitTower1 &&
-        !hitTower2
-        ? "STATUS: HIT THE SECOND TOWER"
-        : "STATUS: HIT THE FIRST TOWER";
-
-    setStartPosition();
-}
-
-/* RESET */
-
-function resetGame(){
-
-    crashed=false;
-    gameStarted=true;
-
-    currentAssembly=null;
-
-    clearInterval(
-        smokeInterval
-    );
-
-    smokeInterval=null;
-
-    hitTower1=false;
-    hitTower2=false;
-
-    updateTargetStatus();
-
-    /*
-       Restore tower assemblies.
-    */
-
-    [towerAssembly1,towerAssembly2]
-    .forEach(
-        assembly=>{
-
-            removeEffectsFrom(
-                assembly
-            );
-
-            assembly.classList.remove(
-                "towerCollapsing"
-            );
-
-            assembly.style.visibility=
-                "visible";
-
-            assembly
-                .querySelectorAll(
-                    ".towerSection"
-                )
-                .forEach(
-                    section=>{
-                        section.style.visibility=
-                            "visible";
-                    }
-                );
-
-            assembly
-                .querySelectorAll(
-                    ".roof,.antenna"
-                )
-                .forEach(
-                    part=>{
-                        part.style.visibility=
-                            "visible";
-                    }
-                );
-        }
-    );
-
-    damage1.classList.remove(
-        "active"
-    );
-
-    damage2.classList.remove(
-        "active"
-    );
-
-    damage1.style.display="";
-    damage2.style.display="";
-
-    game.classList.remove(
-        "shake",
-        "bigShake"
-    );
-
-    if(
-        plane.parentElement !== game
-    ){
-
-        game.appendChild(
-            plane
-        );
-    }
-
-    plane.style.display=
-        "block";
-
-    plane.style.position=
-        "absolute";
-
-    plane.style.zIndex=
-        "80";
-
-    statusText.textContent=
-        "STATUS: FLYING";
-
-    resetButton.style.display=
-        "none";
-
-    setStartPosition();
-
-    backgroundMusic.currentTime=
-        0;
-
-    musicStarted=false;
-
-    startMusic();
-}
-
-/* RESET BUTTON */
-
-resetButton.addEventListener(
-    "click",
-    resetGame
-);
-
-/* RESIZE */
-
-window.addEventListener(
-    "resize",
-    ()=>{
-
-        if(
-            gameStarted &&
-            !crashed &&
-            plane.parentElement===game
-        ){
-
-            setStartPosition();
-
-        }
-
-    }
-);
-
-/* START STATE */
-
-plane.style.display=
-    "none";
-
-backgroundMusic.volume=.6;
-
-/* LOOP */
-
-function loop(){
-
-    updatePlane();
-
-    requestAnimationFrame(
-        loop
-    );
-}
-
-loop();
-
+show("nameScreen");
 </script>
 
 </body>
