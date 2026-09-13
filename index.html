@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -885,922 +886,362 @@ button:active{
 </div>
 
 <script>
+const $ = id => document.getElementById(id);
 
-const $=id=>document.getElementById(id);
+let ws = null;
+let myName = "";
+let myRole = "";
+let state = null;
+let selectedPlane = "airliner";
+let selectedGun = "mg";
+let keys = {up:false,down:false,left:false,right:false,brake:false};
+let countdownTimer = null;
+let firing = false;
+let fireTimer = null;
+let audioStarted = false;
+let lastTowerHP = [100,100];
+let lastPlaneHP = 100;
 
-let ws=null;
-let myName="";
-let myRole="";
-let state=null;
-
-let selectedPlane="airliner";
-let selectedGun="mg";
-
-let firing=false;
-
-let keys={
- up:false,
- down:false,
- left:false,
- right:false,
- brake:false
+const planeNames = {
+ small:"Small Jet", airliner:"Airliner", large:"Large Airliner", cargo:"Cargo Plane", fighter:"Fighter Jet"
 };
-
-let previousBullets=new Map();
-
-let audioStarted=false;
-
-let countdownTimer=null;
-
-const planeNames={
- small:"Small Jet",
- airliner:"Airliner",
- large:"Large Airliner",
- cargo:"Cargo Plane",
- fighter:"Fighter Jet"
-};
-
-const gunNames={
- mg:"Machine Gun",
- heavy:"Heavy MG",
- rapid:"Rapid MG"
-};
+const gunNames = {mg:"Machine Gun", heavy:"Heavy MG", rapid:"Rapid MG"};
 
 function show(id){
-
- [
-  "nameScreen",
-  "queueScreen",
-  "matchScreen",
-  "game",
-  "endScreen"
- ].forEach(x=>{
-  $(x).classList.add("hidden");
- });
-
+ ["nameScreen","queueScreen","matchScreen","game","endScreen"].forEach(x=>$(x).classList.add("hidden"));
  $(id).classList.remove("hidden");
 }
 
+function send(data){
+ if(ws && ws.readyState===WebSocket.OPEN) ws.send(JSON.stringify(data));
+}
+
 function startMusic(){
-
- if(audioStarted)return;
-
+ if(audioStarted) return;
  audioStarted=true;
-
  const a=new Audio("towersong.mp3");
-
  a.loop=true;
  a.volume=.45;
-
  a.play().catch(()=>{});
-
  window.gameMusic=a;
 }
 
 function startCountdown(){
-
- if(countdownTimer){
-  clearInterval(countdownTimer);
-  countdownTimer=null;
- }
-
+ stopCountdown();
  let n=3;
-
  $("countdown").textContent=n;
  $("matchStatus").textContent="Get ready...";
-
  countdownTimer=setInterval(()=>{
-
   n--;
-
   if(n>0){
-
    $("countdown").textContent=n;
-
-   return;
+  }else{
+   $("countdown").textContent="START!";
+   $("matchStatus").textContent="";
+   clearInterval(countdownTimer);
+   countdownTimer=null;
   }
-
-  $("countdown").textContent="START!";
-  $("matchStatus").textContent="";
-
-  clearInterval(countdownTimer);
-  countdownTimer=null;
-
  },1000);
 }
 
 function stopCountdown(){
-
- if(countdownTimer){
-  clearInterval(countdownTimer);
-  countdownTimer=null;
- }
+ if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null;}
 }
 
 function connect(){
-
- const protocol=
-  location.protocol==="https:"
-   ?"wss"
-   :"ws";
-
- const host=location.host;
-
- ws=new WebSocket(
-  protocol+"://"+host
- );
+ if(ws && (ws.readyState===WebSocket.OPEN || ws.readyState===WebSocket.CONNECTING)) return;
+ const protocol=location.protocol==="https:"?"wss":"ws";
+ ws=new WebSocket(protocol+"://"+location.host);
 
  ws.onopen=()=>{
-
-  if(myName){
-   send({
-    type:"setName",
-    name:myName
-   });
-
-   send({
-    type:"queue"
-   });
-  }
-
+  send({type:"setName",name:myName});
+  send({type:"selectPlane",planeType:selectedPlane});
+  send({type:"selectGun",gun:selectedGun});
+  send({type:"queue"});
  };
 
  ws.onmessage=e=>{
-
   let msg;
+  try{msg=JSON.parse(e.data);}catch{return;}
 
-  try{
-   msg=JSON.parse(e.data);
-  }catch{
+  if(msg.type==="connected") return;
+
+  if(msg.type==="nameSet") return;
+
+  if(msg.type==="queue"){
+   show("queueScreen");
+   $("queueText").textContent="Searching for an opponent...";
    return;
   }
 
-  /*
-   * The server sends matchWaiting
-   * while its 3.2 second countdown
-   * is running.
-   *
-   * Start our visual countdown here,
-   * instead of waiting for matchFound.
-   */
   if(msg.type==="matchWaiting"){
-
    show("matchScreen");
-
    $("roles").textContent="MATCH FOUND";
-
    startMusic();
-
    startCountdown();
+   return;
   }
 
-  /*
-   * matchFound contains our actual role.
-   */
   if(msg.type==="matchFound"){
-
-   /*
-    * Server uses lowercase:
-    * pilot / gunner
-    *
-    * Convert it so the rest of
-    * the client can use Pilot/Gunner.
-    */
-   myRole=
-    String(msg.role||"")
-     .toLowerCase()==="pilot"
-      ?"Pilot"
-      :"Gunner";
-
-   $("roles").textContent=
-    "YOU ARE THE "+myRole.toUpperCase();
-
-   startMusic();
-
-   /*
-    * Do NOT restart the countdown.
-    *
-    * The countdown already started
-    * when matchWaiting arrived.
-    */
-
-   if($("game").classList.contains("hidden")){
-    show("matchScreen");
-   }
+   myRole=String(msg.role||"").toLowerCase()==="pilot"?"Pilot":"Gunner";
+   $("roles").textContent="YOU ARE THE "+myRole.toUpperCase();
+   if(msg.planeType) selectedPlane=msg.planeType;
+   if(msg.gun) selectedGun=msg.gun;
+   show("matchScreen");
+   return;
   }
 
-  /*
-   * This is the important part.
-   *
-   * The server wraps the actual game
-   * data inside msg.state, e.g.
-   * { type:"state", state:{ phase:"playing", ... } }
-   *
-   * so we have to unwrap it before
-   * checking phase or rendering.
-   */
   if(msg.type==="state"){
-
-   const s=msg.state;
-
-   if(!s)return;
-
-   state=s;
-
-   if(s.phase==="playing"){
-
+   state=msg.state;
+   if(msg.state.phase==="playing"){
     stopCountdown();
-
     show("game");
-
-    render(s);
-   }
-
-   if(s.phase==="ended"){
-
+    render(msg.state);
+   }else if(msg.state.phase==="roundEnd"){
+    render(msg.state);
+   }else if(msg.state.phase==="ended"){
     stopCountdown();
-
-    render(s);
-
-    showEnd(s);
+    render(msg.state);
+    showEnd(msg.state);
    }
+   return;
   }
 
   if(msg.type==="opponentLeft"){
-
    stopCountdown();
-
+   stopFiring();
    $("endTitle").textContent="YOU WIN!";
    $("endReason").textContent="Your opponent left.";
-
    show("endScreen");
-  }
-
-  if(msg.type==="error"){
-
-   $("nameError").textContent=
-    msg.message||"Server error";
-  }
-
- };
-
- ws.onclose=()=>{
-
-  stopCountdown();
-
-  if(!$("endScreen").classList.contains("hidden")){
    return;
   }
 
-  $("queueText").textContent=
-   "Connection lost. Refresh to reconnect.";
+  if(msg.type==="left"){
+   stopCountdown();
+   stopFiring();
+   show("nameScreen");
+   return;
+  }
+
+  if(msg.type==="error") $("nameError").textContent=msg.message||"Server error";
+ };
+
+ ws.onerror=()=>{};
+ ws.onclose=()=>{
+  stopCountdown();
+  stopFiring();
+  if(!$("endScreen").classList.contains("hidden")) return;
+  if(!$("nameScreen").classList.contains("hidden")) return;
+  $("queueText").textContent="Connection lost. Refresh to reconnect.";
  };
 }
 
-function send(data){
-
- if(
-  ws&&
-  ws.readyState===WebSocket.OPEN
- ){
-  ws.send(JSON.stringify(data));
- }
-}
-
 $("nameBtn").onclick=()=>{
-
- const name=
-  $("nameInput").value.trim();
-
- if(!name){
-
-  $("nameError").textContent=
-   "Enter a name.";
-
-  return;
- }
-
- myName=name.slice(0,16);
-
+ const name=$("nameInput").value.trim().slice(0,16);
+ if(!name){$("nameError").textContent="Enter a name.";return;}
+ myName=name;
+ $("nameError").textContent="";
  startMusic();
-
  show("queueScreen");
-
  connect();
 };
 
-$("nameInput").addEventListener(
- "keydown",
- e=>{
-  if(e.key==="Enter"){
-   $("nameBtn").click();
-  }
- }
-);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter") $("nameBtn").click();});
 
 $("cancelBtn").onclick=()=>{
-
  stopCountdown();
-
- send({
-  type:"leave"
- });
-
+ stopFiring();
+ send({type:"cancelQueue"});
  show("nameScreen");
 };
 
 $("rematchBtn").onclick=()=>{
-
  stopCountdown();
-
- $("endScreen").classList.add("hidden");
-
- send({
-  type:"rematch"
- });
-
+ stopFiring();
+ send({type:"rematch"});
  show("matchScreen");
-
  $("roles").textContent="MATCH FOUND";
-
  startCountdown();
 };
 
 $("menuBtn").onclick=()=>{
-
  stopCountdown();
-
- send({
-  type:"leave"
- });
-
+ stopFiring();
+ send({type:"leave"});
  show("nameScreen");
 };
 
-document
- .querySelectorAll("[data-plane]")
- .forEach(card=>{
+document.querySelectorAll("[data-plane]").forEach(card=>{
+ card.onclick=()=>{
+  selectedPlane=card.dataset.plane;
+  send({type:"selectPlane",planeType:selectedPlane});
+  $("planeMenu").classList.add("hidden");
+ };
+});
 
-  card.onclick=()=>{
+document.querySelectorAll("[data-gun]").forEach(card=>{
+ card.onclick=()=>{
+  selectedGun=card.dataset.gun;
+  send({type:"selectGun",gun:selectedGun});
+  $("gunMenu").classList.add("hidden");
+ };
+});
 
-   selectedPlane=
-    card.dataset.plane;
+function openPlaneMenu(){if(myRole==="Pilot") $("planeMenu").classList.remove("hidden");}
+function openGunMenu(){if(myRole==="Gunner") $("gunMenu").classList.remove("hidden");}
 
-   send({
-    type:"selectPlane",
-    planeType:selectedPlane
-   });
+window.addEventListener("keydown",e=>{
+ if(e.key.toLowerCase()==="p"){openPlaneMenu();return;}
+ if(e.key.toLowerCase()==="g"){openGunMenu();return;}
+ if(e.code==="Space"){keys.brake=true;e.preventDefault();}
+ if(["w","ArrowUp"].includes(e.key)) keys.up=true;
+ if(["s","ArrowDown"].includes(e.key)) keys.down=true;
+ if(["a","ArrowLeft"].includes(e.key)) keys.left=true;
+ if(["d","ArrowRight"].includes(e.key)) keys.right=true;
+});
 
-   $("planeMenu")
-    .classList.add("hidden");
-  };
+window.addEventListener("keyup",e=>{
+ if(e.code==="Space") keys.brake=false;
+ if(["w","ArrowUp"].includes(e.key)) keys.up=false;
+ if(["s","ArrowDown"].includes(e.key)) keys.down=false;
+ if(["a","ArrowLeft"].includes(e.key)) keys.left=false;
+ if(["d","ArrowRight"].includes(e.key)) keys.right=false;
+});
 
- });
-
-document
- .querySelectorAll("[data-gun]")
- .forEach(card=>{
-
-  card.onclick=()=>{
-
-   selectedGun=
-    card.dataset.gun;
-
-   send({
-    type:"selectGun",
-    gun:selectedGun
-   });
-
-   $("gunMenu")
-    .classList.add("hidden");
-  };
-
- });
-
-function openPlaneMenu(){
-
- if(myRole==="Pilot"){
-
-  $("planeMenu")
-   .classList.remove("hidden");
- }
-}
-
-function openGunMenu(){
-
- if(myRole==="Gunner"){
-
-  $("gunMenu")
-   .classList.remove("hidden");
- }
-}
-
-window.addEventListener(
- "keydown",
- e=>{
-
-  if(e.key.toLowerCase()==="p"){
-   openPlaneMenu();
-  }
-
-  if(e.key.toLowerCase()==="g"){
-   openGunMenu();
-  }
-
-  if(e.code==="Space"){
-   keys.brake=true;
-   e.preventDefault();
-  }
-
-  if(
-   ["w","ArrowUp"]
-    .includes(e.key)
-  ){
-   keys.up=true;
-  }
-
-  if(
-   ["s","ArrowDown"]
-    .includes(e.key)
-  ){
-   keys.down=true;
-  }
-
-  if(
-   ["a","ArrowLeft"]
-    .includes(e.key)
-  ){
-   keys.left=true;
-  }
-
-  if(
-   ["d","ArrowRight"]
-    .includes(e.key)
-  ){
-   keys.right=true;
-  }
-
- });
-
-window.addEventListener(
- "keyup",
- e=>{
-
-  if(e.code==="Space"){
-   keys.brake=false;
-  }
-
-  if(
-   ["w","ArrowUp"]
-    .includes(e.key)
-  ){
-   keys.up=false;
-  }
-
-  if(
-   ["s","ArrowDown"]
-    .includes(e.key)
-  ){
-   keys.down=false;
-  }
-
-  if(
-   ["a","ArrowLeft"]
-    .includes(e.key)
-  ){
-   keys.left=false;
-  }
-
-  if(
-   ["d","ArrowRight"]
-    .includes(e.key)
-  ){
-   keys.right=false;
-  }
-
- });
-
-function sendInput(){
-
- if(myRole!=="Pilot"){
-  return;
- }
-
- send({
-  type:"input",
-  input:keys
- });
-}
-
-setInterval(
- sendInput,
- 50
-);
+setInterval(()=>{
+ if(myRole==="Pilot") send({type:"input",input:keys});
+},50);
 
 function aim(e){
-
- if(myRole!=="Gunner"){
-  return;
- }
-
- const r=
-  $("game").getBoundingClientRect();
-
- const x=
-  (e.clientX-r.left)/
-  r.width*
-  1000;
-
- const y=
-  (e.clientY-r.top)/
-  r.height*
-  600;
-
- send({
-  type:"aim",
-  x:x,
-  y:y
- });
+ if(myRole!=="Gunner") return;
+ const r=$("game").getBoundingClientRect();
+ const x=(e.clientX-r.left)/r.width*1000;
+ const y=(e.clientY-r.top)/r.height*600;
+ send({type:"aim",x,y});
 }
 
-$("game").addEventListener(
- "pointermove",
- aim
-);
+$("game").addEventListener("pointermove",aim);
 
-$("game").addEventListener(
- "pointerdown",
- e=>{
-
-  if(myRole==="Gunner"){
-
-   firing=true;
-
-   send({
-    type:"fire",
-    down:true
-   });
-  }
-
- });
-
-window.addEventListener(
- "pointerup",
- ()=>{
-
-  if(firing){
-
-   firing=false;
-
-  }
-
- });
-
-$("mobileFire").addEventListener(
- "pointerdown",
- ()=>{
-
-  firing=true;
-
-  send({
-   type:"fire",
-   down:true
-  });
-
- });
-
-$("mobileFire").addEventListener(
- "pointerup",
- ()=>{
-
-  firing=false;
-
- });
-
-document
- .querySelectorAll(".mobileBtn[data-key]")
- .forEach(btn=>{
-
-  const k=btn.dataset.key;
-
-  const set=v=>{
-
-   if(k==="up")keys.up=v;
-   if(k==="down")keys.down=v;
-   if(k==="left")keys.left=v;
-   if(k==="right")keys.right=v;
-
-   sendInput();
-  };
-
-  btn.addEventListener(
-   "pointerdown",
-   e=>{
-    e.preventDefault();
-    set(true);
-   }
-  );
-
-  btn.addEventListener(
-   "pointerup",
-   e=>{
-    e.preventDefault();
-    set(false);
-   }
-  );
-
-  btn.addEventListener(
-   "pointercancel",
-   ()=>{
-    set(false);
-   }
-  );
-
- });
-
-function pct(v,max=100){
-
- return Math.max(
-  0,
-  Math.min(
-   100,
-   v/max*100
-  )
- )+"%";
+function startFiring(){
+ if(myRole!=="Gunner") return;
+ if(firing) return;
+ firing=true;
+ send({type:"fire"});
+ fireTimer=setInterval(()=>send({type:"fire"}),60);
+}
+function stopFiring(){
+ firing=false;
+ if(fireTimer){clearInterval(fireTimer);fireTimer=null;}
 }
 
-function worldToScreenX(x){
+$("game").addEventListener("pointerdown",e=>{if(myRole==="Gunner") startFiring();});
+window.addEventListener("pointerup",stopFiring);
+$("mobileFire").addEventListener("pointerdown",e=>{e.preventDefault();startFiring();});
+$("mobileFire").addEventListener("pointerup",e=>{e.preventDefault();stopFiring();});
+$("mobileFire").addEventListener("pointercancel",stopFiring);
 
- return x/1000*innerWidth;
-}
+document.querySelectorAll(".mobileBtn[data-key]").forEach(btn=>{
+ const k=btn.dataset.key;
+ const set=v=>{keys[k]=v;if(myRole==="Pilot") send({type:"input",input:keys});};
+ btn.addEventListener("pointerdown",e=>{e.preventDefault();set(true);});
+ btn.addEventListener("pointerup",e=>{e.preventDefault();set(false);});
+ btn.addEventListener("pointercancel",()=>set(false));
+});
 
-function worldToScreenY(y){
-
- return y/600*innerHeight;
-}
+function pct(v,max=100){return Math.max(0,Math.min(100,v/max*100))+"%";}
+function worldToScreenX(x){return x/1000*innerWidth;}
+function worldToScreenY(y){return y/600*innerHeight;}
 
 function render(s){
-
  state=s;
+ const t1=s.tower1||{hp:100};
+ const t2=s.tower2||{hp:100};
+ const rw=s.roundWins||{player1:0,player2:0};
 
- $("tower1HP").style.width=
-  pct(s.tower1.hp);
+ $("tower1HP").style.width=pct(t1.hp);
+ $("tower2HP").style.width=pct(t2.hp);
+ $("planeBar").firstElementChild.style.width=pct(s.plane.hp);
+ $("gunBar").style.width=s.gunnerReady?"100%":"25%";
 
- $("tower2HP").style.width=
-  pct(s.tower2.hp);
+ $("tower1Name").textContent="TOWER 1";
+ $("tower2Name").textContent="TOWER 2";
+ $("roundText").textContent=`ROUND ${s.round} · ${rw.player1} - ${rw.player2}`;
+ $("pilotLabel").textContent=`PILOT: ${s.pilotName||""}`;
+ $("gunnerLabel").textContent=`GUNNER: ${s.gunnerName||""}`;
+ $("gunLabel").textContent=gunNames[s.gun]||"GUN";
 
- $("planeBar")
-  .firstElementChild
-  .style.width=
-  pct(s.plane.hp);
+ $("tower1").classList.toggle("destroyed",t1.hp<=0);
+ $("tower2").classList.toggle("destroyed",t2.hp<=0);
 
- $("gunBar").style.width=
-  s.gunnerReady
-   ?"100%"
-   :"25%";
+ const px=worldToScreenX(s.plane.x), py=worldToScreenY(s.plane.y);
+ $("plane").style.left=(px-39)+"px";
+ $("plane").style.top=(py-15)+"px";
+ $("plane").style.transform=`rotate(${s.plane.pitch}deg)`;
+ $("plane").classList.toggle("stalled",!!s.plane.stalled);
 
- $("tower1Name").textContent=
-  "TOWER 1";
+ const towerX=s.gunTower===1?347:652;
+ const tx=worldToScreenX(towerX), ty=worldToScreenY(245);
+ $("turret").style.left=(tx-30)+"px";
+ $("turret").style.top=(ty-45)+"px";
+ const angle=Math.atan2(s.aim.y-245,s.aim.x-towerX)*180/Math.PI;
+ $("turret .barrel").style.transform=`rotate(${angle}deg)`;
 
- $("tower2Name").textContent=
-  "TOWER 2";
-
- $("roundText").textContent=
-  `ROUND ${s.round} · ${s.roundWins.player1} - ${s.roundWins.player2}`;
-
- $("pilotLabel").textContent=
-  `PILOT: ${s.pilotName}`;
-
- $("gunnerLabel").textContent=
-  `GUNNER: ${s.gunnerName}`;
-
- $("gunLabel").textContent=
-  gunNames[s.gun]||"GUN";
-
- $("tower1").classList.toggle(
-  "destroyed",
-  s.tower1.hp<=0
- );
-
- $("tower2").classList.toggle(
-  "destroyed",
-  s.tower2.hp<=0
- );
-
- const px=
-  worldToScreenX(s.plane.x);
-
- const py=
-  worldToScreenY(s.plane.y);
-
- $("plane").style.left=
-  (px-39)+"px";
-
- $("plane").style.top=
-  (py-15)+"px";
-
- $("plane").style.transform=
-  `rotate(${s.plane.pitch}deg)`;
-
- $("plane").classList.toggle(
-  "stalled",
-  s.plane.stalled
- );
-
- const tx=
-  worldToScreenX(
-   s.gunTower===1
-    ?347
-    :652
-  );
-
- const ty=
-  worldToScreenY(245);
-
- $("turret").style.left=
-  (tx-30)+"px";
-
- $("turret").style.top=
-  (ty-45)+"px";
-
- const angle=
-  Math.atan2(
-   s.aim.y-245,
-   s.aim.x-
-    (s.gunTower===1?347:652)
-  )*
-  180/
-  Math.PI;
-
- $("turret .barrel").style.transform=
-  `rotate(${angle}deg)`;
-
- renderBullets(
-  s.bullets||[]
- );
-
+ renderBullets(s.bullets||[]);
  detectHits(s);
 }
 
 function renderBullets(bullets){
-
  const active=new Set();
-
  bullets.forEach(b=>{
-
-  const id=b.id;
-
+  const id=String(b.id);
   active.add(id);
-
-  let el=
-   document.querySelector(
-    `.bullet[data-id="${id}"]`
-   );
-
+  let el=document.querySelector(`.bullet[data-id="${CSS.escape(id)}"]`);
   if(!el){
-
-   el=
-    document.createElement("div");
-
+   el=document.createElement("div");
    el.className="bullet";
-
    el.dataset.id=id;
-
    $("arena").appendChild(el);
   }
-
-  el.style.left=
-   (worldToScreenX(b.x)-6)+"px";
-
-  el.style.top=
-   (worldToScreenY(b.y)-2)+"px";
+  el.style.left=(worldToScreenX(b.x)-6)+"px";
+  el.style.top=(worldToScreenY(b.y)-2)+"px";
+  el.style.transform=`rotate(${Math.atan2(b.vy,b.vx)*180/Math.PI}deg)`;
  });
-
- document
-  .querySelectorAll(".bullet")
-  .forEach(el=>{
-
-   if(
-    !active.has(
-     el.dataset.id
-    )
-   ){
-    el.remove();
-   }
-
-  });
+ document.querySelectorAll(".bullet").forEach(el=>{if(!active.has(String(el.dataset.id))) el.remove();});
 }
 
-let lastTowerHP=[
-  100,
-  100
-];
-
-let lastPlaneHP=100;
-
 function detectHits(s){
-
- if(
-  s.tower1.hp<
-  lastTowerHP[0]
- ){
-  effectAt(347,465);
- }
-
- if(
-  s.tower2.hp<
-  lastTowerHP[1]
- ){
-  effectAt(652,465);
- }
-
- if(
-  s.plane.hp<
-  lastPlaneHP
- ){
-  effectAt(
-   s.plane.x,
-   s.plane.y
-  );
- }
-
- lastTowerHP=[
-  s.tower1.hp,
-  s.tower2.hp
- ];
-
- lastPlaneHP=
-  s.plane.hp;
+ if(s.tower1.hp<lastTowerHP[0]) effectAt(347,465);
+ if(s.tower2.hp<lastTowerHP[1]) effectAt(652,465);
+ if(s.plane.hp<lastPlaneHP) effectAt(s.plane.x,s.plane.y);
+ lastTowerHP=[s.tower1.hp,s.tower2.hp];
+ lastPlaneHP=s.plane.hp;
 }
 
 function effectAt(x,y){
-
- const e=$("effects");
-
- const px=
-  worldToScreenX(x);
-
- const py=
-  worldToScreenY(y);
-
- const flash=
-  document.createElement("div");
-
+ const e=$("effects"),px=worldToScreenX(x),py=worldToScreenY(y);
+ const flash=document.createElement("div");
  flash.className="flash";
-
- flash.style.left=
-  (px-35)+"px";
-
- flash.style.top=
-  (py-35)+"px";
-
+ flash.style.left=(px-35)+"px";
+ flash.style.top=(py-35)+"px";
  e.appendChild(flash);
-
- setTimeout(
-  ()=>flash.remove(),
-  250
- );
-
+ setTimeout(()=>flash.remove(),250);
  for(let i=0;i<4;i++){
-
-  const smoke=
-   document.createElement("div");
-
+  const smoke=document.createElement("div");
   smoke.className="smoke";
-
-  smoke.style.left=
-   (px-17+
-    Math.random()*34)+"px";
-
-  smoke.style.top=
-   (py-17+
-    Math.random()*34)+"px";
-
+  smoke.style.left=(px-17+Math.random()*34)+"px";
+  smoke.style.top=(py-17+Math.random()*34)+"px";
   e.appendChild(smoke);
-
-  setTimeout(
-   ()=>smoke.remove(),
-   1100
-  );
+  setTimeout(()=>smoke.remove(),1100);
  }
 }
 
 function showEnd(s){
-
- $("endTitle").textContent=
-  s.winnerName===myName
-   ?"YOU WIN!"
-   :"YOU LOSE!";
-
- $("endReason").textContent=
-  s.reason||
-  "Match complete";
-
+ $("endTitle").textContent=s.winnerName===myName?"YOU WIN!":"YOU LOSE!";
+ $("endReason").textContent=s.reason||"Match complete";
  show("endScreen");
 }
 
 show("nameScreen");
-
 </script>
 
 </body>
