@@ -15,87 +15,134 @@ const TICK_MS = 1000 / TICK_RATE;
 const TOWER_MAX_HP = 100;
 const PLANE_MAX_HP = 100;
 
-// How long the "get ready" countdown lasts before a round actually starts.
-// This value MUST match the countdown length the client displays (see
-// startCountdown() in the client, which counts 3 -> 2 -> 1 -> START over
-// 3000ms) so the UI never gets cut off early or left hanging.
 const ROUND_START_DELAY = 3000;
-
-// Small buffer after a round ends before we show the "waiting" screen for
-// the next round, so players can read the round result.
 const ROUND_END_DISPLAY_MS = 2200;
+
+/*
+==================================================
+PLANE BALANCE
+==================================================
+All planes are viable.
+
+Small:
+- Fast
+- Agile
+- Smaller target
+
+Airliner:
+- Balanced
+
+Large:
+- Slower
+- Bigger target
+- More stable
+
+Cargo:
+- Slowest
+- Biggest target
+- Strong maneuver forgiveness
+
+Fighter:
+- Fastest
+- Very agile
+- Small target
+- Does NOT have the old ridiculous 10 speed
+*/
 
 const planeTypes = {
     small: {
         name: "Small Jet",
-        maxSpeed: 7.5,
-        acceleration: 2.8,
-        braking: 4.5,
+        maxSpeed: 6.6,
+        acceleration: 2.6,
+        braking: 4.0,
         turn: 170,
-        climb: 145,
-        stall: 0.32
+        climb: 2.6,
+        stall: 0.28,
+        hitRadius: 38
     },
 
     airliner: {
         name: "Airliner",
-        maxSpeed: 5.5,
-        acceleration: 1.8,
-        braking: 3.0,
-        turn: 105,
-        climb: 100,
-        stall: 0.26
+        maxSpeed: 5.7,
+        acceleration: 1.9,
+        braking: 3.2,
+        turn: 120,
+        climb: 2.3,
+        stall: 0.25,
+        hitRadius: 42
     },
 
     large: {
         name: "Large Airliner",
-        maxSpeed: 4.7,
-        acceleration: 1.35,
-        braking: 2.7,
-        turn: 82,
-        climb: 82,
-        stall: 0.23
+        maxSpeed: 5.0,
+        acceleration: 1.5,
+        braking: 3.0,
+        turn: 95,
+        climb: 2.0,
+        stall: 0.23,
+        hitRadius: 46
     },
 
     cargo: {
         name: "Cargo Plane",
-        maxSpeed: 4.2,
-        acceleration: 1.1,
-        braking: 3.8,
-        turn: 70,
-        climb: 70,
-        stall: 0.21
+        maxSpeed: 4.6,
+        acceleration: 1.3,
+        braking: 3.6,
+        turn: 82,
+        climb: 1.9,
+        stall: 0.22,
+        hitRadius: 50
     },
 
     fighter: {
         name: "Fighter Jet",
-        maxSpeed: 10,
-        acceleration: 3.8,
-        braking: 5.5,
-        turn: 240,
-        climb: 190,
-        stall: 0.36
+        maxSpeed: 7.8,
+        acceleration: 3.2,
+        braking: 4.8,
+        turn: 205,
+        climb: 2.8,
+        stall: 0.30,
+        hitRadius: 34
     }
 };
+
+/*
+==================================================
+GUN BALANCE
+==================================================
+
+MG:
+4 damage / 120ms
+≈ 33 DPS
+
+Heavy:
+9 damage / 270ms
+≈ 33 DPS
+
+Rapid:
+3 damage / 90ms
+≈ 33 DPS
+*/
 
 const gunTypes = {
     mg: {
         name: "Machine Gun",
-        damage: 5,
-        cooldown: 110,
+        damage: 4,
+        cooldown: 120,
         bulletSpeed: 13
     },
 
     heavy: {
         name: "Heavy MG",
-        damage: 10,
-        cooldown: 240,
-        bulletSpeed: 12
+        damage: 9,
+        cooldown: 270,
+        bulletSpeed: 13
     },
 
     rapid: {
         name: "Rapid MG",
         damage: 3,
-        cooldown: 55,
+        cooldown: 90,
         bulletSpeed: 15
     }
 };
@@ -103,6 +150,12 @@ const gunTypes = {
 const players = new Map();
 const rooms = new Map();
 const queue = [];
+
+/*
+==================================================
+UTILITIES
+==================================================
+*/
 
 function randomId() {
     return crypto.randomBytes(8).toString("hex");
@@ -118,7 +171,10 @@ function send(ws, data) {
     try {
         ws.send(JSON.stringify(data));
     } catch (err) {
-        console.error("WebSocket send error:", err.message);
+        console.error(
+            "WebSocket send error:",
+            err.message
+        );
     }
 }
 
@@ -130,28 +186,42 @@ function broadcast(room, data) {
 }
 
 function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
+    return Math.max(
+        min,
+        Math.min(max, value)
+    );
 }
 
-function distance(x1, y1, x2, y2) {
+function distance(
+    x1,
+    y1,
+    x2,
+    y2
+) {
     const dx = x1 - x2;
     const dy = y1 - y2;
 
-    return Math.sqrt(dx * dx + dy * dy);
+    return Math.sqrt(
+        dx * dx +
+        dy * dy
+    );
 }
 
-// These rectangles MUST stay in sync with the tower CSS in index.html
-// (.tower.left / .tower.right, expressed as fractions of the 1000x600
-// world). If the two ever drift apart, the visible tower and its hitbox
-// stop matching. Desktop CSS: left tower spans 27%-42.5% x / 34%-100% y,
-// right tower spans 57.5%-73% x / 34%-100% y of the play area.
+/*
+==================================================
+TOWER COLLISION
+==================================================
+
+These match the original visible map positions.
+*/
+
 function towerRect(number) {
     if (number === 1) {
         return {
-            x: 347,   // center x  (34.7% of 1000)
-            y: 402,   // center y  (67% of 600)
-            w: 155,   // width     (15.5% of 1000)
-            h: 396    // height    (66% of 600)
+            x: 347,
+            y: 402,
+            w: 155,
+            h: 396
         };
     }
 
@@ -163,41 +233,87 @@ function towerRect(number) {
     };
 }
 
+/*
+==================================================
+PLANE / TOWER COLLISION
+==================================================
+*/
+
 function planeHitsTower(room) {
     const s = room.state;
     const p = s.plane;
 
-    const planeRadiusX = 48;
-    const planeRadiusY = 25;
+    const type =
+        planeTypes[s.plane.planeType] ||
+        planeTypes.airliner;
+
+    const radiusX =
+        type.hitRadius || 42;
+
+    const radiusY =
+        Math.max(
+            22,
+            radiusX * 0.52
+        );
 
     for (let i = 1; i <= 2; i++) {
         const tower = towerRect(i);
 
-        const left = tower.x - tower.w / 2;
-        const right = tower.x + tower.w / 2;
-        const top = tower.y - tower.h / 2;
-        const bottom = tower.y + tower.h / 2;
+        const left =
+            tower.x -
+            tower.w / 2;
 
-        const closestX = clamp(
-            p.x,
-            left,
-            right
-        );
+        const right =
+            tower.x +
+            tower.w / 2;
 
-        const closestY = clamp(
-            p.y,
-            top,
-            bottom
-        );
+        const top =
+            tower.y -
+            tower.h / 2;
 
-        const dx = p.x - closestX;
-        const dy = p.y - closestY;
+        const bottom =
+            tower.y +
+            tower.h / 2;
 
-        if (
-            (dx * dx) / (planeRadiusX * planeRadiusX) +
-            (dy * dy) / (planeRadiusY * planeRadiusY)
-            <= 1
-        ) {
+        const closestX =
+            clamp(
+                p.x,
+                left,
+                right
+            );
+
+        const closestY =
+            clamp(
+                p.y,
+                top,
+                bottom
+            );
+
+        const dx =
+            p.x -
+            closestX;
+
+        const dy =
+            p.y -
+            closestY;
+
+        const hit =
+            (
+                dx * dx
+            ) /
+            (
+                radiusX *
+                radiusX
+            ) +
+            (
+                dy * dy
+            ) /
+            (
+                radiusY *
+                radiusY
+            ) <= 1;
+
+        if (hit) {
             return i;
         }
     }
@@ -205,22 +321,32 @@ function planeHitsTower(room) {
     return 0;
 }
 
-// World-space spawn point for the plane at the start of every round.
-// Placed above AND to the left of both towers (towers start at world
-// y=204 at the earliest, and x=269.5 at the earliest) with plenty of
-// margin so the plane can never spawn inside/touching a tower, and the
-// pilot gets a few seconds of flight time before reaching the city.
+/*
+==================================================
+PLANE SPAWN
+==================================================
+
+Farther left gives the gunner a fair reaction window.
+The plane enters from off-screen above the city.
+*/
+
 const PLANE_SPAWN = {
-    x: -40,
-    y: 120,
-    speed: 2.4
+    x: -150,
+    y: 115,
+    speed: 1.8
 };
+
+/*
+==================================================
+PLAYER
+==================================================
+*/
 
 function createPlayerState(ws) {
     const player = {
         id: randomId(),
 
-        ws: ws,
+        ws,
 
         name: "Player",
 
@@ -250,12 +376,24 @@ function createPlayerState(ws) {
         firing: false
     };
 
-    players.set(player.id, player);
+    players.set(
+        player.id,
+        player
+    );
 
     return player;
 }
 
-function createRoom(player1, player2) {
+/*
+==================================================
+ROOM
+==================================================
+*/
+
+function createRoom(
+    player1,
+    player2
+) {
     const room = {
         id: randomId(),
 
@@ -292,9 +430,11 @@ function createRoom(player1, player2) {
 
             plane: {
                 x: PLANE_SPAWN.x,
+
                 y: PLANE_SPAWN.y,
 
                 vx: PLANE_SPAWN.speed,
+
                 vy: 0,
 
                 speed: PLANE_SPAWN.speed,
@@ -303,7 +443,7 @@ function createRoom(player1, player2) {
 
                 hp: PLANE_MAX_HP,
 
-                planeType: player1.planeType,
+                planeType: "airliner",
 
                 lateralVelocity: 0,
 
@@ -317,7 +457,7 @@ function createRoom(player1, player2) {
                 y: 245
             },
 
-            gun: player2.gun,
+            gun: "mg",
 
             gunnerReady: true,
 
@@ -335,24 +475,45 @@ function createRoom(player1, player2) {
         }
     };
 
-    player1.roomId = room.id;
-    player2.roomId = room.id;
+    player1.roomId =
+        room.id;
 
-    rooms.set(room.id, room);
+    player2.roomId =
+        room.id;
+
+    rooms.set(
+        room.id,
+        room
+    );
 
     return room;
 }
 
-function getPlayerIndex(room, player) {
+/*
+==================================================
+ROLE HELPERS
+==================================================
+*/
+
+function getPlayerIndex(
+    room,
+    player
+) {
     if (!room || !player) {
         return -1;
     }
 
-    if (room.players[0].id === player.id) {
+    if (
+        room.players[0].id ===
+        player.id
+    ) {
         return 0;
     }
 
-    if (room.players[1].id === player.id) {
+    if (
+        room.players[1].id ===
+        player.id
+    ) {
         return 1;
     }
 
@@ -360,13 +521,21 @@ function getPlayerIndex(room, player) {
 }
 
 function getPilot(room) {
-    if (!room) return null;
+    if (!room) {
+        return null;
+    }
 
-    if (room.players[0].id === room.state.pilotId) {
+    if (
+        room.players[0].id ===
+        room.state.pilotId
+    ) {
         return room.players[0];
     }
 
-    if (room.players[1].id === room.state.pilotId) {
+    if (
+        room.players[1].id ===
+        room.state.pilotId
+    ) {
         return room.players[1];
     }
 
@@ -374,131 +543,214 @@ function getPilot(room) {
 }
 
 function getGunner(room) {
-    if (!room) return null;
+    if (!room) {
+        return null;
+    }
 
-    if (room.players[0].id === room.state.gunnerId) {
+    if (
+        room.players[0].id ===
+        room.state.gunnerId
+    ) {
         return room.players[0];
     }
 
-    if (room.players[1].id === room.state.gunnerId) {
+    if (
+        room.players[1].id ===
+        room.state.gunnerId
+    ) {
         return room.players[1];
     }
 
     return null;
 }
 
+/*
+==================================================
+PUBLIC STATE
+==================================================
+*/
+
 function publicState(room) {
-    const s = room.state;
+    const s =
+        room.state;
 
     return {
-        phase: s.phase,
+        phase:
+            s.phase,
 
-        round: s.round,
+        round:
+            s.round,
 
         roundWins: {
-            player1: s.roundWins.player1,
-            player2: s.roundWins.player2
+            player1:
+                s.roundWins.player1,
+
+            player2:
+                s.roundWins.player2
         },
 
-        pilotId: s.pilotId || null,
+        pilotId:
+            s.pilotId || null,
 
-        gunnerId: s.gunnerId || null,
+        gunnerId:
+            s.gunnerId || null,
 
-        pilotName: s.pilotName || "",
+        pilotName:
+            s.pilotName || "",
 
-        gunnerName: s.gunnerName || "",
+        gunnerName:
+            s.gunnerName || "",
 
         tower1: {
-            hp: s.tower1.hp
+            hp:
+                s.tower1.hp
         },
 
         tower2: {
-            hp: s.tower2.hp
+            hp:
+                s.tower2.hp
         },
 
         plane: {
-            x: s.plane.x,
-            y: s.plane.y,
+            x:
+                s.plane.x,
 
-            vx: s.plane.vx,
-            vy: s.plane.vy,
+            y:
+                s.plane.y,
 
-            speed: s.plane.speed,
+            vx:
+                s.plane.vx,
 
-            pitch: s.plane.pitch,
+            vy:
+                s.plane.vy,
 
-            hp: s.plane.hp,
+            speed:
+                s.plane.speed,
 
-            planeType: s.plane.planeType,
+            pitch:
+                s.plane.pitch,
 
-            stalled: !!s.plane.stalled,
+            hp:
+                s.plane.hp,
 
-            disabled: !!s.planeDisabled
+            planeType:
+                s.plane.planeType,
+
+            stalled:
+                !!s.plane.stalled,
+
+            disabled:
+                !!s.planeDisabled
         },
 
-        gunTower: s.gunTower,
+        gunTower:
+            s.gunTower,
 
         aim: {
-            x: s.aim.x,
-            y: s.aim.y
+            x:
+                s.aim.x,
+
+            y:
+                s.aim.y
         },
 
-        gun: s.gun,
+        gun:
+            s.gun,
 
-        gunnerReady: !!s.gunnerReady,
+        gunnerReady:
+            !!s.gunnerReady,
 
-        disabledTower: s.disabledTower || 0,
+        disabledTower:
+            s.disabledTower || 0,
 
-        bullets: s.bullets.map(function(bullet) {
-            return {
-                id: bullet.id,
+        bullets:
+            s.bullets.map(
+                function(bullet) {
+                    return {
+                        id:
+                            bullet.id,
 
-                x: bullet.x,
-                y: bullet.y,
+                        x:
+                            bullet.x,
 
-                vx: bullet.vx,
-                vy: bullet.vy
-            };
-        }),
+                        y:
+                            bullet.y,
 
-        winnerName: s.winnerName || "",
+                        vx:
+                            bullet.vx,
 
-        reason: s.reason || ""
+                        vy:
+                            bullet.vy
+                    };
+                }
+            ),
+
+        winnerName:
+            s.winnerName || "",
+
+        reason:
+            s.reason || ""
     };
 }
 
 function sendState(room) {
-    broadcast(room, {
-        type: "state",
-        state: publicState(room)
-    });
+    broadcast(
+        room,
+        {
+            type: "state",
+
+            state:
+                publicState(room)
+        }
+    );
 }
+
+/*
+==================================================
+INITIAL ROLES
+==================================================
+*/
 
 function assignInitialRoles(room) {
     if (!room) return;
 
-    const firstPilot = Math.random() < 0.5;
+    const firstPilot =
+        Math.random() < 0.5;
 
     let pilot;
     let gunner;
 
     if (firstPilot) {
-        pilot = room.players[0];
-        gunner = room.players[1];
+        pilot =
+            room.players[0];
+
+        gunner =
+            room.players[1];
     } else {
-        pilot = room.players[1];
-        gunner = room.players[0];
+        pilot =
+            room.players[1];
+
+        gunner =
+            room.players[0];
     }
 
-    room.state.pilotId = pilot.id;
-    room.state.gunnerId = gunner.id;
+    room.state.pilotId =
+        pilot.id;
 
-    room.state.pilotName = pilot.name;
-    room.state.gunnerName = gunner.name;
+    room.state.gunnerId =
+        gunner.id;
 
-    room.state.plane.planeType = pilot.planeType;
+    room.state.pilotName =
+        pilot.name;
 
-    room.state.gun = gunner.gun;
+    room.state.gunnerName =
+        gunner.name;
+
+    room.state.plane.planeType =
+        pilot.planeType;
+
+    room.state.gun =
+        gunner.gun;
 
     room.state.gunTower = 1;
 
@@ -508,40 +760,64 @@ function assignInitialRoles(room) {
     sendMatchFound(room);
 }
 
+/*
+==================================================
+MATCH FOUND
+==================================================
+*/
+
 function sendMatchFound(room) {
     if (!room) return;
 
-    const s = room.state;
+    const s =
+        room.state;
 
-    for (const player of room.players) {
-        send(player.ws, {
-            type: "matchFound",
+    for (
+        const player of
+        room.players
+    ) {
+        send(
+            player.ws,
+            {
+                type:
+                    "matchFound",
 
-            roomId: room.id,
+                roomId:
+                    room.id,
 
-            role:
-                player.id === s.pilotId
-                    ? "pilot"
-                    : "gunner",
+                role:
+                    player.id ===
+                    s.pilotId
+                        ? "pilot"
+                        : "gunner",
 
-            pilotName: s.pilotName,
+                pilotName:
+                    s.pilotName,
 
-            gunnerName: s.gunnerName,
+                gunnerName:
+                    s.gunnerName,
 
-            round: s.round,
+                round:
+                    s.round,
 
-            planeType: s.plane.planeType,
+                planeType:
+                    s.plane.planeType,
 
-            gun: s.gun,
+                gun:
+                    s.gun,
 
-            // Tells the client exactly how long to run its countdown for,
-            // so the visual countdown and the actual round start always
-            // line up regardless of which flow triggered it (new match,
-            // rematch, or the next round of an ongoing match).
-            startsIn: ROUND_START_DELAY
-        });
+                startsIn:
+                    ROUND_START_DELAY
+            }
+        );
     }
 }
+
+/*
+==================================================
+RESET
+==================================================
+*/
 
 function resetInput(player) {
     if (!player) return;
@@ -560,35 +836,56 @@ function resetInput(player) {
 function resetRound(room) {
     if (!room) return;
 
-    const s = room.state;
+    const s =
+        room.state;
 
-    const pilot = getPilot(room);
-    const gunner = getGunner(room);
+    const pilot =
+        getPilot(room);
 
-    s.tower1.hp = TOWER_MAX_HP;
-    s.tower2.hp = TOWER_MAX_HP;
+    const gunner =
+        getGunner(room);
+
+    s.tower1.hp =
+        TOWER_MAX_HP;
+
+    s.tower2.hp =
+        TOWER_MAX_HP;
 
     s.plane = {
-        x: PLANE_SPAWN.x,
-        y: PLANE_SPAWN.y,
+        x:
+            PLANE_SPAWN.x,
 
-        vx: PLANE_SPAWN.speed,
-        vy: 0,
+        y:
+            PLANE_SPAWN.y,
 
-        speed: PLANE_SPAWN.speed,
+        vx:
+            PLANE_SPAWN.speed,
 
-        pitch: 0,
+        vy:
+            0,
 
-        hp: PLANE_MAX_HP,
+        speed:
+            PLANE_SPAWN.speed,
+
+        pitch:
+            0,
+
+        hp:
+            PLANE_MAX_HP,
 
         planeType:
-            pilot && planeTypes[pilot.planeType]
+            pilot &&
+            planeTypes[
+                pilot.planeType
+            ]
                 ? pilot.planeType
                 : "airliner",
 
-        lateralVelocity: 0,
+        lateralVelocity:
+            0,
 
-        stalled: false
+        stalled:
+            false
     };
 
     s.gunTower = 1;
@@ -599,27 +896,43 @@ function resetRound(room) {
     };
 
     s.gun =
-        gunner && gunTypes[gunner.gun]
+        gunner &&
+        gunTypes[
+            gunner.gun
+        ]
             ? gunner.gun
             : "mg";
 
-    s.gunnerReady = true;
+    s.gunnerReady =
+        true;
 
     s.bullets = [];
 
-    s.towerHitCooldown = 0;
+    s.towerHitCooldown =
+        0;
 
-    s.disabledTower = 0;
+    s.disabledTower =
+        0;
 
-    s.planeDisabled = false;
+    s.planeDisabled =
+        false;
 
-    s.winnerName = "";
+    s.winnerName =
+        "";
 
-    s.reason = "";
+    s.reason =
+        "";
 
-    for (const player of room.players) {
-        resetInput(player);
-        player.lastFire = 0;
+    for (
+        const player of
+        room.players
+    ) {
+        resetInput(
+            player
+        );
+
+        player.lastFire =
+            0;
     }
 }
 
@@ -632,39 +945,78 @@ function startRound(room) {
 
     resetRound(room);
 
-    room.state.phase = "playing";
+    room.state.phase =
+        "playing";
 
     sendState(room);
 }
 
+/*
+==================================================
+ROLE SWITCH
+==================================================
+*/
+
 function switchRoles(room) {
     if (!room) return;
 
-    const s = room.state;
+    const s =
+        room.state;
 
-    const oldPilotId = s.pilotId;
+    const oldPilotId =
+        s.pilotId;
 
-    if (room.players[0].id === oldPilotId) {
-        s.pilotId = room.players[1].id;
-        s.gunnerId = room.players[0].id;
+    if (
+        room.players[0].id ===
+        oldPilotId
+    ) {
+        s.pilotId =
+            room.players[1].id;
+
+        s.gunnerId =
+            room.players[0].id;
     } else {
-        s.pilotId = room.players[0].id;
-        s.gunnerId = room.players[1].id;
+        s.pilotId =
+            room.players[0].id;
+
+        s.gunnerId =
+            room.players[1].id;
     }
 
-    const pilot = getPilot(room);
-    const gunner = getGunner(room);
+    const pilot =
+        getPilot(room);
 
-    s.pilotName = pilot ? pilot.name : "";
+    const gunner =
+        getGunner(room);
 
-    s.gunnerName = gunner ? gunner.name : "";
+    s.pilotName =
+        pilot
+            ? pilot.name
+            : "";
 
-    if (pilot && planeTypes[pilot.planeType]) {
-        s.plane.planeType = pilot.planeType;
+    s.gunnerName =
+        gunner
+            ? gunner.name
+            : "";
+
+    if (
+        pilot &&
+        planeTypes[
+            pilot.planeType
+        ]
+    ) {
+        s.plane.planeType =
+            pilot.planeType;
     }
 
-    if (gunner && gunTypes[gunner.gun]) {
-        s.gun = gunner.gun;
+    if (
+        gunner &&
+        gunTypes[
+            gunner.gun
+        ]
+    ) {
+        s.gun =
+            gunner.gun;
     }
 
     s.gunTower =
@@ -673,124 +1025,253 @@ function switchRoles(room) {
             : 1;
 }
 
-function awardRoundWin(room, winner) {
-    if (!room || !winner) return;
+/*
+==================================================
+ROUND WIN
+==================================================
+*/
 
-    if (room.players[0].id === winner.id) {
+function awardRoundWin(
+    room,
+    winner
+) {
+    if (
+        !room ||
+        !winner
+    ) {
+        return;
+    }
+
+    if (
+        room.players[0].id ===
+        winner.id
+    ) {
         room.state.roundWins.player1++;
     }
 
-    if (room.players[1].id === winner.id) {
+    if (
+        room.players[1].id ===
+        winner.id
+    ) {
         room.state.roundWins.player2++;
     }
 }
 
 function getWinnerOfMatch(room) {
-    if (!room) return null;
+    if (!room) {
+        return null;
+    }
 
-    if (room.state.roundWins.player1 >= 3) {
+    if (
+        room.state.roundWins.player1 >=
+        3
+    ) {
         return room.players[0];
     }
 
-    if (room.state.roundWins.player2 >= 3) {
+    if (
+        room.state.roundWins.player2 >=
+        3
+    ) {
         return room.players[1];
     }
 
     return null;
 }
 
-function finishRound(room, winner, reason) {
+/*
+==================================================
+ROUND FINISH
+==================================================
+*/
+
+function finishRound(
+    room,
+    winner,
+    reason
+) {
     if (!room) return;
 
-    if (room.state.phase !== "playing") {
+    if (
+        room.state.phase !==
+        "playing"
+    ) {
         return;
     }
 
-    const s = room.state;
+    const s =
+        room.state;
 
-    s.phase = "roundEnd";
+    s.phase =
+        "roundEnd";
 
-    s.winnerName = winner
-        ? winner.name
-        : "";
+    s.winnerName =
+        winner
+            ? winner.name
+            : "";
 
-    s.reason = reason || "";
+    s.reason =
+        reason || "";
 
-    s.planeDisabled = true;
+    s.planeDisabled =
+        true;
 
-    s.plane.vx = 0;
-    s.plane.vy = 0;
-    s.plane.speed = 0;
+    s.plane.vx =
+        0;
 
-    for (const player of room.players) {
-        player.firing = false;
-        resetInput(player);
+    s.plane.vy =
+        0;
+
+    s.plane.speed =
+        0;
+
+    for (
+        const player of
+        room.players
+    ) {
+        player.firing =
+            false;
+
+        resetInput(
+            player
+        );
     }
 
-    awardRoundWin(room, winner);
+    awardRoundWin(
+        room,
+        winner
+    );
 
     sendState(room);
 
-    const matchWinner = getWinnerOfMatch(room);
+    const matchWinner =
+        getWinnerOfMatch(room);
 
     if (matchWinner) {
-        setTimeout(function() {
-            if (!rooms.has(room.id)) return;
+        setTimeout(
+            function() {
+                if (
+                    !rooms.has(
+                        room.id
+                    )
+                ) {
+                    return;
+                }
 
-            room.state.phase = "ended";
+                room.state.phase =
+                    "ended";
 
-            room.state.winnerName =
-                matchWinner.name;
+                room.state.winnerName =
+                    matchWinner.name;
 
-            room.state.reason =
-                "Match complete";
+                room.state.reason =
+                    "Match complete";
 
-            sendState(room);
-        }, ROUND_END_DISPLAY_MS);
+                sendState(room);
+            },
+            ROUND_END_DISPLAY_MS
+        );
 
         return;
     }
 
-    setTimeout(function() {
-        if (!rooms.has(room.id)) {
-            return;
-        }
-
-        room.state.round++;
-
-        switchRoles(room);
-
-        room.state.phase = "waiting";
-
-        resetRound(room);
-
-        sendMatchFound(room);
-        sendState(room);
-
-        setTimeout(function() {
-            if (!rooms.has(room.id)) {
+    setTimeout(
+        function() {
+            if (
+                !rooms.has(
+                    room.id
+                )
+            ) {
                 return;
             }
 
-            startRound(room);
-        }, ROUND_START_DELAY);
-    }, ROUND_END_DISPLAY_MS);
+            room.state.round++;
+
+            switchRoles(
+                room
+            );
+
+            room.state.phase =
+                "waiting";
+
+            resetRound(
+                room
+            );
+
+            sendMatchFound(
+                room
+            );
+
+            sendState(
+                room
+            );
+
+            setTimeout(
+                function() {
+                    if (
+                        !rooms.has(
+                            room.id
+                        )
+                    ) {
+                        return;
+                    }
+
+                    startRound(
+                        room
+                    );
+                },
+                ROUND_START_DELAY
+            );
+        },
+        ROUND_END_DISPLAY_MS
+    );
 }
 
-function updatePlane(room, dt) {
-    const s = room.state;
+/*
+==================================================
+PLANE MOVEMENT
+==================================================
 
-    const pilot = getPilot(room);
+IMPORTANT FIX:
 
-    if (!pilot || s.planeDisabled) {
+Old system:
+vx = speed + lateralVelocity
+
+That meant pressing A/D changed forward speed.
+
+New system:
+forward movement and steering are separate.
+
+A/D = horizontal steering
+W/S = vertical movement
+Space = braking
+*/
+
+function updatePlane(
+    room,
+    dt
+) {
+    const s =
+        room.state;
+
+    const pilot =
+        getPilot(room);
+
+    if (
+        !pilot ||
+        s.planeDisabled
+    ) {
         return;
     }
 
     const type =
-        planeTypes[s.plane.planeType] ||
+        planeTypes[
+            s.plane.planeType
+        ] ||
         planeTypes.airliner;
 
-    const input = pilot.input;
+    const input =
+        pilot.input;
 
     const verticalInput =
         (input.down ? 1 : 0) -
@@ -800,10 +1281,16 @@ function updatePlane(room, dt) {
         (input.right ? 1 : 0) -
         (input.left ? 1 : 0);
 
+    /*
+    ------------------------------------------
+    ENGINE SPEED
+    ------------------------------------------
+    */
+
     if (input.brake) {
         s.plane.speed -=
             type.braking *
-            1.35 *
+            1.15 *
             dt;
     } else {
         s.plane.speed +=
@@ -811,77 +1298,118 @@ function updatePlane(room, dt) {
             dt;
     }
 
-    s.plane.speed = clamp(
-        s.plane.speed,
-        1.8,
-        type.maxSpeed
-    );
-
-    const targetVy =
-        verticalInput * 6.2;
-
-    // Lerp factor controls how quickly the plane responds to stick input.
-    // Bumped up so the controls feel immediate rather than floaty.
-    s.plane.vy +=
-        (targetVy - s.plane.vy) *
-        Math.min(
-            1,
-            dt * 9
+    s.plane.speed =
+        clamp(
+            s.plane.speed,
+            1.65,
+            type.maxSpeed
         );
 
-    s.plane.vy = clamp(
-        s.plane.vy,
-        -6.8,
-        6.8
-    );
+    /*
+    ------------------------------------------
+    VERTICAL MOVEMENT
+    ------------------------------------------
+    */
 
-    if (
-        s.plane.lateralVelocity ===
-        undefined
-    ) {
-        s.plane.lateralVelocity = 0;
-    }
+    const targetVy =
+        verticalInput *
+        type.climb;
+
+    s.plane.vy +=
+        (
+            targetVy -
+            s.plane.vy
+        ) *
+        Math.min(
+            1,
+            dt * 10
+        );
+
+    s.plane.vy =
+        clamp(
+            s.plane.vy,
+            -3.2,
+            3.2
+        );
+
+    /*
+    ------------------------------------------
+    HORIZONTAL STEERING
+    ------------------------------------------
+    */
 
     const maxSide =
-        Math.min(
-            5.2,
-            type.turn / 42
+        clamp(
+            type.turn / 80,
+            0.9,
+            2.7
         );
 
     const targetLateral =
-        horizontalInput * maxSide;
+        horizontalInput *
+        maxSide;
 
     s.plane.lateralVelocity +=
-        (targetLateral -
-            s.plane.lateralVelocity) *
+        (
+            targetLateral -
+            s.plane.lateralVelocity
+        ) *
         Math.min(
             1,
-            dt * 12
+            dt * 14
         );
 
     s.plane.lateralVelocity =
         clamp(
             s.plane.lateralVelocity,
-            -5.5,
-            5.5
+            -3.0,
+            3.0
         );
+
+    /*
+    ------------------------------------------
+    ACTUAL MOVEMENT
+    ------------------------------------------
+    */
+
+    const forwardSpeed =
+        s.plane.speed *
+        60;
+
+    const sideSpeed =
+        s.plane.lateralVelocity *
+        60;
+
+    const verticalSpeed =
+        s.plane.vy *
+        60;
 
     s.plane.vx =
         s.plane.speed +
         s.plane.lateralVelocity;
 
     s.plane.x +=
-        s.plane.vx *
-        60 *
+        (
+            forwardSpeed +
+            sideSpeed
+        ) *
         dt;
 
     s.plane.y +=
-        s.plane.vy *
-        60 *
+        verticalSpeed *
         dt;
 
-    if (s.plane.y < 65) {
-        s.plane.y = 65;
+    /*
+    ------------------------------------------
+    WORLD BOUNDS
+    ------------------------------------------
+    */
+
+    if (
+        s.plane.y < 60
+    ) {
+        s.plane.y =
+            60;
 
         s.plane.vy =
             Math.max(
@@ -890,8 +1418,11 @@ function updatePlane(room, dt) {
             );
     }
 
-    if (s.plane.y > 430) {
-        s.plane.y = 430;
+    if (
+        s.plane.y > 430
+    ) {
+        s.plane.y =
+            430;
 
         s.plane.vy =
             Math.min(
@@ -900,43 +1431,72 @@ function updatePlane(room, dt) {
             );
     }
 
+    /*
+    ------------------------------------------
+    PITCH
+    ------------------------------------------
+    */
+
     const targetPitch =
-        s.plane.vy * 7.5 +
-        s.plane.lateralVelocity * 2.8;
+        s.plane.vy * 8 +
+        s.plane.lateralVelocity * 3;
 
     s.plane.pitch +=
-        (targetPitch -
-            s.plane.pitch) *
+        (
+            targetPitch -
+            s.plane.pitch
+        ) *
         Math.min(
             1,
-            dt * 8
+            dt * 9
         );
 
     s.plane.pitch =
         clamp(
             s.plane.pitch,
-            -38,
-            38
+            -35,
+            35
         );
+
+    /*
+    ------------------------------------------
+    STALL
+    ------------------------------------------
+    */
 
     s.plane.stalled =
         s.plane.speed <=
         type.maxSpeed *
         type.stall;
 
+    /*
+    ------------------------------------------
+    WRAP
+    ------------------------------------------
+    */
+
     if (
         s.plane.x >
-        WORLD_WIDTH + 80
+        WORLD_WIDTH + 100
     ) {
-        s.plane.x = -70;
+        s.plane.x =
+            -100;
     }
 
     if (
-        s.plane.x < -80
+        s.plane.x <
+        -150
     ) {
-        s.plane.x = -70;
+        s.plane.x =
+            -100;
     }
 }
+
+/*
+==================================================
+BULLET COLLISION
+==================================================
+*/
 
 function segmentDistanceToPoint(
     x1,
@@ -946,8 +1506,11 @@ function segmentDistanceToPoint(
     px,
     py
 ) {
-    const dx = x2 - x1;
-    const dy = y2 - y1;
+    const dx =
+        x2 - x1;
+
+    const dy =
+        y2 - y1;
 
     if (
         dx === 0 &&
@@ -961,24 +1524,27 @@ function segmentDistanceToPoint(
         );
     }
 
-    const t = clamp(
-        (
-            (px - x1) * dx +
-            (py - y1) * dy
-        ) /
-        (
-            dx * dx +
-            dy * dy
-        ),
-        0,
-        1
-    );
+    const t =
+        clamp(
+            (
+                (px - x1) * dx +
+                (py - y1) * dy
+            ) /
+            (
+                dx * dx +
+                dy * dy
+            ),
+            0,
+            1
+        );
 
     const cx =
-        x1 + dx * t;
+        x1 +
+        dx * t;
 
     const cy =
-        y1 + dy * t;
+        y1 +
+        dy * t;
 
     return distance(
         cx,
@@ -988,6 +1554,12 @@ function segmentDistanceToPoint(
     );
 }
 
+/*
+==================================================
+SHOT RESULT
+==================================================
+*/
+
 function sendShotResult(
     player,
     shotId,
@@ -995,30 +1567,47 @@ function sendShotResult(
     damage,
     hp
 ) {
-    if (!player) return;
+    if (!player) {
+        return;
+    }
 
-    send(player.ws, {
-        type: "shotResult",
+    send(
+        player.ws,
+        {
+            type:
+                "shotResult",
 
-        shotId: shotId,
+            shotId,
 
-        result: result,
+            result,
 
-        damage:
-            damage || 0,
+            damage:
+                damage || 0,
 
-        hp:
-            hp === undefined
-                ? null
-                : hp
-    });
+            hp:
+                hp === undefined
+                    ? null
+                    : hp
+        }
+    );
 }
 
-function updateBullets(room, dt) {
-    const s = room.state;
+/*
+==================================================
+BULLET UPDATE
+==================================================
+*/
+
+function updateBullets(
+    room,
+    dt
+) {
+    const s =
+        room.state;
 
     for (
-        let i = s.bullets.length - 1;
+        let i =
+            s.bullets.length - 1;
         i >= 0;
         i--
     ) {
@@ -1041,7 +1630,8 @@ function updateBullets(room, dt) {
             60 *
             dt;
 
-        bullet.life -= dt;
+        bullet.life -=
+            dt;
 
         const outOfBounds =
             bullet.x < -150 ||
@@ -1074,6 +1664,19 @@ function updateBullets(room, dt) {
             continue;
         }
 
+        const type =
+            planeTypes[
+                s.plane.planeType
+            ] ||
+            planeTypes.airliner;
+
+        const hitRadius =
+            Math.max(
+                32,
+                type.hitRadius ||
+                    42
+            );
+
         const hitDistance =
             segmentDistanceToPoint(
                 oldX,
@@ -1085,7 +1688,8 @@ function updateBullets(room, dt) {
             );
 
         if (
-            hitDistance <= 42 &&
+            hitDistance <=
+                hitRadius &&
             !s.planeDisabled
         ) {
             s.plane.hp -=
@@ -1110,17 +1714,25 @@ function updateBullets(room, dt) {
                 s.plane.hp
             );
 
-            broadcast(room, {
-                type: "impact",
+            broadcast(
+                room,
+                {
+                    type:
+                        "impact",
 
-                x: s.plane.x,
+                    x:
+                        s.plane.x,
 
-                y: s.plane.y,
+                    y:
+                        s.plane.y,
 
-                damage: bullet.damage,
+                    damage:
+                        bullet.damage,
 
-                hp: s.plane.hp
-            });
+                    hp:
+                        s.plane.hp
+                }
+            );
 
             s.bullets.splice(
                 i,
@@ -1142,7 +1754,16 @@ function updateBullets(room, dt) {
     }
 }
 
-function updateRoom(room, dt) {
+/*
+==================================================
+ROOM UPDATE
+==================================================
+*/
+
+function updateRoom(
+    room,
+    dt
+) {
     if (
         !room ||
         room.state.phase !==
@@ -1164,12 +1785,21 @@ function updateRoom(room, dt) {
             dt;
     }
 
+    /*
+    ------------------------------------------
+    TOWER COLLISION
+    ------------------------------------------
+    */
+
     if (
-        room.state.towerHitCooldown <= 0 &&
+        room.state.towerHitCooldown <=
+            0 &&
         !room.state.planeDisabled
     ) {
         const hitTower =
-            planeHitsTower(room);
+            planeHitsTower(
+                room
+            );
 
         if (
             hitTower !== 0
@@ -1205,6 +1835,12 @@ function updateRoom(room, dt) {
         }
     }
 
+    /*
+    ------------------------------------------
+    GUNNER
+    ------------------------------------------
+    */
+
     const gunner =
         getGunner(room);
 
@@ -1218,6 +1854,12 @@ function updateRoom(room, dt) {
             true
         );
     }
+
+    /*
+    ------------------------------------------
+    BULLETS
+    ------------------------------------------
+    */
 
     updateBullets(
         room,
@@ -1247,12 +1889,21 @@ function updateRoom(room, dt) {
     sendState(room);
 }
 
+/*
+==================================================
+FIRE GUN
+==================================================
+*/
+
 function fireGun(
     room,
     player,
     automatic
 ) {
-    if (!room || !player) {
+    if (
+        !room ||
+        !player
+    ) {
         return false;
     }
 
@@ -1271,7 +1922,9 @@ function fireGun(
     }
 
     const gun =
-        gunTypes[player.gun] ||
+        gunTypes[
+            player.gun
+        ] ||
         gunTypes.mg;
 
     const now =
@@ -1285,38 +1938,49 @@ function fireGun(
         return false;
     }
 
-    let towerX =
+    const towerX =
         room.state.gunTower === 1
             ? 347
             : 652;
 
-    let towerY = 245;
+    const towerY =
+        245;
 
     let targetX =
-        Number(room.state.aim.x);
+        Number(
+            room.state.aim.x
+        );
 
     let targetY =
-        Number(room.state.aim.y);
+        Number(
+            room.state.aim.y
+        );
 
     if (
-        !Number.isFinite(targetX)
+        !Number.isFinite(
+            targetX
+        )
     ) {
         targetX =
             towerX + 100;
     }
 
     if (
-        !Number.isFinite(targetY)
+        !Number.isFinite(
+            targetY
+        )
     ) {
         targetY =
             towerY;
     }
 
     let dx =
-        targetX - towerX;
+        targetX -
+        towerX;
 
     let dy =
-        targetY - towerY;
+        targetY -
+        towerY;
 
     let len =
         Math.sqrt(
@@ -1351,13 +2015,17 @@ function fireGun(
         dy * 42;
 
     room.state.bullets.push({
-        id: bulletId,
+        id:
+            bulletId,
 
-        ownerId: player.id,
+        ownerId:
+            player.id,
 
-        x: startX,
+        x:
+            startX,
 
-        y: startY,
+        y:
+            startY,
 
         vx:
             dx *
@@ -1370,40 +2038,62 @@ function fireGun(
         damage:
             gun.damage,
 
-        life: 2.5
+        life:
+            2.5
     });
 
     room.state.gunnerReady =
         false;
 
-    send(player.ws, {
-        type: "shotFired",
+    send(
+        player.ws,
+        {
+            type:
+                "shotFired",
 
-        shotId: bulletId,
+            shotId:
+                bulletId,
 
-        x: startX,
+            x:
+                startX,
 
-        y: startY,
+            y:
+                startY,
 
-        vx:
-            dx *
-            gun.bulletSpeed,
+            vx:
+                dx *
+                gun.bulletSpeed,
 
-        vy:
-            dy *
-            gun.bulletSpeed
-    });
+            vy:
+                dy *
+                gun.bulletSpeed
+        }
+    );
 
     return true;
 }
 
-function removeFromQueue(player) {
-    if (!player) return;
+/*
+==================================================
+QUEUE
+==================================================
+*/
+
+function removeFromQueue(
+    player
+) {
+    if (!player) {
+        return;
+    }
 
     const index =
-        queue.indexOf(player);
+        queue.indexOf(
+            player
+        );
 
-    if (index !== -1) {
+    if (
+        index !== -1
+    ) {
         queue.splice(
             index,
             1
@@ -1411,12 +2101,20 @@ function removeFromQueue(player) {
     }
 }
 
-function joinQueue(player) {
-    if (!player) return;
+function joinQueue(
+    player
+) {
+    if (!player) {
+        return;
+    }
 
-    removeFromQueue(player);
+    removeFromQueue(
+        player
+    );
 
-    if (player.roomId) {
+    if (
+        player.roomId
+    ) {
         return;
     }
 
@@ -1428,14 +2126,20 @@ function joinQueue(player) {
         return;
     }
 
-    queue.push(player);
+    queue.push(
+        player
+    );
 
-    send(player.ws, {
-        type: "queue",
+    send(
+        player.ws,
+        {
+            type:
+                "queue",
 
-        position:
-            queue.length
-    });
+            position:
+                queue.length
+        }
+    );
 
     tryCreateMatch();
 }
@@ -1489,13 +2193,17 @@ function tryCreateMatch() {
             player1.roomId ||
             player2.roomId
         ) {
-            if (!player1.roomId) {
+            if (
+                !player1.roomId
+            ) {
                 queue.unshift(
                     player1
                 );
             }
 
-            if (!player2.roomId) {
+            if (
+                !player2.roomId
+            ) {
                 queue.unshift(
                     player2
                 );
@@ -1510,39 +2218,50 @@ function tryCreateMatch() {
                 player2
             );
 
-        // assignInitialRoles() sends "matchFound" (with startsIn) to both
-        // players immediately. The client starts its countdown the moment
-        // it receives that message, and we start the actual round after
-        // exactly ROUND_START_DELAY so the two always line up.
         assignInitialRoles(
             room
         );
 
-        setTimeout(function() {
-            if (
-                !rooms.has(
-                    room.id
-                )
-            ) {
-                return;
-            }
+        setTimeout(
+            function() {
+                if (
+                    !rooms.has(
+                        room.id
+                    )
+                ) {
+                    return;
+                }
 
-            if (
-                room.players[0].ws.readyState !==
-                    WebSocket.OPEN ||
-                room.players[1].ws.readyState !==
-                    WebSocket.OPEN
-            ) {
-                return;
-            }
+                if (
+                    room.players[0].ws.readyState !==
+                        WebSocket.OPEN ||
+                    room.players[1].ws.readyState !==
+                        WebSocket.OPEN
+                ) {
+                    return;
+                }
 
-            startRound(room);
-        }, ROUND_START_DELAY);
+                startRound(
+                    room
+                );
+            },
+            ROUND_START_DELAY
+        );
     }
 }
 
-function leaveRoom(player) {
-    if (!player) return;
+/*
+==================================================
+LEAVE ROOM
+==================================================
+*/
+
+function leaveRoom(
+    player
+) {
+    if (!player) {
+        return;
+    }
 
     if (!player.roomId) {
         return;
@@ -1554,7 +2273,9 @@ function leaveRoom(player) {
         );
 
     if (!room) {
-        player.roomId = null;
+        player.roomId =
+            null;
+
         return;
     }
 
@@ -1565,29 +2286,49 @@ function leaveRoom(player) {
             : room.players[0];
 
     if (other) {
-        other.roomId = null;
+        other.roomId =
+            null;
 
-        other.firing = false;
+        other.firing =
+            false;
 
-        resetInput(other);
+        resetInput(
+            other
+        );
 
-        send(other.ws, {
-            type: "opponentLeft"
-        });
+        send(
+            other.ws,
+            {
+                type:
+                    "opponentLeft"
+            }
+        );
     }
 
     rooms.delete(
         room.id
     );
 
-    player.roomId = null;
+    player.roomId =
+        null;
 
-    player.firing = false;
+    player.firing =
+        false;
 
-    resetInput(player);
+    resetInput(
+        player
+    );
 }
 
-function sanitizeName(value) {
+/*
+==================================================
+NAME
+==================================================
+*/
+
+function sanitizeName(
+    value
+) {
     let name =
         String(
             value ||
@@ -1607,11 +2348,18 @@ function sanitizeName(value) {
             );
 
     if (!name) {
-        name = "Player";
+        name =
+            "Player";
     }
 
     return name;
 }
+
+/*
+==================================================
+MESSAGE HANDLER
+==================================================
+*/
 
 function handleMessage(
     player,
@@ -1626,6 +2374,12 @@ function handleMessage(
         return;
     }
 
+    /*
+    ------------------------------------------
+    NAME
+    ------------------------------------------
+    */
+
     if (
         message.type ===
         "setName"
@@ -1635,15 +2389,25 @@ function handleMessage(
                 message.name
             );
 
-        send(player.ws, {
-            type: "nameSet",
+        send(
+            player.ws,
+            {
+                type:
+                    "nameSet",
 
-            name:
-                player.name
-        });
+                name:
+                    player.name
+            }
+        );
 
         return;
     }
+
+    /*
+    ------------------------------------------
+    PLANE SELECTION
+    ------------------------------------------
+    */
 
     if (
         message.type ===
@@ -1678,6 +2442,12 @@ function handleMessage(
         return;
     }
 
+    /*
+    ------------------------------------------
+    GUN SELECTION
+    ------------------------------------------
+    */
+
     if (
         message.type ===
         "selectGun"
@@ -1711,6 +2481,12 @@ function handleMessage(
         return;
     }
 
+    /*
+    ------------------------------------------
+    QUEUE
+    ------------------------------------------
+    */
+
     if (
         message.type ===
         "queue"
@@ -1732,6 +2508,12 @@ function handleMessage(
         return;
     }
 
+    /*
+    ------------------------------------------
+    CANCEL QUEUE
+    ------------------------------------------
+    */
+
     if (
         message.type ===
         "cancelQueue"
@@ -1740,12 +2522,22 @@ function handleMessage(
             player
         );
 
-        send(player.ws, {
-            type: "left"
-        });
+        send(
+            player.ws,
+            {
+                type:
+                    "left"
+            }
+        );
 
         return;
     }
+
+    /*
+    ------------------------------------------
+    PILOT INPUT
+    ------------------------------------------
+    */
 
     if (
         message.type ===
@@ -1792,6 +2584,12 @@ function handleMessage(
 
         return;
     }
+
+    /*
+    ------------------------------------------
+    GUNNER AIM
+    ------------------------------------------
+    */
 
     if (
         message.type ===
@@ -1857,6 +2655,12 @@ function handleMessage(
         return;
     }
 
+    /*
+    ------------------------------------------
+    FIRE
+    ------------------------------------------
+    */
+
     if (
         message.type ===
         "fire"
@@ -1897,6 +2701,12 @@ function handleMessage(
         return;
     }
 
+    /*
+    ------------------------------------------
+    STOP FIRE
+    ------------------------------------------
+    */
+
     if (
         message.type ===
         "stopFire"
@@ -1906,6 +2716,12 @@ function handleMessage(
 
         return;
     }
+
+    /*
+    ------------------------------------------
+    REMATCH
+    ------------------------------------------
+    */
 
     if (
         message.type ===
@@ -1935,7 +2751,9 @@ function handleMessage(
         room.state.phase =
             "waiting";
 
-        resetRound(room);
+        resetRound(
+            room
+        );
 
         assignInitialRoles(
             room
@@ -1945,22 +2763,31 @@ function handleMessage(
             room
         );
 
-        setTimeout(function() {
-            if (
-                !rooms.has(
-                    room.id
-                )
-            ) {
-                return;
-            }
+        setTimeout(
+            function() {
+                if (
+                    !rooms.has(
+                        room.id
+                    )
+                ) {
+                    return;
+                }
 
-            startRound(
-                room
-            );
-        }, ROUND_START_DELAY);
+                startRound(
+                    room
+                );
+            },
+            ROUND_START_DELAY
+        );
 
         return;
     }
+
+    /*
+    ------------------------------------------
+    LEAVE
+    ------------------------------------------
+    */
 
     if (
         message.type ===
@@ -1974,13 +2801,23 @@ function handleMessage(
             player
         );
 
-        send(player.ws, {
-            type: "left"
-        });
+        send(
+            player.ws,
+            {
+                type:
+                    "left"
+            }
+        );
 
         return;
     }
 }
+
+/*
+==================================================
+HTTP SERVER
+==================================================
+*/
 
 const server =
     http.createServer(
@@ -2164,9 +3001,15 @@ const server =
         }
     );
 
+/*
+==================================================
+WEBSOCKET
+==================================================
+*/
+
 const wss =
     new WebSocket.Server({
-        server: server
+        server
     });
 
 wss.on(
@@ -2182,12 +3025,16 @@ wss.on(
             player.id
         );
 
-        send(ws, {
-            type: "connected",
+        send(
+            ws,
+            {
+                type:
+                    "connected",
 
-            playerId:
-                player.id
-        });
+                playerId:
+                    player.id
+            }
+        );
 
         ws.on(
             "message",
@@ -2245,13 +3092,20 @@ wss.on(
     }
 );
 
+/*
+==================================================
+GAME LOOP
+==================================================
+*/
+
 setInterval(
     function() {
         const dt =
             TICK_MS / 1000;
 
         for (
-            const room of rooms.values()
+            const room of
+            rooms.values()
         ) {
             if (
                 room.state.phase ===
@@ -2301,6 +3155,12 @@ setInterval(
     TICK_MS
 );
 
+/*
+==================================================
+START
+==================================================
+*/
+
 server.listen(
     PORT,
     "0.0.0.0",
@@ -2312,6 +3172,10 @@ server.listen(
 
         console.log(
             "WebSocket multiplayer is ready."
+        );
+
+        console.log(
+            "Balanced plane and gun settings loaded."
         );
     }
 );
