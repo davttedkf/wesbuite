@@ -505,6 +505,19 @@ button:active{
  background:#8e2730
 }
 
+#crosshair{position:absolute;width:34px;height:34px;margin-left:-17px;margin-top:-17px;z-index:14;pointer-events:none;opacity:0}
+#crosshair:before,#crosshair:after{content:"";position:absolute;background:#fff;box-shadow:0 0 5px #000}
+#crosshair:before{left:15px;top:0;width:4px;height:34px}
+#crosshair:after{left:0;top:15px;width:34px;height:4px}
+#crosshair.active{opacity:1}
+#combatMessage{position:absolute;left:50%;top:22%;transform:translateX(-50%);z-index:18;padding:9px 15px;background:rgba(8,13,24,.88);border:3px solid #fff;font-size:18px;font-weight:bold;text-shadow:2px 2px #000;opacity:0;pointer-events:none}
+#combatMessage.show{animation:combatMsg .55s ease-out forwards}
+#combatMessage.hit{color:#76ff8a;border-color:#76ff8a}
+#combatMessage.miss{color:#ff8d8d;border-color:#ff8d8d}
+#combatMessage.fire{color:#fff2a1;border-color:#fff2a1}
+@keyframes combatMsg{0%{opacity:0;transform:translate(-50%,8px) scale(.85)}20%{opacity:1;transform:translate(-50%,0) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-12px) scale(1.05)}}
+#flightStatus{position:absolute;left:50%;bottom:92px;transform:translateX(-50%);z-index:16;padding:7px 12px;background:rgba(10,16,28,.72);border:2px solid rgba(255,255,255,.75);font-size:13px;font-weight:bold;text-shadow:2px 2px #000;pointer-events:none}
+#gunStatus{font-size:11px;margin-top:4px;font-weight:bold}
 #effects{
  position:absolute;
  inset:0;
@@ -602,8 +615,67 @@ button:active{
 .bullet{position:absolute!important;width:18px!important;height:6px!important;border-radius:3px!important;background:#fff2a1!important;border:2px solid #ff8d35!important;box-shadow:0 0 8px #ffd65a,0 0 16px rgba(255,125,45,.7)!important;z-index:15!important;pointer-events:none!important}
 .bullet:before{content:"";position:absolute;right:100%;top:0;width:18px;height:2px;background:linear-gradient(90deg,transparent,#ffd65a)}
 .mobileBtn{touch-action:none;border-radius:12px;box-shadow:4px 4px 0 rgba(0,0,0,.45)}
-.fire{border-radius:50%;background:#a52e35;box-shadow:0 5px 0 #57151a}
+.fire{border-radius:50%;background:#a52e35;box-shadow:0 5px 0 #57151a}.brake{background:#3b5575;font-size:11px}
 @media(max-width:700px){.tower{height:58%}.tower.left{left:22%;width:19%}.tower.right{left:59%;width:19%}.building{width:13%!important}}
+
+/* POLISHED PIXEL PLANES */
+#plane{width:118px;height:58px;image-rendering:pixelated;transform-origin:50% 50%;filter:drop-shadow(6px 7px 0 rgba(0,0,0,.3))}
+#plane *{position:absolute;box-sizing:border-box}
+#plane .plane-shadow{left:20px;top:43px;width:76px;height:7px;background:rgba(10,25,40,.22);filter:blur(2px)}
+#plane .body{left:12px;top:23px;width:82px;height:15px;background:#e8edf2;border:3px solid #172333;border-radius:2px;box-shadow:inset 0 -4px #aebdca,inset 0 3px #fff}
+#plane .nose{left:91px;top:25px;width:20px;height:11px;background:#dce5ec;border:3px solid #172333;clip-path:polygon(0 0,100% 50%,0 100%);z-index:6}
+#plane .wing{background:#aabac8;border:3px solid #172333;z-index:1}
+#plane .wing-main{left:38px;top:12px;width:55px;height:34px;clip-path:polygon(0 50%,100% 0,78% 100%,34% 67%);background:#c9d4de}
+#plane .wing-back{left:21px;top:30px;width:45px;height:22px;clip-path:polygon(0 30%,100% 0,72% 100%,20% 80%);background:#93a5b5}
+#plane .tail{left:17px;top:17px;width:25px;height:20px;background:#91a4b5;border:3px solid #172333;clip-path:polygon(0 100%,40% 0,100% 0,75% 100%);z-index:2}
+#plane .tail-fin{left:16px;top:8px;width:21px;height:22px;background:#647d92;border:3px solid #172333;clip-path:polygon(0 100%,45% 0,100% 0,78% 100%);z-index:3}
+#plane .cockpit{left:75px;top:20px;width:18px;height:9px;background:#4e91b5;border:2px solid #172333;clip-path:polygon(0 100%,20% 0,100% 0,100% 100%);z-index:7}
+#plane .windows{left:43px;top:25px;width:27px;height:7px;background:repeating-linear-gradient(90deg,#3e718e 0 5px,#8dc1d6 5px 8px);border-bottom:2px solid #172333;z-index:7}
+#plane .stripe{left:13px;top:32px;width:79px;height:5px;background:#e54b4b;z-index:8;opacity:.9}
+#plane .engine{width:17px;height:10px;background:#465768;border:3px solid #172333;z-index:6}
+#plane .engine-top{left:48px;top:38px}.engine-bottom{left:70px;top:39px}
+#plane .firetrail{left:-28px;top:26px;width:32px;height:10px;background:linear-gradient(90deg,transparent,#ffea6b 25%,#ff9b32 65%,#ff3d25);box-shadow:0 0 10px #ff9b32;z-index:0;clip-path:polygon(100% 0,100% 100%,0 70%,25% 50%,0 30%)}
+#plane.plane-small{width:108px;height:50px}
+#plane.plane-small .body{left:15px;top:21px;width:73px;height:13px}
+#plane.plane-small .nose{left:84px;top:23px;width:18px;height:10px}
+#plane.plane-small .wing-main{left:39px;top:10px;width:46px;height:30px}
+#plane.plane-small .wing-back{left:25px;top:29px;width:38px;height:19px}
+#plane.plane-small .windows{display:none}
+#plane.plane-small .stripe{left:16px;top:29px;width:70px;background:#54a7e8}
+#plane.plane-small .engine-top{left:47px;top:34px;width:14px;height:8px}
+#plane.plane-small .engine-bottom{left:65px;top:34px;width:14px;height:8px}
+#plane.plane-large{width:128px;height:64px}
+#plane.plane-large .body{left:8px;top:24px;width:93px;height:17px}
+#plane.plane-large .nose{left:98px;top:26px;width:24px;height:13px}
+#plane.plane-large .wing-main{left:39px;top:8px;width:67px;height:39px}
+#plane.plane-large .wing-back{left:20px;top:35px;width:53px;height:25px}
+#plane.plane-large .windows{left:42px;top:27px;width:39px;height:8px}
+#plane.plane-large .stripe{left:10px;top:35px;width:90px;background:#4f75d8}
+#plane.plane-large .engine{width:19px;height:11px}
+#plane.plane-large .engine-top{left:52px;top:40px}.plane-large .engine-bottom{left:78px;top:40px}
+#plane.plane-cargo .body{background:#d5d9dd;border-radius:1px}
+#plane.plane-cargo .stripe{background:#e0a62d;height:7px}
+#plane.plane-cargo .cockpit{background:#6f8c9c}
+#plane.plane-cargo .windows{display:none}
+#plane.plane-cargo .tail-fin{background:#d08a25}
+#plane.plane-fighter{width:110px;height:52px}
+#plane.plane-fighter .body{left:14px;top:22px;width:73px;height:12px;background:#657484}
+#plane.plane-fighter .nose{left:82px;top:23px;width:25px;height:10px;background:#788898;clip-path:polygon(0 0,100% 50%,0 100%)}
+#plane.plane-fighter .wing-main{left:39px;top:8px;width:51px;height:31px;background:#526272;clip-path:polygon(0 52%,100% 0,75% 100%,28% 65%)}
+#plane.plane-fighter .wing-back{left:23px;top:30px;width:38px;height:17px;background:#465564}
+#plane.plane-fighter .tail-fin{background:#394856}
+#plane.plane-fighter .tail{background:#4c5e70}
+#plane.plane-fighter .cockpit{left:67px;top:19px;width:20px;height:9px;background:#5fd0e9}
+#plane.plane-fighter .windows{display:none}
+#plane.plane-fighter .stripe{left:16px;top:29px;width:71px;background:#5ed0df}
+#plane.plane-fighter .engine{background:#29343f;width:14px;height:9px}
+#plane.plane-fighter .engine-top{left:50px;top:34px}.plane-fighter .engine-bottom{left:67px;top:34px}
+#plane.plane-fighter .firetrail{height:7px;top:25px}
+#plane.stalled{animation:planeShake .14s infinite alternate}
+@keyframes planeShake{from{margin-top:-1px}to{margin-top:2px}}
+#plane.disabled .firetrail{display:none}
+#plane.disabled .body,#plane.disabled .wing,#plane.disabled .tail,#plane.disabled .tail-fin{filter:grayscale(1) brightness(.65)}
+
 </style>
 </head>
 
@@ -700,11 +772,19 @@ button:active{
    </div>
   </div>
 
-  <div id="plane">
+  <div id="plane" class="plane-airliner">
    <div class="firetrail"></div>
+   <div class="plane-shadow"></div>
+   <div class="wing wing-main"></div>
+   <div class="wing wing-back"></div>
+   <div class="engine engine-top"></div>
+   <div class="engine engine-bottom"></div>
    <div class="tail"></div>
-   <div class="wing"></div>
+   <div class="tail-fin"></div>
    <div class="body"></div>
+   <div class="cockpit"></div>
+   <div class="windows"></div>
+   <div class="stripe"></div>
    <div class="nose"></div>
   </div>
 
@@ -714,7 +794,12 @@ button:active{
    <div class="barrel"></div>
   </div>
 
+  <div id="crosshair"></div>
+
  </div>
+
+ <div id="combatMessage"></div>
+ <div id="flightStatus">FLIGHT: READY</div>
 
  <div id="effects"></div>
 
@@ -740,6 +825,7 @@ button:active{
   <div class="hudbox">
    <div id="gunnerLabel">GUNNER</div>
    <div id="gunLabel">GUN</div>
+   <div id="gunStatus">READY</div>
 
    <div class="bar">
     <div id="gunBar"></div>
@@ -788,6 +874,11 @@ button:active{
    class="mobileBtn fire"
    id="mobileFire"
   >FIRE</button>
+
+  <button
+   class="mobileBtn brake"
+   data-key="brake"
+  >BRAKE</button>
 
   <div class="mobileGroup">
    <button
@@ -925,6 +1016,9 @@ let fireTimer = null;
 let audioStarted = false;
 let lastTowerHP = [100,100];
 let lastPlaneHP = 100;
+let lastRound = 1;
+let lastDisabledTower = 0;
+let messageTimer = null;
 
 const planeNames = {
  small:"Small Jet", airliner:"Airliner", large:"Large Airliner", cargo:"Cargo Plane", fighter:"Fighter Jet"
@@ -1014,6 +1108,18 @@ function connect(){
    show("matchScreen");
    return;
   }
+
+  if(msg.type==="shotFired"){
+   if(myRole==="Gunner"){muzzleFlash(msg.x,msg.y);showCombat("FIRING","fire");}
+   return;
+  }
+  if(msg.type==="shotResult"){
+   if(myRole!=="Gunner") return;
+   if(msg.result==="hit") showCombat("HIT  -"+(msg.damage||0)+" HP","hit");
+   else showCombat("MISS","miss");
+   return;
+  }
+  if(msg.type==="impact"){hitSpark(msg.x,msg.y);return;}
 
   if(msg.type==="state"){
    state=msg.state;
@@ -1145,62 +1251,39 @@ setInterval(()=>{
 },40);
 
 function aim(e){
- if(myRole!=="Gunner") return;
- if(!state || state.phase!=="playing") return;
+ if(myRole!=="Gunner" || !state || state.phase!=="playing") return;
  const r=$("game").getBoundingClientRect();
  const x=Math.max(0,Math.min(1000,(e.clientX-r.left)/r.width*1000));
  const y=Math.max(0,Math.min(600,(e.clientY-r.top)/r.height*600));
  send({type:"aim",x,y});
+ const c=$("crosshair");
+ c.style.left=(e.clientX-r.left)+"px";c.style.top=(e.clientY-r.top)+"px";c.classList.add("active");
 }
 
-$("game").addEventListener("pointermove",aim);
+let aimingTouch=false;
+$("game").addEventListener("pointermove",e=>{if(myRole==="Gunner" && (aimingTouch || e.pointerType==="mouse")) aim(e);});
 
 function startFiring(){
  if(myRole!=="Gunner" || firing) return;
- firing=true;
- send({type:"fire"});
- fireTimer=setInterval(()=>{
-  if(myRole==="Gunner" && state && state.phase==="playing") send({type:"fire"});
-  else stopFiring();
- },35);
+ firing=true;showCombat("FIRING","fire");send({type:"fire"});
+ fireTimer=setInterval(()=>{if(myRole==="Gunner" && state && state.phase==="playing") send({type:"fire"});else stopFiring();},35);
 }
-
 function stopFiring(){
  if(!firing) return;
- firing=false;
- if(fireTimer){clearInterval(fireTimer);fireTimer=null;}
- send({type:"stopFire"});
+ firing=false;if(fireTimer){clearInterval(fireTimer);fireTimer=null;}send({type:"stopFire"});
 }
-
 $("game").addEventListener("pointerdown",e=>{
  if(myRole!=="Gunner" || e.target.closest("button")) return;
- startFiring();
- aim(e);
+ aimingTouch=true;aim(e);startFiring();
 });
-window.addEventListener("pointerup",stopFiring);
-window.addEventListener("pointercancel",stopFiring);
+window.addEventListener("pointerup",()=>{aimingTouch=false;stopFiring();});
+window.addEventListener("pointercancel",()=>{aimingTouch=false;stopFiring();});
 $("mobileFire").addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();startFiring();});
-
-let aimingTouch=false;
-$("game").addEventListener("pointerdown",e=>{
- if(myRole!=="Gunner" || e.target.closest("button")) return;
- aimingTouch=true;
- aim(e);
-});
-$("game").addEventListener("pointermove",e=>{
- if(myRole!=="Gunner" || !aimingTouch) return;
- aim(e);
-});
-window.addEventListener("pointerup",()=>{aimingTouch=false;});
-window.addEventListener("pointercancel",()=>{aimingTouch=false;});
+$("mobileFire").addEventListener("pointerup",e=>{e.preventDefault();e.stopPropagation();stopFiring();});
 
 document.querySelectorAll(".mobileBtn[data-key]").forEach(btn=>{
  const k=btn.dataset.key;
- const set=v=>{
-  if(myRole!=="Pilot") return;
-  keys[k]=v;
-  send({type:"input",input:keys});
- };
+ const set=v=>{if(myRole!=="Pilot") return;keys[k]=v;send({type:"input",input:keys});};
  btn.addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();set(true);});
  btn.addEventListener("pointerup",e=>{e.preventDefault();e.stopPropagation();set(false);});
  btn.addEventListener("pointercancel",()=>set(false));
@@ -1213,72 +1296,27 @@ function worldToScreenY(y){return y/600*innerHeight;}
 
 function render(s){
  state=s;
- const t1=s.tower1||{hp:100};
- const t2=s.tower2||{hp:100};
- const rw=s.roundWins||{player1:0,player2:0};
-
- $("tower1HP").style.width=pct(t1.hp);
- $("tower2HP").style.width=pct(t2.hp);
- $("planeBar").firstElementChild.style.width=pct(s.plane.hp);
- $("gunBar").style.width=s.gunnerReady?"100%":"25%";
-
- $("tower1Name").textContent="TOWER 1";
- $("tower2Name").textContent="TOWER 2";
- $("roundText").textContent=`ROUND ${s.round} · ${rw.player1} - ${rw.player2}`;
- $("pilotLabel").textContent=`PILOT: ${s.pilotName||""}`;
- $("gunnerLabel").textContent=`GUNNER: ${s.gunnerName||""}`;
- $("gunLabel").textContent=gunNames[s.gun]||"GUN";
-
- $("tower1").classList.toggle("destroyed",t1.hp<=0);
- $("tower2").classList.toggle("destroyed",t2.hp<=0);
- $("tower1").classList.toggle("disabled",s.disabledTower===1);
- $("tower2").classList.toggle("disabled",s.disabledTower===2);
-
- const px=worldToScreenX(s.plane.x), py=worldToScreenY(s.plane.y);
- $("plane").style.left=(px-39)+"px";
- $("plane").style.top=(py-15)+"px";
- $("plane").style.transform=`rotate(${s.plane.pitch}deg)`;
- $("plane").classList.toggle("stalled",!!s.plane.stalled);
- $("plane").classList.toggle("disabled",!!s.plane.disabled);
-
- const towerX=s.gunTower===1?347:652;
- const tx=worldToScreenX(towerX), ty=worldToScreenY(245);
- $("turret").style.left=(tx-30)+"px";
- $("turret").style.top=(ty-45)+"px";
- const angle=Math.atan2(s.aim.y-245,s.aim.x-towerX)*180/Math.PI;
- $("turret .barrel").style.transform=`rotate(${angle}deg)`;
-
- renderBullets(s.bullets||[]);
- detectHits(s);
+ const t1=s.tower1||{hp:100},t2=s.tower2||{hp:100},rw=s.roundWins||{player1:0,player2:0};
+ $("tower1HP").style.width=pct(t1.hp);$("tower2HP").style.width=pct(t2.hp);$("planeBar").firstElementChild.style.width=pct(s.plane.hp);$("gunBar").style.width=s.gunnerReady?"100%":"18%";
+ $("tower1Name").textContent=s.disabledTower===1?"TOWER 1 · DISABLED":"TOWER 1";$("tower2Name").textContent=s.disabledTower===2?"TOWER 2 · DISABLED":"TOWER 2";
+ $("roundText").textContent=`ROUND ${s.round} · ${rw.player1} - ${rw.player2}`;$("pilotLabel").textContent=`PILOT: ${s.pilotName||""}`;$("gunnerLabel").textContent=`GUNNER: ${s.gunnerName||""}`;$("gunLabel").textContent=gunNames[s.gun]||"GUN";$("gunStatus").textContent=s.gunnerReady?"● READY":"● RELOADING";
+ $("tower1").classList.toggle("destroyed",t1.hp<=0);$("tower2").classList.toggle("destroyed",t2.hp<=0);$("tower1").classList.toggle("disabled",s.disabledTower===1);$("tower2").classList.toggle("disabled",s.disabledTower===2);
+ const px=worldToScreenX(s.plane.x),py=worldToScreenY(s.plane.y);const planeEl=$("plane");planeEl.style.left=(px-59)+"px";planeEl.style.top=(py-29)+"px";planeEl.style.transform=`rotate(${s.plane.pitch}deg)`;planeEl.classList.remove("plane-small","plane-airliner","plane-large","plane-cargo","plane-fighter");planeEl.classList.add("plane-"+(s.plane.planeType||"airliner"));planeEl.classList.toggle("stalled",!!s.plane.stalled);planeEl.classList.toggle("disabled",!!s.plane.disabled);
+ const speed=Math.round((s.plane.speed||0)*20);let flight="CRUISE";if(s.plane.disabled)flight="DISABLED";else if(s.plane.stalled)flight="STALL WARNING";else if(speed<65)flight="LOW SPEED";else if(speed>150)flight="HIGH SPEED";$("flightStatus").textContent=`FLIGHT: ${flight} · SPEED ${speed}`;
+ const towerX=s.gunTower===1?347:652,tx=worldToScreenX(towerX),ty=worldToScreenY(245);$("turret").style.left=(tx-30)+"px";$("turret").style.top=(ty-45)+"px";const angle=Math.atan2(s.aim.y-245,s.aim.x-towerX)*180/Math.PI;$("turret .barrel").style.transform=`rotate(${angle}deg)`;
+ renderBullets(s.bullets||[]);detectHits(s);
 }
-
 function renderBullets(bullets){
  const active=new Set();
- bullets.forEach(b=>{
-  const id=String(b.id);
-  active.add(id);
-  let el=document.querySelector(`.bullet[data-id="${CSS.escape(id)}"]`);
-  if(!el){
-   el=document.createElement("div");
-   el.className="bullet";
-   el.dataset.id=id;
-   $("arena").appendChild(el);
-  }
-  el.style.left=(worldToScreenX(b.x)-6)+"px";
-  el.style.top=(worldToScreenY(b.y)-2)+"px";
-  el.style.transform=`rotate(${Math.atan2(b.vy,b.vx)*180/Math.PI}deg)`;
- });
- document.querySelectorAll(".bullet").forEach(el=>{if(!active.has(String(el.dataset.id))) el.remove();});
+ bullets.forEach(b=>{const id=String(b.id);active.add(id);let el=document.querySelector(`.bullet[data-id="${CSS.escape(id)}"]`);if(!el){el=document.createElement("div");el.className="bullet";el.dataset.id=id;$("arena").appendChild(el);}const angle=Math.atan2(b.vy||0,b.vx||1)*180/Math.PI;el.style.left=(worldToScreenX(b.x)-9)+"px";el.style.top=(worldToScreenY(b.y)-3)+"px";el.style.transform=`rotate(${angle}deg)`;});
+ document.querySelectorAll(".bullet").forEach(el=>{if(!active.has(String(el.dataset.id)))el.remove();});
 }
-
 function detectHits(s){
- if(s.disabledTower===1 && lastTowerHP[0]===100) effectAt(347,390);
- if(s.disabledTower===2 && lastTowerHP[1]===100) effectAt(652,390);
+ if(s.disabledTower && s.disabledTower!==lastDisabledTower) effectAt(s.disabledTower===1?347:652,390);
  if(s.plane.hp<lastPlaneHP) effectAt(s.plane.x,s.plane.y);
- lastTowerHP=[s.disabledTower===1?0:s.tower1.hp,s.disabledTower===2?0:s.tower2.hp];
- lastPlaneHP=s.plane.hp;
+ if(s.round!==lastRound){showCombat("ROUND "+s.round,"fire");lastRound=s.round;}
+ lastPlaneHP=s.plane.hp;lastDisabledTower=s.disabledTower||0;
 }
-
 function effectAt(x,y){
  const e=$("effects"),px=worldToScreenX(x),py=worldToScreenY(y);
  const flash=document.createElement("div");
