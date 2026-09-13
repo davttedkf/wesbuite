@@ -1,12 +1,12 @@
 {
-"name": "pixel-sky-crash",
-"version": "2.0.0",
-"description": "Pixel Sky Crash 1v1 multiplayer game",
-"main": "server.js",
-"scripts": {
-"start": "node server.js"
-},
-"dependencies": {
-"ws": "^8.18.0"
-}
+  "name": "pixel-sky-crash",
+  "version": "2.0.1",
+  "description": "Pixel Sky Crash 1v1 multiplayer game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
 }
