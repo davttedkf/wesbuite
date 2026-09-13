@@ -30,7 +30,7 @@ const planeTypes = {
         name: "Airliner",
         maxSpeed: 5.5,
         acceleration: 1.8,
-        braking: 3,
+        braking: 3.0,
         turn: 105,
         climb: 100,
         stall: 0.26
@@ -108,14 +108,13 @@ function send(ws, data) {
     try {
         ws.send(JSON.stringify(data));
     } catch (err) {
-        console.error("Send error:", err.message);
+        console.error("WebSocket send error:", err.message);
     }
 }
 
 function broadcast(room, data) {
-    for (const player of room.players) {
-        send(player.ws, data);
-    }
+    send(room.players[0].ws, data);
+    send(room.players[1].ws, data);
 }
 
 function clamp(value, min, max) {
@@ -147,10 +146,37 @@ function towerRect(number) {
     };
 }
 
+function planeHitsTower(room) {
+    const s = room.state;
+    const p = s.plane;
+
+    for (let i = 1; i <= 2; i++) {
+        const tower = towerRect(i);
+
+        const left = tower.x - tower.w / 2;
+        const right = tower.x + tower.w / 2;
+        const top = tower.y - tower.h / 2;
+        const bottom = tower.y + tower.h / 2;
+
+        if (
+            p.x >= left - 18 &&
+            p.x <= right + 18 &&
+            p.y >= top - 20 &&
+            p.y <= bottom
+        ) {
+            return i;
+        }
+    }
+
+    return 0;
+}
+
 function createPlayerState(ws) {
+    const id = randomId();
+
     const player = {
-        id: randomId(),
-        ws,
+        id: id,
+        ws: ws,
 
         name: "Player",
 
@@ -158,6 +184,8 @@ function createPlayerState(ws) {
         gun: "mg",
 
         roomId: null,
+
+        ready: false,
 
         input: {
             up: false,
@@ -175,7 +203,7 @@ function createPlayerState(ws) {
         lastFire: 0
     };
 
-    players.set(player.id, player);
+    players.set(id, player);
 
     return player;
 }
@@ -199,12 +227,6 @@ function createRoom(player1, player2) {
                 player2: 0
             },
 
-            pilotId: null,
-            gunnerId: null,
-
-            pilotName: "",
-            gunnerName: "",
-
             tower1: {
                 hp: TOWER_MAX_HP
             },
@@ -216,12 +238,18 @@ function createRoom(player1, player2) {
             plane: {
                 x: 80,
                 y: 270,
+
                 vx: 4,
                 vy: 0,
+
                 speed: 4,
+
                 pitch: 0,
+
                 hp: PLANE_MAX_HP,
+
                 planeType: player1.planeType,
+
                 stalled: false
             },
 
@@ -246,29 +274,60 @@ function createRoom(player1, player2) {
     player1.roomId = room.id;
     player2.roomId = room.id;
 
+    room.state.plane.planeType = player1.planeType;
+    room.state.gun = player2.gun;
+
     rooms.set(room.id, room);
 
     return room;
 }
 
+function playerIndex(room, player) {
+    if (room.players[0].id === player.id) {
+        return 0;
+    }
+
+    if (room.players[1].id === player.id) {
+        return 1;
+    }
+
+    return -1;
+}
+
 function getPilot(room) {
-    if (!room.state.pilotId) {
+    const s = room.state;
+
+    if (!s.pilotId) {
         return null;
     }
 
-    return room.players.find(
-        p => p.id === room.state.pilotId
-    ) || null;
+    if (room.players[0].id === s.pilotId) {
+        return room.players[0];
+    }
+
+    if (room.players[1].id === s.pilotId) {
+        return room.players[1];
+    }
+
+    return null;
 }
 
 function getGunner(room) {
-    if (!room.state.gunnerId) {
+    const s = room.state;
+
+    if (!s.gunnerId) {
         return null;
     }
 
-    return room.players.find(
-        p => p.id === room.state.gunnerId
-    ) || null;
+    if (room.players[0].id === s.gunnerId) {
+        return room.players[0];
+    }
+
+    if (room.players[1].id === s.gunnerId) {
+        return room.players[1];
+    }
+
+    return null;
 }
 
 function publicState(room) {
@@ -279,16 +338,15 @@ function publicState(room) {
 
         round: s.round,
 
-        roundWins: {
-            player1: s.roundWins.player1,
-            player2: s.roundWins.player2
-        },
+        roundWins: s.roundWins,
 
-        pilotId: s.pilotId,
-        gunnerId: s.gunnerId,
+        pilotId: s.pilotId || null,
 
-        pilotName: s.pilotName,
-        gunnerName: s.gunnerName,
+        gunnerId: s.gunnerId || null,
+
+        pilotName: s.pilotName || "",
+
+        gunnerName: s.gunnerName || "",
 
         tower1: {
             hp: s.tower1.hp
@@ -301,12 +359,18 @@ function publicState(room) {
         plane: {
             x: s.plane.x,
             y: s.plane.y,
+
             vx: s.plane.vx,
             vy: s.plane.vy,
+
             speed: s.plane.speed,
+
             pitch: s.plane.pitch,
+
             hp: s.plane.hp,
+
             planeType: s.plane.planeType,
+
             stalled: s.plane.stalled
         },
 
@@ -321,16 +385,47 @@ function publicState(room) {
 
         gunnerReady: s.gunnerReady,
 
-        bullets: s.bullets.map(b => ({
-            id: b.id,
-            x: b.x,
-            y: b.y
-        })),
+        bullets: s.bullets.map(function(b) {
+            return {
+                id: b.id,
+                x: b.x,
+                y: b.y,
+                vx: b.vx,
+                vy: b.vy
+            };
+        }),
 
-        winnerName: s.winnerName,
-        reason: s.reason
+        winnerName: s.winnerName || "",
+
+        reason: s.reason || ""
     };
 }
+
+/*
+    FIX:
+    The client expects phase, round, plane, towers, etc.
+    directly on the WebSocket message.
+
+    The old version sent:
+
+    {
+        type: "state",
+        state: {
+            phase: ...
+        }
+    }
+
+    The client was looking for msg.phase,
+    so it never saw "playing".
+
+    Now we send:
+
+    {
+        type: "state",
+        phase: "playing",
+        ...
+    }
+*/
 
 function sendState(room) {
     broadcast(room, {
@@ -340,19 +435,21 @@ function sendState(room) {
 }
 
 function assignInitialRoles(room) {
-    const player1 = room.players[0];
-    const player2 = room.players[1];
+    const firstPilot = Math.random() < 0.5;
 
-    if (Math.random() < 0.5) {
-        room.state.pilotId = player1.id;
-        room.state.gunnerId = player2.id;
+    let pilot;
+    let gunner;
+
+    if (firstPilot) {
+        pilot = room.players[0];
+        gunner = room.players[1];
     } else {
-        room.state.pilotId = player2.id;
-        room.state.gunnerId = player1.id;
+        pilot = room.players[1];
+        gunner = room.players[0];
     }
 
-    const pilot = getPilot(room);
-    const gunner = getGunner(room);
+    room.state.pilotId = pilot.id;
+    room.state.gunnerId = gunner.id;
 
     room.state.pilotName = pilot.name;
     room.state.gunnerName = gunner.name;
@@ -360,13 +457,17 @@ function assignInitialRoles(room) {
     room.state.plane.planeType = pilot.planeType;
     room.state.gun = gunner.gun;
 
+    room.state.gunTower = 1;
+
     sendMatchFound(room);
 }
 
 function sendMatchFound(room) {
     const s = room.state;
 
-    for (const player of room.players) {
+    for (let i = 0; i < room.players.length; i++) {
+        const player = room.players[i];
+
         send(player.ws, {
             type: "matchFound",
 
@@ -378,6 +479,7 @@ function sendMatchFound(room) {
                     : "gunner",
 
             pilotName: s.pilotName,
+
             gunnerName: s.gunnerName,
 
             round: s.round,
@@ -440,10 +542,23 @@ function resetRound(room) {
 
     if (pilot) {
         pilot.lastFire = 0;
+
+        pilot.input = {
+            up: false,
+            down: false,
+            left: false,
+            right: false,
+            brake: false
+        };
     }
 
     if (gunner) {
         gunner.lastFire = 0;
+
+        gunner.aim = {
+            x: 650,
+            y: 245
+        };
     }
 }
 
@@ -457,52 +572,48 @@ function startRound(room) {
     resetRound(room);
 
     sendMatchFound(room);
-    sendState(room);
 
-    console.log(
-        "GAME STARTED:",
-        room.players[0].name,
-        "vs",
-        room.players[1].name
-    );
+    sendState(room);
 }
 
 function switchRoles(room) {
-    const oldPilot = room.state.pilotId;
+    const s = room.state;
 
-    if (room.players[0].id === oldPilot) {
-        room.state.pilotId = room.players[1].id;
-        room.state.gunnerId = room.players[0].id;
+    const oldPilotId = s.pilotId;
+
+    if (room.players[0].id === oldPilotId) {
+        s.pilotId = room.players[1].id;
+        s.gunnerId = room.players[0].id;
     } else {
-        room.state.pilotId = room.players[0].id;
-        room.state.gunnerId = room.players[1].id;
+        s.pilotId = room.players[0].id;
+        s.gunnerId = room.players[1].id;
     }
 
     const pilot = getPilot(room);
     const gunner = getGunner(room);
 
-    room.state.pilotName =
+    s.pilotName =
         pilot
             ? pilot.name
             : "";
 
-    room.state.gunnerName =
+    s.gunnerName =
         gunner
             ? gunner.name
             : "";
 
-    room.state.gunTower =
-        room.state.gunTower === 1
+    s.gunTower =
+        s.gunTower === 1
             ? 2
             : 1;
 
     if (pilot) {
-        room.state.plane.planeType =
+        s.plane.planeType =
             pilot.planeType;
     }
 
     if (gunner) {
-        room.state.gun =
+        s.gun =
             gunner.gun;
     }
 }
@@ -514,19 +625,19 @@ function awardRoundWin(room, player) {
 
     if (room.players[0].id === player.id) {
         room.state.roundWins.player1++;
-    }
-
-    if (room.players[1].id === player.id) {
+    } else if (room.players[1].id === player.id) {
         room.state.roundWins.player2++;
     }
 }
 
 function getWinnerOfMatch(room) {
-    if (room.state.roundWins.player1 >= 3) {
+    const wins = room.state.roundWins;
+
+    if (wins.player1 >= 3) {
         return room.players[0];
     }
 
-    if (room.state.roundWins.player2 >= 3) {
+    if (wins.player2 >= 3) {
         return room.players[1];
     }
 
@@ -573,7 +684,7 @@ function finishRound(room, winner, reason) {
 
     sendState(room);
 
-    setTimeout(() => {
+    setTimeout(function() {
         if (!rooms.has(room.id)) {
             return;
         }
@@ -588,12 +699,13 @@ function finishRound(room, winner, reason) {
 
         sendMatchFound(room);
 
-        setTimeout(() => {
+        setTimeout(function() {
             if (!rooms.has(room.id)) {
                 return;
             }
 
             startRound(room);
+
         }, 1200);
 
     }, 2500);
@@ -601,6 +713,7 @@ function finishRound(room, winner, reason) {
 
 function updatePlane(room, dt) {
     const s = room.state;
+
     const pilot = getPilot(room);
 
     if (!pilot) {
@@ -608,8 +721,8 @@ function updatePlane(room, dt) {
     }
 
     const type =
-        planeTypes[s.plane.planeType] ||
-        planeTypes.airliner;
+        planeTypes[s.plane.planeType]
+            || planeTypes.airliner;
 
     const input = pilot.input;
 
@@ -635,11 +748,13 @@ function updatePlane(room, dt) {
 
     s.plane.vy *= 0.94;
 
+    const maxVerticalSpeed = 7;
+
     s.plane.vy =
         clamp(
             s.plane.vy,
-            -7,
-            7
+            -maxVerticalSpeed,
+            maxVerticalSpeed
         );
 
     if (input.brake) {
@@ -693,37 +808,6 @@ function updatePlane(room, dt) {
     }
 }
 
-function planeHitsTower(room) {
-    const p = room.state.plane;
-
-    for (let i = 1; i <= 2; i++) {
-        const tower = towerRect(i);
-
-        const left =
-            tower.x - tower.w / 2;
-
-        const right =
-            tower.x + tower.w / 2;
-
-        const top =
-            tower.y - tower.h / 2;
-
-        const bottom =
-            tower.y + tower.h / 2;
-
-        if (
-            p.x >= left - 18 &&
-            p.x <= right + 18 &&
-            p.y >= top - 20 &&
-            p.y <= bottom
-        ) {
-            return i;
-        }
-    }
-
-    return 0;
-}
-
 function updateBullets(room, dt) {
     const s = room.state;
 
@@ -748,6 +832,7 @@ function updateBullets(room, dt) {
             bullet.y > WORLD_HEIGHT + 100
         ) {
             s.bullets.splice(i, 1);
+
             continue;
         }
 
@@ -767,9 +852,12 @@ function updateBullets(room, dt) {
             if (s.plane.hp <= 0) {
                 s.plane.hp = 0;
 
+                const gunner =
+                    getGunner(room);
+
                 finishRound(
                     room,
-                    getGunner(room),
+                    gunner,
                     "Plane shot down"
                 );
 
@@ -779,26 +867,122 @@ function updateBullets(room, dt) {
     }
 }
 
-function fireGun(room, player) {
-    if (
-        room.state.phase !==
-        "playing"
-    ) {
+function updateRoom(room, dt) {
+    if (room.state.phase !== "playing") {
         return;
     }
 
-    if (
-        player.id !==
-        room.state.gunnerId
-    ) {
+    updatePlane(room, dt);
+
+    const hitTower =
+        planeHitsTower(room);
+
+    if (hitTower !== 0) {
+        if (hitTower === 1) {
+            room.state.tower1.hp -= 25;
+
+            if (room.state.tower1.hp < 0) {
+                room.state.tower1.hp = 0;
+            }
+        }
+
+        if (hitTower === 2) {
+            room.state.tower2.hp -= 25;
+
+            if (room.state.tower2.hp < 0) {
+                room.state.tower2.hp = 0;
+            }
+        }
+
+        if (
+            hitTower === 1 &&
+            room.state.tower1.hp <= 0
+        ) {
+            room.state.gunTower = 2;
+
+            const pilot =
+                getPilot(room);
+
+            finishRound(
+                room,
+                pilot,
+                "Tower destroyed"
+            );
+
+            return;
+        }
+
+        if (
+            hitTower === 2 &&
+            room.state.tower2.hp <= 0
+        ) {
+            room.state.gunTower = 1;
+
+            const pilot =
+                getPilot(room);
+
+            finishRound(
+                room,
+                pilot,
+                "Tower destroyed"
+            );
+
+            return;
+        }
+
+        room.state.plane.x =
+            room.state.plane.x - 30;
+
+        room.state.plane.speed =
+            Math.max(
+                2,
+                room.state.plane.speed * 0.8
+            );
+
+        room.state.plane.vx =
+            room.state.plane.speed;
+    }
+
+    updateBullets(room, dt);
+
+    if (room.state.phase !== "playing") {
+        return;
+    }
+
+    const gunner =
+        getGunner(room);
+
+    if (gunner) {
+        const gun =
+            gunTypes[gunner.gun]
+            || gunTypes.mg;
+
+        const now =
+            Date.now();
+
+        room.state.gunnerReady =
+            now - gunner.lastFire >=
+            gun.cooldown;
+    }
+
+    sendState(room);
+}
+
+function fireGun(room, player) {
+    if (room.state.phase !== "playing") {
+        return;
+    }
+
+    if (player.id !== room.state.gunnerId) {
         return;
     }
 
     const gun =
-        gunTypes[player.gun] ||
-        gunTypes.mg;
+        gunTypes[player.gun]
+        || gunTypes.mg;
 
-    const now = Date.now();
+    const now =
+        Date.now();
 
     if (
         now - player.lastFire <
@@ -816,26 +1000,30 @@ function fireGun(room, player) {
 
     const towerY = 245;
 
+    const aimX =
+        room.state.aim.x;
+
+    const aimY =
+        room.state.aim.y;
+
     let dx =
-        room.state.aim.x -
-        towerX;
+        aimX - towerX;
 
     let dy =
-        room.state.aim.y -
-        towerY;
+        aimY - towerY;
 
-    const len =
+    const length =
         Math.sqrt(
             dx * dx +
             dy * dy
         );
 
-    if (len <= 0) {
+    if (length <= 0) {
         return;
     }
 
-    dx /= len;
-    dy /= len;
+    dx /= length;
+    dy /= length;
 
     room.state.bullets.push({
         id: randomId(),
@@ -855,109 +1043,7 @@ function fireGun(room, player) {
             gun.damage
     });
 
-    room.state.gunnerReady =
-        false;
-
-    sendState(room);
-}
-
-function updateRoom(room, dt) {
-    if (
-        room.state.phase !==
-        "playing"
-    ) {
-        return;
-    }
-
-    updatePlane(room, dt);
-
-    const hitTower =
-        planeHitsTower(room);
-
-    if (hitTower === 1) {
-        room.state.tower1.hp -= 25;
-
-        room.state.tower1.hp =
-            Math.max(
-                0,
-                room.state.tower1.hp
-            );
-
-        room.state.plane.x -= 30;
-
-        room.state.plane.speed =
-            Math.max(
-                2,
-                room.state.plane.speed *
-                0.8
-            );
-
-        if (
-            room.state.tower1.hp <= 0
-        ) {
-            finishRound(
-                room,
-                getPilot(room),
-                "Tower destroyed"
-            );
-
-            return;
-        }
-    }
-
-    if (hitTower === 2) {
-        room.state.tower2.hp -= 25;
-
-        room.state.tower2.hp =
-            Math.max(
-                0,
-                room.state.tower2.hp
-            );
-
-        room.state.plane.x -= 30;
-
-        room.state.plane.speed =
-            Math.max(
-                2,
-                room.state.plane.speed *
-                0.8
-            );
-
-        if (
-            room.state.tower2.hp <= 0
-        ) {
-            finishRound(
-                room,
-                getPilot(room),
-                "Tower destroyed"
-            );
-
-            return;
-        }
-    }
-
-    updateBullets(room, dt);
-
-    if (
-        room.state.phase !==
-        "playing"
-    ) {
-        return;
-    }
-
-    const gunner =
-        getGunner(room);
-
-    if (gunner) {
-        const gun =
-            gunTypes[gunner.gun] ||
-            gunTypes.mg;
-
-        room.state.gunnerReady =
-            Date.now() -
-            gunner.lastFire >=
-            gun.cooldown;
-    }
+    room.state.gunnerReady = false;
 
     sendState(room);
 }
@@ -972,27 +1058,17 @@ function removeFromQueue(player) {
 }
 
 function joinQueue(player) {
-    if (
-        player.roomId
-    ) {
+    removeFromQueue(player);
+
+    if (player.roomId) {
         return;
     }
 
-    removeFromQueue(player);
-
     queue.push(player);
-
-    console.log(
-        "QUEUE:",
-        player.name,
-        "| Players waiting:",
-        queue.length
-    );
 
     send(player.ws, {
         type: "queue",
-        position: queue.length,
-        waiting: true
+        position: queue.length
     });
 
     tryCreateMatch();
@@ -1006,38 +1082,31 @@ function tryCreateMatch() {
         const player2 =
             queue.shift();
 
-        if (!player1 || !player2) {
+        const p1Ok =
+            !!player1 &&
+            player1.ws.readyState ===
+            WebSocket.OPEN;
+
+        const p2Ok =
+            !!player2 &&
+            player2.ws.readyState ===
+            WebSocket.OPEN;
+
+        if (!p1Ok && !p2Ok) {
             continue;
         }
 
-        if (
-            player1.ws.readyState !==
-            WebSocket.OPEN
-        ) {
-            if (
-                player2.ws.readyState ===
-                WebSocket.OPEN
-            ) {
-                queue.unshift(player2);
-            }
+        if (!p1Ok) {
+            queue.unshift(player2);
 
             continue;
         }
 
-        if (
-            player2.ws.readyState !==
-            WebSocket.OPEN
-        ) {
+        if (!p2Ok) {
             queue.unshift(player1);
+
             continue;
         }
-
-        console.log(
-            "MATCH FOUND:",
-            player1.name,
-            "VS",
-            player2.name
-        );
 
         const room =
             createRoom(
@@ -1047,31 +1116,22 @@ function tryCreateMatch() {
 
         assignInitialRoles(room);
 
-        send(
-            player1.ws,
-            {
-                type: "matchWaiting",
-                roomId: room.id,
-                seconds: 3
-            }
-        );
+        send(player1.ws, {
+            type: "matchWaiting"
+        });
 
-        send(
-            player2.ws,
-            {
-                type: "matchWaiting",
-                roomId: room.id,
-                seconds: 3
-            }
-        );
+        send(player2.ws, {
+            type: "matchWaiting"
+        });
 
-        setTimeout(() => {
+        setTimeout(function() {
             if (!rooms.has(room.id)) {
                 return;
             }
 
             startRound(room);
-        }, 3000);
+
+        }, 3200);
     }
 }
 
@@ -1085,33 +1145,26 @@ function leaveRoom(player) {
 
     if (!room) {
         player.roomId = null;
+
         return;
     }
 
     const other =
-        room.players.find(
-            p => p.id !== player.id
-        );
+        room.players[0].id === player.id
+            ? room.players[1]
+            : room.players[0];
 
     if (other) {
-        other.roomId = null;
+        send(other.ws, {
+            type: "opponentLeft"
+        });
 
-        send(
-            other.ws,
-            {
-                type: "opponentLeft"
-            }
-        );
+        other.roomId = null;
     }
 
     rooms.delete(room.id);
 
     player.roomId = null;
-
-    console.log(
-        "ROOM CLOSED:",
-        room.id
-    );
 }
 
 function handleMessage(player, message) {
@@ -1141,45 +1194,61 @@ function handleMessage(player, message) {
 
         player.name = name;
 
-        console.log(
-            "NAME SET:",
-            player.id,
-            "=>",
-            player.name
-        );
-
-        send(
-            player.ws,
-            {
-                type: "nameSet",
-                name: player.name
-            }
-        );
+        send(player.ws, {
+            type: "nameSet",
+            name: player.name
+        });
 
         return;
     }
 
     if (message.type === "selectPlane") {
-        if (
-            planeTypes[
-                message.planeType
-            ]
-        ) {
+        if (planeTypes[message.planeType]) {
             player.planeType =
                 message.planeType;
+        }
+
+        if (player.roomId) {
+            const room =
+                rooms.get(
+                    player.roomId
+                );
+
+            if (room) {
+                if (
+                    room.state.pilotId ===
+                    player.id
+                ) {
+                    room.state.plane.planeType =
+                        player.planeType;
+                }
+            }
         }
 
         return;
     }
 
     if (message.type === "selectGun") {
-        if (
-            gunTypes[
-                message.gun
-            ]
-        ) {
+        if (gunTypes[message.gun]) {
             player.gun =
                 message.gun;
+        }
+
+        if (player.roomId) {
+            const room =
+                rooms.get(
+                    player.roomId
+                );
+
+            if (room) {
+                if (
+                    room.state.gunnerId ===
+                    player.id
+                ) {
+                    room.state.gun =
+                        player.gun;
+                }
+            }
         }
 
         return;
@@ -1187,46 +1256,6 @@ function handleMessage(player, message) {
 
     if (message.type === "queue") {
         joinQueue(player);
-        return;
-    }
-
-    if (message.type === "cancelQueue") {
-        removeFromQueue(player);
-
-        send(
-            player.ws,
-            {
-                type: "left"
-            }
-        );
-
-        return;
-    }
-
-    if (message.type === "leaveRoom") {
-        removeFromQueue(player);
-        leaveRoom(player);
-
-        send(
-            player.ws,
-            {
-                type: "left"
-            }
-        );
-
-        return;
-    }
-
-    if (message.type === "leave") {
-        removeFromQueue(player);
-        leaveRoom(player);
-
-        send(
-            player.ws,
-            {
-                type: "left"
-            }
-        );
 
         return;
     }
@@ -1237,7 +1266,9 @@ function handleMessage(player, message) {
         }
 
         const room =
-            rooms.get(player.roomId);
+            rooms.get(
+                player.roomId
+            );
 
         if (!room) {
             return;
@@ -1251,8 +1282,7 @@ function handleMessage(player, message) {
         }
 
         const input =
-            message.input ||
-            message;
+            message.input || {};
 
         player.input.up =
             !!input.up;
@@ -1278,7 +1308,9 @@ function handleMessage(player, message) {
         }
 
         const room =
-            rooms.get(player.roomId);
+            rooms.get(
+                player.roomId
+            );
 
         if (!room) {
             return;
@@ -1318,6 +1350,12 @@ function handleMessage(player, message) {
                 WORLD_HEIGHT
             );
 
+        player.aim.x =
+            room.state.aim.x;
+
+        player.aim.y =
+            room.state.aim.y;
+
         return;
     }
 
@@ -1327,7 +1365,9 @@ function handleMessage(player, message) {
         }
 
         const room =
-            rooms.get(player.roomId);
+            rooms.get(
+                player.roomId
+            );
 
         if (!room) {
             return;
@@ -1347,7 +1387,9 @@ function handleMessage(player, message) {
         }
 
         const room =
-            rooms.get(player.roomId);
+            rooms.get(
+                player.roomId
+            );
 
         if (!room) {
             return;
@@ -1362,34 +1404,26 @@ function handleMessage(player, message) {
 
         assignInitialRoles(room);
 
-        room.state.phase =
-            "waiting";
-
-        send(
-            room.players[0].ws,
-            {
-                type: "matchWaiting",
-                roomId: room.id,
-                seconds: 1
-            }
-        );
-
-        send(
-            room.players[1].ws,
-            {
-                type: "matchWaiting",
-                roomId: room.id,
-                seconds: 1
-            }
-        );
-
-        setTimeout(() => {
+        setTimeout(function() {
             if (!rooms.has(room.id)) {
                 return;
             }
 
             startRound(room);
+
         }, 1000);
+
+        return;
+    }
+
+    if (message.type === "leave") {
+        removeFromQueue(player);
+
+        leaveRoom(player);
+
+        send(player.ws, {
+            type: "left"
+        });
 
         return;
     }
@@ -1397,16 +1431,14 @@ function handleMessage(player, message) {
 
 const server =
     http.createServer(
-        (req, res) => {
+        function(req, res) {
             let requestPath =
                 req.url || "/";
 
             requestPath =
                 requestPath.split("?")[0];
 
-            if (
-                requestPath === "/"
-            ) {
+            if (requestPath === "/") {
                 requestPath =
                     "/index.html";
             }
@@ -1428,16 +1460,20 @@ const server =
                 )
             ) {
                 res.writeHead(403);
+
                 res.end("Forbidden");
+
                 return;
             }
 
             fs.readFile(
                 filePath,
-                (err, data) => {
+                function(err, data) {
                     if (err) {
                         res.writeHead(404);
+
                         res.end("Not Found");
+
                         return;
                     }
 
@@ -1451,45 +1487,48 @@ const server =
                     ) {
                         contentType =
                             "text/html; charset=utf-8";
-                    }
 
-                    if (
+                    } else if (
                         requestPath.endsWith(
                             ".js"
                         )
                     ) {
                         contentType =
                             "application/javascript; charset=utf-8";
-                    }
 
-                    if (
+                    } else if (
                         requestPath.endsWith(
                             ".css"
                         )
                     ) {
                         contentType =
                             "text/css; charset=utf-8";
-                    }
 
-                    if (
+                    } else if (
                         requestPath.endsWith(
                             ".mp3"
                         )
                     ) {
                         contentType =
                             "audio/mpeg";
-                    }
 
-                    if (
+                    } else if (
+                        requestPath.endsWith(
+                            ".json"
+                        )
+                    ) {
+                        contentType =
+                            "application/json; charset=utf-8";
+
+                    } else if (
                         requestPath.endsWith(
                             ".png"
                         )
                     ) {
                         contentType =
                             "image/png";
-                    }
 
-                    if (
+                    } else if (
                         requestPath.endsWith(
                             ".jpg"
                         ) ||
@@ -1499,9 +1538,8 @@ const server =
                     ) {
                         contentType =
                             "image/jpeg";
-                    }
 
-                    if (
+                    } else if (
                         requestPath.endsWith(
                             ".svg"
                         )
@@ -1510,13 +1548,10 @@ const server =
                             "image/svg+xml";
                     }
 
-                    res.writeHead(
-                        200,
-                        {
-                            "Content-Type":
-                                contentType
-                        }
-                    );
+                    res.writeHead(200, {
+                        "Content-Type":
+                            contentType
+                    });
 
                     res.end(data);
                 }
@@ -1526,31 +1561,28 @@ const server =
 
 const wss =
     new WebSocket.Server({
-        server
+        server: server
     });
 
 wss.on(
     "connection",
-    ws => {
+    function(ws) {
         const player =
             createPlayerState(ws);
 
         console.log(
-            "PLAYER CONNECTED:",
+            "Player connected:",
             player.id
         );
 
-        send(
-            ws,
-            {
-                type: "connected",
-                playerId: player.id
-            }
-        );
+        send(ws, {
+            type: "connected",
+            playerId: player.id
+        });
 
         ws.on(
             "message",
-            raw => {
+            function(raw) {
                 try {
                     const message =
                         JSON.parse(
@@ -1561,9 +1593,10 @@ wss.on(
                         player,
                         message
                     );
+
                 } catch (err) {
                     console.error(
-                        "MESSAGE ERROR:",
+                        "Message error:",
                         err.message
                     );
                 }
@@ -1572,10 +1605,10 @@ wss.on(
 
         ws.on(
             "close",
-            () => {
+            function() {
                 console.log(
-                    "PLAYER DISCONNECTED:",
-                    player.name
+                    "Player disconnected:",
+                    player.id
                 );
 
                 removeFromQueue(
@@ -1594,9 +1627,9 @@ wss.on(
 
         ws.on(
             "error",
-            err => {
+            function(err) {
                 console.error(
-                    "WEBSOCKET ERROR:",
+                    "WebSocket error:",
                     err.message
                 );
             }
@@ -1605,9 +1638,12 @@ wss.on(
 );
 
 setInterval(
-    () => {
+    function() {
+        const now =
+            Date.now();
+
         rooms.forEach(
-            room => {
+            function(room) {
                 if (
                     room.state.phase ===
                     "playing"
@@ -1619,6 +1655,27 @@ setInterval(
                 }
             }
         );
+
+        if (
+            now % 10000 <
+            TICK_RATE
+        ) {
+            rooms.forEach(
+                function(room) {
+                    if (
+                        room.players[0].ws.readyState !==
+                            WebSocket.OPEN &&
+                        room.players[1].ws.readyState !==
+                            WebSocket.OPEN
+                    ) {
+                        rooms.delete(
+                            room.id
+                        );
+                    }
+                }
+            );
+        }
+
     },
     TICK_MS
 );
@@ -1626,22 +1683,10 @@ setInterval(
 server.listen(
     PORT,
     "0.0.0.0",
-    () => {
+    function() {
         console.log(
-            "================================="
-        );
-
-        console.log(
-            "PIXEL SKY CRASH SERVER ONLINE"
-        );
-
-        console.log(
-            "PORT:",
+            "Pixel Sky Crash server running on port " +
             PORT
-        );
-
-        console.log(
-            "================================="
         );
     }
 );
