@@ -25,7 +25,6 @@ const planeTypes = {
         climb: 145,
         stall: 0.32
     },
-
     airliner: {
         name: "Airliner",
         maxSpeed: 5.5,
@@ -35,7 +34,6 @@ const planeTypes = {
         climb: 100,
         stall: 0.26
     },
-
     large: {
         name: "Large Airliner",
         maxSpeed: 4.7,
@@ -45,7 +43,6 @@ const planeTypes = {
         climb: 82,
         stall: 0.23
     },
-
     cargo: {
         name: "Cargo Plane",
         maxSpeed: 4.2,
@@ -55,7 +52,6 @@ const planeTypes = {
         climb: 70,
         stall: 0.21
     },
-
     fighter: {
         name: "Fighter Jet",
         maxSpeed: 10,
@@ -74,14 +70,12 @@ const gunTypes = {
         cooldown: 110,
         bulletSpeed: 13
     },
-
     heavy: {
         name: "Heavy MG",
         damage: 10,
         cooldown: 240,
         bulletSpeed: 12
     },
-
     rapid: {
         name: "Rapid MG",
         damage: 3,
@@ -100,10 +94,7 @@ function randomId() {
 
 function send(ws, data) {
     if (!ws) return;
-
-    if (ws.readyState !== WebSocket.OPEN) {
-        return;
-    }
+    if (ws.readyState !== WebSocket.OPEN) return;
 
     try {
         ws.send(JSON.stringify(data));
@@ -177,14 +168,10 @@ function createPlayerState(ws) {
     const player = {
         id: id,
         ws: ws,
-
         name: "Player",
-
         planeType: "airliner",
         gun: "mg",
-
         roomId: null,
-
         ready: false,
 
         input: {
@@ -243,7 +230,6 @@ function createRoom(player1, player2) {
                 vy: 0,
 
                 speed: 4,
-
                 pitch: 0,
 
                 hp: PLANE_MAX_HP,
@@ -265,6 +251,8 @@ function createRoom(player1, player2) {
             gunnerReady: true,
 
             bullets: [],
+
+            towerHitCooldown: 0,
 
             winnerName: "",
             reason: ""
@@ -341,11 +329,9 @@ function publicState(room) {
         roundWins: s.roundWins,
 
         pilotId: s.pilotId || null,
-
         gunnerId: s.gunnerId || null,
 
         pilotName: s.pilotName || "",
-
         gunnerName: s.gunnerName || "",
 
         tower1: {
@@ -359,18 +345,12 @@ function publicState(room) {
         plane: {
             x: s.plane.x,
             y: s.plane.y,
-
             vx: s.plane.vx,
             vy: s.plane.vy,
-
             speed: s.plane.speed,
-
             pitch: s.plane.pitch,
-
             hp: s.plane.hp,
-
             planeType: s.plane.planeType,
-
             stalled: s.plane.stalled
         },
 
@@ -389,48 +369,19 @@ function publicState(room) {
             return {
                 id: b.id,
                 x: b.x,
-                y: b.y,
-                vx: b.vx,
-                vy: b.vy
+                y: b.y
             };
         }),
 
         winnerName: s.winnerName || "",
-
         reason: s.reason || ""
     };
 }
 
-/*
-    FIX:
-    The client expects phase, round, plane, towers, etc.
-    directly on the WebSocket message.
-
-    The old version sent:
-
-    {
-        type: "state",
-        state: {
-            phase: ...
-        }
-    }
-
-    The client was looking for msg.phase,
-    so it never saw "playing".
-
-    Now we send:
-
-    {
-        type: "state",
-        phase: "playing",
-        ...
-    }
-*/
-
 function sendState(room) {
     broadcast(room, {
         type: "state",
-        ...publicState(room)
+        state: publicState(room)
     });
 }
 
@@ -473,19 +424,14 @@ function sendMatchFound(room) {
 
             roomId: room.id,
 
-            role:
-                player.id === s.pilotId
-                    ? "pilot"
-                    : "gunner",
+            role: player.id === s.pilotId ? "pilot" : "gunner",
 
             pilotName: s.pilotName,
-
             gunnerName: s.gunnerName,
 
             round: s.round,
 
             planeType: s.plane.planeType,
-
             gun: s.gun
         });
     }
@@ -508,15 +454,13 @@ function resetRound(room) {
         vy: 0,
 
         speed: 4,
-
         pitch: 0,
 
         hp: PLANE_MAX_HP,
 
-        planeType:
-            pilot
-                ? pilot.planeType
-                : "airliner",
+        planeType: pilot
+            ? pilot.planeType
+            : "airliner",
 
         stalled: false
     };
@@ -528,21 +472,17 @@ function resetRound(room) {
         y: 245
     };
 
-    s.gun =
-        gunner
-            ? gunner.gun
-            : "mg";
+    s.gun = gunner
+        ? gunner.gun
+        : "mg";
 
     s.gunnerReady = true;
 
     s.bullets = [];
 
-    s.winnerName = "";
-    s.reason = "";
+    s.towerHitCooldown = 0;
 
     if (pilot) {
-        pilot.lastFire = 0;
-
         pilot.input = {
             up: false,
             down: false,
@@ -553,12 +493,24 @@ function resetRound(room) {
     }
 
     if (gunner) {
-        gunner.lastFire = 0;
-
-        gunner.aim = {
-            x: 650,
-            y: 245
+        gunner.input = {
+            up: false,
+            down: false,
+            left: false,
+            right: false,
+            brake: false
         };
+    }
+
+    s.winnerName = "";
+    s.reason = "";
+
+    if (pilot) {
+        pilot.lastFire = 0;
+    }
+
+    if (gunner) {
+        gunner.lastFire = 0;
     }
 }
 
@@ -572,7 +524,6 @@ function startRound(room) {
     resetRound(room);
 
     sendMatchFound(room);
-
     sendState(room);
 }
 
@@ -592,29 +543,24 @@ function switchRoles(room) {
     const pilot = getPilot(room);
     const gunner = getGunner(room);
 
-    s.pilotName =
-        pilot
-            ? pilot.name
-            : "";
+    s.pilotName = pilot
+        ? pilot.name
+        : "";
 
-    s.gunnerName =
-        gunner
-            ? gunner.name
-            : "";
+    s.gunnerName = gunner
+        ? gunner.name
+        : "";
 
-    s.gunTower =
-        s.gunTower === 1
-            ? 2
-            : 1;
+    s.gunTower = s.gunTower === 1
+        ? 2
+        : 1;
 
     if (pilot) {
-        s.plane.planeType =
-            pilot.planeType;
+        s.plane.planeType = pilot.planeType;
     }
 
     if (gunner) {
-        s.gun =
-            gunner.gun;
+        s.gun = gunner.gun;
     }
 }
 
@@ -655,27 +601,21 @@ function finishRound(room, winner, reason) {
 
     room.state.phase = "roundEnd";
 
-    room.state.winnerName =
-        winner
-            ? winner.name
-            : "";
+    room.state.winnerName = winner
+        ? winner.name
+        : "";
 
-    room.state.reason =
-        reason || "";
+    room.state.reason = reason || "";
 
     awardRoundWin(room, winner);
 
-    const matchWinner =
-        getWinnerOfMatch(room);
+    const matchWinner = getWinnerOfMatch(room);
 
     if (matchWinner) {
         room.state.phase = "ended";
 
-        room.state.winnerName =
-            matchWinner.name;
-
-        room.state.reason =
-            "Match complete";
+        room.state.winnerName = matchWinner.name;
+        room.state.reason = "Match complete";
 
         sendState(room);
 
@@ -705,15 +645,12 @@ function finishRound(room, winner, reason) {
             }
 
             startRound(room);
-
         }, 1200);
-
     }, 2500);
 }
 
 function updatePlane(room, dt) {
     const s = room.state;
-
     const pilot = getPilot(room);
 
     if (!pilot) {
@@ -721,41 +658,36 @@ function updatePlane(room, dt) {
     }
 
     const type =
-        planeTypes[s.plane.planeType]
-            || planeTypes.airliner;
+        planeTypes[s.plane.planeType] ||
+        planeTypes.airliner;
 
     const input = pilot.input;
 
-    if (input.up) {
-        s.plane.vy -=
-            type.climb * dt;
-    }
+    const verticalInput =
+        (input.down ? 1 : 0) -
+        (input.up ? 1 : 0);
 
-    if (input.down) {
+    const horizontalInput =
+        (input.right ? 1 : 0) -
+        (input.left ? 1 : 0);
+
+    if (verticalInput !== 0) {
         s.plane.vy +=
-            type.climb * dt;
+            verticalInput *
+            type.climb *
+            dt;
     }
 
-    if (input.left) {
-        s.plane.vy -=
-            type.turn * 0.45 * dt;
-    }
+    s.plane.vy *= Math.pow(
+        0.82,
+        dt * 30
+    );
 
-    if (input.right) {
-        s.plane.vy +=
-            type.turn * 0.45 * dt;
-    }
-
-    s.plane.vy *= 0.94;
-
-    const maxVerticalSpeed = 7;
-
-    s.plane.vy =
-        clamp(
-            s.plane.vy,
-            -maxVerticalSpeed,
-            maxVerticalSpeed
-        );
+    s.plane.vy = clamp(
+        s.plane.vy,
+        -7,
+        7
+    );
 
     if (input.brake) {
         s.plane.speed -=
@@ -765,35 +697,44 @@ function updatePlane(room, dt) {
             type.acceleration * dt;
     }
 
-    s.plane.speed =
-        clamp(
-            s.plane.speed,
-            1.5,
-            type.maxSpeed
-        );
+    s.plane.speed = clamp(
+        s.plane.speed,
+        1.5,
+        type.maxSpeed
+    );
 
-    s.plane.vx =
-        s.plane.speed;
+    const steering =
+        horizontalInput *
+        (type.turn / 70);
+
+    s.plane.vx = clamp(
+        s.plane.speed + steering,
+        -2.5,
+        type.maxSpeed + 4
+    );
 
     s.plane.x +=
-        s.plane.vx * 60 * dt;
+        s.plane.vx *
+        60 *
+        dt;
 
     s.plane.y +=
-        s.plane.vy * 60 * dt;
+        s.plane.vy *
+        60 *
+        dt;
 
-    s.plane.y =
-        clamp(
-            s.plane.y,
-            85,
-            425
-        );
+    s.plane.y = clamp(
+        s.plane.y,
+        85,
+        425
+    );
 
-    s.plane.pitch =
-        clamp(
-            s.plane.vy * 8,
-            -45,
-            45
-        );
+    s.plane.pitch = clamp(
+        s.plane.vy * 8 +
+        horizontalInput * 8,
+        -45,
+        45
+    );
 
     s.plane.stalled =
         s.plane.speed <=
@@ -804,7 +745,8 @@ function updatePlane(room, dt) {
     }
 
     if (s.plane.x < -60) {
-        s.plane.x = -45;
+        s.plane.x =
+            WORLD_WIDTH + 45;
     }
 }
 
@@ -816,14 +758,17 @@ function updateBullets(room, dt) {
         i >= 0;
         i--
     ) {
-        const bullet =
-            s.bullets[i];
+        const bullet = s.bullets[i];
 
         bullet.x +=
-            bullet.vx * 60 * dt;
+            bullet.vx *
+            60 *
+            dt;
 
         bullet.y +=
-            bullet.vy * 60 * dt;
+            bullet.vy *
+            60 *
+            dt;
 
         if (
             bullet.x < -100 ||
@@ -832,7 +777,6 @@ function updateBullets(room, dt) {
             bullet.y > WORLD_HEIGHT + 100
         ) {
             s.bullets.splice(i, 1);
-
             continue;
         }
 
@@ -874,8 +818,14 @@ function updateRoom(room, dt) {
 
     updatePlane(room, dt);
 
+    if (room.state.towerHitCooldown > 0) {
+        room.state.towerHitCooldown -= dt;
+    }
+
     const hitTower =
-        planeHitsTower(room);
+        room.state.towerHitCooldown <= 0
+            ? planeHitsTower(room)
+            : 0;
 
     if (hitTower !== 0) {
         if (hitTower === 1) {
@@ -940,7 +890,12 @@ function updateRoom(room, dt) {
             );
 
         room.state.plane.vx =
-            room.state.plane.speed;
+            Math.max(
+                1,
+                room.state.plane.speed
+            );
+
+        room.state.towerHitCooldown = 0.8;
     }
 
     updateBullets(room, dt);
@@ -949,16 +904,14 @@ function updateRoom(room, dt) {
         return;
     }
 
-    const gunner =
-        getGunner(room);
+    const gunner = getGunner(room);
 
     if (gunner) {
         const gun =
-            gunTypes[gunner.gun]
-            || gunTypes.mg;
+            gunTypes[gunner.gun] ||
+            gunTypes.mg;
 
-        const now =
-            Date.now();
+        const now = Date.now();
 
         room.state.gunnerReady =
             now - gunner.lastFire >=
@@ -978,11 +931,10 @@ function fireGun(room, player) {
     }
 
     const gun =
-        gunTypes[player.gun]
-        || gunTypes.mg;
+        gunTypes[player.gun] ||
+        gunTypes.mg;
 
-    const now =
-        Date.now();
+    const now = Date.now();
 
     if (
         now - player.lastFire <
@@ -1000,11 +952,8 @@ function fireGun(room, player) {
 
     const towerY = 245;
 
-    const aimX =
-        room.state.aim.x;
-
-    const aimY =
-        room.state.aim.y;
+    const aimX = room.state.aim.x;
+    const aimY = room.state.aim.y;
 
     let dx =
         aimX - towerX;
@@ -1028,8 +977,13 @@ function fireGun(room, player) {
     room.state.bullets.push({
         id: randomId(),
 
-        x: towerX,
-        y: towerY,
+        x:
+            towerX +
+            dx * 38,
+
+        y:
+            towerY +
+            dy * 38,
 
         vx:
             dx *
@@ -1098,13 +1052,11 @@ function tryCreateMatch() {
 
         if (!p1Ok) {
             queue.unshift(player2);
-
             continue;
         }
 
         if (!p2Ok) {
             queue.unshift(player1);
-
             continue;
         }
 
@@ -1130,7 +1082,6 @@ function tryCreateMatch() {
             }
 
             startRound(room);
-
         }, 3200);
     }
 }
@@ -1145,7 +1096,6 @@ function leaveRoom(player) {
 
     if (!room) {
         player.roomId = null;
-
         return;
     }
 
@@ -1182,11 +1132,10 @@ function handleMessage(player, message) {
                 "Player"
             );
 
-        name =
-            name
-                .replace(/[<>]/g, "")
-                .trim()
-                .slice(0, 18);
+        name = name
+            .replace(/[<>]/g, "")
+            .trim()
+            .slice(0, 18);
 
         if (!name) {
             name = "Player";
@@ -1203,7 +1152,11 @@ function handleMessage(player, message) {
     }
 
     if (message.type === "selectPlane") {
-        if (planeTypes[message.planeType]) {
+        if (
+            planeTypes[
+                message.planeType
+            ]
+        ) {
             player.planeType =
                 message.planeType;
         }
@@ -1229,7 +1182,11 @@ function handleMessage(player, message) {
     }
 
     if (message.type === "selectGun") {
-        if (gunTypes[message.gun]) {
+        if (
+            gunTypes[
+                message.gun
+            ]
+        ) {
             player.gun =
                 message.gun;
         }
@@ -1255,7 +1212,29 @@ function handleMessage(player, message) {
     }
 
     if (message.type === "queue") {
+        if (message.name) {
+            let name =
+                String(message.name)
+                    .replace(/[<>]/g, "")
+                    .trim()
+                    .slice(0, 18);
+
+            if (name) {
+                player.name = name;
+            }
+        }
+
         joinQueue(player);
+
+        return;
+    }
+
+    if (message.type === "cancelQueue") {
+        removeFromQueue(player);
+
+        send(player.ws, {
+            type: "left"
+        });
 
         return;
     }
@@ -1410,7 +1389,6 @@ function handleMessage(player, message) {
             }
 
             startRound(room);
-
         }, 1000);
 
         return;
@@ -1429,135 +1407,123 @@ function handleMessage(player, message) {
     }
 }
 
-const server =
-    http.createServer(
-        function(req, res) {
-            let requestPath =
-                req.url || "/";
+const server = http.createServer(
+    function(req, res) {
+        let requestPath =
+            req.url || "/";
 
+        requestPath =
+            requestPath.split("?")[0];
+
+        if (requestPath === "/") {
             requestPath =
-                requestPath.split("?")[0];
-
-            if (requestPath === "/") {
-                requestPath =
-                    "/index.html";
-            }
-
-            let filePath =
-                path.join(
-                    __dirname,
-                    requestPath
-                );
-
-            filePath =
-                path.normalize(
-                    filePath
-                );
-
-            if (
-                !filePath.startsWith(
-                    __dirname
-                )
-            ) {
-                res.writeHead(403);
-
-                res.end("Forbidden");
-
-                return;
-            }
-
-            fs.readFile(
-                filePath,
-                function(err, data) {
-                    if (err) {
-                        res.writeHead(404);
-
-                        res.end("Not Found");
-
-                        return;
-                    }
-
-                    let contentType =
-                        "text/plain";
-
-                    if (
-                        requestPath.endsWith(
-                            ".html"
-                        )
-                    ) {
-                        contentType =
-                            "text/html; charset=utf-8";
-
-                    } else if (
-                        requestPath.endsWith(
-                            ".js"
-                        )
-                    ) {
-                        contentType =
-                            "application/javascript; charset=utf-8";
-
-                    } else if (
-                        requestPath.endsWith(
-                            ".css"
-                        )
-                    ) {
-                        contentType =
-                            "text/css; charset=utf-8";
-
-                    } else if (
-                        requestPath.endsWith(
-                            ".mp3"
-                        )
-                    ) {
-                        contentType =
-                            "audio/mpeg";
-
-                    } else if (
-                        requestPath.endsWith(
-                            ".json"
-                        )
-                    ) {
-                        contentType =
-                            "application/json; charset=utf-8";
-
-                    } else if (
-                        requestPath.endsWith(
-                            ".png"
-                        )
-                    ) {
-                        contentType =
-                            "image/png";
-
-                    } else if (
-                        requestPath.endsWith(
-                            ".jpg"
-                        ) ||
-                        requestPath.endsWith(
-                            ".jpeg"
-                        )
-                    ) {
-                        contentType =
-                            "image/jpeg";
-
-                    } else if (
-                        requestPath.endsWith(
-                            ".svg"
-                        )
-                    ) {
-                        contentType =
-                            "image/svg+xml";
-                    }
-
-                    res.writeHead(200, {
-                        "Content-Type":
-                            contentType
-                    });
-
-                    res.end(data);
-                }
-            );
+                "/index.html";
         }
-    );
+
+        let filePath =
+            path.join(
+                __dirname,
+                requestPath
+            );
+
+        filePath =
+            path.normalize(
+                filePath
+            );
+
+        if (
+            !filePath.startsWith(
+                __dirname
+            )
+        ) {
+            res.writeHead(403);
+            res.end("Forbidden");
+            return;
+        }
+
+        fs.readFile(
+            filePath,
+            function(err, data) {
+                if (err) {
+                    res.writeHead(404);
+                    res.end("Not Found");
+                    return;
+                }
+
+                let contentType =
+                    "text/plain";
+
+                if (
+                    requestPath.endsWith(
+                        ".html"
+                    )
+                ) {
+                    contentType =
+                        "text/html; charset=utf-8";
+                } else if (
+                    requestPath.endsWith(
+                        ".js"
+                    )
+                ) {
+                    contentType =
+                        "application/javascript; charset=utf-8";
+                } else if (
+                    requestPath.endsWith(
+                        ".css"
+                    )
+                ) {
+                    contentType =
+                        "text/css; charset=utf-8";
+                } else if (
+                    requestPath.endsWith(
+                        ".mp3"
+                    )
+                ) {
+                    contentType =
+                        "audio/mpeg";
+                } else if (
+                    requestPath.endsWith(
+                        ".json"
+                    )
+                ) {
+                    contentType =
+                        "application/json; charset=utf-8";
+                } else if (
+                    requestPath.endsWith(
+                        ".png"
+                    )
+                ) {
+                    contentType =
+                        "image/png";
+                } else if (
+                    requestPath.endsWith(
+                        ".jpg"
+                    ) ||
+                    requestPath.endsWith(
+                        ".jpeg"
+                    )
+                ) {
+                    contentType =
+                        "image/jpeg";
+                } else if (
+                    requestPath.endsWith(
+                        ".svg"
+                    )
+                ) {
+                    contentType =
+                        "image/svg+xml";
+                }
+
+                res.writeHead(200, {
+                    "Content-Type":
+                        contentType
+                });
+
+                res.end(data);
+            }
+        );
+    }
+);
 
 const wss =
     new WebSocket.Server({
@@ -1593,7 +1559,6 @@ wss.on(
                         player,
                         message
                     );
-
                 } catch (err) {
                     console.error(
                         "Message error:",
@@ -1611,13 +1576,9 @@ wss.on(
                     player.id
                 );
 
-                removeFromQueue(
-                    player
-                );
+                removeFromQueue(player);
 
-                leaveRoom(
-                    player
-                );
+                leaveRoom(player);
 
                 players.delete(
                     player.id
@@ -1639,8 +1600,7 @@ wss.on(
 
 setInterval(
     function() {
-        const now =
-            Date.now();
+        const now = Date.now();
 
         rooms.forEach(
             function(room) {
@@ -1675,7 +1635,6 @@ setInterval(
                 }
             );
         }
-
     },
     TICK_MS
 );
