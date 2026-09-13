@@ -618,6 +618,32 @@ button:active{
 .fire{border-radius:50%;background:#a52e35;box-shadow:0 5px 0 #57151a}.brake{background:#3b5575;font-size:11px}
 @media(max-width:700px){.tower{height:58%}.tower.left{left:22%;width:19%}.tower.right{left:59%;width:19%}.building{width:13%!important}}
 
+/* ENHANCED PIXEL CITY MAP */
+#horizonGlow{position:absolute;left:0;right:0;top:34%;height:24%;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none;z-index:1}
+#mountainsBack,#mountainsFront{position:absolute;left:-5%;right:-5%;bottom:24%;height:30%;pointer-events:none;z-index:1;clip-path:polygon(0 100%,0 62%,7% 48%,13% 67%,20% 38%,27% 61%,35% 31%,43% 65%,51% 42%,59% 64%,68% 30%,76% 60%,84% 40%,92% 64%,100% 35%,100% 100%)}
+#mountainsBack{background:#5b7890;opacity:.55;transform:scaleY(.75);transform-origin:bottom}
+#mountainsFront{background:#3b566c;opacity:.7;bottom:21%;transform:scaleY(.55);transform-origin:bottom}
+#airGrid{position:absolute;left:0;right:0;bottom:27%;height:28%;opacity:.16;pointer-events:none;z-index:1;background:linear-gradient(rgba(255,255,255,.8) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.7) 1px,transparent 1px);background-size:55px 28px;transform:perspective(300px) rotateX(58deg);transform-origin:bottom}
+#city{height:31%;background:linear-gradient(to top,#0d1725,#1a2d42 75%,rgba(40,69,91,.6));display:flex;align-items:flex-end;gap:1.4%;padding:0 2%;overflow:hidden;z-index:2;box-shadow:0 -10px 25px rgba(8,19,31,.22)}
+.building{position:relative!important;left:auto!important;right:auto!important;width:10%!important;height:55%!important;background:linear-gradient(90deg,#162438,#38536c 48%,#122034)!important;border:2px solid #091321!important;box-shadow:inset 6px 0 rgba(255,255,255,.05),inset -5px 0 rgba(0,0,0,.25)!important}
+.building:nth-child(1){height:46%!important}.building:nth-child(2){height:70%!important}.building:nth-child(3){height:58%!important}.building:nth-child(4){height:82%!important}
+.building:before{content:"";position:absolute;left:12%;right:12%;top:5%;height:3px;background:#7fa8bd;box-shadow:0 8px 0 rgba(127,168,189,.5),0 16px 0 rgba(127,168,189,.35)}
+.building:after{content:"";position:absolute;inset:10px 7px;background:repeating-linear-gradient(90deg,#d8e5ad 0 4px,transparent 4px 12px),repeating-linear-gradient(0deg,transparent 0 12px,rgba(255,220,120,.45) 12px 15px);opacity:.45}
+.tower{width:15.5%;height:66%;background:linear-gradient(90deg,#1c2a3b,#526b82 45%,#26394c 100%);box-shadow:inset 9px 0 rgba(255,255,255,.06),inset -12px 0 rgba(0,0,0,.18),8px 8px 0 rgba(0,0,0,.16),0 -8px 20px rgba(18,35,50,.15)}
+.tower.left{left:27%}.tower.right{left:57.5%}
+.tower .roof{height:18px;top:-16px;background:#172537;box-shadow:0 -5px 0 #314a60}
+.windows{inset:25px 11px 12px;background:repeating-linear-gradient(90deg,transparent 0 9px,#9ed6e5 9px 14px,transparent 14px 24px),repeating-linear-gradient(0deg,transparent 0 18px,rgba(190,225,235,.45) 18px 23px);opacity:.62}
+.tower.disabled{opacity:.3;filter:grayscale(1);box-shadow:0 0 0 4px #e85d5d,8px 8px 0 rgba(0,0,0,.16)}
+#game:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:18;background:radial-gradient(ellipse at center,transparent 48%,rgba(4,10,18,.18) 100%)}
+@media(max-width:700px){.tower{height:58%}.tower.left{left:22%;width:19%}.tower.right{left:59%;width:19%}.building{width:13%!important}}
+
+#game,#arena,#crosshair,.mobileBtn{touch-action:none}
+#crosshair{width:30px!important;height:30px!important;border:3px solid #fff!important;box-shadow:0 0 0 2px #111,0 0 12px rgba(255,255,255,.7)!important;pointer-events:none!important;z-index:30!important}
+#crosshair:before,#crosshair:after{content:"";position:absolute;background:#fff;box-shadow:0 0 3px #000}
+#crosshair:before{width:44px;height:2px;left:-10px;top:11px}
+#crosshair:after{width:2px;height:44px;left:11px;top:-10px}
+#combatMessage{z-index:40!important;pointer-events:none}
+
 /* POLISHED PIXEL PLANES */
 #plane{width:118px;height:58px;image-rendering:pixelated;transform-origin:50% 50%;filter:drop-shadow(6px 7px 0 rgba(0,0,0,.3))}
 #plane *{position:absolute;box-sizing:border-box}
@@ -730,6 +756,10 @@ button:active{
 <div id="game" class="hidden">
 
  <div id="sun"></div>
+ <div id="horizonGlow"></div>
+ <div id="mountainsBack"></div>
+ <div id="mountainsFront"></div>
+ <div id="airGrid"></div>
 
  <div class="cloud c1"></div>
  <div class="cloud c2"></div>
@@ -1257,29 +1287,77 @@ function aim(e){
  const y=Math.max(0,Math.min(600,(e.clientY-r.top)/r.height*600));
  send({type:"aim",x,y});
  const c=$("crosshair");
- c.style.left=(e.clientX-r.left)+"px";c.style.top=(e.clientY-r.top)+"px";c.classList.add("active");
+ c.style.left=(e.clientX-r.left-15)+"px";
+ c.style.top=(e.clientY-r.top-15)+"px";
+ c.classList.add("active");
 }
 
 let aimingTouch=false;
-$("game").addEventListener("pointermove",e=>{if(myRole==="Gunner" && (aimingTouch || e.pointerType==="mouse")) aim(e);});
+let firePointerId=null;
+$("game").addEventListener("pointermove",e=>{
+ if(myRole!=="Gunner") return;
+ if(e.pointerType==="mouse" || aimingTouch) aim(e);
+});
 
-function startFiring(){
- if(myRole!=="Gunner" || firing) return;
- firing=true;showCombat("FIRING","fire");send({type:"fire"});
- fireTimer=setInterval(()=>{if(myRole==="Gunner" && state && state.phase==="playing") send({type:"fire"});else stopFiring();},35);
+function startFiring(e){
+ if(myRole!=="Gunner" || firing || !state || state.phase!=="playing") return;
+ firing=true;
+ firePointerId=e ? e.pointerId : null;
+ showCombat("FIRING","fire");
+ if(e && e.currentTarget && e.currentTarget.setPointerCapture){
+  try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}
+ }
+ send({type:"fire"});
+ fireTimer=setInterval(()=>{
+  if(myRole==="Gunner" && state && state.phase==="playing") send({type:"fire"});
+  else stopFiring();
+ },45);
 }
+
 function stopFiring(){
  if(!firing) return;
- firing=false;if(fireTimer){clearInterval(fireTimer);fireTimer=null;}send({type:"stopFire"});
+ firing=false;
+ firePointerId=null;
+ if(fireTimer){clearInterval(fireTimer);fireTimer=null;}
+ send({type:"stopFire"});
 }
+
 $("game").addEventListener("pointerdown",e=>{
  if(myRole!=="Gunner" || e.target.closest("button")) return;
- aimingTouch=true;aim(e);startFiring();
+ e.preventDefault();
+ aimingTouch=true;
+ aim(e);
+ startFiring(e);
 });
-window.addEventListener("pointerup",()=>{aimingTouch=false;stopFiring();});
+
+window.addEventListener("pointerup",e=>{
+ if(firePointerId===null || e.pointerId===firePointerId || e.pointerType==="mouse") stopFiring();
+ aimingTouch=false;
+});
 window.addEventListener("pointercancel",()=>{aimingTouch=false;stopFiring();});
-$("mobileFire").addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();startFiring();});
-$("mobileFire").addEventListener("pointerup",e=>{e.preventDefault();e.stopPropagation();stopFiring();});
+
+$("mobileFire").addEventListener("pointerdown",e=>{
+ e.preventDefault();
+ e.stopPropagation();
+ startFiring(e);
+});
+$("mobileFire").addEventListener("pointerup",e=>{
+ e.preventDefault();
+ e.stopPropagation();
+ stopFiring();
+});
+
+window.addEventListener("keydown",e=>{
+ if(myRole!=="Gunner") return;
+ if(e.code==="Space" || e.key.toLowerCase()==="f"){
+  e.preventDefault();
+  startFiring();
+ }
+});
+window.addEventListener("keyup",e=>{
+ if(myRole!=="Gunner") return;
+ if(e.code==="Space" || e.key.toLowerCase()==="f") stopFiring();
+});
 
 document.querySelectorAll(".mobileBtn[data-key]").forEach(btn=>{
  const k=btn.dataset.key;
