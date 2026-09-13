@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -590,6 +591,7 @@ button:active{
  }
  #mobile{display:flex}
  #bottom{display:none}
+ .tower{height:48%}
 }
 
 /* POLISHED MAP */
@@ -614,7 +616,7 @@ button:active{
 .bullet:before{content:"";position:absolute;right:100%;top:0;width:18px;height:2px;background:linear-gradient(90deg,transparent,#ffd65a)}
 .mobileBtn{touch-action:none;border-radius:12px;box-shadow:4px 4px 0 rgba(0,0,0,.45)}
 .fire{border-radius:50%;background:#a52e35;box-shadow:0 5px 0 #57151a}.brake{background:#3b5575;font-size:11px}
-@media(max-width:700px){.building{width:13%!important}}
+@media(max-width:700px){.tower{height:58%}.tower.left{left:22%;width:19%}.tower.right{left:59%;width:19%}.building{width:13%!important}}
 
 /* ENHANCED PIXEL CITY MAP */
 #horizonGlow{position:absolute;left:0;right:0;top:34%;height:24%;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none;z-index:1}
@@ -633,13 +635,7 @@ button:active{
 .windows{inset:25px 11px 12px;background:repeating-linear-gradient(90deg,transparent 0 9px,#9ed6e5 9px 14px,transparent 14px 24px),repeating-linear-gradient(0deg,transparent 0 18px,rgba(190,225,235,.45) 18px 23px);opacity:.62}
 .tower.disabled{opacity:.3;filter:grayscale(1);box-shadow:0 0 0 4px #e85d5d,8px 8px 0 rgba(0,0,0,.16)}
 #game:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:18;background:radial-gradient(ellipse at center,transparent 48%,rgba(4,10,18,.18) 100%)}
-/* NOTE: tower left/width/height are intentionally NOT overridden per
-   screen size. The server's collision rectangles (towerRect() in
-   server.js) are fixed fractions of the 1000x600 world, and #arena
-   always fills the viewport, so keeping these percentages constant
-   across breakpoints keeps the drawn towers and their hitboxes in
-   sync on every device. Only non-structural chrome (fonts, HUD size,
-   showing the on-screen d-pad) changes at the mobile breakpoint. */
+@media(max-width:700px){.tower{height:58%}.tower.left{left:22%;width:19%}.tower.right{left:59%;width:19%}.building{width:13%!important}}
 
 #game,#arena,#crosshair,.mobileBtn{touch-action:none}
 #crosshair{width:30px!important;height:30px!important;border:3px solid #fff!important;box-shadow:0 0 0 2px #111,0 0 12px rgba(255,255,255,.7)!important;pointer-events:none!important;z-index:30!important}
@@ -706,6 +702,37 @@ button:active{
 #plane.disabled .firetrail{display:none}
 #plane.disabled .body,#plane.disabled .wing,#plane.disabled .tail,#plane.disabled .tail-fin{filter:grayscale(1) brightness(.65)}
 
+
+/* ORIGINAL MAP ONLY: distant buildings + tower assemblies + original plane parts */
+#city{
+  height:31%;background:linear-gradient(to top,#101923,#1c3044);
+  display:block;padding:0;overflow:hidden;z-index:2;
+  box-shadow:0 -10px 25px rgba(8,19,31,.22)
+}
+.distantBuilding{position:absolute;bottom:0;width:6%;background:linear-gradient(90deg,#182536,#344b60 48%,#142133);border:2px solid #0a1420;box-shadow:inset 5px 0 rgba(255,255,255,.05),inset -5px 0 rgba(0,0,0,.24)}
+.distantBuilding:after{content:"";position:absolute;inset:8px 5px;background:repeating-linear-gradient(90deg,#c7d8cf 0 3px,transparent 3px 10px),repeating-linear-gradient(0deg,transparent 0 10px,rgba(255,220,130,.38) 10px 13px);opacity:.45}
+.db1{left:1%;height:42%}.db2{left:8%;height:63%}.db3{left:15%;height:50%}.db4{left:22%;height:73%}.db5{left:29%;height:44%}.db6{left:36%;height:67%}.db7{left:43%;height:52%}.db8{left:50%;height:76%}.db9{left:57%;height:48%}.db10{left:64%;height:69%}.db11{left:71%;height:56%}.db12{left:78%;height:74%}.db13{left:85%;height:45%}.db14{left:92%;height:61%}
+.towerAssembly{position:absolute;bottom:0;width:15.5%;height:66%;z-index:4}
+#towerAssembly1{left:27%}#towerAssembly2{left:57.5%}
+.towerAssembly .tower{position:absolute;inset:0!important;width:100%!important;height:100%!important;left:0!important;bottom:0!important;background:repeating-linear-gradient(90deg,#d3d4d0 0 5px,#9b9d9a 5px 8px,#c5c6c2 8px 12px);border-left:5px solid #777a78;border-right:5px solid #747775;border-top:0;border-bottom:0;box-shadow:inset 10px 0 #e0e0d9,inset -10px 0 #686b69,7px 0 0 rgba(30,45,60,.18);overflow:visible}
+.towerAssembly .windowGrid{position:absolute;top:17px;left:14px;right:14px;bottom:14px;background:repeating-linear-gradient(90deg,transparent 0 8px,#35434f 8px 13px,transparent 13px 21px),repeating-linear-gradient(0deg,transparent 0 15px,rgba(80,105,120,.8) 15px 19px);border-left:2px solid #e2e1d8;border-right:2px solid #737673;opacity:.78}
+.towerAssembly .roof{position:absolute;top:-17px;left:-4px;right:-4px;height:16px;background:#777a77;border:4px solid #555856;z-index:5}
+.towerAssembly .antenna{position:absolute;top:-75px;left:50%;width:7px;height:57px;transform:translateX(-50%);background:#535654;box-shadow:0 -7px 0 #535654;z-index:5}
+.towerAssembly .health,.towerAssembly .tower-name{z-index:8}
+#plane{width:118px;height:58px;image-rendering:pixelated;transform-origin:50% 50%;filter:drop-shadow(6px 7px 0 rgba(0,0,0,.3))}
+#plane *{position:absolute;box-sizing:border-box}
+#plane .tailWing{left:11px;top:8px;width:28px;height:10px;background:#8798a8;border:3px solid #182433;clip-path:polygon(0 100%,25% 0,100% 20%,70% 100%);z-index:2}
+#plane .mainWing{left:37px;top:7px;width:52px;height:34px;background:#b7c5d1;border:3px solid #182433;clip-path:polygon(0 50%,100% 0,78% 100%,30% 66%);z-index:1}
+#plane .lowerWing{left:35px;top:31px;width:47px;height:20px;background:#8c9eae;border:3px solid #182433;clip-path:polygon(0 25%,100% 0,74% 100%,25% 80%);z-index:1}
+#plane .tailFin{left:14px;top:2px;width:21px;height:23px;background:#64798b;border:3px solid #182433;clip-path:polygon(0 100%,40% 0,100% 0,78% 100%);z-index:3}
+#plane .engine{width:16px;height:9px;background:#445462;border:3px solid #182433;z-index:6}
+#plane .engine1{left:48px;top:36px}#plane .engine2{left:69px;top:37px}
+#plane .fuselage{left:10px;top:22px;width:84px;height:15px;background:linear-gradient(#f7fbff,#b7c5d0);border:3px solid #172333;border-radius:5px;z-index:5}
+#plane .cockpit{left:75px;top:19px;width:19px;height:10px;background:#4c8dad;border:2px solid #172333;clip-path:polygon(0 100%,20% 0,100% 0,100% 100%);z-index:7}
+#plane .window{top:26px;width:6px;height:6px;background:#4d8199;border:1px solid #172333;z-index:7}
+#plane .w1{left:44px}#plane .w2{left:54px}#plane .w3{left:64px}#plane .w4{left:74px}#plane .w5{left:84px}
+#plane .fuselage:after{content:"";position:absolute;left:12px;right:8px;bottom:2px;height:4px;background:#e04e4e}
+
 </style>
 </head>
 
@@ -759,68 +786,64 @@ button:active{
 
 <div id="game" class="hidden">
 
- <div id="sun"></div>
- <div id="horizonGlow"></div>
- <div id="mountainsBack"></div>
- <div id="mountainsFront"></div>
- <div id="airGrid"></div>
 
  <div class="cloud c1"></div>
  <div class="cloud c2"></div>
  <div class="cloud c3"></div>
 
  <div id="city">
-  <div class="building"></div>
-  <div class="building"></div>
-  <div class="building"></div>
-  <div class="building"></div>
+    <div class="distantBuilding db1"></div>
+  <div class="distantBuilding db2"></div>
+  <div class="distantBuilding db3"></div>
+  <div class="distantBuilding db4"></div>
+  <div class="distantBuilding db5"></div>
+  <div class="distantBuilding db6"></div>
+  <div class="distantBuilding db7"></div>
+  <div class="distantBuilding db8"></div>
+  <div class="distantBuilding db9"></div>
+  <div class="distantBuilding db10"></div>
+  <div class="distantBuilding db11"></div>
+  <div class="distantBuilding db12"></div>
+  <div class="distantBuilding db13"></div>
+  <div class="distantBuilding db14"></div>
  </div>
 
  <div id="arena">
-
-  <div class="tower left" id="tower1">
-   <div class="roof"></div>
-   <div class="windows"></div>
-
-   <div
-    class="tower-name"
-    id="tower1Name"
-   >TOWER 1</div>
-
-   <div class="health">
-    <div id="tower1HP"></div>
+   <div id="towerAssembly1" class="towerAssembly">
+    <div class="tower" id="tower1">
+     <div class="windowGrid"></div>
+     <div class="roof"></div>
+     <div class="antenna"></div>
+     <div class="tower-name" id="tower1Name">TOWER 1</div>
+     <div class="health"><div id="tower1HP"></div></div>
+    </div>
    </div>
-  </div>
 
-  <div class="tower right" id="tower2">
-   <div class="roof"></div>
-   <div class="windows"></div>
-
-   <div
-    class="tower-name"
-    id="tower2Name"
-   >TOWER 2</div>
-
-   <div class="health">
-    <div id="tower2HP"></div>
+   <div id="towerAssembly2" class="towerAssembly">
+    <div class="tower" id="tower2">
+     <div class="windowGrid"></div>
+     <div class="roof"></div>
+     <div class="antenna"></div>
+     <div class="tower-name" id="tower2Name">TOWER 2</div>
+     <div class="health"><div id="tower2HP"></div></div>
+    </div>
    </div>
-  </div>
-
-  <div id="plane" class="plane-airliner">
-   <div class="firetrail"></div>
-   <div class="plane-shadow"></div>
-   <div class="wing wing-main"></div>
-   <div class="wing wing-back"></div>
-   <div class="engine engine-top"></div>
-   <div class="engine engine-bottom"></div>
-   <div class="tail"></div>
-   <div class="tail-fin"></div>
-   <div class="body"></div>
-   <div class="cockpit"></div>
-   <div class="windows"></div>
-   <div class="stripe"></div>
-   <div class="nose"></div>
-  </div>
+   <div id="plane" class="plane-airliner">
+    <div class="firetrail"></div>
+    <div class="tailWing"></div>
+    <div class="mainWing"></div>
+    <div class="lowerWing"></div>
+    <div class="tailFin"></div>
+    <div class="engine engine1"></div>
+    <div class="engine engine2"></div>
+    <div class="fuselage"></div>
+    <div class="cockpit"></div>
+    <div class="window w1"></div>
+    <div class="window w2"></div>
+    <div class="window w3"></div>
+    <div class="window w4"></div>
+    <div class="window w5"></div>
+   </div>
 
   <div id="turret">
    <div class="tbase"></div>
@@ -1078,27 +1101,22 @@ function startMusic(){
  window.gameMusic=a;
 }
 
-// durationMs comes from the server (matchFound.startsIn) so the on-screen
-// countdown always matches exactly how long until the round actually
-// starts, whether this is the first match, a rematch, or the next round.
-function startCountdown(durationMs){
+function startCountdown(){
  stopCountdown();
- const total = Math.max(1000, durationMs || 3000);
- const totalSeconds = Math.round(total/1000);
- let n = totalSeconds;
- $("countdown").textContent = n;
- $("matchStatus").textContent = "Get ready...";
- countdownTimer = setInterval(()=>{
+ let n=3;
+ $("countdown").textContent=n;
+ $("matchStatus").textContent="Get ready...";
+ countdownTimer=setInterval(()=>{
   n--;
   if(n>0){
-   $("countdown").textContent = n;
+   $("countdown").textContent=n;
   }else{
-   $("countdown").textContent = "START!";
-   $("matchStatus").textContent = "";
+   $("countdown").textContent="START!";
+   $("matchStatus").textContent="";
    clearInterval(countdownTimer);
-   countdownTimer = null;
+   countdownTimer=null;
   }
- }, 1000);
+ },1000);
 }
 
 function stopCountdown(){
@@ -1131,16 +1149,20 @@ function connect(){
    return;
   }
 
+  if(msg.type==="matchWaiting"){
+   show("matchScreen");
+   $("roles").textContent="MATCH FOUND";
+   startMusic();
+   startCountdown();
+   return;
+  }
+
   if(msg.type==="matchFound"){
    myRole=String(msg.role||"").toLowerCase()==="pilot"?"Pilot":"Gunner";
    $("roles").textContent="YOU ARE THE "+myRole.toUpperCase();
    if(msg.planeType) selectedPlane=msg.planeType;
    if(msg.gun) selectedGun=msg.gun;
    show("matchScreen");
-   startMusic();
-   // Server tells us exactly how long until the round starts, so the
-   // countdown shown here always finishes right as the round begins.
-   startCountdown(msg.startsIn);
    return;
   }
 
@@ -1163,21 +1185,11 @@ function connect(){
     show("game");
     render(msg.state);
    }else if(msg.state.phase==="roundEnd"){
-    // Round is over: make sure we're not still holding down fire/inputs
-    // client-side, even if the player is physically still holding the
-    // mouse button or a movement key.
-    stopFiring();
-    clearKeys();
     render(msg.state);
    }else if(msg.state.phase==="ended"){
     stopCountdown();
-    stopFiring();
-    clearKeys();
     render(msg.state);
     showEnd(msg.state);
-   }else if(msg.state.phase==="waiting"){
-    stopFiring();
-    clearKeys();
    }
    return;
   }
@@ -1185,7 +1197,6 @@ function connect(){
   if(msg.type==="opponentLeft"){
    stopCountdown();
    stopFiring();
-   clearKeys();
    $("endTitle").textContent="YOU WIN!";
    $("endReason").textContent="Your opponent left.";
    show("endScreen");
@@ -1195,7 +1206,6 @@ function connect(){
   if(msg.type==="left"){
    stopCountdown();
    stopFiring();
-   clearKeys();
    show("nameScreen");
    return;
   }
@@ -1207,7 +1217,6 @@ function connect(){
  ws.onclose=()=>{
   stopCountdown();
   stopFiring();
-  clearKeys();
   if(!$("endScreen").classList.contains("hidden")) return;
   if(!$("nameScreen").classList.contains("hidden")) return;
   $("queueText").textContent="Connection lost. Refresh to reconnect.";
@@ -1239,7 +1248,7 @@ $("rematchBtn").onclick=()=>{
  send({type:"rematch"});
  show("matchScreen");
  $("roles").textContent="MATCH FOUND";
- $("matchStatus").textContent="Get ready...";
+ startCountdown();
 };
 
 $("menuBtn").onclick=()=>{
@@ -1270,7 +1279,6 @@ function openGunMenu(){if(myRole==="Gunner") $("gunMenu").classList.remove("hidd
 
 function clearKeys(){
  keys={up:false,down:false,left:false,right:false,brake:false};
- if(myRole==="Pilot") send({type:"input",input:keys});
 }
 
 window.addEventListener("keydown",e=>{
@@ -1305,13 +1313,9 @@ function aim(e){
  const x=Math.max(0,Math.min(1000,(e.clientX-r.left)/r.width*1000));
  const y=Math.max(0,Math.min(600,(e.clientY-r.top)/r.height*600));
  send({type:"aim",x,y});
- // Render the crosshair from the SAME clamped world coordinates we just
- // sent to the server, converted back to screen space. This keeps the
- // crosshair perfectly in sync with where the gun will actually aim, and
- // guarantees it can never be drawn outside the play area.
  const c=$("crosshair");
- c.style.left=worldToScreenX(x)+"px";
- c.style.top=worldToScreenY(y)+"px";
+ c.style.left=(e.clientX-r.left-15)+"px";
+ c.style.top=(e.clientY-r.top-15)+"px";
  c.classList.add("active");
 }
 
@@ -1434,22 +1438,6 @@ function effectAt(x,y){
   e.appendChild(smoke);
   setTimeout(()=>smoke.remove(),1100);
  }
-}
-
-function muzzleFlash(x,y){
- effectAt(x,y);
-}
-function hitSpark(x,y){
- effectAt(x,y);
-}
-function showCombat(text,cls){
- const el=$("combatMessage");
- el.textContent=text;
- el.className="";
- void el.offsetWidth;
- el.classList.add(cls,"show");
- if(messageTimer) clearTimeout(messageTimer);
- messageTimer=setTimeout(()=>el.classList.remove("show"),550);
 }
 
 function showEnd(s){
