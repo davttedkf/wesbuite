@@ -165,9 +165,6 @@ canvas{position:absolute;inset:0;display:block}
 }
 
 
-#itemLabel{position:absolute;top:238px;left:24px;font-family:"Titan One";font-size:13px;color:var(--cream);background:var(--paper);border-radius:8px;padding:5px 10px;min-width:92px;text-align:center;letter-spacing:.4px}
-#itemLabel.ready{background:rgba(23,163,152,.9)}
-#itemLabel.empty{opacity:.72}
 #rescueHint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
   font-family:"Titan One";font-size:12px;letter-spacing:.4px;color:var(--ink);
   background:var(--cream);border:3px solid var(--ink);border-radius:10px;padding:6px 12px;
@@ -238,7 +235,6 @@ canvas{position:absolute;inset:0;display:block}
     <div id="posBadge">8th</div>
     <div id="lapBadge">LAP 1/3</div>
     <div id="coinBadge"><div id="coinDisc"></div><span id="coinNum">0</span></div>
-    <div id="itemLabel" class="empty">ITEM: NONE</div>
     <div id="timer">00:00.00</div>
     <div id="msg"><span id="msgMain"></span><span id="msgSub"></span></div>
     <div id="countdown"></div>
@@ -322,7 +318,7 @@ const TRACKS=[
     fog:0xE89A5E,fogN:130,fogF:760,bg:0xE89A5E,ground:0xDCA66B,shoulder:0xC08E55,
     rock:[0xB4653F,0x8A4A32,0xC97B52],cact:0x3E7D5E,palmT:0x8A5A3A,palmL:0x4E9E6E,
     mtn:0x9A5A44,cloudA:0xF5C9A8,cloudB:0xE98A6C,sunC:0xFFE8B0,sunPos:[-620,300,-1180],
-    dirC:0xFFD9A6,dirI:1.7,exposure:1.2,hemiS:0x8FD5CF,hemiG:0xB8743C,
+    dirC:0xFFD9A6,dirI:1.55,hemiS:0x8FD5CF,hemiG:0xB8743C,
     rocks:70,hazRocks:34,cacti:24,palms:26,mtn:15,clouds:10}},
  {id:'bay',name:'PALM BAY',tag:'Sweepers, sea breeze, easy living',diff:1,laps:3,song:'bay',
   start:[-75,190],
@@ -332,7 +328,7 @@ const TRACKS=[
     fog:0xF7D9AC,fogN:150,fogF:850,bg:0xF7D9AC,ground:0xE8C48A,shoulder:0xD3AC6E,
     rock:[0xC99B6A,0xB3854F,0xD9B078],cact:0x4E9E6E,palmT:0x8A5A3A,palmL:0x4E9E6E,
     mtn:0x7AA89E,cloudA:0xFFF0DC,cloudB:0xF8D8B8,sunC:0xFFF3C8,sunPos:[-500,430,-1000],
-    dirC:0xFFF0C8,dirI:1.7,exposure:1.18,hemiS:0xBFE8E0,hemiG:0xC9A06A,
+    dirC:0xFFF0C8,dirI:1.5,hemiS:0xBFE8E0,hemiG:0xC9A06A,
     rocks:30,hazRocks:20,cacti:10,palms:40,mtn:8,clouds:13}},
  {id:'canyon',name:'CANYON RUSH',tag:'Two hairpins and no mercy',diff:3,laps:3,song:'canyon',
   start:[-52,206],
@@ -343,17 +339,8 @@ const TRACKS=[
     fog:0xC98A66,fogN:110,fogF:620,bg:0xC98A66,ground:0xB87A52,shoulder:0xA96C48,
     rock:[0xA8542F,0x8A4230,0xB46042],cact:0x4E7D4E,palmT:0x8A5A3A,palmL:0x4E9E6E,
     mtn:0x7A4638,cloudA:0xD98A6C,cloudB:0xC26048,sunC:0xFFD9A0,sunPos:[-700,240,-1150],
-    dirC:0xFFC890,dirI:1.5,exposure:1.12,hemiS:0xE8B08A,hemiG:0x9A5A44,
+    dirC:0xFFC890,dirI:1.35,hemiS:0xE8B08A,hemiG:0x9A5A44,
     rocks:110,hazRocks:46,cacti:34,palms:0,mtn:20,clouds:6}},
- {id:'classic',name:'CLASSIC CIRCUIT',tag:'Clean grass, clean lines, pure kart racing',diff:1,laps:3,song:'ridge',
-  start:[-105,175],
-  pts:[[-155,175],[-162,105],[-145,35],[-100,-20],[-35,-45],[35,-35],[95,-5],[135,45],[150,105],[125,155],[65,180],[-5,195],[-70,205],[-125,195],[-155,175]],
-  env:{sky:[[0,0xBFE7FF],[0.3,0x8FD0F0],[0.7,0x5FA7D5],[1,0x2E6E9D]],
-    fog:0xB9D8D0,fogN:180,fogF:1000,bg:0xA8D2D8,ground:0x5F9A4A,shoulder:0x7EAF5D,
-    rock:[0x77756A,0x66645B,0x8B887C],cact:0x4B7D42,palmT:0x6D5135,palmL:0x4E8D46,
-    mtn:0x5D7E69,cloudA:0xFFFFFF,cloudB:0xDCEAF0,sunC:0xFFF3C7,sunPos:[-520,420,-1100],
-    dirC:0xFFF1D0,dirI:1.8,exposure:1.22,hemiS:0xB9E3FF,hemiG:0x507747,
-    rocks:46,hazRocks:18,cacti:0,palms:22,mtn:10,clouds:16}},
 ];
 
 const $=id=>document.getElementById(id);
@@ -365,7 +352,7 @@ const dom={
   sb:[document.querySelector('#sb1 i'),document.querySelector('#sb2 i'),document.querySelector('#sb3 i')],
   loading:$('loading'),loadTrack:$('loadTrack'),loadBar:$('loadBar'),loadStep:$('loadStep'),
   loadPct:$('loadPct'),loadTip:$('loadTip'),
-  hudDom:$('hudDom'),pos:$('posBadge'),lap:$('lapBadge'),coin:$('coinNum'),timer:$('timer'),itemLabel:$('itemLabel'),
+  hudDom:$('hudDom'),pos:$('posBadge'),lap:$('lapBadge'),coin:$('coinNum'),timer:$('timer'),
   msg:$('msg'),msgMain:$('msgMain'),msgSub:$('msgSub'),cd:$('countdown'),ww:$('wrongWay'),
   mute:$('muteBtn'),results:$('results'),resTable:$('resTable'),resFoot:$('resFoot'),
   pause:$('pause'),touch:$('touchUI'),errBanner:$('errBanner'),dbgChip:$('dbgChip'),
@@ -566,7 +553,7 @@ const hemi=new THREE.HemisphereLight(0x9FE5DF,0x9A6138,0.82);scene.add(hemi);
 scene.add(new THREE.AmbientLight(0x59402F,0.48));
 const dirL=new THREE.DirectionalLight(0xFFD9A6,1.55);
 dirL.castShadow=true;
-dirL.shadow.mapSize.set(384,384);
+dirL.shadow.mapSize.set(512,512);
 dirL.shadow.camera.left=-70;dirL.shadow.camera.right=70;
 dirL.shadow.camera.top=70;dirL.shadow.camera.bottom=-70;
 dirL.shadow.camera.near=20;dirL.shadow.camera.far=500;dirL.shadow.bias=-0.0004;
@@ -575,26 +562,27 @@ scene.add(dirL);scene.add(dirL.target);
 
 /* ---- quality ladder ---- */
 const QUALITIES=[
-  {name:'HIGH',shadows:false,pxCap:0.90},
-  {name:'MEDIUM',shadows:false,pxCap:0.72},
-  {name:'LOW',shadows:false,pxCap:0.58},
+  {name:'HIGH',shadows:false,pxCap:1.0},
+  {name:'MEDIUM',shadows:false,pxCap:0.85},
+  {name:'LOW',shadows:false,pxCap:0.65},
 ];
 // Start in the stable performance preset. G can still cycle graphics modes.
 let qIdx=0,raceShadowsOn=false;
 function calcPxMax(){
   const w=Math.max(1,innerWidth),h=Math.max(1,innerHeight);
   const budget=Math.sqrt(2600000/(w*h));   // hard pixel budget: ~2.6 MP
-  return clamp(Math.min(devicePixelRatio||1,1.15,budget),0.55,1.15);
+  return clamp(Math.min(devicePixelRatio||1,1.5,budget),0.6,1.5);
 }
 function effPxMax(){return Math.min(calcPxMax(),QUALITIES[qIdx].pxCap);}
-let pxRatio=Math.min(effPxMax(),0.72);     // conservative start; prevents first-race GPU spikes
+let pxRatio=Math.min(effPxMax(),0.85);     // conservative start; prevents first-race GPU spikes
 function applyRes(){renderer.setPixelRatio(pxRatio);renderer.setSize(innerWidth,innerHeight);}
 function setShadows(on){
   try{
     renderer.shadowMap.enabled=on;
     dirL.castShadow=on;
     hemi.intensity=on?0.6:0.9;
-    dirL.shadow.mapSize.set(on?384:256,on?384:256);
+    scene.traverse(o=>{if(o.material){const ms=Array.isArray(o.material)?o.material:[o.material];
+      ms.forEach(m=>{m.needsUpdate=true;});}});
   }catch(e){}
 }
 function applyQuality(){
@@ -819,12 +807,6 @@ function buildRoadMeshes(def){
   const shMat=new THREE.MeshStandardMaterial({color:0xFFFFFF,map:envTexture(env,'shoulder'),roughness:1});
   trackGroup.add(new THREE.Mesh(stripGeo(0,TN,9.5,16,0.01,1),shMat));
   trackGroup.add(new THREE.Mesh(stripGeo(0,TN,-16,-9.5,0.01,1),shMat));
-  const vergeMat=new THREE.MeshStandardMaterial({color:0x4F8E45,map:envTexture(env,'ground'),roughness:1});
-  trackGroup.add(new THREE.Mesh(stripGeo(0,TN,16,31,-0.01,2.8),vergeMat));
-  trackGroup.add(new THREE.Mesh(stripGeo(0,TN,-31,-16,-0.01,2.8),vergeMat));
-  const edgeM=new THREE.MeshStandardMaterial({color:0xFFF8E8,roughness:.65});
-  trackGroup.add(new THREE.Mesh(stripGeo(0,TN,-8.02,-7.86,0.065,3.5),edgeM));
-  trackGroup.add(new THREE.Mesh(stripGeo(0,TN,7.86,8.02,0.065,3.5),edgeM));
   const chk=texCanvas(128,16,ctx=>{for(let x=0;x<16;x++)for(let y=0;y<2;y++){
     ctx.fillStyle=((x+y)%2)?'#F6EAD8':'#2A1B12';ctx.fillRect(x*8,y*8,8,8);}});
   trackGroup.add(new THREE.Mesh(stripGeo(START_I-1,2,-8,8,0.05,3.2),
@@ -895,35 +877,6 @@ function buildRoadMeshes(def){
     new THREE.MeshStandardMaterial({map:checker,roughness:.7}));
   startPanel.position.set(0,6.55,.38);arch.add(startPanel);
   trackGroup.add(arch);
-}
-
-/* ---- trackside detail: kerbs, tire stacks, fencing and marshal boards ---- */
-function addTracksideDetails(def){
-  const mat=(c,r=.65,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
-  const dark=mat(0x25292A,.55,.25), tire=mat(0x151718,1);
-  const boardTex=texCanvas(256,64,ctx=>{ctx.fillStyle='#FFF3E2';ctx.fillRect(0,0,256,64);ctx.fillStyle='#D94132';ctx.fillRect(0,0,256,10);ctx.fillRect(0,54,256,10);ctx.fillStyle='#2A1B12';ctx.font='700 25px "Baloo 2"';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('KART RUSH',128,34);});
-  const sponsor=new THREE.MeshStandardMaterial({map:boardTex,roughness:.7});
-  const count=Math.floor(TN/10);
-  for(let i=0;i<count;i++){
-    const ss=wrapS(i*TRK.L/count+TRK.seg*2,TRK.L),side=i%2?-1:1,p=trackPoint(ss,side*(18+(i%3)*1.6));
-    if(i%7===0){
-      const g=new THREE.Group();g.position.set(p.x,0,p.z);g.rotation.y=p.yaw;
-      for(let k=-1;k<=1;k++){const t=new THREE.Mesh(new THREE.TorusGeometry(.62,.22,8,14),tire);t.rotation.y=Math.PI/2;t.position.set(k*.72,.52,0);t.castShadow=true;g.add(t);}
-      trackGroup.add(g);
-    }
-    if(i%6===0){
-      const g=new THREE.Group();g.position.set(p.x,0,p.z);g.rotation.y=p.yaw;
-      const post=new THREE.Mesh(new THREE.CylinderGeometry(.055,.07,2.25,7),dark);post.position.y=1.12;g.add(post);
-      const b=new THREE.Mesh(new THREE.BoxGeometry(2.7,.72,.10),sponsor);b.position.set(0,2.02,0);b.castShadow=true;g.add(b);trackGroup.add(g);
-    }
-    if(i%11===0){
-      for(let k=-2;k<=2;k++){
-        const q=trackPoint(wrapS(ss+k*3.8,TRK.L),side*21),post=new THREE.Mesh(new THREE.CylinderGeometry(.045,.055,1.5,6),dark);
-        post.position.set(q.x,.75,q.z);trackGroup.add(post);
-        if(k<2){const q2=trackPoint(wrapS(ss+(k+1)*3.8,TRK.L),side*21),mid=new THREE.Vector3((q.x+q2.x)/2,.98,(q.z+q2.z)/2),len=Math.hypot(q2.x-q.x,q2.z-q.z);const rail=new THREE.Mesh(new THREE.BoxGeometry(.045,.045,len),dark);rail.position.copy(mid);rail.rotation.y=Math.atan2(q2.x-q.x,q2.z-q.z);trackGroup.add(rail);}
-      }
-    }
-  }
 }
 
 /* ---- scenery: CHUNKED merges, so culling works in both passes ---- */
@@ -1240,13 +1193,11 @@ function loadCustomModels(){
   });
 }
 
-function buildCustomKartMesh(ch,isPlayer,slot){
+function buildCustomKartMesh(ch){
   const g=new THREE.Group();
   const body=new THREE.Group();
   g.add(body);
   const model=customKartTemplate.clone(true);
-  // Make every clone independent so preview/race cleanup cannot dispose the shared GLB geometry.
-  model.traverse(o=>{if(o.isMesh&&o.geometry)o.geometry=o.geometry.clone();});
 
   // GLB should face +Z in KART RUSH. Change to Math.PI only if the source file
   // itself was exported facing -Z.
@@ -1264,9 +1215,8 @@ function buildCustomKartMesh(ch,isPlayer,slot){
   body.add(model);
 
   // Give every racer a different paint while preserving tires/glass/dark trim.
-  const paintColors=[0xE64A3B,0x3D8BFF,0x45B96B,0xF3C63E,0xA45DE8,0xFF73B7,0xFF8A3D,0x19B8C8];
-  const aiPaint=paintColors[Math.max(0,slot%paintColors.length)];
-  const chosen=isPlayer?ch.color:aiPaint;
+  const paintColors=[ch.color,0xE64A3B,0x3D8BFF,0x45B96B,0xF3C63E,0xA45DE8,0xFF73B7,0xFF8A3D];
+  const chosen=paintColors[Math.max(0,Math.min(paintColors.length-1,CHARS.indexOf(ch)))];
   const tint=new THREE.Color(chosen);
   body.traverse(o=>{
     if(!o.isMesh)return;
@@ -1278,7 +1228,7 @@ function buildCustomKartMesh(ch,isPlayer,slot){
       const glass=(m.transmission||0)>0 || (m.opacity!==undefined&&m.opacity<0.75);
       if(!dark&&!glass){
         const hsl={h:0,s:0,l:0};c.getHSL(hsl);
-        if(hsl.s>0.18 || hsl.l>0.16)c.lerp(tint,isPlayer?0.48:0.78);
+        if(hsl.s>0.18 || hsl.l>0.16)c.lerp(tint,0.38);
       }
       if(m.emissive && typeof m.emissiveIntensity!=='number')m.emissiveIntensity=0;
     });
@@ -1305,28 +1255,14 @@ function buildCustomKartMesh(ch,isPlayer,slot){
     paint=mats.find(m=>m&&m.color) || null;
   });
   if(!paint)paint=new THREE.MeshStandardMaterial({color:chosen,emissive:0x000000,emissiveIntensity:0});
-  if(!paint.emissive)paint.emissive=new THREE.Color(0x000000);
-  if(typeof paint.emissiveIntensity!=='number')paint.emissiveIntensity=0;
   const flames=[];
-  // AI karts get subtle size/wheel differences so the field is easier to read at speed.
-  const aiScale=isPlayer?1.05:(0.94+((slot*7)%5)*0.035);
-  g.scale.setScalar(aiScale);
-  if(!isPlayer){
-    const ringMat=new THREE.MeshBasicMaterial({color:chosen,transparent:true,opacity:0.48,depthWrite:false});
-    const ring=new THREE.Mesh(new THREE.RingGeometry(1.05,1.22,24),ringMat);
-    ring.rotation.x=-Math.PI/2;ring.position.y=0.035;body.add(ring);
-    // Tiny roof marker: makes rivals immediately distinguishable without covering the GLB.
-    const mast=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.38,6),ringMat);
-    mast.position.set(0,1.85,0);body.add(mast);
-    const flag=new THREE.Mesh(new THREE.BoxGeometry(.22,.12,.025),ringMat);
-    flag.position.set(.10,1.99,0);body.add(flag);
-  }
+  g.scale.setScalar(1.05);
   return {group:g,body,wheels,paint,flames};
 }
 
 loadCustomModels();
 
-function buildBuiltInKartMesh(ch,isPlayer,slot){
+function buildBuiltInKartMesh(ch){
   const g=new THREE.Group(),body=new THREE.Group();g.add(body);
   const P=[
     part(new THREE.BoxGeometry(1.5,0.32,2.7),ch.color,0,0.42,0),
@@ -1371,12 +1307,12 @@ function buildBuiltInKartMesh(ch,isPlayer,slot){
   g.scale.setScalar(1.05);
   return {group:g,body,wheels,paint:mat,flames};
 }
-function buildKartMesh(ch,isPlayer,slot){
-  return customKartTemplate ? buildCustomKartMesh(ch,isPlayer,slot) : buildBuiltInKartMesh(ch,isPlayer,slot);
+function buildKartMesh(ch){
+  return customKartTemplate ? buildCustomKartMesh(ch) : buildBuiltInKartMesh(ch);
 }
 let karts=[],player=null,projs=[],bananasOnTrack=[];
 function makeKart(ch,isPlayer,slot){
-  const mesh=buildKartMesh(ch,isPlayer,slot);
+  const mesh=buildKartMesh(ch);
   const s=wrapS(START_S-(8+slot*4.2),TRK.L),lat=(slot%2?-3.4:3.4);
   const p=trackPoint(s,lat);
   scene.add(mesh.group);
@@ -1390,7 +1326,6 @@ function makeKart(ch,isPlayer,slot){
     item:null,itemStack:0,rouT:0,rouItem:null,landT:0,coins:0,
     skill:isPlayer?1:rand(0.88,0.97),capMul:1,
     aiLatT:rand(0,9),aiBaseLat:rand(-3.5,3.5),aiUseT:0,aiRevT:0,stuckT:0,
-    aiStyle:rand(0,1),aiAggro:rand(.9,1.12),aiLineJitter:rand(1.3,2.8),
     rescueT:0,rescueCooldown:0,rescueLift:0,
     lapStart:0,rank:slot+1};
   mesh.group.position.set(p.x,0,p.z);mesh.group.rotation.y=p.yaw;
@@ -1770,9 +1705,9 @@ function kartCollisions(dt){
 function aiControl(k,dt){
   const sp=Math.hypot(k.vx,k.vz);
   const refU=player?(player.finished?playerFinishU:player.U):0;
-  k.capMul=k.skill*k.aiAggro*(player&&!k.finished?clamp(1+(refU-k.U)/2400,0.9,1.12):1);
+  k.capMul=k.skill*(player&&!k.finished?clamp(1+(refU-k.U)/2400,0.9,1.12):1);
   k.aiLatT+=dt*0.22;
-  let tgtLat=k.aiBaseLat+Math.sin(k.aiLatT+k.slot*2.1)*k.aiLineJitter;
+  let tgtLat=k.aiBaseLat+Math.sin(k.aiLatT+k.slot*2.1)*2.2;
   for(const o of karts){
     if(o===k)continue;
     const ds=wrapDelta(o.s-k.s,TRK.L);
@@ -1800,7 +1735,6 @@ function aiControl(k,dt){
   k.ctrl.throttle=sp<tv-1?1:0;
   k.ctrl.brake=sp>tv+7?1:0;
   if(sp<2.5&&k.ctrl.throttle>0)k.stuckT+=dt;else k.stuckT=0;
-  if(k.aiStyle>0.72&&sp>18&&Math.abs(dy)<0.22)k.ctrl.throttle=1;
   if(k.stuckT>2){k.aiRevT=1.2;k.stuckT=0;}
   if(k.aiRevT>0){k.aiRevT-=dt;k.ctrl.throttle=0;k.ctrl.brake=1;k.ctrl.steer=-k.ctrl.steer;}
   if(!k.drifting&&Math.abs(dy)>0.5&&sp>24&&!k.offroad){
@@ -1914,21 +1848,15 @@ let menuPreviewDef=null,menuCamT=0;
 
 function clearMenuPreview(){
   if(!menuPreviewGroup)return;
-  // Remove preview objects without disposing shared GLB geometry/materials.
-  // The old cleanup disposed resources owned by kart.glb, which could make
-  // later previews render black or disappear after switching screens.
   while(menuPreviewGroup.children.length){
-    const o=menuPreviewGroup.children[menuPreviewGroup.children.length-1];
-    menuPreviewGroup.remove(o);
-    if(o.userData && o.userData.previewOwned){
-      o.traverse(n=>{
-        if(n.geometry)try{n.geometry.dispose();}catch(e){}
-        if(n.material){
-          const ms=Array.isArray(n.material)?n.material:[n.material];
-          ms.forEach(m=>{try{m.dispose();}catch(e){}});
-        }
-      });
-    }
+    const o=menuPreviewGroup.children.pop();
+    o.traverse(n=>{
+      if(n.geometry)try{n.geometry.dispose();}catch(e){}
+      if(n.material){
+        const ms=Array.isArray(n.material)?n.material:[n.material];
+        ms.forEach(m=>{try{m.dispose();}catch(e){}});
+      }
+    });
   }
   menuPreviewTrack=null;menuPreviewCar=null;menuPreviewAccent=null;menuPreviewDef=null;
 }
@@ -1958,7 +1886,7 @@ function buildMenuTrackPreview(def){
   menuPreviewGroup.userData.trackCurve=curve;
   menuPreviewGroup.userData.trackDef=def;
   menuCamT=0;
-  const pts=curve.getSpacedPoints(120); pts.pop();
+  const pts=curve.getSpacedPoints(220); pts.pop();
 
   const width=13.5;
   const pos=[],idx=[],uv=[];
@@ -2017,7 +1945,7 @@ function buildMenuTrackPreview(def){
   const decoMat=new THREE.MeshStandardMaterial({color:def.env.rock[0],roughness:1,flatShading:true});
   const treeTrunk=new THREE.MeshStandardMaterial({color:def.env.palmT,roughness:1});
   const treeLeaf=new THREE.MeshStandardMaterial({color:def.env.palmL,roughness:.9,flatShading:true});
-  for(let i=0;i<22;i++){
+  for(let i=0;i<38;i++){
     const x=rand(-210,210),z=rand(-210,210);
     const near=locateMenuPreviewPoint(x,z,def);
     if(near<10)continue;
@@ -2025,7 +1953,7 @@ function buildMenuTrackPreview(def){
     const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(r,0),decoMat);
     rock.position.set(x,r*.35,z);rock.rotation.set(seed()*2,seed()*TAU,seed()*2);
     menuPreviewGroup.add(rock);
-    if(i<8 && def.env.palms>0){
+    if(i<14 && def.env.palms>0){
       const g=new THREE.Group();
       const t=new THREE.Mesh(new THREE.CylinderGeometry(.22,.38,4.5,7),treeTrunk);t.position.y=2.25;g.add(t);
       for(let k=0;k<5;k++){
@@ -2051,11 +1979,12 @@ function locateMenuPreviewPoint(x,z,def){
 function putMenuCarOnTrack(ch,def){
   if(menuPreviewCar){
     menuPreviewGroup.remove(menuPreviewCar);
-    if(menuPreviewCar.userData && menuPreviewCar.userData.previewOwned){
-      disposeGroup(menuPreviewCar);
-    }
+    menuPreviewCar.traverse(n=>{
+      if(n.geometry)try{n.geometry.dispose();}catch(e){}
+      if(n.material){const ms=Array.isArray(n.material)?n.material:[n.material];ms.forEach(m=>{try{m.dispose();}catch(e){}});}
+    });
   }
-  const mesh=buildKartMesh(ch,isPlayer,slot);
+  const mesh=buildKartMesh(ch);
   let si=0,sd=Infinity;
   for(let i=0;i<def.pts.length;i++){
     const d=Math.hypot(def.pts[i][0]-def.start[0],def.pts[i][1]-def.start[1]);
@@ -2096,9 +2025,6 @@ function applyEnv(env){
   sunDisc.material.color.setHex(env.sunC);
   sunDisc.position.set(env.sunPos[0],env.sunPos[1],env.sunPos[2]);
   dirL.color.setHex(env.dirC);dirL.intensity=env.dirI;
-  if(env.exposure)renderer.toneMappingExposure=env.exposure;
-  dirL.position.set(env.sunPos[0]*0.18,Math.max(120,env.sunPos[1]*0.72),env.sunPos[2]*0.18);
-  if(dirL.target){dirL.target.position.set(0,0,0);dirL.target.updateMatrixWorld();}
   hemi.color.setHex(env.hemiS);hemi.groundColor.setHex(env.hemiG);
   if(attractGroundMat)attractGroundMat.color.setHex(env.ground);
 }
@@ -2164,11 +2090,6 @@ function refreshTrackSel(){
   if(best){dom.trkBest.classList.remove('hidden');dom.trkBest.textContent='BEST '+fmt(best);}
   else dom.trkBest.classList.add('hidden');
   buildMenuTrackPreview(def);
-  if(attractGroup)attractGroup.visible=true;
-  camera.position.set(def.start[0]+42,42,def.start[1]+42);
-  camLook.set(def.start[0],0,def.start[1]);
-  camera.lookAt(camLook);
-  camera.fov=52;camera.updateProjectionMatrix();
   applyEnv(def.env);
 }
 function refreshCharSel(){
@@ -2213,16 +2134,6 @@ function showSelect(step){
   confetti=[];paused=false;stallShown=false;stallN=0;
   setSelStep(step);
   refreshTrackSel();refreshCharSel();
-  // Always establish a valid menu camera immediately. This prevents a black
-  // frame when coming back from a race where the chase camera was active.
-  const md=TRACKS[trackIdx];
-  const mp=md.pts[0];
-  camera.position.set(mp[0]+42,42,mp[1]+42);
-  camera.up.set(0,1,0);
-  camLook.set(mp[0],0,mp[1]);
-  camera.lookAt(camLook);
-  camera.fov=52;camera.updateProjectionMatrix();
-  applyEnv(md.env);
   MUSIC.play('title');
 }
 function leaveBoot(){
@@ -2502,17 +2413,6 @@ function updateDomHUD(){
   if(lapTxt!==lastLapShown){lastLapShown=lapTxt;
     dom.lap.textContent='LAP '+lapTxt+' / '+curLaps;}
   if(player.coins!==lastCoinShown){lastCoinShown=player.coins;dom.coin.textContent=player.coins;}
-  if(dom.itemLabel){
-    let itemText='ITEM: NONE';
-    if(player.rouT>0)itemText='ITEM: ?';
-    else if(player.item){
-      const names={mush:'BOOST',green:'GREEN SHELL',red:'RED SHELL',banana:'BANANA',star:'STAR'};
-      itemText='ITEM: '+(names[player.item]||player.item.toUpperCase())+(player.itemStack>1?' ×'+player.itemStack:'');
-    }
-    dom.itemLabel.textContent=itemText;
-    dom.itemLabel.classList.toggle('ready',!!player.item||player.rouT>0);
-    dom.itemLabel.classList.toggle('empty',!player.item&&player.rouT<=0);
-  }
   const tt=Math.floor(raceT*10);
   if(tt!==lastTimerT){lastTimerT=tt;dom.timer.textContent=fmt(raceT);}
   dom.ww.classList.toggle('hidden',wrongT<1.1);
@@ -2709,9 +2609,6 @@ function updateChaseCam(dt){
 }
 function updateAttract(dt){
   if(!attractGroup)return;
-  attractGroup.visible=true;
-  skyMesh.visible=true;
-  sunDisc.visible=true;
   menuOrbit+=dt*0.22;
   const curve=menuPreviewGroup&&menuPreviewGroup.userData.trackCurve;
 
@@ -2763,7 +2660,7 @@ function updateAttract(dt){
 /* =====================================================================
    INPUT
    ===================================================================== */
-let keys={};
+const keys={};
 window.addEventListener('keydown',e=>{
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
   initAudio();if(ACTX&&ACTX.state==='suspended')ACTX.resume();
