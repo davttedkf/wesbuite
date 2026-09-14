@@ -154,9 +154,9 @@ canvas{position:absolute;inset:0;display:block}
 #tbD{right:118px;bottom:26px;background:rgba(255,90,54,.85);color:var(--cream)}
 #tbI{right:22px;bottom:26px;background:rgba(23,163,152,.85);color:var(--cream)}
 
-#select:has(#selCharPanel:not(.hidden)) #selHead{position:relative;z-index:3;margin-bottom:2px;transform:translateY(185px)}
-#select:has(#selCharPanel:not(.hidden)) #selCharPanel{transform:translateY(185px)}
-#select:has(#selCharPanel:not(.hidden)) .selNav{transform:translateY(185px)}
+#select:has(#selCharPanel:not(.hidden)) #selHead{position:relative;z-index:3;margin-bottom:2px;transform:translateY(145px)}
+#select:has(#selCharPanel:not(.hidden)) #selCharPanel{transform:translateY(145px)}
+#select:has(#selCharPanel:not(.hidden)) .selNav{transform:translateY(145px)}
 #select:has(#selCharPanel:not(.hidden)) #ctrlHint{background:rgba(18,11,8,.48);padding:5px 12px;border-radius:10px;bottom:1vh}
 @media (max-width:700px){
   #selCharPanel{width:86vw;padding:10px}
@@ -979,6 +979,33 @@ function buildScenery(def){
 }
 
 function buildPickups(){
+  // If the real Lucky Block GLB has loaded, use it for every pickup.
+  if(luckyBlockTemplate){
+    boxList.forEach(b=>{if(b&&b.grp)disposeGroup(b.grp);});
+    boxList=[];
+    for(const f of [0.16,0.46,0.73]){
+      for(const lat of [-5.2,0,5.2]){
+        const s=wrapS(START_S+f*TRK.L,TRK.L),p=trackPoint(s,lat);
+        const g=new THREE.Group();g.position.set(p.x,1.25,p.z);
+        const model=luckyBlockTemplate.clone(true);
+        const bb=new THREE.Box3().setFromObject(model);
+        const sz=new THREE.Vector3();const cc=new THREE.Vector3();bb.getSize(sz);bb.getCenter(cc);
+        const longest=Math.max(sz.x,sz.y,sz.z)||1;
+        const sc=1.9/longest;
+        model.scale.setScalar(sc);
+        model.position.sub(cc.multiplyScalar(sc));
+        model.position.y=0;
+        g.add(model);
+        const glow=new THREE.PointLight(0xFFD21F,1.2,5,2);
+        glow.position.y=.4;g.add(glow);
+        trackGroup.add(g);
+        let animMeshes=[];
+        model.traverse(o=>{if(o.isMesh)animMeshes.push(o);});
+        boxList.push({grp:g,cube:model,core:null,mat:null,ring:null,x:p.x,z:p.z,s,lat,active:true,rt:0,ph:rand(0,TAU),model,animMeshes});
+      }
+    }
+    return;
+  }
   const face=luckyFaceTexture();
   const frameMat=new THREE.MeshStandardMaterial({
     color:0xFFC928,emissive:0x8A4A00,emissiveIntensity:.55,
@@ -1125,118 +1152,116 @@ const Skid=(function(){
 const K_DARK=0x2A241F,K_SKIN=0xE8B08A,K_VISOR=0x1A1E22;
 let customKartTemplate=null;
 let customKartLoadError=false;
+let luckyBlockTemplate=null;
+let luckyBlockLoadError=false;
+let glbModelsReady=false;
 
-function loadCustomKart(){
+function cloneMaterials(root){
+  root.traverse(o=>{
+    if(!o.isMesh)return;
+    o.castShadow=true;o.receiveShadow=true;
+    if(o.material){
+      if(Array.isArray(o.material))o.material=o.material.map(m=>m&&m.clone?m.clone():m);
+      else if(o.material.clone)o.material=o.material.clone();
+    }
+  });
+}
+
+function loadCustomModels(){
   if(!THREE.GLTFLoader)return;
   const loader=new THREE.GLTFLoader();
-  loader.load('./go_kart.glb',gltf=>{
+  loader.load('./kart.glb',gltf=>{
     customKartTemplate=gltf.scene;
-    customKartTemplate.traverse(o=>{
-      if(o.isMesh){
-        o.castShadow=true;
-        o.receiveShadow=true;
-        if(o.material)o.material=o.material.clone();
-      }
-    });
-    // If the GLB is already visible, rebuild the current preview/racers.
+    cloneMaterials(customKartTemplate);
+    customKartLoadError=false;
     if(typeof refreshCharSel==='function')refreshCharSel();
   },undefined,err=>{
     customKartLoadError=true;
-    console.warn('go_kart.glb was not loaded; using the built-in kart.',err);
+    console.warn('kart.glb was not loaded; using the built-in kart.',err);
+  });
+  loader.load('./luckyblock.glb',gltf=>{
+    luckyBlockTemplate=gltf.scene;
+    cloneMaterials(luckyBlockTemplate);
+    luckyBlockLoadError=false;
+    // Replace already-created procedural boxes with the real GLB boxes.
+    if(typeof buildPickups==='function' && typeof trackGroup!=='undefined' && trackGroup){
+      buildPickups();
+    }
+  },undefined,err=>{
+    luckyBlockLoadError=true;
+    console.warn('luckyblock.glb was not loaded; using the built-in Lucky Block.',err);
   });
 }
 
 function buildCustomKartMesh(ch){
-  const g=new THREE.Group(),body=new THREE.Group();
+  const g=new THREE.Group();
+  const body=new THREE.Group();
   g.add(body);
-
   const model=customKartTemplate.clone(true);
 
-  // The uploaded GLB faces the opposite direction from KART RUSH's +Z forward.
-  model.rotation.y=Math.PI;
+  // GLB should face +Z in KART RUSH. Change to Math.PI only if the source file
+  // itself was exported facing -Z.
+  model.rotation.y=0;
 
-  // Normalize the model to a sensible kart size.
   const box=new THREE.Box3().setFromObject(model);
   const size=new THREE.Vector3();
   const center=new THREE.Vector3();
-  box.getSize(size); box.getCenter(center);
+  box.getSize(size);box.getCenter(center);
   const longest=Math.max(size.x,size.y,size.z)||1;
   const scale=3.9/longest;
   model.scale.setScalar(scale);
   model.position.sub(center.multiplyScalar(scale));
   model.position.y+=0.58;
-
-  // Give each racer their own paint variant while preserving dark/metal parts.
-  const paintColor=new THREE.Color(ch.color||0xffffff);
-  model.traverse(o=>{
-    if(!o.isMesh||!o.material)return;
-    const mats=Array.isArray(o.material)?o.material:[o.material];
-    const out=[];
-    for(const src of mats){
-      if(!src){out.push(src);continue;}
-      const m=src.clone();
-
-      // Safely clone/initialize emissive properties for any Standard-like material.
-      if(!m.emissive){
-        m.emissive=new THREE.Color(0x000000);
-      }
-      if(typeof m.emissiveIntensity!=='number')m.emissiveIntensity=0;
-
-      // Repaint colorful body materials; leave black/gray tires, hubs and trim alone.
-      if(m.color){
-        const c=m.color.clone();
-        const max=Math.max(c.r,c.g,c.b);
-        const min=Math.min(c.r,c.g,c.b);
-        const brightness=(c.r+c.g+c.b)/3;
-        if(brightness>0.20 && (max-min)>0.04){
-          // Blend the GLB's original paint with this racer's team color.
-          c.lerp(paintColor,.78);
-          m.color.copy(c);
-        }
-      }
-      out.push(m);
-    }
-    o.material=Array.isArray(o.material)?out:out[0];
-    o.castShadow=true;
-    o.receiveShadow=true;
-  });
-
   body.add(model);
 
-  // Find wheels by common names. They remain optional.
+  // Give every racer a different paint while preserving tires/glass/dark trim.
+  const paintColors=[ch.color,0xE64A3B,0x3D8BFF,0x45B96B,0xF3C63E,0xA45DE8,0xFF73B7,0xFF8A3D];
+  const chosen=paintColors[Math.max(0,Math.min(paintColors.length-1,CHARS.indexOf(ch)))];
+  const tint=new THREE.Color(chosen);
+  body.traverse(o=>{
+    if(!o.isMesh)return;
+    const mats=Array.isArray(o.material)?o.material:[o.material];
+    mats.forEach(m=>{
+      if(!m||!m.color)return;
+      const c=m.color;
+      const dark=c.r<0.16&&c.g<0.16&&c.b<0.16;
+      const glass=(m.transmission||0)>0 || (m.opacity!==undefined&&m.opacity<0.75);
+      if(!dark&&!glass){
+        const hsl={h:0,s:0,l:0};c.getHSL(hsl);
+        if(hsl.s>0.18 || hsl.l>0.16)c.lerp(tint,0.38);
+      }
+      if(m.emissive && typeof m.emissiveIntensity!=='number')m.emissiveIntensity=0;
+    });
+  });
+
   const wheels=[];
   body.traverse(o=>{
     if(!o.isObject3D||o===body)return;
     const n=(o.name||'').toLowerCase();
-    if(/wheel|tire|tyre/.test(n) && !o.userData.kartWheel){
+    if(/wheel|tire|tyre/.test(n)&&!o.userData.kartWheel){
       o.userData.kartWheel=true;
       const steer=new THREE.Group();
       steer.position.copy(o.position);
-      o.parent.add(steer);
       o.position.set(0,0,0);
-      steer.add(o);
-      wheels.push({
-        steer,
-        spin:o,
-        front:/front|f_wheel|fwheel|steer/.test(n)
-      });
+      o.parent.add(steer);steer.add(o);
+      wheels.push({steer,spin:o,front:/front|f_wheel|fwheel/.test(n)});
     }
   });
 
-  // IMPORTANT: gameplay always gets a guaranteed emissive-capable paint material.
-  // Never use a random GLB material here, which caused the emissiveIntensity null crash.
-  const paint=new THREE.MeshStandardMaterial({
-    color:paintColor.clone(),
-    emissive:0x000000,
-    emissiveIntensity:0,
-    roughness:.48,
-    metalness:.16
+  let paint=null;
+  model.traverse(o=>{
+    if(paint||!o.isMesh)return;
+    const mats=Array.isArray(o.material)?o.material:[o.material];
+    paint=mats.find(m=>m&&m.color) || null;
   });
-
+  if(!paint)paint=new THREE.MeshStandardMaterial({color:chosen,emissive:0x000000,emissiveIntensity:0});
   const flames=[];
   g.scale.setScalar(1.05);
   return {group:g,body,wheels,paint,flames};
 }
+
+loadCustomModels();
+
 function buildBuiltInKartMesh(ch){
   const g=new THREE.Group(),body=new THREE.Group();g.add(body);
   const P=[
@@ -1750,7 +1775,8 @@ function updatePickups(dt){
       b.grp.position.y=1.25+Math.sin(perfT*2+(b.ph||0))*0.16;
       if(b.mat&&b.mat.emissive)b.mat.emissiveIntensity=.45+Math.sin(perfT*4+(b.ph||0))*.22;
       if(b.core&&b.core.rotation){b.core.rotation.y-=ad*3.2;b.core.rotation.x+=ad*1.4;}
-      if(b.ring){b.ring.rotation.z+=ad*1.7;b.ring.material.opacity=.13+Math.sin(perfT*5+(b.ph||0))*.07;}
+      if(b.ring){b.ring.rotation.z+=ad*1.7;if(b.ring.material)b.ring.material.opacity=.13+Math.sin(perfT*5+(b.ph||0))*.07;}
+      if(b.model)b.model.rotation.y+=ad*1.6;
     }
     for(const k of karts){
       if(!k||!isFinite(k.x)||!isFinite(k.z))continue;
@@ -2816,9 +2842,6 @@ buildAttract();
 applyEnv(TRACKS[0].env);
 showScreen('boot');
 dom.boot.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();});
-// Load the user's custom kart model before the racer preview/race starts.
-// The loader function is defined above; without this call the game always used the built-in kart.
-loadCustomKart();
 refreshTrackSel();
 refreshCharSel();
 attractGroup.visible=true;
