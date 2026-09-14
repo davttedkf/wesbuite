@@ -319,7 +319,7 @@ const TRACKS=[
     rock:[0xB4653F,0x8A4A32,0xC97B52],cact:0x3E7D5E,palmT:0x8A5A3A,palmL:0x4E9E6E,
     mtn:0x9A5A44,cloudA:0xF5C9A8,cloudB:0xE98A6C,sunC:0xFFE8B0,sunPos:[-620,300,-1180],
     dirC:0xFFD9A6,dirI:1.55,hemiS:0x8FD5CF,hemiG:0xB8743C,
-    rocks:70,hazRocks:34,cacti:24,palms:26,mtn:15,clouds:10}},
+    rocks:70,hazRocks:34,cacti:24,palms:26,mtn:0,clouds:10}},
  {id:'bay',name:'PALM BAY',tag:'Sweepers, sea breeze, easy living',diff:1,laps:3,song:'bay',
   start:[-75,190],
   pts:[[-170,190],[-178,100],[-160,10],[-105,-60],[-20,-95],[70,-115],[150,-100],[195,-40],
@@ -329,7 +329,7 @@ const TRACKS=[
     rock:[0xC99B6A,0xB3854F,0xD9B078],cact:0x4E9E6E,palmT:0x8A5A3A,palmL:0x4E9E6E,
     mtn:0x7AA89E,cloudA:0xFFF0DC,cloudB:0xF8D8B8,sunC:0xFFF3C8,sunPos:[-500,430,-1000],
     dirC:0xFFF0C8,dirI:1.5,hemiS:0xBFE8E0,hemiG:0xC9A06A,
-    rocks:30,hazRocks:20,cacti:10,palms:40,mtn:8,clouds:13}},
+    rocks:30,hazRocks:20,cacti:10,palms:40,mtn:0,clouds:13}},
  {id:'canyon',name:'CANYON RUSH',tag:'Two hairpins and no mercy',diff:3,laps:3,song:'canyon',
   start:[-52,206],
   pts:[[-140,200],[-150,120],[-132,55],[-90,15],[-98,-35],[-38,-62],[22,-38],[62,-88],
@@ -340,7 +340,7 @@ const TRACKS=[
     rock:[0xA8542F,0x8A4230,0xB46042],cact:0x4E7D4E,palmT:0x8A5A3A,palmL:0x4E9E6E,
     mtn:0x7A4638,cloudA:0xD98A6C,cloudB:0xC26048,sunC:0xFFD9A0,sunPos:[-700,240,-1150],
     dirC:0xFFC890,dirI:1.35,hemiS:0xE8B08A,hemiG:0x9A5A44,
-    rocks:110,hazRocks:46,cacti:34,palms:0,mtn:20,clouds:6}},
+    rocks:110,hazRocks:46,cacti:34,palms:0,mtn:0,clouds:6}},
 ];
 
 const $=id=>document.getElementById(id);
@@ -955,12 +955,8 @@ function buildScenery(def){
     }
   }
 
-  const mtnGeo=new THREE.ConeGeometry(1,1,7);
-  for(let i=0;i<env.mtn;i++){
-    const a=i/env.mtn*TAU+rv(-0.2,0.2),d=rv(560,900);
-    const h=rv(90,220),r=rv(120,240);
-    farParts.push(part(mtnGeo,env.mtn,Math.cos(a)*d,h/2-8,Math.sin(a)*d,0,0,0,r,h,r));
-  }
+  // Distant cone mountains removed. Keep the horizon clean and let
+  // the track scenery, trees, rocks and clouds define each environment.
   const cloudGeo=new THREE.SphereGeometry(1,10,8);
   for(let i=0;i<env.clouds;i++){
     const a=rv(0,TAU),d=rv(400,800),rr=rv(26,55);
@@ -1308,8 +1304,6 @@ function buildBuiltInKartMesh(ch){
   return {group:g,body,wheels,paint:mat,flames};
 }
 function buildKartMesh(ch){
-  // Every racer uses the exact same kart.glb model.
-  // Their character color is applied by buildCustomKartMesh().
   return customKartTemplate ? buildCustomKartMesh(ch) : buildBuiltInKartMesh(ch);
 }
 let karts=[],player=null,projs=[],bananasOnTrack=[];
