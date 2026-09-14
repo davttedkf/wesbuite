@@ -1308,6 +1308,8 @@ function buildBuiltInKartMesh(ch){
   return {group:g,body,wheels,paint:mat,flames};
 }
 function buildKartMesh(ch){
+  // Every racer uses the exact same kart.glb model.
+  // Their character color is applied by buildCustomKartMesh().
   return customKartTemplate ? buildCustomKartMesh(ch) : buildBuiltInKartMesh(ch);
 }
 let karts=[],player=null,projs=[],bananasOnTrack=[];
