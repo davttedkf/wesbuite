@@ -896,10 +896,21 @@ function buildScenery(def){
   };
   const farParts=[];
   const rockGeo=new THREE.DodecahedronGeometry(1,0);
+  const trunkGeo=new THREE.CylinderGeometry(.25,.42,1,7);
+  const leafGeo=new THREE.ConeGeometry(.55,3.2,5);
+  const cactT=new THREE.CylinderGeometry(.35,.42,1,8);
+  const cactA=new THREE.CylinderGeometry(.22,.24,1,8);
+  const fencePostGeo=new THREE.CylinderGeometry(.11,.14,2.0,6);
+  const fenceRailGeo=new THREE.BoxGeometry(.14,.14,3.0);
+  const signPostGeo=new THREE.CylinderGeometry(.13,.16,2.8,7);
+  const signGeo=new THREE.BoxGeometry(2.8,1.35,.16);
+  const hillGeo=new THREE.ConeGeometry(1,1,9);
+  const archPostGeo=new THREE.BoxGeometry(.35,4.4,.35);
+  const archTopGeo=new THREE.BoxGeometry(8.5,.42,.35);
 
-  // Keep every decorative object well outside the racing corridor.
-  // We use nearest-track distance as the final safety check instead of
-  // relying only on the requested lateral offset.
+  const rockParts=[],woodParts=[],leafParts=[],greenParts=[],sandParts=[],accentParts=[];
+  const addPart=(arr,geo,color,x,y,z,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1)=>arr.push(part(geo,color,x,y,z,rx,ry,rz,sx,sy,sz));
+
   const safePoint=(minLat,maxLat,minTrackDist)=>{
     for(let tries=0;tries<80;tries++){
       const p=trackPoint(rv(0,TRK.L),(R()<0.5?1:-1)*rv(minLat,maxLat));
@@ -908,72 +919,133 @@ function buildScenery(def){
     return null;
   };
 
+  // Main low-poly rocks: enough density to frame the course without hurting FPS.
   for(let i=0;i<env.rocks;i++){
-    const p=safePoint(58,110,48);
-    if(!p)continue;
+    const p=safePoint(58,110,48); if(!p)continue;
     const px=p.x+rv(-5,5),pz=p.z+rv(-5,5);
     if(nearLat(px,pz)<43)continue;
     const r=rv(3,10);
-    addNear(px,pz,part(rockGeo,env.rock[i%3],px,r*rv(0.3,0.6),pz,rv(0,3),rv(0,3),rv(0,3),r,r*rv(0.7,1.1),r));
+    addPart(rockParts,rockGeo,env.rock[i%3],px,r*rv(.3,.6),pz,rv(0,3),rv(0,3),rv(0,3),r,r*rv(.7,1.1),r);
   }
-
-  // Small hazard rocks are also pushed well away from the drivable lane.
   for(let i=0;i<env.hazRocks;i++){
-    const p=safePoint(50,70,40);
-    if(!p)continue;
-    const r=rv(1.0,1.8);
-    addNear(p.x,p.z,part(rockGeo,env.rock[(i+1)%3],p.x,r*0.55,p.z,rv(0,3),rv(0,3),rv(0,3),r,r,r));
-    OBST.push({x:p.x,z:p.z,r:r*0.9});
+    const p=safePoint(50,70,40); if(!p)continue;
+    const r=rv(1,1.8);
+    addPart(rockParts,rockGeo,env.rock[(i+1)%3],p.x,r*.55,p.z,rv(0,3),rv(0,3),rv(0,3),r,r,r);
+    OBST.push({x:p.x,z:p.z,r:r*.9});
   }
 
-  const cactT=new THREE.CylinderGeometry(0.35,0.42,1,8);
-  const cactA=new THREE.CylinderGeometry(0.22,0.24,1,8);
-  for(let i=0;i<env.cacti;i++){
-    const p=safePoint(48,68,40);
-    if(!p)continue;
-    const h=rv(2.5,4);
-    addNear(p.x,p.z,part(cactT,env.cact,p.x,h/2,p.z,0,0,0,1,h,1));
-    for(const side of [-1,1]){
-      if(R()<0.3)continue;
-      addNear(p.x,p.z,part(cactA,env.cact,p.x+side*.62,h*.55,p.z,0,0,0,1,h*.45,1));
-      addNear(p.x,p.z,part(cactA,env.cact,p.x+side*.85,h*.72,p.z,0,0,0,1,.5,1));
-    }
-    OBST.push({x:p.x,z:p.z,r:0.9});
-  }
-
-  // Palms/trees are kept farther out so their leaves cannot overlap the road.
-  const trunkGeo=new THREE.CylinderGeometry(0.25,0.42,1,7);
-  const leafGeo=new THREE.ConeGeometry(0.55,3.2,5);
+  // Trees/palms are now clustered so the map has depth instead of a flat ring of props.
   for(let i=0;i<env.palms;i++){
-    const p=safePoint(72,115,60);
-    if(!p)continue;
-    const h=rv(6,9);
-    addNear(p.x,p.z,part(trunkGeo,env.palmT,p.x,h/2,p.z,0,0,0,1,h,1));
+    const p=safePoint(72,115,60); if(!p)continue;
+    const h=rv(6,9),lean=rv(-.12,.12);
+    addPart(woodParts,trunkGeo,env.palmT,p.x,h/2,p.z,0,0,lean,1,h,1);
     for(let k=0;k<6;k++){
       const a=k/6*TAU;
-      addNear(p.x,p.z,part(leafGeo,env.palmL,p.x+Math.cos(a)*1.2,h,p.z+Math.sin(a)*1.2,Math.sin(a)*1.1,-Math.cos(a)*1.1,1.35));
+      addPart(leafParts,leafGeo,env.palmL,p.x+Math.cos(a)*1.2,h,p.z+Math.sin(a)*1.2,Math.sin(a)*1.1,-Math.cos(a)*1.1,0,1.35);
     }
   }
 
-  // Distant cone mountains removed. Keep the horizon clean and let
-  // the track scenery, trees, rocks and clouds define each environment.
+  // Desert vegetation remains theme-specific.
+  for(let i=0;i<env.cacti;i++){
+    const p=safePoint(48,68,40); if(!p)continue;
+    const h=rv(2.5,4);
+    addPart(greenParts,cactT,env.cact,p.x,h/2,p.z,0,0,0,1,h,1);
+    for(const side of [-1,1]) if(R()<.7){
+      addPart(greenParts,cactA,env.cact,p.x+side*.62,h*.55,p.z,0,0,0,1,h*.45,1);
+      addPart(greenParts,cactA,env.cact,p.x+side*.85,h*.72,p.z,0,0,0,1,.5,1);
+    }
+    OBST.push({x:p.x,z:p.z,r:.9});
+  }
+
+  // ---- Detailed trackside dressing ----
+  // Repeated wooden safety fencing makes turns feel authored rather than procedurally empty.
+  const fenceCount=def.id==='canyon'?28:22;
+  for(let i=0;i<fenceCount;i++){
+    const s=wrapS((i/fenceCount)*TRK.L+TRK.L*.08,TRK.L);
+    for(const side of [-1,1]){
+      const lat=side*(18+((i%3)*2));
+      const p=trackPoint(s,lat), next=trackPoint(s+2.7,lat);
+      const yaw=Math.atan2(next.x-p.x,next.z-p.z);
+      addPart(woodParts,fencePostGeo,env.palmT,p.x,1,p.z,0,yaw,0,1,1,1);
+      addPart(woodParts,fenceRailGeo,env.palmT,p.x,1.45,p.z,0,yaw,0,1,1,1);
+      addPart(woodParts,fenceRailGeo,env.palmT,p.x,.78,p.z,0,yaw,0,1,1,1);
+    }
+  }
+
+  // Small themed hills replace the old distant cone mountains. They stay close, earthy,
+  // and use the map's rock palette so there are no giant purple silhouettes.
+  const hillCount=def.id==='canyon'?14:10;
+  for(let i=0;i<hillCount;i++){
+    const p=safePoint(125,190,95); if(!p)continue;
+    const h=rv(18,38),r=rv(24,48);
+    addPart(sandParts,hillGeo,env.rock[(i+2)%3],p.x,h*.5,p.z,0,rv(0,TAU),0,r,h,r);
+  }
+
+  // Bay gets visible water pockets beyond the racing corridor; ridge/canyon get extra terrain.
+  if(def.id==='bay'){
+    const waterGeo=new THREE.CircleGeometry(1,32);
+    for(let i=0;i<5;i++){
+      const p=safePoint(110,175,95); if(!p)continue;
+      addPart(accentParts,waterGeo,0x48BFC8,p.x,-.08,p.z,0,0,0,rv(22,38),1,rv(14,26));
+    }
+  }else if(def.id==='canyon'){
+    // Tall nearby canyon pillars give the course walls and scale without restoring the old mountains.
+    for(let i=0;i<18;i++){
+      const p=safePoint(78,125,65); if(!p)continue;
+      const h=rv(10,24),r=rv(3,8);
+      addPart(rockParts,rockGeo,env.rock[i%3],p.x,h*.5,p.z,rv(-.15,.15),rv(0,TAU),rv(-.15,.15),r,h,r);
+    }
+  }else{
+    // Sunset Ridge gets softer rolling terrain and little stone clusters.
+    for(let i=0;i<12;i++){
+      const p=safePoint(80,135,65); if(!p)continue;
+      const r=rv(5,12);
+      addPart(rockParts,rockGeo,env.rock[(i+1)%3],p.x,r*.45,p.z,rv(0,3),rv(0,TAU),rv(0,3),r,r*.65,r);
+    }
+  }
+
+  // Three simple checkpoint arches make the whole lap visually readable.
+  for(const f of [.25,.5,.75]){
+    const s=wrapS(START_S+f*TRK.L,TRK.L),p=trackPoint(s,0),yaw=p.yaw;
+    for(const side of [-1,1]) addPart(accentParts,archPostGeo,0xF6EAD8,p.x+TRK.lx[p.i]*side*10.8,2.2,p.z+TRK.lz[p.i]*side*10.8,0,yaw,0,1,1,1);
+    addPart(accentParts,archTopGeo,0xF6EAD8,p.x,4.25,p.z,0,yaw,0,1,1,1);
+  }
+
+  // Themed signboards at major turns. These are deliberately lightweight; no extra textures/assets required.
+  for(let i=0;i<6;i++){
+    const s=wrapS(START_S+(i+.5)/6*TRK.L,TRK.L),side=i%2?1:-1,lat=side*22;
+    const p=trackPoint(s,lat),q=trackPoint(s+2,lat),yaw=Math.atan2(q.x-p.x,q.z-p.z);
+    addPart(woodParts,signPostGeo,env.palmT,p.x,1.4,p.z,0,yaw,0,1,1,1);
+    addPart(accentParts,signGeo,i%2?env.rock[0]:env.rock[2],p.x,2.7,p.z,0,yaw,0,1,1,1);
+  }
+
+  // Clouds remain far away, but are softer and larger than the old tiny backdrop shapes.
   const cloudGeo=new THREE.SphereGeometry(1,10,8);
   for(let i=0;i<env.clouds;i++){
     const a=rv(0,TAU),d=rv(400,800),rr=rv(26,55);
-    farParts.push(part(cloudGeo,R()<0.5?env.cloudA:env.cloudB,Math.cos(a)*d,rv(120,230),Math.sin(a)*d,0,0,0,rr,rr*0.32,rr));
+    farParts.push(part(cloudGeo,R()<.5?env.cloudA:env.cloudB,Math.cos(a)*d,rv(120,230),Math.sin(a)*d,0,0,0,rr,rr*.32,rr));
   }
-  const nearMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.95,flatShading:true});
-  for(const arr of chunks.values()){
-    const m=new THREE.Mesh(mergeParts(arr),nearMat);
-    m.castShadow=false;
-    trackGroup.add(m);
-  }
-  const far=new THREE.Mesh(mergeParts(farParts),
-    new THREE.MeshStandardMaterial({vertexColors:true,roughness:1}));
-  trackGroup.add(far);
-  rockGeo.dispose();cactT.dispose();cactA.dispose();trunkGeo.dispose();leafGeo.dispose();cloudGeo.dispose();
-}
 
+  const nearMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,flatShading:true});
+  const mergeGroup=(parts,mat)=>{
+    if(!parts.length)return;
+    const m=new THREE.Mesh(mergeParts(parts),mat);m.castShadow=false;m.receiveShadow=false;trackGroup.add(m);
+  };
+  for(const arr of chunks.values()){
+    const m=new THREE.Mesh(mergeParts(arr),nearMat);m.castShadow=false;m.receiveShadow=false;trackGroup.add(m);
+  }
+  mergeGroup(rockParts,nearMat);
+  mergeGroup(woodParts,nearMat);
+  mergeGroup(leafParts,nearMat);
+  mergeGroup(greenParts,nearMat);
+  mergeGroup(sandParts,nearMat);
+  mergeGroup(accentParts,nearMat);
+
+  const far=new THREE.Mesh(mergeParts(farParts),new THREE.MeshStandardMaterial({vertexColors:true,roughness:1}));
+  trackGroup.add(far);
+  rockGeo.dispose();trunkGeo.dispose();leafGeo.dispose();cactT.dispose();cactA.dispose();
+  fencePostGeo.dispose();fenceRailGeo.dispose();signPostGeo.dispose();signGeo.dispose();hillGeo.dispose();archPostGeo.dispose();archTopGeo.dispose();cloudGeo.dispose();
+}
 function buildPickups(){
   // If the real Lucky Block GLB has loaded, use it for every pickup.
   if(luckyBlockTemplate){
@@ -1307,6 +1379,7 @@ function buildKartMesh(ch){
   return customKartTemplate ? buildCustomKartMesh(ch) : buildBuiltInKartMesh(ch);
 }
 let karts=[],player=null,projs=[],bananasOnTrack=[];
+let finishOrder=[],resultsRefreshT=0;
 function makeKart(ch,isPlayer,slot){
   const mesh=buildKartMesh(ch);
   const s=wrapS(START_S-(8+slot*4.2),TRK.L),lat=(slot%2?-3.4:3.4);
@@ -1328,6 +1401,7 @@ function makeKart(ch,isPlayer,slot){
   return k;
 }
 function destroyRace(){
+  finishOrder=[];resultsRefreshT=0;
   karts.forEach(k=>disposeGroup(k.group));karts=[];player=null;
   projs.forEach(p=>disposeGroup(p.mesh));projs=[];
   bananasOnTrack.forEach(b=>disposeGroup(b.mesh));bananasOnTrack=[];
@@ -2365,13 +2439,26 @@ function updateRace(dt){
   // Ranking and DOM HUD are intentionally throttled. Physics stays full-rate.
   if((frameN&3)===0){
     try{
-      const sorted=karts.slice().sort((a,b)=>b.U-a.U);
+      const sorted=karts.slice().sort((a,b)=>{
+        if(a.finished!==b.finished)return a.finished?-1:1;
+        if(a.finished&&b.finished)return (a.finishTime??1e9)-(b.finishTime??1e9);
+        return b.U-a.U;
+      });
       for(let i=0;i<sorted.length;i++)sorted[i].rank=i+1;
       updateDomHUD();
+      // Keep the results screen live while the AI finish after the player.
+      if(!dom.results.classList.contains('hidden')){
+        resultsRefreshT-=0.066;
+        if(resultsRefreshT<=0){resultsRefreshT=0.18;updateResultsTable();}
+      }
     }catch(err){showErr(err,'hud-dom');}
   }
 }
 function onFinish(k){
+  if(!k.finishTime)k.finishTime=raceT;
+  if(!finishOrder.includes(k))finishOrder.push(k);
+  // AI finishers are recorded too; the old code only did special finish
+  // handling for the player, which made the results panel stale.
   if(k.isPlayer){
     playerFinishU=k.U;state='finished';
     flashMsg('FINISH!','big');
@@ -2380,13 +2467,25 @@ function onFinish(k){
     const key='kr_best_'+curTrack.id;
     const best=+localStorage.getItem(key)||0;
     if(!best||k.finishTime<best)localStorage.setItem(key,k.finishTime);
-    setTimeout(()=>{playerFinalRank=k.rank;S.fanfare(k.rank<=3);showResults();},2400);
+    setTimeout(()=>{
+      playerFinalRank=finishOrder.indexOf(player)>=0?finishOrder.indexOf(player)+1:k.rank;
+      S.fanfare(playerFinalRank<=3);
+      showResults();
+    },2400);
   }
 }
-function showResults(){dom.results.classList.remove('hidden');updateResultsTable();}
+function showResults(){
+  resultsRefreshT=0;
+  dom.results.classList.remove('hidden');
+  updateResultsTable();
+}
 function updateResultsTable(){
   if(!player)return;
-  const sorted=karts.slice().sort((a,b)=>b.U-a.U);
+  const sorted=karts.slice().sort((a,b)=>{
+    if(a.finished!==b.finished)return a.finished?-1:1;
+    if(a.finished&&b.finished)return (a.finishTime??1e9)-(b.finishTime??1e9);
+    return b.U-a.U;
+  });
   playerFinalRank=sorted.indexOf(player)+1;
   dom.resTable.innerHTML=sorted.map((k,i)=>
     `<div class="resRow${k.isPlayer?' me':''}"><span class="resRank">${ORD[i]}</span>
