@@ -2816,6 +2816,9 @@ buildAttract();
 applyEnv(TRACKS[0].env);
 showScreen('boot');
 dom.boot.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();});
+// Load the user's custom kart model before the racer preview/race starts.
+// The loader function is defined above; without this call the game always used the built-in kart.
+loadCustomKart();
 refreshTrackSel();
 refreshCharSel();
 attractGroup.visible=true;
