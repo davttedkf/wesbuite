@@ -165,6 +165,9 @@ canvas{position:absolute;inset:0;display:block}
 }
 
 
+#itemLabel{position:absolute;top:238px;left:24px;font-family:"Titan One";font-size:13px;color:var(--cream);background:var(--paper);border-radius:8px;padding:5px 10px;min-width:92px;text-align:center;letter-spacing:.4px}
+#itemLabel.ready{background:rgba(23,163,152,.9)}
+#itemLabel.empty{opacity:.72}
 #rescueHint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
   font-family:"Titan One";font-size:12px;letter-spacing:.4px;color:var(--ink);
   background:var(--cream);border:3px solid var(--ink);border-radius:10px;padding:6px 12px;
@@ -235,6 +238,7 @@ canvas{position:absolute;inset:0;display:block}
     <div id="posBadge">8th</div>
     <div id="lapBadge">LAP 1/3</div>
     <div id="coinBadge"><div id="coinDisc"></div><span id="coinNum">0</span></div>
+    <div id="itemLabel" class="empty">ITEM: NONE</div>
     <div id="timer">00:00.00</div>
     <div id="msg"><span id="msgMain"></span><span id="msgSub"></span></div>
     <div id="countdown"></div>
@@ -352,7 +356,7 @@ const dom={
   sb:[document.querySelector('#sb1 i'),document.querySelector('#sb2 i'),document.querySelector('#sb3 i')],
   loading:$('loading'),loadTrack:$('loadTrack'),loadBar:$('loadBar'),loadStep:$('loadStep'),
   loadPct:$('loadPct'),loadTip:$('loadTip'),
-  hudDom:$('hudDom'),pos:$('posBadge'),lap:$('lapBadge'),coin:$('coinNum'),timer:$('timer'),
+  hudDom:$('hudDom'),pos:$('posBadge'),lap:$('lapBadge'),coin:$('coinNum'),timer:$('timer'),itemLabel:$('itemLabel'),
   msg:$('msg'),msgMain:$('msgMain'),msgSub:$('msgSub'),cd:$('countdown'),ww:$('wrongWay'),
   mute:$('muteBtn'),results:$('results'),resTable:$('resTable'),resFoot:$('resFoot'),
   pause:$('pause'),touch:$('touchUI'),errBanner:$('errBanner'),dbgChip:$('dbgChip'),
@@ -1193,11 +1197,13 @@ function loadCustomModels(){
   });
 }
 
-function buildCustomKartMesh(ch){
+function buildCustomKartMesh(ch,isPlayer,slot){
   const g=new THREE.Group();
   const body=new THREE.Group();
   g.add(body);
   const model=customKartTemplate.clone(true);
+  // Make every clone independent so preview/race cleanup cannot dispose the shared GLB geometry.
+  model.traverse(o=>{if(o.isMesh&&o.geometry)o.geometry=o.geometry.clone();});
 
   // GLB should face +Z in KART RUSH. Change to Math.PI only if the source file
   // itself was exported facing -Z.
@@ -1215,8 +1221,9 @@ function buildCustomKartMesh(ch){
   body.add(model);
 
   // Give every racer a different paint while preserving tires/glass/dark trim.
-  const paintColors=[ch.color,0xE64A3B,0x3D8BFF,0x45B96B,0xF3C63E,0xA45DE8,0xFF73B7,0xFF8A3D];
-  const chosen=paintColors[Math.max(0,Math.min(paintColors.length-1,CHARS.indexOf(ch)))];
+  const paintColors=[0xE64A3B,0x3D8BFF,0x45B96B,0xF3C63E,0xA45DE8,0xFF73B7,0xFF8A3D,0x19B8C8];
+  const aiPaint=paintColors[Math.max(0,slot%paintColors.length)];
+  const chosen=isPlayer?ch.color:aiPaint;
   const tint=new THREE.Color(chosen);
   body.traverse(o=>{
     if(!o.isMesh)return;
@@ -1228,7 +1235,7 @@ function buildCustomKartMesh(ch){
       const glass=(m.transmission||0)>0 || (m.opacity!==undefined&&m.opacity<0.75);
       if(!dark&&!glass){
         const hsl={h:0,s:0,l:0};c.getHSL(hsl);
-        if(hsl.s>0.18 || hsl.l>0.16)c.lerp(tint,0.38);
+        if(hsl.s>0.18 || hsl.l>0.16)c.lerp(tint,isPlayer?0.48:0.78);
       }
       if(m.emissive && typeof m.emissiveIntensity!=='number')m.emissiveIntensity=0;
     });
@@ -1255,14 +1262,28 @@ function buildCustomKartMesh(ch){
     paint=mats.find(m=>m&&m.color) || null;
   });
   if(!paint)paint=new THREE.MeshStandardMaterial({color:chosen,emissive:0x000000,emissiveIntensity:0});
+  if(!paint.emissive)paint.emissive=new THREE.Color(0x000000);
+  if(typeof paint.emissiveIntensity!=='number')paint.emissiveIntensity=0;
   const flames=[];
-  g.scale.setScalar(1.05);
+  // AI karts get subtle size/wheel differences so the field is easier to read at speed.
+  const aiScale=isPlayer?1.05:(0.94+((slot*7)%5)*0.035);
+  g.scale.setScalar(aiScale);
+  if(!isPlayer){
+    const ringMat=new THREE.MeshBasicMaterial({color:chosen,transparent:true,opacity:0.48,depthWrite:false});
+    const ring=new THREE.Mesh(new THREE.RingGeometry(1.05,1.22,24),ringMat);
+    ring.rotation.x=-Math.PI/2;ring.position.y=0.035;body.add(ring);
+    // Tiny roof marker: makes rivals immediately distinguishable without covering the GLB.
+    const mast=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.38,6),ringMat);
+    mast.position.set(0,1.85,0);body.add(mast);
+    const flag=new THREE.Mesh(new THREE.BoxGeometry(.22,.12,.025),ringMat);
+    flag.position.set(.10,1.99,0);body.add(flag);
+  }
   return {group:g,body,wheels,paint,flames};
 }
 
 loadCustomModels();
 
-function buildBuiltInKartMesh(ch){
+function buildBuiltInKartMesh(ch,isPlayer,slot){
   const g=new THREE.Group(),body=new THREE.Group();g.add(body);
   const P=[
     part(new THREE.BoxGeometry(1.5,0.32,2.7),ch.color,0,0.42,0),
@@ -1307,12 +1328,12 @@ function buildBuiltInKartMesh(ch){
   g.scale.setScalar(1.05);
   return {group:g,body,wheels,paint:mat,flames};
 }
-function buildKartMesh(ch){
-  return customKartTemplate ? buildCustomKartMesh(ch) : buildBuiltInKartMesh(ch);
+function buildKartMesh(ch,isPlayer,slot){
+  return customKartTemplate ? buildCustomKartMesh(ch,isPlayer,slot) : buildBuiltInKartMesh(ch,isPlayer,slot);
 }
 let karts=[],player=null,projs=[],bananasOnTrack=[];
 function makeKart(ch,isPlayer,slot){
-  const mesh=buildKartMesh(ch);
+  const mesh=buildKartMesh(ch,isPlayer,slot);
   const s=wrapS(START_S-(8+slot*4.2),TRK.L),lat=(slot%2?-3.4:3.4);
   const p=trackPoint(s,lat);
   scene.add(mesh.group);
@@ -1326,6 +1347,7 @@ function makeKart(ch,isPlayer,slot){
     item:null,itemStack:0,rouT:0,rouItem:null,landT:0,coins:0,
     skill:isPlayer?1:rand(0.88,0.97),capMul:1,
     aiLatT:rand(0,9),aiBaseLat:rand(-3.5,3.5),aiUseT:0,aiRevT:0,stuckT:0,
+    aiStyle:rand(0,1),aiAggro:rand(.9,1.12),aiLineJitter:rand(1.3,2.8),
     rescueT:0,rescueCooldown:0,rescueLift:0,
     lapStart:0,rank:slot+1};
   mesh.group.position.set(p.x,0,p.z);mesh.group.rotation.y=p.yaw;
@@ -1705,9 +1727,9 @@ function kartCollisions(dt){
 function aiControl(k,dt){
   const sp=Math.hypot(k.vx,k.vz);
   const refU=player?(player.finished?playerFinishU:player.U):0;
-  k.capMul=k.skill*(player&&!k.finished?clamp(1+(refU-k.U)/2400,0.9,1.12):1);
+  k.capMul=k.skill*k.aiAggro*(player&&!k.finished?clamp(1+(refU-k.U)/2400,0.9,1.12):1);
   k.aiLatT+=dt*0.22;
-  let tgtLat=k.aiBaseLat+Math.sin(k.aiLatT+k.slot*2.1)*2.2;
+  let tgtLat=k.aiBaseLat+Math.sin(k.aiLatT+k.slot*2.1)*k.aiLineJitter;
   for(const o of karts){
     if(o===k)continue;
     const ds=wrapDelta(o.s-k.s,TRK.L);
@@ -1735,6 +1757,7 @@ function aiControl(k,dt){
   k.ctrl.throttle=sp<tv-1?1:0;
   k.ctrl.brake=sp>tv+7?1:0;
   if(sp<2.5&&k.ctrl.throttle>0)k.stuckT+=dt;else k.stuckT=0;
+  if(k.aiStyle>0.72&&sp>18&&Math.abs(dy)<0.22)k.ctrl.throttle=1;
   if(k.stuckT>2){k.aiRevT=1.2;k.stuckT=0;}
   if(k.aiRevT>0){k.aiRevT-=dt;k.ctrl.throttle=0;k.ctrl.brake=1;k.ctrl.steer=-k.ctrl.steer;}
   if(!k.drifting&&Math.abs(dy)>0.5&&sp>24&&!k.offroad){
@@ -1984,7 +2007,7 @@ function putMenuCarOnTrack(ch,def){
       if(n.material){const ms=Array.isArray(n.material)?n.material:[n.material];ms.forEach(m=>{try{m.dispose();}catch(e){}});}
     });
   }
-  const mesh=buildKartMesh(ch);
+  const mesh=buildKartMesh(ch,isPlayer,slot);
   let si=0,sd=Infinity;
   for(let i=0;i<def.pts.length;i++){
     const d=Math.hypot(def.pts[i][0]-def.start[0],def.pts[i][1]-def.start[1]);
@@ -2413,6 +2436,17 @@ function updateDomHUD(){
   if(lapTxt!==lastLapShown){lastLapShown=lapTxt;
     dom.lap.textContent='LAP '+lapTxt+' / '+curLaps;}
   if(player.coins!==lastCoinShown){lastCoinShown=player.coins;dom.coin.textContent=player.coins;}
+  if(dom.itemLabel){
+    let itemText='ITEM: NONE';
+    if(player.rouT>0)itemText='ITEM: ?';
+    else if(player.item){
+      const names={mush:'BOOST',green:'GREEN SHELL',red:'RED SHELL',banana:'BANANA',star:'STAR'};
+      itemText='ITEM: '+(names[player.item]||player.item.toUpperCase())+(player.itemStack>1?' ×'+player.itemStack:'');
+    }
+    dom.itemLabel.textContent=itemText;
+    dom.itemLabel.classList.toggle('ready',!!player.item||player.rouT>0);
+    dom.itemLabel.classList.toggle('empty',!player.item&&player.rouT<=0);
+  }
   const tt=Math.floor(raceT*10);
   if(tt!==lastTimerT){lastTimerT=tt;dom.timer.textContent=fmt(raceT);}
   dom.ww.classList.toggle('hidden',wrongT<1.1);
@@ -2660,7 +2694,7 @@ function updateAttract(dt){
 /* =====================================================================
    INPUT
    ===================================================================== */
-const keys={};
+let keys={};
 window.addEventListener('keydown',e=>{
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
   initAudio();if(ACTX&&ACTX.state==='suspended')ACTX.resume();
