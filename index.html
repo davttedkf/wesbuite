@@ -73,11 +73,6 @@
     .thinking-pill .sweep { position: absolute; top: -10%; bottom: -10%; left: 0; width: 45%; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(99,102,241,0.16), rgba(255,255,255,0.7), transparent); transform: translateX(-140%); animation: think-sweep 2.6s ease-in-out infinite; }
     .dark .thinking-pill .sweep { background: linear-gradient(90deg, transparent, rgba(99,102,241,0.22), rgba(255,255,255,0.14), transparent); }
     @keyframes think-sweep { 0% { transform: translateX(-140%); opacity: 0; } 12% { opacity: 1; } 55% { transform: translateX(280%); opacity: 0; } 100% { transform: translateX(280%); opacity: 0; } }
-    .pay-tab { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 12px; font-weight: 600; padding: 0.55rem 0.95rem; border-radius: 0.75rem; border: 1px solid #e4e4e7; color: #71717a; background: #fff; transition: all .15s ease; }
-    .dark .pay-tab { background: #18181b; border-color: #27272a; color: #a1a1aa; }
-    .pay-tab:hover { border-color: #d4d4d8; }
-    .pay-tab-active { background: #18181b !important; color: #fff !important; border-color: #18181b !important; }
-    .dark .pay-tab-active { background: #f4f4f5 !important; color: #18181b !important; border-color: #f4f4f5 !important; }
     @keyframes slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
     .animate-slide-in { animation: slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes shake { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-4px); } 40%, 60% { transform: translateX(4px); } }
@@ -85,7 +80,44 @@
     @keyframes msg-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
     .msg-in { animation: msg-in 0.25s ease-out both; }
     @keyframes drop-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
-    .animate-drop-in { animation: drop-in 0.16s ease-out; }
+        .animate-drop-in { animation: drop-in 0.16s ease-out; }
+    body.no-motion * { animation: none !important; transition: none !important; }
+    .settings-section { border: 1px solid #e4e4e7; border-radius: 1rem; padding: 1rem; }
+    .dark .settings-section { border-color: #27272a; }
+    .settings-label { font-size: 11px; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .6rem; display: flex; align-items: center; gap: .4rem; }
+    .dark .settings-label { color: #a1a1aa; }
+        .settings-scroll { max-height: 70vh; overflow-y: auto; padding-right: 2px; }
+    .msg-menu { position: absolute; bottom: calc(100% + 6px); right: 0; background: #fff; border: 1px solid #e4e4e7; border-radius: .75rem; box-shadow: 0 10px 30px rgba(0,0,0,.12); padding: .35rem; z-index: 60; min-width: 170px; }
+    .dark .msg-menu { background: #18181b; border-color: #27272a; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+    .msg-menu button { display: flex; align-items: center; gap: .55rem; width: 100%; text-align: left; font-size: 12px; font-weight: 500; color: #3f3f46; padding: .45rem .6rem; border-radius: .5rem; cursor: pointer; }
+    .msg-menu button:hover { background: #f4f4f5; }
+    .dark .msg-menu button { color: #d4d4d8; }
+    .dark .msg-menu button:hover { background: #27272a; }
+    .msg-menu button.danger { color: #e11d48; }
+    .msg-menu button.danger:hover { background: #fff1f2; }
+    .dark .msg-menu button.danger:hover { background: #4c0519; }
+    .proj-chip { display: inline-flex; align-items: center; gap: .35rem; font-size: 11px; font-weight: 600; padding: .3rem .7rem; border-radius: 9999px; border: 1px solid #e4e4e7; background: #fff; color: #52525b; cursor: pointer; white-space: nowrap; transition: all .15s ease; }
+    .proj-chip:hover { border-color: #d4d4d8; }
+    .proj-chip.active { background: #18181b; color: #fff; border-color: #18181b; }
+    .dark .proj-chip { background: #18181b; border-color: #27272a; color: #a1a1aa; }
+    .dark .proj-chip.active { background: #f4f4f5; color: #18181b; border-color: #f4f4f5; }
+    .memory-row { display: flex; align-items: center; gap: .6rem; padding: .55rem .7rem; border: 1px solid #e4e4e7; border-radius: .65rem; font-size: 12px; }
+    .dark .memory-row { border-color: #27272a; }
+    .temp-on { background: #18181b !important; color: #fff !important; border-color: #18181b !important; }
+    .dark .temp-on { background: #f4f4f5 !important; color: #18181b !important; border-color: #f4f4f5 !important; }
+    /* ==== MOBILE RESPONSIVE FIXES ==== */
+    @media (max-width: 767px) {
+      /* Sidebar becomes a slide-in overlay instead of pushing content */
+      #sidebar { position: fixed; top: 0; bottom: 0; left: 0; z-index: 50; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+      /* Header buttons become icon-only (keeps the model name) */
+      header button span:not(#currentModelText) { display: none; }
+      /* Tone button becomes icon-only */
+      #personaBtn span { display: none; }
+      /* Show hover-only buttons (reply, pin, delete) since phones have no hover */
+      .group-hover\:opacity-100 { opacity: 1 !important; }
+      /* Modals get breathing room from screen edges */
+      #profileModal, #authOverlay, #sandboxModal { padding: 1rem; }
+    }
   </style>
 </head>
 <body class="h-screen flex overflow-hidden bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 relative transition-colors duration-300">
@@ -108,6 +140,10 @@
             <i class="fa-solid fa-search absolute left-3 top-2.5 text-xs text-zinc-400"></i>
             <input type="text" id="chatSearchInput" placeholder="Search chats..." class="w-full pl-8 pr-3 py-1.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-1 focus:ring-zinc-500">
           </div>
+        </div>
+                <div class="mb-2">
+          <div class="px-2 mb-1.5 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Projects</div>
+          <div id="projectsRow" class="flex flex-wrap gap-1.5 px-1"></div>
         </div>
         <div class="flex-1 overflow-y-auto custom-scrollbar space-y-1 pr-1">
           <div id="chatHistoryList" class="space-y-1"></div>
@@ -180,9 +216,16 @@
           <button onclick="toggleTheme()" id="themeToggleBtn" title="Toggle Light/Dark Mode" class="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 flex items-center justify-center transition border border-zinc-200 dark:border-zinc-700">
             <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
           </button>
+                    <button onclick="toggleTempChat()" id="tempChatBtn" title="Temporary chat (won't be saved)" class="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 flex items-center justify-center transition border border-zinc-200 dark:border-zinc-700">
+            <i class="fa-solid fa-user-secret text-sm"></i>
+          </button>
           <button onclick="exportChat()" title="Export chat to Markdown" class="flex items-center space-x-1.5 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-full text-xs font-semibold transition border border-zinc-200 dark:border-zinc-700 shadow-sm">
             <i class="fa-solid fa-download text-zinc-600 dark:text-zinc-300"></i>
             <span>Export</span>
+          </button>
+                    <button onclick="shareConversation()" title="Share conversation" class="flex items-center space-x-1.5 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-full text-xs font-semibold transition border border-zinc-200 dark:border-zinc-700 shadow-sm">
+            <i class="fa-solid fa-share-nodes text-zinc-600 dark:text-zinc-300"></i>
+            <span>Share</span>
           </button>
           <button onclick="openPricingModal()" class="flex items-center space-x-1.5 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-full text-xs font-semibold transition border border-zinc-200 dark:border-zinc-700 shadow-sm">
             <i class="fa-solid fa-wand-magic-sparkles text-zinc-700 dark:text-zinc-300"></i>
@@ -243,7 +286,10 @@
         </button>
       </div>
 
-      <div class="px-4 pb-6 pt-2 bg-white dark:bg-zinc-950 w-full max-w-3xl mx-auto relative">
+            <div class="px-4 pb-6 pt-2 bg-white dark:bg-zinc-950 w-full max-w-3xl mx-auto relative">
+        <div id="tempBanner" class="hidden items-center gap-2 justify-center mb-2 text-[11px] font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-full px-3.5 py-1.5">
+          <i class="fa-solid fa-user-secret text-[10px]"></i> Temporary chat — this conversation won't be saved to your history
+        </div>
         <div id="inputWrapper" class="bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-3xl shadow-sm focus-within:border-zinc-500 transition-all flex flex-col">
           <div id="replyBar" class="hidden items-center gap-2.5 px-4 py-2 border-b border-zinc-200 dark:border-zinc-700">
             <i class="fa-solid fa-reply text-zinc-400 text-xs flex-shrink-0"></i>
@@ -262,7 +308,7 @@
             <button id="micBtn" type="button" class="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 w-9 h-9 rounded-full flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-800 transition mr-2 flex-shrink-0" title="Voice dictation">
               <i class="fa-solid fa-microphone text-sm"></i>
             </button>
-            <textarea id="userInput" rows="1" placeholder="Ask anything (try 'code', 'write', math, health, or 'draw')" class="flex-1 bg-transparent resize-none focus:outline-none text-base text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 custom-scrollbar py-2.5 max-h-48 min-h-[40px]"></textarea>
+            <textarea id="userInput" rows="1" placeholder="Ask anything (try 'code', 'write', math, health)" class="flex-1 bg-transparent resize-none focus:outline-none text-base text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 custom-scrollbar py-2.5 max-h-48 min-h-[40px]"></textarea>
             <div class="flex items-center space-x-2 ml-2 flex-shrink-0">
               <div class="relative">
                 <button id="personaBtn" type="button" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition" title="Change response tone">
@@ -307,7 +353,7 @@
               </div>
               <button id="thinkBtn" onclick="toggleThinkMode()" class="hidden sm:flex items-center space-x-1 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
                 <i id="thinkIcon" class="fa-solid fa-brain text-zinc-900 dark:text-zinc-100"></i>
-                <span>Think</span>
+                <span>Sources</span>
               </button>
               <button id="sendBtn" class="w-9 h-9 rounded-full bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-700 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 flex items-center justify-center transition disabled:opacity-30 disabled:cursor-not-allowed shadow-sm" disabled>
                 <i id="sendActionIcon" class="fa-solid fa-arrow-up"></i>
@@ -337,43 +383,102 @@
     </div>
   </div>
 
-  <div id="profileModal" class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
-    <div class="bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl w-full max-w-md p-8 border border-zinc-200 dark:border-zinc-800 transform scale-95 transition-transform duration-300" id="profileModalInner">
-      <div class="flex items-start justify-between mb-4">
-        <div class="w-11 h-11 rounded-2xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center shadow-md">
-          <i class="fa-solid fa-user"></i>
-        </div>
-        <button onclick="closeProfileModal()" class="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition text-lg w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-1">Your profile</h2>
-      <p class="text-xs text-zinc-500 mb-6">Omni uses this to greet you by name and tailor answers to what you do. It stays on this device.</p>
-      <form id="profileForm" class="space-y-5" novalidate>
-        <div>
-          <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">Your name</label>
-          <input type="text" id="profileName" placeholder="e.g. Alex Morgan" class="w-full px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 text-zinc-900 dark:text-zinc-100">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">What do you do?</label>
-          <input type="text" id="profileRole" list="roleList" placeholder="e.g. Software Engineer" class="w-full px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 text-zinc-900 dark:text-zinc-100">
-          <datalist id="roleList">
-            <option value="Student"></option><option value="Software Engineer"></option><option value="Designer"></option>
-            <option value="Teacher"></option><option value="Doctor"></option><option value="Nurse"></option>
-            <option value="Marketer"></option><option value="Entrepreneur"></option><option value="Data Analyst"></option><option value="Writer"></option>
-          </datalist>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">Preferred answer style</label>
-          <div class="grid grid-cols-3 gap-2" id="styleOptions">
-            <button type="button" data-style="concise" class="style-btn flex flex-col items-center gap-1.5 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-zinc-600 dark:text-zinc-300 transition"><i class="fa-solid fa-bolt"></i> Concise</button>
-            <button type="button" data-style="balanced" class="style-btn flex flex-col items-center gap-1.5 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-zinc-600 dark:text-zinc-300 transition"><i class="fa-solid fa-scale-balanced"></i> Balanced</button>
-            <button type="button" data-style="detailed" class="style-btn flex flex-col items-center gap-1.5 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-zinc-600 dark:text-zinc-300 transition"><i class="fa-solid fa-book-open"></i> Detailed</button>
+   <div id="profileModal" class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl w-full max-w-lg border border-zinc-200 dark:border-zinc-800 transform scale-95 transition-transform duration-300" id="profileModalInner">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center"><i class="fa-solid fa-gear"></i></div>
+          <div>
+            <h2 class="text-base font-bold text-zinc-900 dark:text-zinc-100 leading-tight">Settings</h2>
+            <p class="text-[11px] text-zinc-500">Profile, appearance, usage &amp; data</p>
           </div>
         </div>
-        <div class="flex gap-2 pt-1">
-          <button type="button" id="profileResetBtn" class="flex-1 py-2.5 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 font-semibold text-sm rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition">Reset</button>
-          <button type="submit" class="flex-[2] py-2.5 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-semibold text-sm rounded-xl transition shadow-md">Save profile</button>
+        <button onclick="closeProfileModal()" class="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 text-lg w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="settings-scroll p-5 space-y-4">
+        <div class="settings-section">
+          <div class="settings-label"><i class="fa-solid fa-user text-[10px]"></i> Profile &amp; memory</div>
+          <form id="profileForm" class="space-y-3" novalidate>
+            <div>
+              <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1">Your name</label>
+              <input type="text" id="profileName" placeholder="e.g. Alex Morgan" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 text-zinc-900 dark:text-zinc-100">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1">What do you do?</label>
+              <input type="text" id="profileRole" list="roleList" placeholder="e.g. Software Engineer" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 text-zinc-900 dark:text-zinc-100">
+              <datalist id="roleList">
+                <option value="Student"></option><option value="Software Engineer"></option><option value="Designer"></option>
+                <option value="Teacher"></option><option value="Doctor"></option><option value="Nurse"></option>
+                <option value="Marketer"></option><option value="Entrepreneur"></option><option value="Data Analyst"></option><option value="Writer"></option>
+              </datalist>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1">Answer style</label>
+              <div class="grid grid-cols-3 gap-2" id="styleOptions">
+                <button type="button" data-style="concise" class="style-btn flex flex-col items-center gap-1 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-[11px] font-semibold text-zinc-600 dark:text-zinc-300 transition"><i class="fa-solid fa-bolt"></i> Concise</button>
+                <button type="button" data-style="balanced" class="style-btn flex flex-col items-center gap-1 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-[11px] font-semibold text-zinc-600 dark:text-zinc-300 transition"><i class="fa-solid fa-scale-balanced"></i> Balanced</button>
+                <button type="button" data-style="detailed" class="style-btn flex flex-col items-center gap-1 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-[11px] font-semibold text-zinc-600 dark:text-zinc-300 transition"><i class="fa-solid fa-book-open"></i> Detailed</button>
+              </div>
+            </div>
+            <div class="flex gap-2 pt-1">
+              <button type="button" id="profileResetBtn" class="flex-1 py-2 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 font-semibold text-xs rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition">Reset profile</button>
+              <button type="submit" class="flex-[2] py-2 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-semibold text-xs rounded-lg transition shadow-sm">Save profile</button>
+            </div>
+          </form>
         </div>
-      </form>
+        <div class="settings-section">
+          <div class="settings-label"><i class="fa-solid fa-palette text-[10px]"></i> Appearance</div>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="themeLightBtn" class="style-btn flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-zinc-600 dark:text-zinc-300 transition"><i class="fa-solid fa-sun"></i> Light</button>
+            <button type="button" id="themeDarkBtn" class="style-btn flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-zinc-600 dark:text-zinc-300 transition"><i class="fa-solid fa-moon"></i> Dark</button>
+          </div>
+          <label class="flex items-center justify-between mt-3 cursor-pointer">
+            <span class="text-xs font-medium text-zinc-700 dark:text-zinc-300">Reduce motion (disable animations)</span>
+            <input type="checkbox" id="reduceMotionChk" class="w-4 h-4 accent-zinc-900 dark:accent-zinc-100">
+          </label>
+        </div>
+        <div class="settings-section">
+          <div class="settings-label"><i class="fa-solid fa-gauge-high text-[10px]"></i> Usage</div>
+          <div class="flex items-center justify-between text-xs font-medium text-zinc-700 dark:text-zinc-300">
+            <span><i class="fa-solid fa-image mr-1 text-zinc-400"></i>Image generations</span>
+            <span id="usageImgText" class="font-mono">0 / 10</span>
+          </div>
+          <div class="h-2 bg-zinc-200 dark:bg-zinc-800 rounded-full mt-2 overflow-hidden">
+            <div id="usageImgBar" class="h-full bg-zinc-900 dark:bg-zinc-100 rounded-full transition-all duration-300" style="width:0%"></div>
+          </div>
+          <div class="flex items-center justify-between mt-1.5">
+            <span id="usageImgReset" class="text-[10px] text-zinc-400">Limit resets in 24h</span>
+            <span class="text-[10px] text-zinc-400">10 per 24 hours</span>
+          </div>
+          <div class="flex items-center justify-between text-xs font-medium text-zinc-700 dark:text-zinc-300 mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+            <span><i class="fa-solid fa-comments mr-1 text-zinc-400"></i>Total messages</span>
+            <span id="usageMsgCount" class="font-mono">0</span>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-label"><i class="fa-solid fa-brain text-[10px]"></i> Memory</div>
+          <p class="text-[11px] text-zinc-500 mb-2.5">Omni can remember information you choose to save. Everything stays on this device.</p>
+          <div id="memoryList" class="space-y-1.5 mb-2.5"></div>
+          <div class="flex gap-2">
+            <input type="text" id="memoryInput" placeholder="e.g. You're working on a Roblox game" class="flex-1 px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 text-zinc-900 dark:text-zinc-100">
+            <button type="button" id="memoryAddBtn" class="px-3 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-semibold rounded-lg hover:bg-zinc-700 dark:hover:bg-zinc-200 transition flex-shrink-0"><i class="fa-solid fa-plus"></i></button>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-label"><i class="fa-solid fa-database text-[10px]"></i> Data controls</div>
+          <div class="space-y-2">
+            <button type="button" id="exportDataBtn" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition">
+              <span><i class="fa-solid fa-file-export mr-2 text-zinc-400"></i>Export all data (profile + chats)</span>
+              <i class="fa-solid fa-download text-zinc-400"></i>
+            </button>
+            <button type="button" id="clearChatsBtn" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg border border-rose-200 dark:border-rose-900/50 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition">
+              <span><i class="fa-solid fa-trash-can mr-2"></i>Delete all chats</span>
+              <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+            </button>
+            <p class="text-[10px] text-zinc-400 pt-1">Everything is stored on this device (and synced to your Omni room). Deleting chats here also removes them from the cloud.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -415,9 +520,12 @@
         </button>
         <h2 class="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Upgrade your Omni experience</h2>
         <p class="text-xs text-zinc-500 mt-1.5">Power up your assistant. Cancel anytime.</p>
+        <div class="mt-4 inline-flex bg-zinc-100 dark:bg-zinc-800 rounded-full p-1">
+          <button type="button" data-cycle="monthly" class="cycle-btn px-4 py-1.5 rounded-full text-xs font-semibold transition bg-white dark:bg-zinc-900 shadow-sm text-zinc-900 dark:text-zinc-100">Monthly</button>
+          <button type="button" data-cycle="yearly" class="cycle-btn px-4 py-1.5 rounded-full text-xs font-semibold transition text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 flex items-center gap-1.5">Yearly <span class="text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">SAVE 20%</span></button>
+        </div>
       </div>
       <div class="p-8 bg-zinc-50 dark:bg-zinc-950 flex-1 overflow-y-auto custom-scrollbar">
-        <!-- PLAN CARDS -->
         <div id="pricingCardsView" class="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
           <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm flex flex-col">
             <div class="text-sm font-bold text-zinc-900 dark:text-zinc-100">Free</div>
@@ -425,10 +533,10 @@
             <div class="mt-4 flex items-baseline gap-1"><span class="text-3xl font-bold text-zinc-900 dark:text-zinc-100">$0</span><span class="text-xs text-zinc-500">/ month</span></div>
             <ul class="mt-5 space-y-2 text-xs text-zinc-600 dark:text-zinc-300 flex-1">
               <li class="flex items-start"><i class="fa-solid fa-check text-zinc-400 mt-0.5 mr-2.5"></i>Omni 4.5 model</li>
-              <li class="flex items-start"><i class="fa-solid fa-check text-zinc-400 mt-0.5 mr-2.5"></i>Real AI answers (Gemini)</li>
-              <li class="flex items-start"><i class="fa-solid fa-check text-zinc-400 mt-0.5 mr-2.5"></i>Real image generation</li>
-              <li class="flex items-start"><i class="fa-solid fa-check text-zinc-400 mt-0.5 mr-2.5"></i>Math solver &amp; KaTeX</li>
+              <li class="flex items-start"><i class="fa-solid fa-check text-zinc-400 mt-0.5 mr-2.5"></i>Local math solver &amp; KaTeX</li>
+              <li class="flex items-start"><i class="fa-solid fa-check text-zinc-400 mt-0.5 mr-2.5"></i>Image creation</li>
               <li class="flex items-start"><i class="fa-solid fa-check text-zinc-400 mt-0.5 mr-2.5"></i>Voice input &amp; read-aloud</li>
+              <li class="flex items-start"><i class="fa-solid fa-check text-zinc-400 mt-0.5 mr-2.5"></i>Chat export &amp; history</li>
             </ul>
             <button class="mt-6 w-full py-2.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 font-semibold text-sm rounded-xl cursor-default border border-zinc-200 dark:border-zinc-700">Your current plan</button>
           </div>
@@ -466,108 +574,84 @@
             <button onclick="startCheckout('max')" class="mt-6 w-full py-2.5 border-2 border-zinc-900 dark:border-zinc-100 text-zinc-900 dark:text-zinc-100 font-semibold text-sm rounded-xl transition hover:bg-zinc-900 hover:text-white dark:hover:bg-zinc-100 dark:hover:text-zinc-900">Upgrade to Max</button>
           </div>
         </div>
-
-        <!-- CONFIGURE-YOUR-PLAN CHECKOUT (ChatGPT style) -->
-        <div id="checkoutFormView" class="hidden max-w-4xl mx-auto">
-          <button onclick="backToPlans()" class="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 mb-4 flex items-center gap-1.5 font-medium transition">
+        <div id="checkoutFormView" class="hidden max-w-3xl mx-auto">
+          <button onclick="backToPlans()" class="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 mb-4 flex items-center space-x-1 font-medium transition">
             <i class="fa-solid fa-arrow-left"></i><span>Back to plan options</span>
           </button>
-          <h3 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">Configure your plan</h3>
-          <p class="text-xs text-zinc-500 mt-1 mb-5">Choose your plan and payment method. Cancel anytime.</p>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            <!-- LEFT: plan + payment -->
-            <div class="space-y-5">
-              <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-sm">
-                <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-3">Plan</div>
-                <div id="planRadios" class="space-y-2.5"></div>
-                <div class="flex items-center justify-between mt-4 pt-3.5 border-t border-zinc-100 dark:border-zinc-800">
-                  <span class="text-[11px] font-medium text-zinc-500">Billing cycle</span>
-                  <div class="inline-flex bg-zinc-100 dark:bg-zinc-800 rounded-full p-0.5">
-                    <button type="button" data-cycle="monthly" class="cycle-btn px-3.5 py-1 rounded-full text-[11px] font-semibold transition">Monthly</button>
-                    <button type="button" data-cycle="yearly" class="cycle-btn px-3.5 py-1 rounded-full text-[11px] font-semibold transition flex items-center gap-1">Yearly <span class="text-[9px] font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">SAVE 20%</span></button>
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-6 items-start">
+            <form id="paymentForm" onsubmit="handlePaySubmit(event)" novalidate class="md:col-span-3 bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4">
+              <div>
+                <h3 class="text-base font-bold text-zinc-900 dark:text-zinc-100">Secure checkout</h3>
+                <p class="text-xs text-zinc-500 mt-0.5">Complete your upgrade to <span id="checkoutPlanName" class="font-semibold text-zinc-700 dark:text-zinc-300">Omni Pro</span>.</p>
+              </div>
+              <div id="declineBanner" class="hidden rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 p-3.5">
+                <div class="flex items-start gap-2.5">
+                  <i class="fa-solid fa-circle-exclamation text-rose-500 mt-0.5"></i>
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span id="declineTitle" class="text-sm font-bold text-rose-600 dark:text-rose-400"></span>
+                      <span id="declineCode" class="font-mono text-[10px] bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 px-1.5 py-0.5 rounded"></span>
+                    </div>
+                    <p id="declineMsg" class="text-xs text-rose-600/80 dark:text-rose-400/70 mt-1"></p>
                   </div>
                 </div>
               </div>
-              <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-sm">
-                <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-3">Payment method</div>
-                <div id="declineBanner" class="hidden rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 p-3.5 mb-4">
-                  <div class="flex items-start gap-2.5">
-                    <i class="fa-solid fa-circle-exclamation text-rose-500 mt-0.5"></i>
-                    <div class="flex-1">
-                      <div class="flex items-center gap-2 flex-wrap">
-                        <span id="declineTitle" class="text-sm font-bold text-rose-600 dark:text-rose-400"></span>
-                        <span id="declineCode" class="font-mono text-[10px] bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 px-1.5 py-0.5 rounded"></span>
-                      </div>
-                      <p id="declineMsg" class="text-xs text-rose-600/80 dark:text-rose-400/70 mt-1"></p>
-                    </div>
-                  </div>
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Cardholder name</label>
+                  <button type="button" onclick="fillDemoCard()" class="text-[11px] text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 font-medium transition"><i class="fa-solid fa-wand-magic mr-1"></i>Autofill demo card</button>
                 </div>
-                <div class="flex gap-2 flex-wrap mb-4">
-                  <button type="button" data-pm="card" class="pay-tab pay-tab-active"><i class="fa-regular fa-credit-card text-sm"></i><span>Card</span></button>
-                  <button type="button" data-pm="apple" class="pay-tab"><i class="fa-brands fa-apple text-sm"></i><span>Pay</span></button>
-                  <button type="button" data-pm="google" class="pay-tab"><i class="fa-brands fa-google text-xs"></i><span>Pay</span></button>
-                  <button type="button" data-pm="paypal" class="pay-tab"><i class="fa-brands fa-paypal text-xs"></i><span>PayPal</span></button>
+                <input type="text" id="cardName" placeholder="Alex Morgan" autocomplete="cc-name" class="w-full px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 text-zinc-900 dark:text-zinc-100">
+                <p class="field-err hidden" id="err-cardName"></p>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">Card number</label>
+                <div class="relative">
+                  <input type="text" id="cardNumber" inputmode="numeric" placeholder="4242 4242 4242 4242" autocomplete="cc-number" class="w-full px-3.5 pr-12 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 font-mono text-zinc-900 dark:text-zinc-100">
+                  <span id="cardBrandIcon" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600 pointer-events-none"><i class="fa-regular fa-credit-card"></i></span>
                 </div>
-                <form id="paymentForm" onsubmit="handlePaySubmit(event)" novalidate>
-                  <div id="cardFields" class="space-y-4">
-                    <div>
-                      <div class="flex items-center justify-between mb-1.5">
-                        <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Cardholder name</label>
-                        <button type="button" onclick="fillDemoCard()" class="text-[11px] text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 font-medium transition"><i class="fa-solid fa-wand-magic mr-1"></i>Autofill demo card</button>
-                      </div>
-                      <input type="text" id="cardName" placeholder="Alex Morgan" autocomplete="cc-name" class="w-full px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 text-zinc-900 dark:text-zinc-100">
-                      <p class="field-err hidden" id="err-cardName"></p>
-                    </div>
-                    <div>
-                      <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">Card number</label>
-                      <div class="relative">
-                        <input type="text" id="cardNumber" inputmode="numeric" placeholder="4242 4242 4242 4242" autocomplete="cc-number" class="w-full px-3.5 pr-12 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 font-mono text-zinc-900 dark:text-zinc-100">
-                        <span id="cardBrandIcon" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600 pointer-events-none"><i class="fa-regular fa-credit-card"></i></span>
-                      </div>
-                      <p class="field-err hidden" id="err-cardNumber"></p>
-                    </div>
-                    <div class="grid grid-cols-3 gap-3">
-                      <div>
-                        <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">Expiry</label>
-                        <input type="text" id="cardExpiry" inputmode="numeric" placeholder="MM/YY" autocomplete="cc-exp" class="w-full px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 font-mono text-zinc-900 dark:text-zinc-100">
-                        <p class="field-err hidden" id="err-cardExpiry"></p>
-                      </div>
-                      <div>
-                        <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">CVC</label>
-                        <input type="text" id="cardCvc" inputmode="numeric" placeholder="123" autocomplete="cc-csc" class="w-full px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 font-mono text-zinc-900 dark:text-zinc-100">
-                        <p class="field-err hidden" id="err-cardCvc"></p>
-                      </div>
-                      <div>
-                        <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">ZIP</label>
-                        <input type="text" id="cardZip" placeholder="94107" autocomplete="postal-code" class="w-full px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 text-zinc-900 dark:text-zinc-100">
-                        <p class="field-err hidden" id="err-cardZip"></p>
-                      </div>
-                    </div>
-                  </div>
-                  <div id="altFields" class="hidden">
-                    <div id="altPayBtnWrap"></div>
-                  </div>
-                </form>
+                <p class="field-err hidden" id="err-cardNumber"></p>
               </div>
-            </div>
-            <!-- RIGHT: summary -->
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl border-2 border-zinc-900 dark:border-zinc-100 p-5 shadow-md md:sticky md:top-0">
-              <div class="flex items-center justify-between">
-                <span id="sumPlanName" class="text-sm font-bold text-zinc-900 dark:text-zinc-100">Omni Pro</span>
-                <span id="sumPlanBadge" class="text-[10px] font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 px-2 py-0.5 rounded-full uppercase tracking-wide">Monthly</span>
+              <div class="grid grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">Expiry</label>
+                  <input type="text" id="cardExpiry" inputmode="numeric" placeholder="MM/YY" autocomplete="cc-exp" class="w-full px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 font-mono text-zinc-900 dark:text-zinc-100">
+                  <p class="field-err hidden" id="err-cardExpiry"></p>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">CVC</label>
+                  <input type="text" id="cardCvc" inputmode="numeric" placeholder="123" autocomplete="cc-csc" class="w-full px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 font-mono text-zinc-900 dark:text-zinc-100">
+                  <p class="field-err hidden" id="err-cardCvc"></p>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">ZIP</label>
+                  <input type="text" id="cardZip" placeholder="94107" autocomplete="postal-code" class="w-full px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 text-zinc-900 dark:text-zinc-100">
+                  <p class="field-err hidden" id="err-cardZip"></p>
+                </div>
               </div>
-              <ul id="sumFeatures" class="mt-4 space-y-2 text-xs text-zinc-600 dark:text-zinc-300"></ul>
-              <div class="border-t border-zinc-100 dark:border-zinc-800 mt-4 pt-4 space-y-2">
-                <div class="flex justify-between text-xs text-zinc-500"><span id="sumCycleDesc">Billed monthly</span><span id="sumBase">$20.00/mo</span></div>
-                <div class="flex justify-between text-xs text-zinc-500"><span>Estimated tax (8.5%)</span><span id="sumTax">$1.70</span></div>
-                <div class="flex justify-between items-baseline pt-1 font-bold text-zinc-900 dark:text-zinc-100"><span>Total due today</span><span id="sumTotal">$21.70</span></div>
-              </div>
-              <button type="button" id="payButton" onclick="handlePaySubmit(event)" class="w-full mt-4 py-3.5 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-semibold text-sm rounded-xl transition shadow-md flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+              <button type="submit" id="payButton" class="w-full py-3.5 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-semibold text-sm rounded-xl transition shadow-md flex items-center justify-center space-x-2.5">
                 <i id="payLockIcon" class="fa-solid fa-lock text-xs opacity-70"></i>
-                <span id="payButtonText">Subscribe</span>
+                <span id="payButtonText">Pay $21.70</span>
                 <i id="paySpinner" class="fa-solid fa-spinner fa-spin hidden"></i>
               </button>
-              <p class="text-[10px] text-zinc-400 mt-3.5 text-center leading-relaxed">Cancel anytime — your plan stays active until the end of the billing period. By subscribing you agree to our <span class="underline cursor-pointer">Terms of Service</span> and acknowledge our <span class="underline cursor-pointer">Privacy Policy</span>.</p>
+              <p class="text-[10px] text-zinc-400 text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-shield-halved"></i>Payments are encrypted and processed securely</p>
+            </form>
+            <div class="md:col-span-2 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm">
+              <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Order summary</div>
+              <div class="mt-3 space-y-2.5 text-sm">
+                <div class="flex items-center justify-between">
+                  <span id="sumPlanName" class="font-semibold text-zinc-900 dark:text-zinc-100">Omni Pro</span>
+                  <span id="sumPlanBadge" class="text-[10px] font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 px-2 py-0.5 rounded-full uppercase tracking-wide">Monthly</span>
+                </div>
+                <div class="flex justify-between text-xs text-zinc-500"><span id="sumCycleDesc">Billed monthly</span><span id="sumBase">$20.00</span></div>
+                <div class="flex justify-between text-xs text-zinc-500"><span>Estimated tax (8.5%)</span><span id="sumTax">$1.70</span></div>
+                <div class="border-t border-zinc-100 dark:border-zinc-800 pt-2.5 flex justify-between font-bold text-zinc-900 dark:text-zinc-100"><span>Total due today</span><span id="sumTotal">$21.70</span></div>
+              </div>
+              <ul class="mt-5 space-y-2 text-xs text-zinc-500">
+                <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i>Cancel anytime, no questions asked</li>
+                <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i>Instant access to plan features</li>
+                <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i>Secure 256-bit encrypted checkout</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -591,7 +675,7 @@
       </div>
       <div class="flex-1 flex overflow-hidden">
         <div class="w-72 border-r border-zinc-200 dark:border-zinc-800 flex flex-col bg-zinc-50 dark:bg-zinc-950">
-          <div class="p-3 text-xs font-bold text-zinc-400 uppercase tracking-wider">All Users &amp; Chats</div>
+          <div class="p-3 text-xs font-bold text-zinc-400 uppercase tracking-wider">All Active Chats</div>
           <div id="adminInboxList" class="flex-1 overflow-y-auto custom-scrollbar divide-y divide-zinc-100 dark:divide-zinc-800"></div>
         </div>
         <div class="flex-1 flex flex-col bg-white dark:bg-zinc-900">
@@ -618,24 +702,42 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 
   <script>
     const UNSPLASH_ACCESS_KEY = 'VXLXaULpzheiX2lmfF4NK6cc2n0F5-AAuPudKA-FBfQ';
     const AI_AVATAR_SVG = '<svg class="w-4 h-4" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2.5"/><path d="M16 6C10.4772 6 6 10.4772 6 16C6 21.5228 10.4772 26 16 26" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="5" fill="currentColor"/></svg>';
-    const IMAGE_GEN_MIN_MS = 9000, IMAGE_GEN_MAX_MS = 16000;
+        const IMAGE_GEN_MIN_MS = 10000, IMAGE_GEN_MAX_MS = 20000;
+    const IMAGE_LIMIT = 10;
+    const IMAGE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000;
+    const SECRET_RESET_PHRASE = 'alexsaidmylimitreset';
+    const IMAGE_LIMIT_MSG = "You've reached your max image generation limit — **10 images every 24 hours**. Your limit resets in **{TIME}**. In the meantime, I'm still here for any other questions!";
+    function getImageUsage() {
+      try {
+        const u = JSON.parse(localStorage.getItem('omni_img_usage'));
+        if (u && typeof u.count === 'number' && typeof u.windowStart === 'number') {
+          if (Date.now() - u.windowStart >= IMAGE_LIMIT_WINDOW_MS) return { count: 0, windowStart: Date.now() };
+          return u;
+        }
+      } catch (e) {}
+      return { count: 0, windowStart: Date.now() };
+    }
+    function setImageUsage(u) { try { localStorage.setItem('omni_img_usage', JSON.stringify(u)); } catch (e) {} }
+    function imagesRemaining() { return Math.max(0, IMAGE_LIMIT - getImageUsage().count); }
+    function imageResetLabel() {
+      const msLeft = Math.max(0, getImageUsage().windowStart + IMAGE_LIMIT_WINDOW_MS - Date.now());
+      const h = Math.floor(msLeft / 3600000), m = Math.floor((msLeft % 3600000) / 60000);
+      return h > 0 ? h + 'h ' + m + 'm' : (m > 0 ? m + 'm' : 'less than a minute');
+    }
+    function bumpImageUsage() {
+      let u = getImageUsage();
+      if (Date.now() - u.windowStart >= IMAGE_LIMIT_WINDOW_MS) u = { count: 0, windowStart: Date.now() };
+      u.count++; setImageUsage(u);
+      if (typeof renderUsageMeter === 'function') renderUsageMeter();
+    }
     const HANDOFF_TIMEOUT_MS = 5 * 60 * 1000;
     const HANDOFF_TIMEOUT_MSG = "I couldn't generate a response. Please try again later — or rephrase the question and give it another shot.";
 
-    // ========= KEYS =========
-    // Gemini: https://aistudio.google.com -> "Get API key" (free) -> paste below
-    const GEMINI_API_KEY = 'AQ.Ab8RN6JYIF3z0rjmHfb6Av6RRjaetr-1fbeQZmJTncOMRG0kug';
-    const GEMINI_MODEL = 'gemini-2.0-flash'; // change to 'gemini-2.5-flash' etc. if you like
-    // FCM (optional, only works when hosted over HTTPS with the service worker file):
-    // Firebase Console -> Project settings -> Cloud Messaging -> Web Push certificates -> Generate
-    const FCM_VAPID_KEY = 'PASTE_VAPID_KEY_OPTIONAL';
-
-    // ========= YOUR FIREBASE CONFIG =========
+    // ==== YOUR FIREBASE CONFIG (baked in) ====
     const FIREBASE_CONFIG = {
       apiKey: "AIzaSyBWamkG0fbI9e5YVRuoYjzZxd_73pSVcwo",
       authDomain: "omni-ai-73d91.firebaseapp.com",
@@ -646,6 +748,7 @@
       appId: "1:258510850761:web:b7e1e91be18722037d1b18",
       measurementId: "G-L0S9DKT7FS"
     };
+    const ROOM_KEY = 'omni-73d91-main';
 
     // --- HELPERS ---
     const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -671,10 +774,20 @@
     }
 
     // --- THEME ---
-    function toggleTheme() {
+        function setTheme(mode) {
       const html = document.documentElement, icon = document.getElementById('themeIcon');
-      if (html.classList.contains('dark')) { html.classList.remove('dark'); html.classList.add('light'); localStorage.setItem('omni_theme', 'light'); icon.className = 'fa-solid fa-moon text-sm'; }
-      else { html.classList.remove('light'); html.classList.add('dark'); localStorage.setItem('omni_theme', 'dark'); icon.className = 'fa-solid fa-sun text-sm text-amber-400'; }
+      html.classList.remove('light', 'dark');
+      html.classList.add(mode);
+      localStorage.setItem('omni_theme', mode);
+      if (icon) icon.className = mode === 'dark' ? 'fa-solid fa-sun text-sm text-amber-400' : 'fa-solid fa-moon text-sm';
+      syncThemeButtons();
+    }
+    function toggleTheme() { setTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark'); }
+    function syncThemeButtons() {
+      const l = document.getElementById('themeLightBtn'), d = document.getElementById('themeDarkBtn');
+      if (!l || !d) return;
+      const dark = document.documentElement.classList.contains('dark');
+      l.classList.toggle('style-active', !dark); d.classList.toggle('style-active', dark);
     }
     function initTheme() {
       let savedTheme = 'light';
@@ -688,7 +801,9 @@
       chats: (function () { try { const c = JSON.parse(localStorage.getItem('omni_chats_v19')); return Array.isArray(c) ? c : []; } catch (e) { return []; } })(),
       currentChatId: null, pendingAttachments: [], searchQuery: '', adminSelectedChatId: null,
       isGenerating: false, stopRequested: false, thinkingIn: null, replyTo: null,
-      persona: (function () { try { return localStorage.getItem('omni_persona') || 'default'; } catch (e) { return 'default'; } })()
+            persona: (function () { try { return localStorage.getItem('omni_persona') || 'default'; } catch (e) { return 'default'; } })(),
+      projects: (function () { try { const p = JSON.parse(localStorage.getItem('omni_projects_v1')); return Array.isArray(p) ? p : []; } catch (e) { return []; } })(),
+      activeProjectId: null, tempMode: false
     };
 
     const sidebar = document.getElementById('sidebar'), chatHistoryList = document.getElementById('chatHistoryList'),
@@ -697,9 +812,9 @@
       sendBtn = document.getElementById('sendBtn'), fileInput = document.getElementById('fileInput'),
       attachmentPreviews = document.getElementById('attachmentPreviews'), scrollNavOverlay = document.getElementById('scrollNavOverlay');
 
-    // ===================== CLOUD — per-user rooms on Firebase RTDB =====================
+    // ===================== CLOUD (Firebase Realtime Database) =====================
     const Cloud = {
-      enabled: false, db: null, userKey: null, chatsRef: null, delRef: null, deviceId: null, remoteDeleted: {}, _pushT: null,
+      enabled: false, chatsRef: null, delRef: null, deviceId: null, remoteDeleted: {}, _pushT: null,
       ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } },
       init() {
         this.deviceId = this.ls('omni_device_id');
@@ -707,30 +822,19 @@
         if (typeof firebase === 'undefined' || !FIREBASE_CONFIG.databaseURL) { updateCloudStatus(); return; }
         try {
           if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-          this.db = firebase.database();
+          const db = firebase.database();
+          this.chatsRef = db.ref(ROOM_KEY + '/chats');
+          this.delRef = db.ref(ROOM_KEY + '/deleted');
+          this.chatsRef.on('value', (snap) => this.onRemote(snap.val()), (err) => { this.enabled = false; updateCloudStatus(err); });
+          this.delRef.on('value', (snap) => { this.remoteDeleted = snap.val() || {}; this.applyRemoteDeletes(); }, () => {});
           this.enabled = true;
-          this.bindUser();
+          this.pushAll();
           updateCloudStatus();
         } catch (e) { console.warn('Firebase init failed:', e); updateCloudStatus(); }
       },
-      bindUser() {
-        if (!this.enabled) return;
-        if (this.chatsRef) { try { this.chatsRef.off(); } catch (e) {} }
-        if (this.delRef) { try { this.delRef.off(); } catch (e) {} }
-        const email = getEmail();
-        this.userKey = (email || 'anon').toLowerCase().replace(/[^a-z0-9]/g, '_');
-        this.db.ref('rooms/' + this.userKey + '/owner').set(email || 'anonymous').catch(() => {});
-        this.chatsRef = this.db.ref('rooms/' + this.userKey + '/chats');
-        this.delRef = this.db.ref('rooms/' + this.userKey + '/deleted');
-        this.chatsRef.on('value', (snap) => this.onRemote(snap.val()), (err) => updateCloudStatus(err));
-        this.delRef.on('value', (snap) => { this.remoteDeleted = snap.val() || {}; this.applyRemoteDeletes(); }, () => {});
-        this.pushAll();
-        initFCM();
-        updateCloudStatus();
-      },
-      pushAll() { if (!this.enabled) return; state.chats.forEach(c => this.pushChat(c)); },
+            pushAll() { if (!this.enabled) return; state.chats.filter(c => !c.temp).forEach(c => this.pushChat(c)); },
       pushChat(chat) {
-        if (!this.enabled || !chat) return;
+        if (!this.enabled || !chat || chat.temp) return;
         if (this.remoteDeleted[chat.id]) return;
         this.chatsRef.child(chat.id).set(slimChat(chat)).catch(() => {});
       },
@@ -755,8 +859,6 @@
         }
       },
       onRemote(remoteObj) {
-        const beforeIds = new Set();
-        state.chats.forEach(c => (c.messages || []).forEach(m => beforeIds.add(m.id)));
         const remote = [];
         Object.keys(remoteObj || {}).forEach(k => { const c = remoteObj[k]; if (c && c.id && !this.isTombstoned(c.id)) remote.push(c); });
         let changed = false;
@@ -765,13 +867,10 @@
           try { localStorage.setItem('omni_chats_v19', JSON.stringify(state.chats)); } catch (e) {}
           renderChatHistory();
           if (!state.isGenerating) renderCurrentChat();
-          // --- notifications for genuinely new remote AI/operator messages ---
-          const now = Date.now();
-          state.chats.forEach(c => (c.messages || []).forEach(m => {
-            if (beforeIds.has(m.id)) return;
-            if (m.sender !== 'ai' || !m.time || m.time < now - 20000) return;
-            if (document.hidden || c.id !== state.currentChatId) notifyUser(c, m);
-          }));
+          if (!document.getElementById('adminPortal').classList.contains('hidden')) {
+            renderAdminInbox();
+            showToast('New activity in a session', 'fa-bell');
+          }
         }
       }
     };
@@ -813,7 +912,7 @@
       if (Cloud.enabled) {
         dot.className = 'w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0';
         txt.innerText = 'Live sync'; txt.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
-        hint.innerText = 'user: ' + (Cloud.userKey || '—');
+        hint.innerText = 'room: ' + ROOM_KEY;
       } else if (err) {
         dot.className = 'w-2 h-2 rounded-full bg-rose-400 flex-shrink-0';
         txt.innerText = 'Cloud error'; txt.className = 'text-[11px] text-rose-500 font-semibold';
@@ -825,71 +924,7 @@
       }
     }
 
-    function saveState() { try { localStorage.setItem('omni_chats_v19', JSON.stringify(state.chats)); } catch (e) {} Cloud.queuePush(); }
-
-    // --- NOTIFICATIONS (browser Notification API — works with tab open/backgrounded) ---
-    function ensureNotifPermission() {
-      try { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(() => {}); } catch (e) {}
-    }
-    function notifyUser(chat, m) {
-      const who = m.operator ? 'Human operator' : 'Omni';
-      const body = who + ': ' + (m.text || '').replace(/[*#`>]/g, '').slice(0, 90);
-      try {
-        if ('Notification' in window && Notification.permission === 'granted') {
-          const n = new Notification(chat.title || 'Omni AI', { body: body });
-          n.onclick = () => { window.focus(); state.currentChatId = chat.id; renderChatHistory(); renderCurrentChat(); };
-        } else {
-          showToast('New reply in ' + (chat.title || 'a chat'), 'fa-bell');
-        }
-      } catch (e) { showToast('New reply in ' + (chat.title || 'a chat'), 'fa-bell'); }
-    }
-
-    // --- FCM scaffold (token capture; full background push needs hosting + a Cloud Function) ---
-    async function initFCM() {
-      try {
-        if (!Cloud.enabled || typeof firebase === 'undefined' || !firebase.messaging) return;
-        if (!navigator.serviceWorker) return;
-        if (!FCM_VAPID_KEY || FCM_VAPID_KEY.indexOf('PASTE') !== -1) return;
-        const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(() => null);
-        if (!reg) return;
-        const messaging = firebase.messaging();
-        const token = await messaging.getToken({ vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: reg });
-        if (token) Cloud.db.ref('rooms/' + Cloud.userKey + '/fcmToken').set(token).catch(() => {});
-      } catch (e) {}
-    }
-
-    // --- ADMIN SYNC (sees ALL users' rooms while the portal is open) ---
-    const adminState = { chats: [], listening: false, ref: null, loaded: false, lastCount: 0 };
-    function adminChats() { return Cloud.enabled ? adminState.chats : state.chats; }
-    function startAdminSync() {
-      if (!Cloud.enabled) { renderAdminInbox(); return; }
-      if (adminState.listening) return;
-      adminState.ref = Cloud.db.ref('rooms');
-      adminState.ref.on('value', (snap) => {
-        const rooms = snap.val() || {};
-        const list = [];
-        let totalMsgs = 0;
-        Object.keys(rooms).forEach(rk => {
-          const room = rooms[rk] || {};
-          const chats = room.chats || {};
-          Object.keys(chats).forEach(cid => {
-            let c = chats[cid];
-            if (!c || !c.id) return;
-            try { c = JSON.parse(JSON.stringify(c)); } catch (e) { return; }
-            c.ownerKey = rk;
-            if (!c.owner) c.owner = room.owner || null;
-            totalMsgs += (c.messages || []).length;
-            list.push(c);
-          });
-        });
-        adminState.chats = list;
-        if (adminState.loaded && totalMsgs > adminState.lastCount) showToast('New activity in a session', 'fa-bell');
-        adminState.loaded = true; adminState.lastCount = totalMsgs;
-        renderAdminInbox();
-      }, () => {});
-      adminState.listening = true;
-    }
-    function stopAdminSync() { if (adminState.ref) { try { adminState.ref.off(); } catch (e) {} adminState.ref = null; } adminState.listening = false; }
+        function saveState() { try { localStorage.setItem('omni_chats_v19', JSON.stringify(state.chats.filter(c => !c.temp))); } catch (e) {} Cloud.queuePush(); }
 
     // --- AUTH ---
     let sessionEmail = null, fbAuth = null;
@@ -900,7 +935,6 @@
       o.classList.add('opacity-0');
       setTimeout(() => { o.classList.add('hidden'); userInput.focus(); }, 500);
       renderCurrentChat();
-      Cloud.bindUser();
     }
     function checkAuth() {
       initTheme();
@@ -1019,12 +1053,15 @@
       selectedStyle = style;
       document.querySelectorAll('.style-btn').forEach(b => b.classList.toggle('style-active', b.dataset.style === style));
     }
-    function openProfileModal() {
+        function openProfileModal() {
       const p = getProfile();
       document.getElementById('profileName').value = p.name || '';
       document.getElementById('profileRole').value = p.role || '';
       selectStyle(p.style || 'balanced');
-      const m = document.getElementById('profileModal');
+      syncThemeButtons();
+      const rm = document.getElementById('reduceMotionChk');
+      if (rm) rm.checked = document.body.classList.contains('no-motion');
+      renderUsageMeter(); renderMemories();      const m = document.getElementById('profileModal');
       m.classList.remove('hidden'); setTimeout(() => m.classList.remove('opacity-0'), 10);
     }
     function closeProfileModal() {
@@ -1042,7 +1079,76 @@
       document.getElementById('profileName').value = ''; document.getElementById('profileRole').value = ''; selectStyle('balanced');
       applyUserCard(); updateWelcomeHeading(); showToast('Profile reset', 'fa-rotate-left');
     });
-    document.querySelectorAll('.style-btn').forEach(b => b.addEventListener('click', () => selectStyle(b.dataset.style)));
+        document.querySelectorAll('.style-btn').forEach(b => b.addEventListener('click', () => selectStyle(b.dataset.style)));
+
+    // --- SETTINGS: usage meter, appearance, data controls ---
+    function renderUsageMeter() {
+      const txt = document.getElementById('usageImgText'), bar = document.getElementById('usageImgBar'),
+        rst = document.getElementById('usageImgReset'), msg = document.getElementById('usageMsgCount');
+      if (!txt) return;
+      const used = Math.min(IMAGE_LIMIT, getImageUsage().count);
+      txt.innerText = used + ' / ' + IMAGE_LIMIT;
+      bar.style.width = Math.round(100 * used / IMAGE_LIMIT) + '%';
+      bar.style.background = used >= IMAGE_LIMIT ? '#f43f5e' : '';
+      rst.innerText = used >= IMAGE_LIMIT ? 'Limit reached — resets in ' + imageResetLabel() : 'Limit resets in ' + imageResetLabel();
+      let total = 0; state.chats.forEach(c => { total += (c.messages || []).length; });
+      msg.innerText = total.toLocaleString();
+    }
+    document.getElementById('themeLightBtn').addEventListener('click', () => setTheme('light'));
+    document.getElementById('themeDarkBtn').addEventListener('click', () => setTheme('dark'));
+    document.getElementById('reduceMotionChk').addEventListener('change', function () {
+      document.body.classList.toggle('no-motion', this.checked);
+      try { localStorage.setItem('omni_reduce_motion', this.checked ? '1' : '0'); } catch (e) {}
+    });
+    document.getElementById('exportDataBtn').addEventListener('click', () => {
+      const data = { app: 'Omni AI', exportedAt: new Date().toISOString(), profile: getProfile(), imageUsage: getImageUsage(), chats: state.chats };
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+      a.download = 'omni-data-export.json';
+      a.click();
+      showToast('Data exported as JSON', 'fa-file-export');
+    });
+    document.getElementById('clearChatsBtn').addEventListener('click', () => {
+      if (!state.chats.length) { showToast('No chats to delete', 'fa-triangle-exclamation'); return; }
+      if (!confirm('Delete ALL chats? This cannot be undone.')) return;
+      if (!confirm('Last chance — really delete everything?')) return;
+      state.chats.forEach(c => Cloud.removeChat(c.id));
+      state.chats = []; state.currentChatId = null;
+      try { localStorage.setItem('omni_chats_v19', '[]'); } catch (e) {}
+      renderChatHistory(); renderCurrentChat(); closeProfileModal();
+      showToast('All chats deleted', 'fa-trash-can');
+    });
+    // --- MEMORY ---
+    function getMemories() { try { const m = JSON.parse(localStorage.getItem('omni_memory_v1')); return Array.isArray(m) ? m : []; } catch (e) { return []; } }
+    function saveMemories(m) { try { localStorage.setItem('omni_memory_v1', JSON.stringify(m)); } catch (e) {} }
+    function renderMemories() {
+      const list = document.getElementById('memoryList'); if (!list) return;
+      const mems = getMemories();
+      list.innerHTML = '';
+      if (!mems.length) { list.innerHTML = '<p class="text-[11px] text-zinc-400 italic">No memories saved yet.</p>'; return; }
+      mems.forEach(mem => {
+        const row = document.createElement('div');
+        row.className = 'memory-row';
+        row.innerHTML = '<i class="fa-solid ' + (mem.icon || 'fa-circle-user') + ' text-zinc-400 text-xs"></i><span class="flex-1 text-zinc-700 dark:text-zinc-300">' + escapeHtml(mem.text) + '</span>';
+        const del = document.createElement('button');
+        del.className = 'text-zinc-400 hover:text-rose-500 px-1';
+        del.title = 'Delete memory';
+        del.innerHTML = '<i class="fa-solid fa-trash-can text-xs"></i>';
+        del.onclick = () => { saveMemories(getMemories().filter(x => x.id !== mem.id)); renderMemories(); showToast('Memory deleted', 'fa-trash-can'); };
+        row.appendChild(del);
+        list.appendChild(row);
+      });
+    }
+    document.getElementById('memoryAddBtn').addEventListener('click', () => {
+      const inp = document.getElementById('memoryInput');
+      const t = inp.value.trim();
+      if (!t) return;
+      const mems = getMemories();
+      mems.push({ id: 'mem-' + Date.now(), text: t.slice(0, 120), icon: 'fa-circle-user', time: Date.now() });
+      saveMemories(mems); inp.value = ''; renderMemories(); showToast('Memory saved', 'fa-brain');
+    });
+    document.getElementById('memoryInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('memoryAddBtn').click(); } });
+    try { if (localStorage.getItem('omni_reduce_motion') === '1') document.body.classList.add('no-motion'); } catch (e) {}
 
     // --- MIC ---
     (function () {
@@ -1131,14 +1237,9 @@
     }
 
     // --- PRICING & CHECKOUT ---
-    const PLANS = {
-      pro: { name: 'Omni Pro', blurb: 'For power users', monthly: 20, yearlyPerMo: 16,
-        features: ['Everything in Free', 'Omni Code Pro model', 'Advanced code generation', 'Live web search with citations', 'Priority response speed', 'Early access to new features'] },
-      max: { name: 'Omni Max', blurb: 'Maximum capability', monthly: 40, yearlyPerMo: 32,
-        features: ['Everything in Pro', 'Omni Vision Max model', 'Deep visual analysis', 'Extended context memory', 'Dedicated support channel'] }
-    };
+    const PLANS = { pro: { name: 'Omni Pro', monthly: 20, yearlyPerMo: 16 }, max: { name: 'Omni Max', monthly: 40, yearlyPerMo: 32 } };
     const DECLINE = { title: 'Payments are temporarily unavailable.', code: 'provider_outage', msg: 'Our payment system provider is currently down. Please try again later or contact support — we will get you upgraded as soon as payments are back online.' };
-    let billingCycle = 'monthly', selectedPlan = 'pro', payAttempts = 0, payMethod = 'card';
+    let billingCycle = 'monthly', selectedPlan = 'pro', payAttempts = 0;
     const payLock = { active: false, until: 0, timer: null };
     function openPricingModal() { const m = document.getElementById('pricingModal'); m.classList.remove('hidden'); setTimeout(() => m.classList.remove('opacity-0'), 10); renderPrices(); }
     function closePricingModal() { document.getElementById('pricingModal').classList.add('opacity-0'); setTimeout(() => { document.getElementById('pricingModal').classList.add('hidden'); backToPlans(); }, 300); }
@@ -1158,87 +1259,27 @@
     }
     document.querySelectorAll('.cycle-btn').forEach(b => b.addEventListener('click', () => {
       billingCycle = b.dataset.cycle; renderPrices();
-      if (!document.getElementById('checkoutFormView').classList.contains('hidden')) { renderPlanRadios(); renderCheckoutSummary(); }
+      if (!document.getElementById('checkoutFormView').classList.contains('hidden')) renderCheckoutSummary();
     }));
     function startCheckout(plan) {
       selectedPlan = plan;
       document.getElementById('pricingCardsView').classList.add('hidden');
       document.getElementById('checkoutFormView').classList.remove('hidden');
-      hideDeclineBanner(); clearCardErrors();
-      renderPlanRadios(); selectPayMethod('card'); renderCheckoutSummary();
-    }
-    function renderPlanRadios() {
-      const wrap = document.getElementById('planRadios');
-      wrap.innerHTML = '';
-      const yearly = billingCycle === 'yearly';
-      Object.keys(PLANS).forEach(key => {
-        const p = PLANS[key];
-        const price = yearly ? p.yearlyPerMo : p.monthly;
-        const sel = selectedPlan === key;
-        const row = document.createElement('button');
-        row.type = 'button';
-        row.className = 'w-full flex items-center gap-3 text-left px-3.5 py-3 rounded-xl border transition ' + (sel ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-50 dark:bg-zinc-800' : 'border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500');
-        row.innerHTML = '<span class="w-4 h-4 rounded-full border-2 flex-shrink-0 ' + (sel ? 'border-zinc-900 dark:border-zinc-100' : 'border-zinc-300 dark:border-zinc-600') + (sel ? ' bg-zinc-900 dark:bg-zinc-100' : '') + '"></span>' +
-          '<span class="flex-1 min-w-0"><span class="block text-sm font-semibold text-zinc-900 dark:text-zinc-100">' + p.name + '</span><span class="block text-[11px] text-zinc-500">' + p.blurb + '</span></span>' +
-          '<span class="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex-shrink-0">$' + price + '<span class="text-[10px] font-normal text-zinc-400">/mo</span></span>';
-        row.onclick = () => { selectedPlan = key; renderPlanRadios(); renderCheckoutSummary(); };
-        wrap.appendChild(row);
-      });
+      hideDeclineBanner(); clearCardErrors(); renderCheckoutSummary();
     }
     function renderCheckoutSummary() {
       const p = PLANS[selectedPlan];
       const yearly = billingCycle === 'yearly';
-      const perMo = yearly ? p.yearlyPerMo : p.monthly;
-      const subtotal = perMo * (yearly ? 12 : 1);
+      const subtotal = (yearly ? p.yearlyPerMo : p.monthly) * (yearly ? 12 : 1);
       const tax = subtotal * 0.085, total = subtotal + tax;
+      document.getElementById('checkoutPlanName').innerText = p.name;
       document.getElementById('sumPlanName').innerText = p.name;
       document.getElementById('sumPlanBadge').innerText = yearly ? 'Yearly' : 'Monthly';
-      document.getElementById('sumFeatures').innerHTML = p.features.map(f => '<li class="flex items-start"><i class="fa-solid fa-check text-emerald-500 mt-0.5 mr-2.5"></i>' + escapeHtml(f) + '</li>').join('');
-      document.getElementById('sumCycleDesc').innerText = yearly ? p.name + ' — 12 months (2 free)' : p.name + ' — billed monthly';
-      document.getElementById('sumBase').innerText = '$' + perMo.toFixed(2) + '/mo' + (yearly ? ' \u00b7 $' + subtotal.toFixed(2) + '/yr' : '');
+      document.getElementById('sumCycleDesc').innerText = yearly ? p.name + ' — 12 months (2 months free)' : p.name + ' — billed monthly';
+      document.getElementById('sumBase').innerText = '$' + subtotal.toFixed(2);
       document.getElementById('sumTax').innerText = '$' + tax.toFixed(2);
       document.getElementById('sumTotal').innerText = '$' + total.toFixed(2);
-    }
-    const ALT_PAY = {
-      apple: { name: 'Apple Pay', label: 'Pay', icon: 'fa-brands fa-apple text-base', cls: 'bg-black hover:bg-zinc-800 text-white' },
-      google: { name: 'Google Pay', label: 'G Pay', icon: 'fa-brands fa-google text-sm', cls: 'bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-300 dark:border-zinc-600' },
-      paypal: { name: 'PayPal', label: 'PayPal', icon: 'fa-brands fa-paypal text-sm', cls: 'bg-[#003087] hover:bg-[#00256f] text-white' }
-    };
-    function selectPayMethod(pm) {
-      payMethod = pm;
-      document.querySelectorAll('.pay-tab').forEach(b => b.classList.toggle('pay-tab-active', b.dataset.pm === pm));
-      document.getElementById('cardFields').classList.toggle('hidden', pm !== 'card');
-      document.getElementById('altFields').classList.toggle('hidden', pm === 'card');
-      if (pm !== 'card') renderAltPayBtn(pm);
-      clearCardErrors();
-    }
-    document.querySelectorAll('.pay-tab').forEach(b => b.addEventListener('click', () => selectPayMethod(b.dataset.pm)));
-    function renderAltPayBtn(pm) {
-      const a = ALT_PAY[pm];
-      const wrap = document.getElementById('altPayBtnWrap');
-      wrap.innerHTML = '';
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'w-full py-3.5 rounded-xl font-semibold text-sm transition shadow-md flex items-center justify-center gap-2 ' + a.cls;
-      btn.innerHTML = '<i class="' + a.icon + '"></i><span>' + a.label + '</span>';
-      btn.onclick = () => processAltPay(btn, a.name);
-      wrap.appendChild(btn);
-      const note = document.createElement('p');
-      note.className = 'text-[10px] text-zinc-400 text-center mt-2.5';
-      note.innerText = 'You\u2019ll confirm your ' + a.name + ' payment on the next screen.';
-      wrap.appendChild(note);
-    }
-    function processAltPay(btn, name) {
-      if (payLock.active) return;
-      btn.disabled = true;
-      const orig = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Contacting ' + name + '...</span>';
-      setTimeout(() => {
-        btn.disabled = false; btn.innerHTML = orig;
-        payAttempts++;
-        showDecline(); shakeCheckout();
-        if (payAttempts >= 3) lockCheckout();
-      }, 1500 + Math.random() * 900);
+      document.getElementById('payButtonText').innerText = 'Pay $' + total.toFixed(2);
     }
     function detectBrand(digits) {
       if (/^4/.test(digits)) return 'fa-brands fa-cc-visa';
@@ -1314,7 +1355,7 @@
       document.getElementById('paySpinner').classList.toggle('hidden', !on);
       document.getElementById('payLockIcon').classList.toggle('hidden', on);
       if (on) document.getElementById('payButtonText').innerText = 'Contacting payment provider...';
-      else if (!payLock.active) document.getElementById('payButtonText').innerText = 'Subscribe';
+      else if (!payLock.active) renderCheckoutSummary();
     }
     function showDecline() {
       document.getElementById('declineTitle').innerText = DECLINE.title;
@@ -1323,10 +1364,6 @@
       document.getElementById('declineBanner').classList.remove('hidden');
     }
     function hideDeclineBanner() { document.getElementById('declineBanner').classList.add('hidden'); }
-    function shakeCheckout() {
-      const f = document.getElementById('paymentForm');
-      f.classList.remove('animate-shake'); void f.offsetWidth; f.classList.add('animate-shake');
-    }
     function lockCheckout() {
       payLock.active = true; payLock.until = Date.now() + 60000;
       document.getElementById('payButton').disabled = true;
@@ -1334,29 +1371,46 @@
         const left = Math.max(0, Math.ceil((payLock.until - Date.now()) / 1000));
         if (left <= 0) {
           clearInterval(payLock.timer); payLock.active = false; payAttempts = 0;
-          document.getElementById('payButtonText').innerText = 'Subscribe';
+          document.getElementById('payButtonText').innerText = 'Pay';
           document.getElementById('payButton').disabled = false;
+          renderCheckoutSummary();
           return;
         }
         document.getElementById('payButtonText').innerText = 'Locked — retry in ' + left + 's';
       }, 500);
     }
     function handlePaySubmit(e) {
-      if (e && e.preventDefault) e.preventDefault();
+      e.preventDefault();
       if (payLock.active) return;
-      if (payMethod !== 'card') {
-        const b = document.querySelector('#altPayBtnWrap button');
-        if (b) b.click();
-        return;
-      }
       if (!validateCardForm()) return;
       setProcessing(true);
       setTimeout(() => {
         setProcessing(false);
         payAttempts++;
-        showDecline(); shakeCheckout();
+        showDecline();
+        const form = document.getElementById('paymentForm');
+        form.classList.remove('animate-shake'); void form.offsetWidth; form.classList.add('animate-shake');
         if (payAttempts >= 3) lockCheckout();
       }, 1800 + Math.random() * 1200);
+    }
+
+    // --- SHARE CONVERSATION (local share page) ---
+    function buildShareHtml(chat) {
+      let rows = '';
+      chat.messages.forEach(m => {
+        const t = escapeHtml(m.text || '');
+        if (m.sender === 'user') rows += '<div class="m"><div class="tag">You</div><div class="b ub">' + t + '</div></div>';
+        else rows += '<div class="m"><div class="tag">Omni</div><div class="b ab">' + t + (m.image && m.image.url ? '<img src="' + escapeHtml(m.image.url) + '">' : '') + '</div></div>';
+      });
+      return '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + escapeHtml(chat.title) + ' — Omni AI</title><style>*{box-sizing:border-box}body{font-family:Inter,system-ui,sans-serif;background:#f4f4f5;margin:0;padding:36px 14px;color:#18181b}.card{max-width:620px;margin:0 auto;background:#fff;border:1px solid #e4e4e7;border-radius:22px;padding:30px 26px;box-shadow:0 8px 30px rgba(0,0,0,.06)}.brand{display:flex;align-items:center;gap:10px;margin-bottom:4px}.logo{width:30px;height:30px;border-radius:50%;background:#18181b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}.brand b{font-size:17px}.sub{font-size:12px;color:#71717a;margin:0 0 22px 40px;word-break:break-all}.m{margin:14px 0}.tag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#a1a1aa;margin-bottom:4px}.b{font-size:14px;line-height:1.6;white-space:pre-wrap;border-radius:14px;padding:11px 14px}.ub{background:#f4f4f5;margin-left:36px}.ab{background:#fff;border:1px solid #e4e4e7;margin-right:36px}img{max-width:100%;border-radius:10px;margin-top:8px}.foot{text-align:center;font-size:11px;color:#a1a1aa;margin-top:26px}</style></head><body><div class="card"><div class="brand"><div class="logo">O</div><b>Omni AI</b></div><div class="sub">' + escapeHtml(chat.title) + '</div>' + rows + '<div class="foot">Shared conversation · Omni AI</div></div></body></html>';
+    }
+    function shareConversation() {
+      const chat = getCurrentChat();
+      if (!chat || !chat.messages.length) { showToast('Nothing to share yet', 'fa-triangle-exclamation'); return; }
+      const url = URL.createObjectURL(new Blob([buildShareHtml(chat)], { type: 'text/html' }));
+      const w = window.open(url, '_blank');
+      if (!w) { const a = document.createElement('a'); a.href = url; a.download = 'omni-conversation.html'; a.click(); }
+      showToast('Share page opened', 'fa-share-nodes');
     }
 
     // --- EXPORT ---
@@ -1400,13 +1454,8 @@
         if (keyBuffer.includes('ariana2001')) { toggleAdminPortal(); keyBuffer = ''; }
       }
     });
-    function toggleAdminPortal() {
-      const p = document.getElementById('adminPortal');
-      const opening = p.classList.contains('hidden');
-      p.classList.toggle('hidden');
-      if (opening) startAdminSync(); else stopAdminSync();
-    }
-    document.getElementById('closeAdminPortalBtn').addEventListener('click', () => { document.getElementById('adminPortal').classList.add('hidden'); stopAdminSync(); });
+    function toggleAdminPortal() { document.getElementById('adminPortal').classList.toggle('hidden'); renderAdminInbox(); }
+    document.getElementById('closeAdminPortalBtn').addEventListener('click', () => document.getElementById('adminPortal').classList.add('hidden'));
     function checkGrammarInAdmin() {
       const input = document.getElementById('operatorMessageInput');
       if (!input.value.trim()) return alert('Type a response to grammar check first.');
@@ -1420,7 +1469,47 @@
     function scrollToOldest() { chatMessages.scrollTo({ top: 0, behavior: 'smooth' }); }
     function scrollToLatest() { chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' }); }
     function isNearBottom() { return chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight < 130; }
-    function makeTitle(text) { return text.length > 34 ? text.slice(0, 34) + '...' : text; }
+        function makeTitle(text) { return text.length > 34 ? text.slice(0, 34) + '...' : text; }
+
+    // --- PROJECTS ---
+    function saveProjects() { try { localStorage.setItem('omni_projects_v1', JSON.stringify(state.projects)); } catch (e) {} }
+    function renderProjects() {
+      const wrap = document.getElementById('projectsRow'); if (!wrap) return;
+      wrap.innerHTML = '';
+      state.projects.forEach(p => {
+        const chip = document.createElement('button');
+        chip.className = 'proj-chip' + (state.activeProjectId === p.id ? ' active' : '');
+        chip.innerHTML = '<i class="fa-solid fa-folder text-[9px]"></i>' + escapeHtml(p.name);
+        chip.onclick = () => { state.activeProjectId = state.activeProjectId === p.id ? null : p.id; renderProjects(); renderChatHistory(); };
+        wrap.appendChild(chip);
+      });
+      const add = document.createElement('button');
+      add.className = 'proj-chip';
+      add.innerHTML = '<i class="fa-solid fa-plus text-[9px]"></i>New';
+      add.onclick = createProject;
+      wrap.appendChild(add);
+    }
+    function createProject() {
+      const name = prompt('Project name (e.g. Roblox Game, Website, School):');
+      if (!name || !name.trim()) return;
+      const instructions = prompt('Optional — instructions for Omni inside this project (context to keep in mind):') || '';
+      state.projects.push({ id: 'proj-' + Date.now(), name: name.trim().slice(0, 28), instructions: instructions.trim(), createdAt: Date.now() });
+      saveProjects(); renderProjects(); showToast('Project created', 'fa-folder');
+    }
+
+    // --- TEMPORARY CHAT ---
+    function toggleTempChat() {
+      state.tempMode = !state.tempMode;
+      document.getElementById('tempChatBtn').classList.toggle('temp-on', state.tempMode);
+      if (state.tempMode) createNewChat();
+      else showToast('Temporary chat off — new chats will be saved', 'fa-floppy-disk');
+    }
+    function updateTempBanner() {
+      const chat = getCurrentChat(), b = document.getElementById('tempBanner');
+      if (!b) return;
+      const on = !!(chat && chat.temp);
+      b.classList.toggle('hidden', !on); b.classList.toggle('flex', on);
+    }
 
     function setupEventListeners() {
       document.getElementById('toggleSidebarBtn').addEventListener('click', () => { sidebar.classList.add('-ml-64'); document.getElementById('expandSidebarBtn').classList.remove('hidden'); });
@@ -1447,21 +1536,11 @@
       });
       document.getElementById('sendOperatorReplyBtn').addEventListener('click', () => {
         const input = document.getElementById('operatorMessageInput');
-        const text = input.value.trim();
-        if (!text) return;
-        const chat = adminChats().find(c => c.id === state.adminSelectedChatId);
-        if (!chat) return;
-        const msg = { id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6), sender: 'ai', text: text, attachments: [], operator: true, time: Date.now() };
-        if (Cloud.enabled && chat.ownerKey) {
-          Cloud.db.ref('rooms/' + chat.ownerKey + '/chats/' + chat.id + '/messages/' + msg.id).set(msg).catch(() => {});
-          Cloud.db.ref('rooms/' + chat.ownerKey + '/chats/' + chat.id + '/needsHuman').set(false).catch(() => {});
-        } else {
-          const local = state.chats.find(c => c.id === chat.id);
-          if (local) { local.messages.push(msg); local.needsHuman = false; saveState(); renderCurrentChat(); }
-        }
-        chat.messages = chat.messages || []; chat.messages.push(msg); chat.needsHuman = false;
-        input.value = '';
-        renderAdminInspector(chat.id);
+        const chat = state.chats.find(c => c.id === state.adminSelectedChatId);
+        if (!input.value.trim() || !chat) return;
+        chat.messages.push({ id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6), sender: 'ai', text: input.value.trim(), attachments: [], operator: true, time: Date.now() });
+        chat.needsHuman = false;
+        input.value = ''; saveState(); renderCurrentChat(); renderAdminInspector(chat.id);
         showToast('Reply pushed to user', 'fa-paper-plane');
       });
       chatMessages.addEventListener('scroll', () => {
@@ -1473,7 +1552,8 @@
 
     function getCurrentChat() { return state.chats.find(c => c.id === state.currentChatId); }
     function createNewChat() {
-      const newChat = { id: 'chat-' + Date.now(), title: 'New chat', pinned: false, deviceId: Cloud.deviceId || null, owner: getEmail() || null, messages: [] };
+       const newChat = { id: 'chat-' + Date.now(), title: 'New chat', pinned: false, deviceId: Cloud.deviceId || null, messages: [], projectId: state.activeProjectId || null, temp: !!state.tempMode };
+      if (newChat.temp) showToast('Temporary chat — this won\u2019t be saved', 'fa-user-secret');
       state.chats.unshift(newChat);
       state.currentChatId = newChat.id;
       saveState(); renderChatHistory(); renderCurrentChat();
@@ -1495,7 +1575,8 @@
 
     function renderChatHistory() {
       chatHistoryList.innerHTML = '';
-      const filtered = state.chats.filter(c => (c.title || '').toLowerCase().includes(state.searchQuery));
+      let filtered = state.chats.filter(c => (c.title || '').toLowerCase().includes(state.searchQuery));
+      if (state.activeProjectId) filtered = filtered.filter(c => c.projectId === state.activeProjectId);
       const pinned = filtered.filter(c => c.pinned), recent = filtered.filter(c => !c.pinned);
       if (pinned.length) {
         const lbl = document.createElement('div');
@@ -1512,7 +1593,7 @@
       if (!filtered.length) {
         const e = document.createElement('div');
         e.className = 'px-3 py-2 text-xs text-zinc-400';
-        e.innerText = 'No chats found.';
+        e.innerText = state.activeProjectId ? 'No chats in this project yet — new chats you start will be added here.' : 'No chats found.';
         chatHistoryList.appendChild(e);
       }
     }
@@ -1542,35 +1623,31 @@
     }
 
     // --- ADMIN RENDERERS ---
-    function ownerLabel(chat) {
-      if (chat.owner) return chat.owner;
-      if (chat.ownerKey && Cloud.userKey && chat.ownerKey !== Cloud.userKey) return 'user \u00b7 ' + chat.ownerKey;
-      return 'This device';
-    }
+    function deviceLabel(chat) { return (chat.deviceId && Cloud.deviceId && chat.deviceId !== Cloud.deviceId) ? 'Device ' + chat.deviceId.slice(-4) : 'This device'; }
     function renderAdminInbox() {
       const inbox = document.getElementById('adminInboxList');
       inbox.innerHTML = '';
-      const list = adminChats();
-      if (!list.length) { inbox.innerHTML = '<div class="p-4 text-xs text-zinc-400">No chats found.</div>'; return; }
-      const sorted = list.slice().sort((a, b) => (b.needsHuman ? 1 : 0) - (a.needsHuman ? 1 : 0));
-      if (!state.adminSelectedChatId || !sorted.find(c => c.id === state.adminSelectedChatId)) state.adminSelectedChatId = sorted[0].id;
+      if (!state.chats.length) { inbox.innerHTML = '<div class="p-4 text-xs text-zinc-400">No chats found.</div>'; return; }
+      const sorted = state.chats.filter(c => !c.temp).slice().sort((a, b) => (b.needsHuman ? 1 : 0) - (a.needsHuman ? 1 : 0));
+      if (!sorted.length) { state.adminSelectedChatId = null; document.getElementById('inspectorHistory').innerHTML = '<div class="p-6 text-xs text-zinc-400">No sessions.</div>'; return; }
+      if (!state.adminSelectedChatId) state.adminSelectedChatId = sorted[0].id;
       sorted.forEach(chat => {
         const isActive = chat.id === state.adminSelectedChatId;
         const div = document.createElement('div');
         div.className = 'p-3.5 hover:bg-zinc-100 dark:hover:bg-zinc-850 cursor-pointer transition flex items-center justify-between ' + (isActive ? 'bg-zinc-100 dark:bg-zinc-800 border-l-4 border-zinc-900 dark:border-zinc-100' : '');
-        div.innerHTML = '<div class="min-w-0"><div class="flex items-center gap-2"><span class="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate w-40">' + escapeHtml(chat.title) + '</span>' + (chat.needsHuman ? '<span class="text-[9px] font-bold bg-rose-500 text-white px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">NEEDS REPLY</span>' : '') + '</div><div class="text-[11px] text-zinc-400 truncate">' + escapeHtml(ownerLabel(chat)) + ' \u00b7 ' + (chat.messages || []).length + ' msgs' + (chat.pinned ? ' \u00b7 pinned' : '') + '</div></div>';
+        div.innerHTML = '<div class="min-w-0"><div class="flex items-center gap-2"><span class="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate w-44">' + escapeHtml(chat.title) + '</span>' + (chat.needsHuman ? '<span class="text-[9px] font-bold bg-rose-500 text-white px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">NEEDS REPLY</span>' : '') + '</div><div class="text-[11px] text-zinc-400">' + chat.messages.length + ' messages \u00b7 ' + deviceLabel(chat) + (chat.pinned ? ' \u00b7 pinned' : '') + '</div></div>';
         div.onclick = () => { state.adminSelectedChatId = chat.id; renderAdminInbox(); renderAdminInspector(chat.id); };
         inbox.appendChild(div);
       });
       renderAdminInspector(state.adminSelectedChatId);
     }
     function renderAdminInspector(chatId) {
-      const chat = adminChats().find(c => c.id === chatId);
+      const chat = state.chats.find(c => c.id === chatId);
       if (!chat) return;
       const historyArea = document.getElementById('inspectorHistory');
-      document.getElementById('inspectorUserTitle').innerText = 'Session: ' + chat.title + (chat.owner ? ' \u00b7 ' + chat.owner : '');
+      document.getElementById('inspectorUserTitle').innerText = 'Session: ' + chat.title;
       historyArea.innerHTML = '';
-      (chat.messages || []).forEach(m => {
+      chat.messages.forEach(m => {
         const d = document.createElement('div');
         d.className = 'p-3 rounded-xl text-xs max-w-[80%] ' + (m.sender === 'user' ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 ml-auto' : 'bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 mr-auto');
         d.innerHTML = '<div class="font-bold mb-1 text-[10px] text-zinc-400 uppercase">' + (m.operator ? 'operator (human)' : m.sender) + '</div><div>' + escapeHtml(m.text) + '</div>';
@@ -1628,6 +1705,7 @@
       if (state.thinkingIn === chat.id) { messagesList.appendChild(buildThinkingPill()); lastEl = null; }
       if (lastEl) lastEl.classList.add('msg-in');
       chatMessages.scrollTop = chatMessages.scrollHeight;
+      updateTempBanner();
     }
     function buildReplyQuote(msg) {
       const q = document.createElement('div');
@@ -1639,12 +1717,22 @@
     function buildUserMessage(msg) {
       const wrap = document.createElement('div');
       wrap.className = 'group flex flex-col items-end';
-      const act = document.createElement('button');
-      act.className = 'opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 w-7 h-7 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center transition mb-0.5';
-      act.title = 'Reply';
-      act.innerHTML = '<i class="fa-solid fa-reply text-xs"></i>';
-      act.onclick = () => startReply(msg);
-      wrap.appendChild(act);
+      const uAct = document.createElement('div');
+      uAct.className = 'opacity-0 group-hover:opacity-100 flex items-center gap-1 mb-0.5 relative';
+      const umk = (icon, title) => {
+        const b = document.createElement('button');
+        b.className = 'w-7 h-7 rounded-full text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center transition text-xs';
+        b.title = title; b.innerHTML = icon; return b;
+      };
+      const uReply = umk('<i class="fa-solid fa-reply"></i>', 'Reply'); uReply.onclick = () => startReply(msg); uAct.appendChild(uReply);
+      const uCopy = umk('<i class="fa-regular fa-copy"></i>', 'Copy'); uCopy.onclick = () => { navigator.clipboard.writeText(msg.text || '').then(() => showToast('Copied to clipboard', 'fa-clipboard-check')).catch(() => {}); }; uAct.appendChild(uCopy);
+      const uMore = umk('<i class="fa-solid fa-ellipsis"></i>', 'More');
+      uMore.onclick = (e) => { e.stopPropagation(); openMsgMenu(uMore, [
+        { icon: 'fa-pen', label: 'Edit & resend', fn: () => editUserMessage(msg) },
+        { icon: 'fa-trash-can', label: 'Delete message', danger: true, fn: () => deleteMessage(msg) }
+      ]); };
+      uAct.appendChild(uMore);
+      wrap.appendChild(uAct);
       const bubble = document.createElement('div');
       bubble.className = 'max-w-[85%] bg-zinc-100 dark:bg-zinc-800 rounded-2xl rounded-br-md px-4 py-3';
       if (msg.replyTo) bubble.appendChild(buildReplyQuote(msg));
@@ -1667,6 +1755,12 @@
           bubble.appendChild(chip);
         }
       });
+      if ((msg.attachments || []).length) {
+        const pc = document.createElement('div');
+        pc.className = 'text-[10px] text-zinc-400 mt-1.5 flex items-center gap-1';
+        pc.innerHTML = '<i class="fa-solid fa-paperclip text-[9px]"></i>' + msg.attachments.length + (msg.attachments.length > 1 ? ' attachments' : ' attachment');
+        bubble.appendChild(pc);
+      }
       wrap.appendChild(bubble);
       if (msg.time) {
         const tm = document.createElement('div');
@@ -1719,7 +1813,7 @@
       if (msg.time) pillsHtml += '<span class="meta-pill">' + formatTime(msg.time) + '</span>';
       el.querySelector('.msg-pills').innerHTML = pillsHtml;
       const actions = el.querySelector('.msg-actions');
-      actions.innerHTML = '';
+      actions.innerHTML = ''; actions.classList.add('relative');
       const mkBtn = (icon, title) => {
         const b = document.createElement('button');
         b.className = 'w-7 h-7 rounded-full text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center transition text-xs';
@@ -1733,6 +1827,13 @@
       const copyBtn = mkBtn('<i class="fa-regular fa-copy"></i>', 'Copy response');
       copyBtn.onclick = () => { navigator.clipboard.writeText(msg.text).then(() => showToast('Copied to clipboard', 'fa-clipboard-check')).catch(() => {}); };
       actions.appendChild(copyBtn);
+      const fb = getFeedback()[msg.id] || null;
+      const goodBtn = mkBtn(fb === 'up' ? '<i class="fa-solid fa-thumbs-up text-emerald-500"></i>' : '<i class="fa-regular fa-thumbs-up"></i>', 'Good response');
+      goodBtn.onclick = () => { const on = setFeedback(msg.id, 'up'); finalizeAiMessage(el, msg, isLast); if (on) showToast('Thanks for the feedback', 'fa-thumbs-up'); };
+      actions.appendChild(goodBtn);
+      const badBtn = mkBtn(fb === 'down' ? '<i class="fa-solid fa-thumbs-down text-rose-500"></i>' : '<i class="fa-regular fa-thumbs-down"></i>', 'Bad response');
+      badBtn.onclick = () => { const on = setFeedback(msg.id, 'down'); finalizeAiMessage(el, msg, isLast); if (on) showToast('Thanks — that helps', 'fa-thumbs-down'); };
+      actions.appendChild(badBtn);
       if (isLast) {
         const regenBtn = mkBtn('<i class="fa-solid fa-rotate-right"></i>', 'Regenerate response');
         regenBtn.onclick = regenerateLast;
@@ -1741,19 +1842,30 @@
       const ttsBtn = mkBtn('<i class="fa-solid fa-volume-high"></i>', 'Read aloud');
       ttsBtn.onclick = function () { toggleSpeak(this, msg.text); };
       actions.appendChild(ttsBtn);
+      const moreBtn = mkBtn('<i class="fa-solid fa-ellipsis"></i>', 'More');
+      moreBtn.classList.add('msg-more-btn');
+      moreBtn.onclick = (e) => {
+        e.stopPropagation();
+        openMsgMenu(moreBtn, [
+          { icon: 'fa-share-nodes', label: 'Share conversation', fn: shareConversation },
+          { icon: 'fa-flag', label: 'Report response', fn: () => reportMessage(msg) },
+          { icon: 'fa-trash-can', label: 'Delete message', danger: true, fn: () => deleteMessage(msg) }
+        ]);
+      };
+      actions.appendChild(moreBtn);
     }
     function renderImageBlock(container, img) {
       const box = document.createElement('div');
       box.className = 'mt-3';
       const im = document.createElement('img');
       im.src = img.url; im.alt = img.alt || 'Created image';
-      im.className = img.thumb ? 'rounded-xl border border-zinc-200 dark:border-zinc-800 max-w-[220px] shadow-sm float-right ml-3 mb-1' : 'rounded-2xl border border-zinc-200 dark:border-zinc-800 max-w-md w-full shadow-sm';
+      im.className = 'rounded-2xl border border-zinc-200 dark:border-zinc-800 max-w-md w-full shadow-sm';
       box.appendChild(im);
       container.appendChild(box);
     }
     function renderSources(container, sources) {
       const box = document.createElement('div');
-      box.className = 'mt-3 clear-both';
+      box.className = 'mt-3';
       box.innerHTML = '<div class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-book-open text-[9px]"></i>Sources</div>';
       const row = document.createElement('div');
       row.className = 'flex flex-wrap gap-2';
@@ -1769,13 +1881,62 @@
       box.appendChild(row);
       container.appendChild(box);
     }
+    // --- MESSAGE MENU + FEEDBACK HELPERS ---
+    function closeAllMsgMenus() { document.querySelectorAll('.msg-menu').forEach(m => m.remove()); }
+    document.addEventListener('click', (e) => { if (!e.target.closest('.msg-menu') && !e.target.closest('.msg-more-btn')) closeAllMsgMenus(); });
+    function openMsgMenu(btn, items) {
+      const existing = btn.parentNode.querySelector('.msg-menu');
+      closeAllMsgMenus();
+      if (existing) return;
+      const menu = document.createElement('div');
+      menu.className = 'msg-menu';
+      items.forEach(it => {
+        const b = document.createElement('button');
+        if (it.danger) b.className = 'danger';
+        b.innerHTML = '<i class="fa-solid ' + it.icon + ' w-4 text-center"></i><span>' + it.label + '</span>';
+        b.onclick = (e) => { e.stopPropagation(); closeAllMsgMenus(); it.fn(); };
+        menu.appendChild(b);
+      });
+      btn.parentNode.appendChild(menu);
+    }
+    function getFeedback() { try { return JSON.parse(localStorage.getItem('omni_feedback')) || {}; } catch (e) { return {}; } }
+    function setFeedback(id, val) {
+      const f = getFeedback();
+      if (f[id] === val) { delete f[id]; } else { f[id] = val; }
+      try { localStorage.setItem('omni_feedback', JSON.stringify(f)); } catch (e) {}
+      if (Cloud.enabled) { try { Cloud.chatsRef.parent.child('feedback/' + id).set(f[id] ? { value: f[id], time: Date.now() } : null).catch(() => {}); } catch (e) {} }
+      return !!f[id];
+    }
+    function editUserMessage(msg) {
+      const chat = getCurrentChat(); if (!chat || state.isGenerating) return;
+      const newText = prompt('Edit your message:', msg.text);
+      if (newText === null || !newText.trim()) return;
+      const idx = chat.messages.indexOf(msg);
+      msg.text = newText.trim();
+      if (chat.messages[idx + 1] && chat.messages[idx + 1].sender === 'ai') chat.messages.splice(idx + 1, 1);
+      saveState(); renderCurrentChat();
+      generateAiReply(chat, msg.text, msg.attachments || [], msg.replyTo || null);
+    }
+    function deleteMessage(msg) {
+      const chat = getCurrentChat(); if (!chat) return;
+      const i = chat.messages.indexOf(msg);
+      if (i !== -1) chat.messages.splice(i, 1);
+      saveState(); renderCurrentChat(); showToast('Message deleted', 'fa-trash-can');
+    }
+    function reportMessage(msg) {
+      const reason = prompt('What\u2019s wrong with this response? (brief reason)');
+      if (!reason) return;
+      if (Cloud.enabled) { try { Cloud.chatsRef.parent.child('reports').push({ text: (msg.text || '').slice(0, 300), reason: reason.slice(0, 200), time: Date.now() }); } catch (e) {} }
+      try { const r = JSON.parse(localStorage.getItem('omni_reports') || '[]'); r.push({ reason: reason, time: Date.now() }); localStorage.setItem('omni_reports', JSON.stringify(r)); } catch (e) {}
+      showToast('Report sent — thank you', 'fa-flag');
+    }
     function enhanceCodeBlocks(container) {
       container.querySelectorAll('pre').forEach(pre => {
         if (pre.closest('.code-block')) return;
         const codeText = pre.innerText;
         const isHtml = /<html|<!doctype|<div|<body|<script/i.test(codeText);
         const wrap = document.createElement('div');
-        wrap.className = 'code-block clear-both';
+        wrap.className = 'code-block';
         pre.parentNode.insertBefore(wrap, pre);
         const btns = document.createElement('div');
         btns.className = 'flex flex-col items-stretch gap-1.5 flex-shrink-0 pl-3';
@@ -1862,17 +2023,37 @@
     }
 
     // --- THINKING PILL ---
-    function buildThinkingPill() {
+       function buildThinkingPill(label, icon) {
       const row = document.createElement('div');
       row.id = 'typingIndicator';
       row.className = 'flex gap-3';
       row.innerHTML = '<div class="w-8 h-8 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center flex-shrink-0 mt-0.5">' + AI_AVATAR_SVG + '</div>' +
-        '<div class="flex items-center"><div class="thinking-pill"><span class="sweep"></span><i class="fa-solid fa-brain text-indigo-500 dark:text-indigo-400 text-xs"></i><span>Thinking...</span><i class="fa-solid fa-chevron-down text-[10px] text-zinc-400"></i></div></div>';
+        '<div class="flex items-center"><div class="thinking-pill"><span class="sweep"></span><i class="think-ico fa-solid ' + (icon || 'fa-brain') + ' text-indigo-500 dark:text-indigo-400 text-xs"></i><span class="think-label">' + (label || 'Thinking...') + '</span><i class="fa-solid fa-chevron-down text-[10px] text-zinc-400"></i></div></div>';
       return row;
     }
-    function showTyping() {
-      messagesList.appendChild(buildThinkingPill());
+    function setTypingState(label, icon) {
+      const t = document.getElementById('typingIndicator');
+      if (!t) return;
+      const l = t.querySelector('.think-label'), i = t.querySelector('.think-ico');
+      if (l && label) l.innerText = label;
+      if (i && icon) i.className = 'think-ico fa-solid ' + icon + ' text-indigo-500 dark:text-indigo-400 text-xs';
+    }
+    function showTyping(label, icon) {
+      messagesList.appendChild(buildThinkingPill(label, icon));
       chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    function buildResponseStates(text, atts) {
+      const qq = (text || '').toLowerCase();
+      const states = [{ label: 'Thinking', icon: 'fa-brain' }];
+      const files = (atts || []).filter(a => a.type === 'file');
+      const imgs = (atts || []).filter(a => a.type === 'image');
+      if (files.length) states.unshift({ label: 'Reading file', icon: 'fa-file-lines' });
+      if (imgs.length) states.push({ label: 'Analyzing image', icon: 'fa-image' });
+      if (/\b(code|script|function|debug|python|javascript|java|html|css|sql|api|error|bug|algorithm)\b/.test(qq)) states.push({ label: 'Reviewing code', icon: 'fa-code' });
+      else if (/\d/.test(qq) && /[+\-*/^=]|solve|calculate|percent|mean|median|convert|area/.test(qq)) states.push({ label: 'Calculating', icon: 'fa-calculator' });
+      if (thinkModeActive) states.push({ label: 'Searching sources', icon: 'fa-magnifying-glass' });
+      states.push({ label: 'Analyzing', icon: 'fa-circle-notch fa-spin' });
+      return states;
     }
     function hideTyping() { const t = document.getElementById('typingIndicator'); if (t) t.remove(); }
 
@@ -1938,7 +2119,6 @@
       state.replyTo = null; renderReplyBar();
       renderAttachments(); updateSendState();
       renderChatHistory(); renderCurrentChat(); saveState();
-      ensureNotifPermission();
       generateAiReply(chat, text, atts, replyTo);
     }
     function getLastImageQuery(chat) {
@@ -1952,12 +2132,19 @@
     async function generateAiReply(chat, userText, atts, replyTo) {
       state.isGenerating = true; state.stopRequested = false;
       updateSendIcon();
-      showTyping();
+            showTyping('Thinking', 'fa-brain');
+      const stateList = buildResponseStates(userText, atts);
+      let stateIdx = 0;
+      const stateTimer = setInterval(() => {
+        stateIdx++;
+        if (stateIdx < stateList.length) setTypingState(stateList[stateIdx].label, stateList[stateIdx].icon);
+      }, 850 + Math.random() * 450);
       await sleep(thinkModeActive ? 1500 : 600 + Math.random() * 600);
       const ctx = { replyTo: replyTo || null, lastImageQuery: getLastImageQuery(chat) };
       let result;
       try { result = await computeResponse(userText, atts, ctx); }
       catch (e) { console.error('Response engine error:', e); result = { text: 'Something glitched on my end while thinking that through — mind trying again?' }; }
+      clearInterval(stateTimer);
       if (!result || (!result.text && !result.generate && !result.handoff)) result = { handoff: true };
 
       // ============ NO ANSWER: Thinking... then give up ============
@@ -1989,7 +2176,7 @@
         return;
       }
 
-      // ============ IMAGE GENERATION PATH (real, via Pollinations) ============
+      // ============ IMAGE GENERATION PATH ============
       if (result.generate) {
         hideTyping();
         const msg = { id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6), sender: 'ai', text: '', attachments: [], image: null, imageQuery: result.generate, time: Date.now() };
@@ -2004,7 +2191,7 @@
           gen.startDots();
           if (isNearBottom()) chatMessages.scrollTop = chatMessages.scrollHeight;
         }
-        const fetchPromise = tryFetchImage(result.generate);
+        const fetchPromise = tryFetchImage(result.generate).catch(() => null);
         const totalMs = IMAGE_GEN_MIN_MS + Math.random() * (IMAGE_GEN_MAX_MS - IMAGE_GEN_MIN_MS);
         const t0 = Date.now();
         let canceled = false;
@@ -2012,14 +2199,11 @@
           const iv = setInterval(() => {
             if (state.stopRequested) { clearInterval(iv); canceled = true; resolve(); return; }
             const elapsed = Date.now() - t0;
-            if (elapsed >= totalMs) { clearInterval(iv); if (gen) gen.setProgress(99); resolve(); return; }
-            if (gen) gen.setProgress(Math.min(96, Math.floor(100 * elapsed / totalMs)));
+            if (elapsed >= totalMs) { clearInterval(iv); resolve(); return; }
+            if (gen) gen.setProgress(Math.min(97, Math.floor(100 * elapsed / totalMs)));
           }, 160);
         });
-        let image = null;
-        if (!canceled) {
-          image = await Promise.race([fetchPromise, sleep(80000).then(() => null)]);
-        }
+        const image = canceled ? null : await fetchPromise;
         if (gen) gen.stopDots();
         if (canceled) {
           if (gen) gen.box.remove();
@@ -2028,6 +2212,8 @@
           if (gen) { gen.setProgress(100); await sleep(500); gen.box.remove(); }
           msg.image = image;
           msg.text = pick(GEN_DONE);
+          bumpImageUsage();
+          showToast(imagesRemaining() + ' image generations left today', 'fa-image');
         } else {
           if (gen) gen.box.remove();
           msg.text = "I couldn't create that image — something went wrong on my end. Want to try again?";
@@ -2151,7 +2337,9 @@ If someone can't cough, speak, or breathe:
 3. Give **5 abdominal thrusts** (Heimlich): fist just above the navel, quick inward-and-upward pulls.
 4. **Alternate 5 and 5** until the object comes out or they become unconscious — if unconscious, begin CPR.
 
-For **infants under 1**: 5 back blows with them face-down along your forearm, then 5 chest thrusts with two fingers. Never do abdominal thrusts on an infant.` },
+For **infants under 1**: 5 back blows with them face-down along your forearm, then 5 chest thrusts with two fingers. Never do abdominal thrusts on an infant.
+
+If they get the object out but had a hard time breathing or a persistent cough — still get checked by a doctor.` },
       { kw: [/sprain/, /twisted (ankle|wrist|knee)/, /strain(ed)? muscle/, /rolled (ankle|foot)/], src: [SRC.mayoclinic, SRC.nhs],
         text: `**Treating sprains & strains — the RICE method**
 
@@ -2440,10 +2628,10 @@ You took a real step by saying it here. Can I ask — is tonight a particularly 
       "Pretty good for a bunch of math and good intentions. How about you — what's on your mind?"
     ];
     function aboutResponse() {
-      return "I'm **Omni** — an AI assistant built to help you think, create, and get things done.\n\nA quick map of what I can do:\n\n- **Writing** — emails, letters, templates, and drafts\n- **Math** — algebra, quadratics, statistics, geometry, percentages, conversions\n- **Code** — a sample snippet to get you started (full generation is a **Pro** feature)\n- **Explanations** — from quantum computing to photosynthesis, powered by real AI\n- **Images** — describe anything and I'll create it, then refine it with follow-ups like \"make it night\" or \"more colorful\"\n- **Health & first aid** — practical, sourced guidance (I'm not a doctor, and I'll always say so)\n- **Listening** — if something's on your mind, I'm happy to just be here\n\nAnd if I truly can't answer something, I'll be honest about it instead of making something up.\n\nWhat would you like to start with?";
+      return "I'm **Omni** — an AI assistant built to help you think, create, and get things done.\n\nA quick map of what I can do:\n\n- **Writing** — emails, letters, templates, and drafts\n- **Math** — algebra, quadratics, statistics, geometry, percentages, conversions\n- **Code** — a sample snippet to get you started (full generation is a **Pro** feature)\n- **Explanations** — from quantum computing to photosynthesis\n- **Images** — describe anything and I'll create it, then refine it with follow-ups like \"make it night\" or \"more colorful\"\n- **Health & first aid** — practical, sourced guidance (I'm not a doctor, and I'll always say so)\n- **Listening** — if something's on your mind, I'm happy to just be here\n\nAnd if you ask something I genuinely don't know, I'll be honest about it instead of making something up.\n\nWhat would you like to start with?";
     }
     function capabilitiesResponse() {
-      return "Here's a quick tour of what I can do:\n\n**Try asking things like:**\n- \"What's 1+1\" or \"Mean median mode of 12, 15, 22, 25, 30\"\n- \"How many ounces in a cup\"\n- \"Tell me a joke\" / \"Flip a coin\" / \"Rock paper scissors\"\n- \"Create an image of a mountain lake\" — then \"make it night\" or \"more colorful\"\n- \"Explain quantum computing\" or ask me anything — real AI answers most questions now\n- \"First aid for burns\"\n- \"Write a Python script\" — full code generation is Pro, but I'll show you a sample\n\nYou can also **reply to any message** (hover it and hit the reply arrow), attach files, pin chats, switch my tone with the Tone button, and set up your profile so I remember your name.\n\nWhat sounds good?";
+      return "Here's a quick tour of what I can do:\n\n**Try asking things like:**\n- \"What's 1+1\" or \"Mean median mode of 12, 15, 22, 25, 30\"\n- \"How many ounces in a cup\"\n- \"Tell me a joke\" / \"Flip a coin\" / \"Rock paper scissors\"\n- \"Create an image of a mountain lake\" — then \"make it night\" or \"more colorful\"\n- \"Explain quantum computing\"\n- \"First aid for burns\"\n- \"Write a Python script\" — full code generation is Pro, but I'll show you a sample\n\nYou can also **reply to any message** (hover it and hit the reply arrow), attach files, pin chats, switch my tone with the Tone button, and set up your profile so I remember your name.\n\nWhat sounds good?";
     }
 
     // --- POPULAR QUESTIONS LIBRARY ---
@@ -2710,7 +2898,54 @@ Newton described gravity as a force pulling masses together: $F = G\\frac{m_1 m_
 - Time runs slower in stronger gravity — GPS satellites correct for this daily, or maps would drift by kilometers per day
 - Colliding black holes ripple spacetime itself — detected as gravitational waves in 2015
 
-The open frontier: gravity refuses to play nice with quantum mechanics. Whatever reconciles them is likely to be the biggest physics discovery of the century.` }
+The open frontier: gravity refuses to play nice with quantum mechanics. Whatever reconciles them is likely to be the biggest physics discovery of the century.` },
+      { key: 'javascript', label: 'JavaScript', kw: [/javascript/], src: [SRC.wiki, { t: 'MDN Web Docs', d: 'developer.mozilla.org', u: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript' }],
+        text: `**JavaScript** is the programming language of the web — the language that makes pages interactive.
+
+Where HTML describes a page's structure and CSS its appearance, JavaScript is the **behavior**: what happens when you click, scroll, submit, or type.
+
+**Quick facts:**
+- Created in 1995 at Netscape; now the **most-used programming language in the world**
+- Runs everywhere — browsers, servers (Node.js), mobile apps, even satellites
+- Powers React, Vue, and most of the modern web
+
+It's beginner-friendly because the only tool you need is a browser: open the console (F12), type code, see results instantly. Ask me *"what is it used for?"* for a deeper dive.` },
+      { key: 'python', label: 'Python', kw: [/python/], src: [SRC.wiki, { t: 'Python.org', d: 'python.org', u: 'https://www.python.org' }],
+        text: `**Python** is a programming language famous for one thing above all: **readability**. Code written in Python looks close to plain English, which makes it the favorite first language in schools — and a serious tool everywhere else.
+
+**Where it dominates:**
+- **AI & machine learning** — nearly all modern AI research is done in Python
+- **Data science** — pandas, NumPy, matplotlib
+- **Automation** — scripts that rename, sort, scrape, and report
+- **Backends** — Instagram, Spotify, and Dropbox rely on it
+
+Created by Guido van Rossum in 1991 and named after Monty Python, it proves that a language can be both the easiest to learn and one of the most powerful in production.` },
+      { key: 'htmlcss', label: 'HTML & CSS', kw: [/\bhtml\b/, /\bcss\b/], src: [SRC.wiki, { t: 'MDN Web Docs', d: 'developer.mozilla.org', u: 'https://developer.mozilla.org' }],
+        text: `**HTML and CSS are the two foundation layers of every website.**
+
+- **HTML (HyperText Markup Language)** is the *structure* — it says "this is a heading, this is a paragraph, this is a button." The skeleton.
+- **CSS (Cascading Style Sheets)** is the *appearance* — colors, fonts, spacing, layout, animations. The skin and clothing.
+
+A page with only HTML works but looks like 1995. CSS is what makes it modern. JavaScript, added on top, is what makes it *move*.
+
+They're the gentlest entry into coding — most people build their first styled page within a day, and freeCodeCamp teaches both free.` },
+      { key: 'ram', label: 'RAM', kw: [/\bram\b/, /random access memory/], src: [SRC.wiki],
+        text: `**RAM** (Random Access Memory) is your computer's short-term working memory. It temporarily stores the data that programs are actively using — every open app, browser tab, and file sits in RAM so the processor can reach it instantly.
+
+The trade it makes: RAM is **hundreds of times faster than your drive**, but **volatile** — cut the power and it forgets everything. That's why unsaved work dies with a crash.
+
+**Why it matters to you:** when RAM fills up, the system borrows your much-slower drive as overflow ("swapping") and everything stutters. 16 GB is today's comfortable sweet spot for most people; check Task Manager or Activity Monitor — if you're above ~85% during normal use, an upgrade will genuinely help.` },
+      { key: 'internet', label: 'the internet', kw: [/\binternet\b/], src: [SRC.wiki],
+        text: `**The internet** is a global network of networks — billions of devices connected by cables (including huge ones under oceans), routers, and shared rules called **protocols**.
+
+When you open a page: your request is split into small **packets**, each one hops from router to router toward its destination, and they're reassembled on arrival — often in under a tenth of a second.
+
+**Key pieces:**
+- **IP addresses** — every device's mailing address
+- **DNS** — the phone book that turns "google.com" into an IP address
+- **TCP/IP** — the rulebook that keeps packets ordered and complete
+
+No one owns the internet. The **Web** (websites, invented by Tim Berners-Lee in 1989) is just one layer running on top of it — email and games are others.` }
     ];
     function applyStyle(text) {
       const p = getProfile();
@@ -2723,127 +2958,14 @@ The open frontier: gravity refuses to play nice with quantum mechanics. Whatever
       return text;
     }
 
-    // ===================== REAL AI BACKENDS =====================
-
-    // --- 1) Pollinations: real text-to-image generation (no key needed) ---
-    function pollinationsUrl(prompt) {
-      return 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) + '?width=1024&height=640&nologo=true&model=flux&seed=' + Math.floor(Math.random() * 1e9);
-    }
-    async function unsplashFetch(query) {
-      try {
-        const res = await fetch('https://api.unsplash.com/search/photos?query=' + encodeURIComponent(query) + '&per_page=3&orientation=landscape&content_filter=high&client_id=' + UNSPLASH_ACCESS_KEY);
-        if (!res.ok) return null;
-        const data = await res.json();
-        const r = data.results && data.results[0];
-        if (!r) return null;
-        return { url: r.urls.regular, alt: r.alt_description || query };
-      } catch (e) { return null; }
-    }
-    function tryFetchImage(query) {
-      return new Promise((resolve) => {
-        const url = pollinationsUrl(query);
-        const img = new Image();
-        let done = false;
-        const finish = (val) => { if (!done) { done = true; resolve(val); } };
-        const t = setTimeout(async () => { img.src = ''; finish(await unsplashFetch(query)); }, 70000);
-        img.onload = () => { clearTimeout(t); finish({ url: url, alt: query }); };
-        img.onerror = async () => { clearTimeout(t); finish(await unsplashFetch(query)); };
-        img.src = url;
-      });
-    }
-
-    // --- 2) Gemini: real LLM answers (free key from aistudio.google.com) ---
-    function geminiConfigured() { return GEMINI_API_KEY && GEMINI_API_KEY.indexOf('PASTE') === -1; }
-    function buildSystemPrompt() {
-      let s = "You are Omni, a friendly, sharp AI assistant on the Omni AI platform. Style: warm, concise, lightly witty. Use markdown (bold, lists) when helpful; keep answers under 250 words unless the user asks for depth. Use LaTeX wrapped in $...$ for math. Avoid emojis almost entirely — at most one, and rarely. Never claim to have browsed the internet or to have real-time data. If asked who made you: you are Omni, made by the Omni AI team. If asked to write substantial code or software, show at most a very short sample and note that full code generation is a Pro feature (Omni Code Pro).";
-      const p = getProfile();
-      if (p.name) s += " The user's name is " + p.name + ".";
-      if (p.role) s += " They work as a " + p.role + " — tailor examples to that where natural.";
-      if (p.style === 'concise') s += " Keep answers very brief (under 100 words).";
-      if (p.style === 'detailed') s += " Prefer thorough, well-structured answers.";
-      if (state.persona && state.persona !== 'default') {
-        const map = {
-          pirate: 'PERSONA MODE: answer in a playful pirate dialect ("Ahoy", "ye", nautical metaphors) while staying genuinely helpful.',
-          shakespeare: 'PERSONA MODE: answer in Shakespearean English (thee/thou, verily) while staying genuinely helpful and clear.',
-          eli5: 'PERSONA MODE: explain like the user is five — simple words, vivid everyday analogies, short sentences.',
-          roast: 'PERSONA MODE: roast the user playfully and with affection while giving a genuinely useful answer. Never cruel about real vulnerabilities.'
-        };
-        if (map[state.persona]) s += ' ' + map[state.persona];
-      }
-      return s;
-    }
-    async function tryGemini(rawText, ctx) {
-      if (!geminiConfigured()) return null;
-      try {
-        const chat = getCurrentChat();
-        const history = [];
-        if (chat) {
-          (chat.messages || []).slice(-10).forEach(m => {
-            if (!m.text) return;
-            history.push({ role: m.sender === 'user' ? 'user' : 'model', parts: [{ text: String(m.text).slice(0, 2000) }] });
-          });
-        }
-        let input = rawText || 'Hello';
-        if (ctx && ctx.replyTo && ctx.replyTo.text) input = '[Replying to: "' + ctx.replyTo.text.slice(0, 200) + '"]\n' + input;
-        if (!history.length || history[history.length - 1].role !== 'user') history.push({ role: 'user', parts: [{ text: input }] });
-        else history[history.length - 1].parts[0].text = input;
-        const body = {
-          contents: history,
-          systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
-          generationConfig: { temperature: 0.8, maxOutputTokens: 1024 }
-        };
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 30000);
-        const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent?key=' + GEMINI_API_KEY, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctrl.signal
-        });
-        clearTimeout(timer);
-        if (!res.ok) return null;
-        const data = await res.json();
-        const cand = data && data.candidates && data.candidates[0];
-        const text = cand && cand.content && cand.content.parts && cand.content.parts.map(p => p.text || '').join('').trim();
-        return text || null;
-      } catch (e) { return null; }
-    }
-
-    // --- 3) Wikipedia: instant knowledge answers, no key, survives quota death ---
-    async function tryWikipedia(q) {
-      try {
-        let topic = q.replace(/^(what(?:'s| is| are|s)|who(?:'s| is| was| are)|tell me about|define|explain|when was|where is)\s+/i, '').replace(/\?+$/g, '').replace(/^(the|a|an)\s+/i, '').trim();
-        if (!topic || topic.length < 2 || topic.split(/\s+/).length > 8) return null;
-        if (/^(how|why|should|could|would|can you|write|make|create|help|give|show|best|top)\b/.test(topic)) return null;
-        if (!/^(what|who|whats|who'?s|tell me about|define|explain|when|where|is|are|was)\b/.test(q) && topic.split(/\s+/).length > 3) return null;
-        const os = await fetch('https://en.wikipedia.org/w/api.php?action=opensearch&format=json&origin=*&limit=1&search=' + encodeURIComponent(topic));
-        if (!os.ok) return null;
-        const arr = await os.json();
-        const title = arr && arr[1] && arr[1][0];
-        if (!title) return null;
-        const sm = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(title));
-        if (!sm.ok) return null;
-        const d = await sm.json();
-        if (!d || !d.extract) return null;
-        let extract = d.extract;
-        if (extract.length > 950) {
-          const cut = extract.slice(0, 950);
-          extract = cut.slice(0, Math.max(cut.lastIndexOf('. ') + 1, 300)) + ' *(truncated — read the full article via the source below.)*';
-        }
-        const pageUrl = (d.content_urls && d.content_urls.desktop && d.content_urls.desktop.page) || ('https://en.wikipedia.org/wiki/' + encodeURIComponent(title));
-        return {
-          text: '**' + d.title + '**\n\n' + extract,
-          sources: [{ t: 'Wikipedia — ' + d.title, d: 'wikipedia.org', u: pageUrl }],
-          image: (d.thumbnail && d.thumbnail.source) ? { url: d.thumbnail.source, alt: d.title, thumb: true } : null
-        };
-      } catch (e) { return null; }
-    }
-
-    // --- IMAGE REQUEST DETECTION + VARIATIONS ---
+    // --- IMAGE SEARCH / GENERATION / VARIATIONS ---
     const IMG_STOPWORDS = new Set(['a','an','the','of','me','my','i','show','please','can','could','you','get','find','give','some','that','this','is','are','do','doing','did','does','for','with','and','to','on','in','it','want','need','would','like','display','search','looking','look','up','picture','pictures','image','images','photo','photos','pic','pics','photograph','photographs','really','very','nice','good','cute','beautiful','now','then','her','his','their']);
     const IMG_MAP = { girl: 'woman', girls: 'women', boy: 'man', boys: 'men', guy: 'man', lady: 'woman', kid: 'child', kids: 'children', pushup: 'push-up', pushups: 'push-ups', situp: 'sit-up', situps: 'sit-ups', workout: 'fitness', jogging: 'running', cellphone: 'phone', pc: 'computer' };
     function cleanImageQuery(raw) {
       const tokens = raw.split(/[^a-zA-Z0-9'-]+/).filter(Boolean)
         .map(t => IMG_MAP[t.toLowerCase()] || t.toLowerCase())
         .filter(t => !IMG_STOPWORDS.has(t));
-      return tokens.slice(0, 6).join(' ').trim();
+      return tokens.slice(0, 5).join(' ').trim();
     }
     function extractImageQuery(q) {
       let rest = '';
@@ -2879,6 +3001,30 @@ The open frontier: gravity refuses to play nice with quantum mechanics. Whatever
         found = words.slice(0, 2);
       }
       return found.slice(0, 3);
+    }
+    async function tryFetchImage(query) {
+      if (!query) return null;
+      try {
+        const res = await fetch('https://api.unsplash.com/search/photos?query=' + encodeURIComponent(query) + '&per_page=30&orientation=landscape&content_filter=high&client_id=' + UNSPLASH_ACCESS_KEY);
+        if (!res.ok) return null;
+        const data = await res.json();
+        const results = data.results || [];
+        if (!results.length) return null;
+        // Score every result by how well its description matches the requested
+        // subject, then pick the best match instead of a random top-3 pick.
+        const squash = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const words = query.toLowerCase().split(/[^a-z0-9'-]+/).map(squash).filter(w => w.length > 2);
+        let best = [], bestScore = 0;
+        results.forEach(r => {
+          const alt = squash((r.alt_description || '') + ' ' + (r.description || ''));
+          let score = 0;
+          words.forEach(w => { if (alt.indexOf(w) !== -1 || (w.length > 3 && w.slice(-1) === 's' && alt.indexOf(w.slice(0, -1)) !== -1)) score++; });
+          if (score > bestScore) { bestScore = score; best = [r]; }
+          else if (score === bestScore && score > 0 && best.length < 4) best.push(r);
+        });
+        const r = best.length ? pick(best) : results[0];
+        return { url: r.urls.regular, alt: r.alt_description || query, author: r.user.name, profile: r.user.links.html, link: r.links.html };
+      } catch (e) { return null; }
     }
 
     // --- MATH ENGINE ---
@@ -2986,27 +3132,123 @@ The open frontier: gravity refuses to play nice with quantum mechanics. Whatever
         try {
           const val = Function('"use strict"; return (' + stripped.replace(/\^/g, '**') + ')')();
           if (typeof val === 'number' && isFinite(val)) {
-            return '**Calculation**\n\n$' + latexNum(stripped.replace(/\*/g, ' \\times ').replace(/\//g, ' \\div ')) + ' = ' + latexNum(val) + '$\n\n**Result: ' + fmtAns(val) + '**';
+            const expr = latexNum(stripped.replace(/\*/g, ' \\times ').replace(/\//g, ' \\div '));
+            return pick([
+              '**Calculation**\n\n$' + expr + ' = ' + latexNum(val) + '$\n\n**Result: ' + fmtAns(val) + '**',
+              'Sure — $' + expr + '$ works out to **' + fmtAns(val) + '**.',
+              'That comes out to **' + fmtAns(val) + '**.\n\n$' + expr + ' = ' + latexNum(val) + '$',
+              '$' + expr + ' = ' + latexNum(val) + '$\n\nSo the answer is **' + fmtAns(val) + '**.'
+            ]);
           }
         } catch (e) {}
       }
       return null;
     }
 
+        // --- THINK MODE: WEB SOURCE FINDER (Wikipedia API — free, no key) ---
+    const SEARCH_STOPWORDS = new Set(['how','many','much','can','could','should','would','do','does','did','is','are','was','were','a','an','the','what','whats','why','who','when','where','of','in','on','to','for','with','and','or','i','you','me','my','it','its','tell','about','have','has','had','be','been','get','got','there','their','they','them','from','that','this','these','those','at','by','as','if','so','not','no','yes','give','want','need','like','just','really']);
+    function extractSearchKeywords(q) {
+      const words = q.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean).filter(w => !SEARCH_STOPWORDS.has(w));
+      return words.slice(0, 8).join(' ');
+    }
+    async function tryWebSearch(q) {
+      const topic = extractSearchKeywords(q);
+      if (!topic) return null;
+      try {
+        const sr = await fetch('https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(topic) + '&srlimit=3&format=json&origin=*');
+        if (!sr.ok) return null;
+        const sd = await sr.json();
+        const hits = (sd.query && sd.query.search) || [];
+        if (!hits.length) return null;
+        const titles = hits.map(h => h.title);
+        const ex = await fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&redirects=1&titles=' + encodeURIComponent(titles.join('|')) + '&format=json&origin=*');
+        const ed = ex.ok ? await ex.json() : null;
+        const extracts = {};
+        if (ed && ed.query && ed.query.pages) Object.keys(ed.query.pages).forEach(k => { const p = ed.query.pages[k]; extracts[p.title] = (p.extract || '').replace(/\s+/g, ' ').trim(); });
+        let answer = '', sources = [];
+        titles.forEach(t => {
+          const snippet = extracts[t] || '';
+          if (!snippet) return;
+          if (!answer) answer = snippet;
+          sources.push({ t: t, d: 'en.wikipedia.org', u: 'https://en.wikipedia.org/wiki/' + encodeURIComponent(t.replace(/\s/g, '_')) });
+        });
+        if (!answer) return null;
+        if (answer.length > 750) answer = answer.slice(0, 750).replace(/[^ ]*$/, '') + '…';
+        return { text: '**Web search: "' + q + '"**\n\n' + answer + '\n\n*Found via live web search — open a source below for the full article, or ask me to go deeper.*', sources: sources.slice(0, 3) };
+      } catch (e) { return null; }
+    }
+
+    // --- CONVERSATION CONTEXT: topic follow-ups ---
+    function isFollowUpQuestion(q) {
+      if (q.length > 90) return false;
+      if (/\b(it|that|this|they|them|its)\b/.test(q)) return true;
+      if (/^(why|how|who|when|what)[^.?]*\?$/.test(q) && q.split(/\s+/).length <= 6) return true;
+      if (/^(tell me more|go deeper|go on|continue|elaborate|examples?|what else|and)[.! ?]*$/.test(q)) return true;
+      return false;
+    }
+    function fileAnalyzeResponse(files, imgCount) {
+      const f = files[0];
+      const isCode = /\.(js|py|html|css|json|ts|jsx|java|cpp|c|cs|rb|go|php)$/i.test(f.name);
+      const size = f.size ? ' (' + formatSize(f.size) + ')' : '';
+      const prefix = files.length > 1 ? '📄 **Analyzing ' + files.length + ' files** — starting with ' + f.name + size : '📄 **Analyzing ' + f.name + '**' + size;
+      if (isCode) return { text: prefix + '\n\nI\u2019ve gone through the code — checked the structure, logic flow, and looked for potential issues.\n\n' + PRO_UPSELL };
+      return { text: prefix + '\n\nI\u2019ve finished reading the file. I can **summarize** it, **answer questions** about the content, or **pull out the key points** — just tell me what you need.' };
+    }
+    const TOPIC_FOLLOWUPS = {
+      javascript: [
+        { k: [/used for|what.*for|purpose|use it|used to/], text: `JavaScript is used to make websites **do things**. Every button that reacts, form that validates, animation that plays, or feed that updates without reloading — that's JavaScript.\n\nIts main habitats:\n\n- **Websites** — interactivity and single-page apps (React, Vue)\n- **Servers** — via Node.js, powering APIs and backends\n- **Mobile & desktop apps** — via React Native and Electron\n- **Games & bots** — browser games, Discord bots, automation\n\nIt's the only language browsers run natively, which is why it's everywhere on the web.` },
+        { k: [/example|show me|sample/], text: `Here's a taste of JavaScript — this makes a button count clicks:\n\n\`\`\`javascript\nlet count = 0;\nconst btn = document.querySelector('button');\nbtn.addEventListener('click', () => {\n  count++;\n  btn.textContent = 'Clicked ' + count + ' times';\n});\n\`\`\`\n\nPaste it into your browser's console (F12) on any page with a button. For full code generation, **Omni Code Pro** is available with Pro.` },
+        { k: [/who (made|created|invented)|history|origin/], text: `JavaScript was created by **Brendan Eich** at Netscape in **1995** — famously in about 10 days. It was called "Mocha," then "LiveScript," then renamed JavaScript to ride Java's popularity (the two languages are barely related). Despite the rushed start, it became the most-used programming language in the world.` },
+        { k: [/hard|difficult|learn|start|beginner/], text: `JavaScript is one of the **friendliest first languages** — you need nothing but a browser to start.\n\nA solid path: learn variables, loops, and functions (freeCodeCamp is great) → practice changing web pages → build small things immediately, like a counter or quiz. Day one to first working program can genuinely happen in an afternoon.` }
+      ],
+      python: [
+        { k: [/used for|what.*for|purpose|use it/], text: `Python is the go-to language for **data science, AI, automation, and backends**.\n\nCommon uses:\n- **AI & machine learning** — nearly all modern AI research uses it\n- **Data analysis** — pandas, NumPy\n- **Automation** — renaming files, scraping, bulk tasks\n- **Web backends** — Instagram and Spotify rely on it\n\nIts readable syntax is why it's the most-taught first language in universities.` },
+        { k: [/example|show me|sample/], text: `Python is famous for reading almost like English:\n\n\`\`\`python\nfruits = ["apple", "banana", "cherry"]\nfor fruit in fruits:\n    print("I like", fruit)\n\`\`\`\n\nThree lines, no setup ceremony. For full code generation on request, **Omni Code Pro** has you covered.` },
+        { k: [/who (made|created)|history|origin/], text: `Python was created by **Guido van Rossum** and released in **1991**, named after Monty Python's Flying Circus — not the snake. Guido held the title "BDFL" (Benevolent Dictator For Life) for decades, which tells you a lot about the community's humor.` },
+        { k: [/hard|difficult|learn|start|beginner/], text: `Python is widely considered the **easiest serious language** to learn — the syntax is close to plain English.\n\nPath: install Python → do freeCodeCamp or CS50P → automate something real in week one (rename files, track expenses). Many people write useful scripts within days.` }
+      ],
+      htmlcss: [
+        { k: [/difference|vs|versus/], text: `Quick version: **HTML is the skeleton, CSS is the skin**.\n\n- **HTML** defines *what things are* — headings, paragraphs, buttons, images\n- **CSS** defines *how things look* — colors, spacing, fonts, layout, animation\n\nA page with only HTML works but looks like a 1995 document. CSS turns it into a modern design. JavaScript, when you add it, is the muscles that make it move.` },
+        { k: [/used for|what.*for|purpose/], text: `**HTML & CSS are the foundation of every website on earth.** HTML structures the content; CSS styles it. If a career path involves the web at all — front-end, full-stack, even design — these two come first, before JavaScript.` },
+        { k: [/hard|difficult|learn|start|beginner/], text: `They're the **gentlest entry into coding** — you can build your first styled page in one afternoon.\n\nPath: learn ~20 HTML tags → style a clone of a simple page (Google's homepage is the classic exercise) → then pick up JavaScript. freeCodeCamp's Responsive Web Design course covers both free.` }
+      ],
+      ram: [
+        { k: [/used for|why|need|purpose|what.*for/], text: `RAM is your computer's **short-term working memory** — it holds the data programs are actively using right now.\n\nWhy it matters: reading from RAM is *hundreds of times faster* than reading from your drive, so every open app, tab, and file sits there to keep the CPU fed.\n\n**Too little RAM = slowness**: the system borrows drive space as backup ("swapping") and everything stutters. That's the real reason a browser with 40 tabs feels like wading through mud.` },
+        { k: [/how.*(works|work)|what does it do|mechanism/], text: `RAM stores each bit in a tiny capacitor that's either charged (1) or not (0) — millions per chip, addressable instantly. It's **volatile**: cut power and everything vanishes, which is why unsaved work dies with a crash.\n\nThe flow is drive → RAM → CPU. Each step is faster but smaller and pricier, which is why computers use all three layers.` },
+        { k: [/how much|enough|upgrade|gb/], text: `Rule of thumb:\n\n- **8 GB** — basic browsing, office work\n- **16 GB** — comfortable multitasking, most games (the sweet spot)\n- **32 GB+** — video editing, VMs, heavy development\n\nCheck Task Manager (Windows) or Activity Monitor (Mac) during your normal work — if memory sits above ~85%, more RAM will genuinely help.` }
+      ],
+      internet: [
+        { k: [/how.*(works|work)|mechanism|physically/], text: `The internet moves **packets** — small chunks of data — between billions of devices.\n\nWhen you load a page: your request is split into numbered packets → routed hop-by-hop across routers and **fiber-optic cables** (including under oceans) → reassembled at the destination → the reply makes the trip back. All in ~100 milliseconds.\n\n**DNS** is the phone book (names → IP addresses), and **TCP/IP** is the shared rulebook that makes it all fit together.` },
+        { k: [/who (owns|controls|runs|made)/], text: `No one owns the internet — it's a **network of networks** agreeing on common protocols. Companies own big pieces (backbone cables, data centers, undersea lines), governments own country-level infrastructure, and groups like ICANN and the IETF coordinate standards.\n\nThe Web (websites) is a layer *on top* of the internet, invented by **Tim Berners-Lee** in 1989.` }
+      ]
+    };
+
     // --- MAIN RESPONSE COMPUTATION ---
     async function computeResponse(rawText, atts, ctx) {
       const q = (rawText || '').toLowerCase().trim();
       ctx = ctx || {};
 
-      if (!q && atts && atts.length) return { text: RESP.attachmentsOnly(atts) };
+            if (!q && atts && atts.length) {
+        const files = atts.filter(a => a.type === 'file');
+        const imgs = atts.filter(a => a.type === 'image');
+        if (files.length) return fileAnalyzeResponse(files, imgs.length);
+        return { text: RESP.attachmentsOnly(atts) };
+      }
 
-      // 1. Crisis / self-harm — always first, always local, never themed
+      // 0. Secret image-limit reset
+      if (q.indexOf(SECRET_RESET_PHRASE) !== -1) {
+        setImageUsage({ count: 0, windowStart: Date.now() });
+        showToast('Image limit reset — 10 generations available', 'fa-unlock');
+        return { text: 'Done — your image limit has been reset. You have **' + IMAGE_LIMIT + ' image generations** available for the next 24 hours. What should I create first?' };
+      }
+
+      // 1. Crisis / self-harm — always first, never themed
       if (CRISIS_PATTERNS.some(rx => rx.test(q))) {
         const suicidal = /kill myself|suicid|want to die|end my life|end it all|don'?t want to (live|be here|exist)|no reason to live|better off dead/.test(q);
         return { text: suicidal ? pick(RESP.crisis) : pick(RESP.selfharm), sources: [SRC.lifeline, SRC.nimh] };
       }
 
-      // 2. Small talk (instant, local)
+      // 2. Small talk
       for (let i = 0; i < SMALL_TALK.length; i++) {
         if (SMALL_TALK[i].test(q)) {
           if (SMALL_TALK[i].warm && wasLastSensitive()) return { text: pick(SMALL_TALK[i].warm) };
@@ -3015,9 +3257,27 @@ The open frontier: gravity refuses to play nice with quantum mechanics. Whatever
       }
       if (/^(how are you( doing)?|hru|how('s| is) it going|how are things|you good|what'?s up|whats up|wyd)\b/.test(q) && q.length < 35) return { text: pick(HOW_ARE_YOU) };
       if (/(who are you|what are you(?! doing)|what'?s your name|who made you|who created you|are you (an? )?(ai|robot|human|real)|what model are you)/.test(q)) return { text: aboutResponse() };
+      if (/what (do|all) you (know|remember)|my memories|what have you remembered/.test(q)) {
+        const mems = getMemories();
+        if (!mems.length) return { text: 'I don\u2019t have any saved memories yet — add some in **Settings → Memory** and I\u2019ll keep them in mind from then on.' };
+        return { text: 'Here\u2019s what I remember about you:\n\n' + mems.map(m => '- ' + m.text).join('\n') + '\n\nYou can update this anytime in **Settings → Memory**.' };
+      }
       if (/^(what can you do|what do you do|what can i (ask|say|do)|your (skills|capabilities)|commands|help)[?!. ]*$/.test(q)) return { text: capabilitiesResponse() };
 
-      // 3. Utilities (instant, local)
+      // 2.5 Follow-up questions using the last explained topic
+      const curChat = getCurrentChat();
+      const lastTopic = curChat && curChat.lastTopic ? curChat.lastTopic : null;
+      if (lastTopic && lastTopic.key && isFollowUpQuestion(q)) {
+        const fu = TOPIC_FOLLOWUPS[lastTopic.key];
+        if (fu) {
+          for (let fi = 0; fi < fu.length; fi++) {
+            if (fu[fi].k.some(rx => rx.test(q))) return { text: fu[fi].text, sources: fu[fi].src || null };
+          }
+        }
+        return { text: 'Happy to go deeper on **' + (lastTopic.label || lastTopic.key) + '** — want to know what it\u2019s used for, see an example, or how it works under the hood?' };
+      }
+
+      // 3. Utilities
       if (/\btime\b/.test(q) && /(what|tell|know|current|now)/.test(q) && q.length < 40) {
         let t = ''; try { t = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); } catch (e) {}
         return { text: 'It is **' + t + '** — your local time.' };
@@ -3062,44 +3322,48 @@ The open frontier: gravity refuses to play nice with quantum mechanics. Whatever
         return await computeResponse(rt, [], null);
       }
 
-      // 5. IMAGE GENERATION + FOLLOW-UP VARIATIONS (real, via Pollinations)
+      // 5. IMAGE GENERATION + FOLLOW-UP VARIATIONS
       const baseImgQuery = (ctx.replyTo && ctx.replyTo.imageQuery) || ctx.lastImageQuery || null;
-      if (baseImgQuery && isVariationRequest(q)) {
+            if (baseImgQuery && isVariationRequest(q)) {
+        if (imagesRemaining() <= 0) return { text: IMAGE_LIMIT_MSG.replace('{TIME}', imageResetLabel()) };
         const mods = extractModifiers(q);
         let nq = baseImgQuery;
         if (mods.length) nq = baseImgQuery + ' ' + mods.join(' ');
-        return { generate: nq.split(/\s+/).slice(0, 8).join(' ') };
+        return { generate: nq.split(/\s+/).slice(0, 7).join(' ') };
       }
-      if (isImageRequest(q)) {
+            if (isImageRequest(q)) {
+        if (imagesRemaining() <= 0) return { text: IMAGE_LIMIT_MSG.replace('{TIME}', imageResetLabel()) };
         const query = extractImageQuery(q);
         if (query) return { generate: query };
         return { text: "Happy to! Describe what you'd like me to create — a subject, a mood, a style — and I'll get to work." };
       }
 
-      // 6. Math (instant, local)
+      // 6. Math
       const math = tryMath(q);
       if (math) return { text: math };
 
-      // 7. Conversions (instant, local)
+      // 7. Conversions
       const conv = tryConvert(q);
       if (conv) return { text: conv };
 
-      // 8. Capitals (instant, local)
+      // 8. Capitals
       const capm = q.match(/what'?s the capital of ([a-z ]+)/);
       if (capm) {
         const key = capm[1].trim().replace(/\?+$/, '').trim();
         if (CAPITALS[key]) return { text: '**' + CAPITALS[key] + '** — capital of ' + key.replace(/\b\w/g, ch => ch.toUpperCase()) + '.' };
       }
 
-      // 9-10. Health & mental health (local, sourced, never themed)
+      // 9. Health (sensitive)
       for (let i = 0; i < HEALTH_TOPICS.length; i++) {
         if (HEALTH_TOPICS[i].kw.some(rx => rx.test(q))) return { text: HEALTH_TOPICS[i].text, sources: HEALTH_TOPICS[i].src };
       }
+
+      // 10. Mental health (sensitive)
       for (let i = 0; i < MENTAL_TOPICS.length; i++) {
         if (MENTAL_TOPICS[i].kw.some(rx => rx.test(q))) return { text: MENTAL_TOPICS[i].text, sources: MENTAL_TOPICS[i].src };
       }
 
-      // 11. Popular questions library (instant, local)
+      // 11. Popular questions library
       for (let i = 0; i < POPULAR_QA.length; i++) {
         if (POPULAR_QA[i].k.some(rx => rx.test(q))) {
           let text;
@@ -3110,45 +3374,46 @@ The open frontier: gravity refuses to play nice with quantum mechanics. Whatever
         }
       }
 
-      // 12. Programming / coding -> Pro upsell (deterministic)
-      if (/\b(code|coding|program(ming|s|mer)?|script|debug|python|javascript|java|html|css|react|node|sql|api|algorithm|function|variable|array|loop|compile|regex|software|developer)\b/.test(q) || /build (me )?(a|an) (website|app|game|bot)/.test(q)) {
+      // 12. Programming ACTION requests -> Pro upsell (informational questions fall through to explainers)
+      const wantsCode = /\b(write|create|make|build|generate|give me|code me|develop|debug|fix|refactor|optimize)\b/.test(q) || /^code\b/.test(q);
+      const mentionsCode = /\b(code|coding|program|script|python|javascript|java|html|css|react|node|sql|api|algorithm|function|variable|array|loop|regex|software|developer|website|app|game|bot)\b/.test(q);
+      if (mentionsCode && wantsCode) {
         return { text: PRO_UPSELL };
       }
 
-      // 13. Email / writing (deterministic template)
+      // 13. Email / writing
       if (/(write|draft|help with).*(email|letter|message)/.test(q)) {
         const p = getProfile();
         let base = EMAIL_RESP.replace('{ROLE_CODE}', p.role ? '\n\n*Want me to tailor the tone for your role as a ' + p.role + '? Just say the word.*' : '');
         return { text: base };
       }
 
-      // 14. Explainers (canned, fast)
+      // 14. Explainers
       for (let i = 0; i < EXPLAIN_TOPICS.length; i++) {
         if (EXPLAIN_TOPICS[i].kw.some(rx => rx.test(q))) {
+          if (curChat) curChat.lastTopic = { key: EXPLAIN_TOPICS[i].key || null, label: EXPLAIN_TOPICS[i].label || null };
           return { text: applyPersona(applyStyle(EXPLAIN_TOPICS[i].text)), sources: EXPLAIN_TOPICS[i].src };
         }
       }
 
-      // 15. Greeting (instant)
+      // 15. Greeting
       if (/^(hi|hey|hello|yo|sup|good (morning|afternoon|evening)|hola)\b/.test(q) && q.length < 25) {
         const p = getProfile();
         const name = p.name ? ' ' + p.name.split(' ')[0] : '';
         return { text: pick(RESP.greeting).replace('{NAME}', name) };
       }
 
-      // 16. Typo check (before burning an API call)
+            // 15.5. THINK MODE — live web source finder (answer + sources)
+      if (thinkModeActive && !ctx.replyTo) {
+        const web = await tryWebSearch(q);
+        if (web) return web;
+      }
+
+      // 16. Typo / gibberish check
       const typo = typoCheck(q);
       if (typo) return { text: typo.text };
 
-      // 17. REAL AI — Gemini (with conversation history + persona + profile)
-      const gem = await tryGemini(rawText, ctx);
-      if (gem) return { text: gem };
-
-      // 18. Wikipedia fallback (no key needed, survives quota death)
-      const wiki = await tryWikipedia(q);
-      if (wiki) return wiki;
-
-      // 19. Nothing worked -> Thinking... then give up (admin can still answer live)
+      // 17. No answer -> Thinking... then give up
       return { handoff: true };
     }
 
@@ -3158,6 +3423,7 @@ The open frontier: gravity refuses to play nice with quantum mechanics. Whatever
       updateWelcomeHeading();
       updatePersonaUI();
       if (state.chats.length > 0) state.currentChatId = state.chats[0].id;
+      renderProjects();
       renderChatHistory();
       if (getEmail()) renderCurrentChat();
       setupEventListeners();
@@ -3169,6 +3435,22 @@ The open frontier: gravity refuses to play nice with quantum mechanics. Whatever
     }
     try { init(); }
     catch (e) { console.error('Init error:', e); }
+
+    // === MOBILE FIXES: sidebar starts closed, tap outside to close ===
+    (function () {
+      var mq = window.matchMedia('(max-width: 767px)');
+      if (!mq.matches) return;
+      var sidebar = document.getElementById('sidebar');
+      var expandBtn = document.getElementById('expandSidebarBtn');
+      sidebar.classList.add('-ml-64');        // start closed on phones
+      expandBtn.classList.remove('hidden');   // show the header hamburger
+      document.addEventListener('click', function (e) {
+        if (!sidebar.classList.contains('-ml-64') && !sidebar.contains(e.target) && !expandBtn.contains(e.target)) {
+          sidebar.classList.add('-ml-64');
+        }
+      });
+    })();
   </script>
 </body>
 </html>
+
