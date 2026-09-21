@@ -105,6 +105,13 @@
     .dark .memory-row { border-color: #27272a; }
     .temp-on { background: #18181b !important; color: #fff !important; border-color: #18181b !important; }
     .dark .temp-on { background: #f4f4f5 !important; color: #18181b !important; border-color: #f4f4f5 !important; }
+    #quickChips { display: flex; gap: 0.4rem; overflow-x: auto; padding: 0 2px 8px; scrollbar-width: none; justify-content: flex-start; }
+    @media (min-width: 768px) { #quickChips { justify-content: center; overflow-x: visible; } }
+    #quickChips::-webkit-scrollbar { display: none; }
+    .quick-chip { flex-shrink: 0; font-size: 11px; font-weight: 600; color: #52525b; background: #fff; border: 1px solid #e4e4e7; border-radius: 9999px; padding: 0.4rem 0.85rem; cursor: pointer; transition: all .15s ease; white-space: nowrap; }
+    .quick-chip:hover { border-color: #d4d4d8; background: #fafafa; color: #18181b; }
+    .dark .quick-chip { background: #18181b; border-color: #27272a; color: #a1a1aa; }
+    .dark .quick-chip:hover { border-color: #3f3f46; color: #f4f4f5; }
     /* ==== MOBILE RESPONSIVE FIXES ==== */
     @media (max-width: 767px) {
       /* Sidebar becomes a slide-in overlay instead of pushing content */
@@ -289,6 +296,13 @@
             <div class="px-4 pb-6 pt-2 bg-white dark:bg-zinc-950 w-full max-w-3xl mx-auto relative">
         <div id="tempBanner" class="hidden items-center gap-2 justify-center mb-2 text-[11px] font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-full px-3.5 py-1.5">
           <i class="fa-solid fa-user-secret text-[10px]"></i> Temporary chat — this conversation won't be saved to your history
+        </div>
+        <div id="quickChips">
+          <button class="quick-chip" data-prompt="Write a professional email"><i class="fa-regular fa-envelope mr-1.5 text-zinc-400"></i>Write an email</button>
+          <button class="quick-chip" data-prompt="Create an image of a mountain lake"><i class="fa-solid fa-palette mr-1.5 text-pink-500"></i>Create an image</button>
+          <button class="quick-chip" data-prompt="Solve 145 * 32"><i class="fa-solid fa-calculator mr-1.5 text-emerald-600"></i>Solve math</button>
+          <button class="quick-chip" data-prompt="Tell me a joke"><i class="fa-solid fa-face-laugh-squint mr-1.5 text-amber-500"></i>Tell me a joke</button>
+          <button class="quick-chip" data-prompt="Explain quantum computing"><i class="fa-solid fa-atom mr-1.5 text-purple-500"></i>Explain a topic</button>
         </div>
         <div id="inputWrapper" class="bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-3xl shadow-sm focus-within:border-zinc-500 transition-all flex flex-col">
           <div id="replyBar" class="hidden items-center gap-2.5 px-4 py-2 border-b border-zinc-200 dark:border-zinc-700">
@@ -478,6 +492,18 @@
             <p class="text-[10px] text-zinc-400 pt-1">Everything is stored on this device (and synced to your Omni room). Deleting chats here also removes them from the cloud.</p>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="promptModal" class="fixed inset-0 z-[70] flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-sm border border-zinc-200 dark:border-zinc-800 transform scale-95 transition-transform duration-300 p-6">
+      <h3 id="promptModalTitle" class="text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1">Title</h3>
+      <p id="promptModalDesc" class="text-xs text-zinc-500 mb-4"></p>
+      <div id="promptModalFields" class="space-y-3"></div>
+      <div class="flex gap-2 mt-5">
+        <button type="button" id="promptModalCancel" class="flex-1 py-2.5 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 font-semibold text-sm rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition">Cancel</button>
+        <button type="button" id="promptModalOk" class="flex-[2] py-2.5 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-semibold text-sm rounded-xl transition shadow-md">Save</button>
       </div>
     </div>
   </div>
@@ -695,7 +721,7 @@
     </div>
   </div>
 
-  <div id="toastContainer" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center gap-2 pointer-events-none"></div>
+  <div id="toastContainer" class="fixed top-16 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center gap-2 pointer-events-none w-full max-w-3xl px-4"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
@@ -768,8 +794,10 @@
       const t = document.createElement('div');
       t.className = 'pointer-events-auto flex items-center gap-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg transition-all duration-300';
       t.innerHTML = '<i class="fa-solid ' + (icon || 'fa-circle-check') + '"></i><span>' + escapeHtml(msg) + '</span>';
+      t.style.opacity = '0'; t.style.transform = 'translateY(-10px)';
       c.appendChild(t);
-      setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(8px)'; }, 2400);
+      requestAnimationFrame(() => requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateY(0)'; }));
+      setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(-10px)'; }, 2400);
       setTimeout(() => t.remove(), 2800);
     }
 
@@ -1110,14 +1138,66 @@
     });
     document.getElementById('clearChatsBtn').addEventListener('click', () => {
       if (!state.chats.length) { showToast('No chats to delete', 'fa-triangle-exclamation'); return; }
-      if (!confirm('Delete ALL chats? This cannot be undone.')) return;
-      if (!confirm('Last chance — really delete everything?')) return;
-      state.chats.forEach(c => Cloud.removeChat(c.id));
-      state.chats = []; state.currentChatId = null;
-      try { localStorage.setItem('omni_chats_v19', '[]'); } catch (e) {}
-      renderChatHistory(); renderCurrentChat(); closeProfileModal();
-      showToast('All chats deleted', 'fa-trash-can');
+      openConfirmModal({
+        title: 'Delete all chats?',
+        desc: 'This removes every conversation from this device and the cloud. It cannot be undone.',
+        okText: 'Delete everything', danger: true,
+        onOk: function () {
+          state.chats.forEach(c => Cloud.removeChat(c.id));
+          state.chats = []; state.currentChatId = null;
+          try { localStorage.setItem('omni_chats_v19', '[]'); } catch (e) {}
+          renderChatHistory(); renderCurrentChat(); closeProfileModal();
+          showToast('All chats deleted', 'fa-trash-can');
+        }
+      });
     });
+    // --- CUSTOM PROMPT / CONFIRM MODAL (replaces browser prompt) ---
+    let promptModalSubmit = null;
+    const OK_DEFAULT_CLASS = 'flex-[2] py-2.5 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-semibold text-sm rounded-xl transition shadow-md';
+    const OK_DANGER_CLASS = 'flex-[2] py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold text-sm rounded-xl transition shadow-md';
+    function openPromptModal(opts) {
+      const m = document.getElementById('promptModal');
+      document.getElementById('promptModalTitle').innerText = opts.title;
+      const desc = document.getElementById('promptModalDesc');
+      desc.innerText = opts.desc || ''; desc.classList.toggle('hidden', !opts.desc);
+      const wrap = document.getElementById('promptModalFields');
+      wrap.innerHTML = '';
+      (opts.fields || []).forEach(f => {
+        const d = document.createElement('div');
+        d.innerHTML = '<label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1">' + f.label + '</label>' +
+          '<input type="text" data-key="' + f.key + '" placeholder="' + (f.placeholder || '') + '" value="' + String(f.value || '').replace(/"/g, '&quot;') + '" class="w-full px-3.5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 text-zinc-900 dark:text-zinc-100">';
+        wrap.appendChild(d);
+      });
+      const ok = document.getElementById('promptModalOk');
+      ok.innerText = opts.okText || 'Save'; ok.className = OK_DEFAULT_CLASS;
+      promptModalSubmit = opts.onSubmit;
+      m.classList.remove('hidden'); setTimeout(() => m.classList.remove('opacity-0'), 10);
+      const first = wrap.querySelector('input'); if (first) setTimeout(() => first.focus(), 60);
+    }
+    function openConfirmModal(opts) {
+      openPromptModal({ title: opts.title, desc: opts.desc, okText: opts.okText || 'Confirm', fields: [], onSubmit: function () { closePromptModal(); if (opts.onOk) opts.onOk(); } });
+      document.getElementById('promptModalOk').className = opts.danger ? OK_DANGER_CLASS : OK_DEFAULT_CLASS;
+    }
+    function closePromptModal() {
+      const m = document.getElementById('promptModal');
+      m.classList.add('opacity-0'); setTimeout(() => m.classList.add('hidden'), 300);
+    }
+    document.getElementById('promptModalOk').addEventListener('click', () => {
+      const vals = {};
+      document.querySelectorAll('#promptModalFields input').forEach(i => vals[i.dataset.key] = i.value.trim());
+      if (promptModalSubmit) promptModalSubmit(vals);
+    });
+    document.getElementById('promptModalCancel').addEventListener('click', closePromptModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !document.getElementById('promptModal').classList.contains('hidden')) closePromptModal(); });
+    // Quick chips above the input
+    document.querySelectorAll('#quickChips .quick-chip').forEach(ch => {
+      ch.addEventListener('click', () => {
+        userInput.value = ch.dataset.prompt;
+        userInput.dispatchEvent(new Event('input'));
+        userInput.focus();
+      });
+    });
+
     // --- MEMORY ---
     function getMemories() { try { const m = JSON.parse(localStorage.getItem('omni_memory_v1')); return Array.isArray(m) ? m : []; } catch (e) { return []; } }
     function saveMemories(m) { try { localStorage.setItem('omni_memory_v1', JSON.stringify(m)); } catch (e) {} }
@@ -1150,20 +1230,69 @@
     document.getElementById('memoryInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('memoryAddBtn').click(); } });
     try { if (localStorage.getItem('omni_reduce_motion') === '1') document.body.classList.add('no-motion'); } catch (e) {}
 
-    // --- MIC ---
+    // --- MIC + VOICE CONVERSATION MODE ---
     (function () {
       const micBtn = document.getElementById('micBtn');
       if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) { micBtn.style.display = 'none'; return; }
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      let voiceMode = false, listening = false, speaking = false;
       const recognition = new SpeechRecognition();
-      micBtn.addEventListener('click', () => { micBtn.classList.add('text-blue-600', 'animate-pulse'); recognition.start(); });
+      recognition.lang = navigator.language || 'en-US';
+      function setMicUI(on) {
+        micBtn.classList.remove('text-blue-600', 'text-emerald-500', 'animate-pulse');
+        if (on) micBtn.classList.add('text-emerald-500', 'animate-pulse');
+      }
+      function startListening() {
+        if (!voiceMode || listening || speaking || state.isGenerating) return;
+        try { recognition.start(); listening = true; } catch (e) {}
+      }
+      function onSpeakDone() {
+        speaking = false;
+        if (voiceMode) setTimeout(startListening, 300);
+      }
+      micBtn.title = 'Voice conversation — speak, Omni replies out loud. Click again to stop.';
+      micBtn.addEventListener('click', () => {
+        if (speaking) { speechSynthesis.cancel(); return; }
+        voiceMode = !voiceMode;
+        setMicUI(voiceMode);
+        if (voiceMode) { showToast('Voice mode on — speak, I answer out loud', 'fa-microphone'); startListening(); }
+        else { try { recognition.stop(); } catch (e) {} showToast('Voice mode off', 'fa-microphone-slash'); }
+      });
+      recognition.onstart = () => { listening = true; setMicUI(true); };
       recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
         const ui = document.getElementById('userInput');
-        ui.value += (ui.value ? ' ' : '') + event.results[0][0].transcript;
-        ui.dispatchEvent(new Event('input'));
+        if (voiceMode) {
+          ui.value = transcript;
+          ui.dispatchEvent(new Event('input'));
+          if (!state.isGenerating && !sendBtn.disabled) handleSendOrStop();
+        } else {
+          ui.value += (ui.value ? ' ' : '') + transcript;
+          ui.dispatchEvent(new Event('input'));
+        }
       };
-      recognition.onerror = () => micBtn.classList.remove('text-blue-600', 'animate-pulse');
-      recognition.onend = () => micBtn.classList.remove('text-blue-600', 'animate-pulse');
+      recognition.onerror = () => { listening = false; if (!voiceMode) setMicUI(false); };
+      recognition.onend = () => {
+        listening = false;
+        if (voiceMode) setTimeout(startListening, 350);
+        else setMicUI(false);
+      };
+      window.__omniVoice = {
+        isOn: function () { return voiceMode; },
+        setSpeaking: function (v) { speaking = v; if (v) { try { recognition.stop(); } catch (e) {} listening = false; } },
+        onSpeakEnd: onSpeakDone,
+        autoSpeak: function (text) {
+          if (!voiceMode) return;
+          if (!('speechSynthesis' in window)) { onSpeakDone(); return; }
+          const clean = String(text || '').replace(/```[\s\S]*?```/g, ' Code block omitted. ').replace(/[$#*`_>~\[\]()]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 3000);
+          speaking = true;
+          try { recognition.stop(); } catch (e) {}
+          if (!clean) { onSpeakDone(); return; }
+          const u = new SpeechSynthesisUtterance(clean);
+          u.onend = onSpeakDone; u.onerror = onSpeakDone;
+          speechSynthesis.cancel(); speechSynthesis.speak(u);
+        }
+      };
     })();
 
     // --- TTS ---
@@ -1176,8 +1305,9 @@
       const clean = rawText.replace(/```[\s\S]*?```/g, ' Code block omitted. ').replace(/[$#*`_>~\[\]()]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 4500);
       const u = new SpeechSynthesisUtterance(clean || 'This message has no readable text.');
       u.rate = 1; u.pitch = 1;
-      u.onend = () => { resetTtsBtn(btn); if (ttsActiveBtn === btn) ttsActiveBtn = null; };
-      u.onerror = () => { resetTtsBtn(btn); ttsActiveBtn = null; };
+      u.onend = () => { resetTtsBtn(btn); if (ttsActiveBtn === btn) ttsActiveBtn = null; if (window.__omniVoice) window.__omniVoice.onSpeakEnd(); };
+      u.onerror = () => { resetTtsBtn(btn); ttsActiveBtn = null; if (window.__omniVoice) window.__omniVoice.onSpeakEnd(); };
+      if (window.__omniVoice) window.__omniVoice.setSpeaking(true);
       speechSynthesis.cancel(); speechSynthesis.speak(u);
       btn.innerHTML = '<i class="fa-solid fa-stop"></i>'; btn.title = 'Stop reading'; btn.classList.add('text-blue-500');
       ttsActiveBtn = btn;
@@ -1477,10 +1607,14 @@
       const wrap = document.getElementById('projectsRow'); if (!wrap) return;
       wrap.innerHTML = '';
       state.projects.forEach(p => {
-        const chip = document.createElement('button');
+        const chip = document.createElement('div');
         chip.className = 'proj-chip' + (state.activeProjectId === p.id ? ' active' : '');
-        chip.innerHTML = '<i class="fa-solid fa-folder text-[9px]"></i>' + escapeHtml(p.name);
-        chip.onclick = () => { state.activeProjectId = state.activeProjectId === p.id ? null : p.id; renderProjects(); renderChatHistory(); };
+        chip.innerHTML = '<i class="fa-solid fa-folder text-[9px]"></i><span>' + escapeHtml(p.name) + '</span><i class="fa-solid fa-xmark text-[9px] opacity-50 hover:opacity-100 ml-0.5" title="Delete project"></i>';
+        chip.onclick = (e) => {
+          if (e.target.classList.contains('fa-xmark')) { deleteProject(p.id); return; }
+          state.activeProjectId = state.activeProjectId === p.id ? null : p.id;
+          renderProjects(); renderChatHistory();
+        };
         wrap.appendChild(chip);
       });
       const add = document.createElement('button');
@@ -1490,19 +1624,50 @@
       wrap.appendChild(add);
     }
     function createProject() {
-      const name = prompt('Project name (e.g. Roblox Game, Website, School):');
-      if (!name || !name.trim()) return;
-      const instructions = prompt('Optional — instructions for Omni inside this project (context to keep in mind):') || '';
-      state.projects.push({ id: 'proj-' + Date.now(), name: name.trim().slice(0, 28), instructions: instructions.trim(), createdAt: Date.now() });
-      saveProjects(); renderProjects(); showToast('Project created', 'fa-folder');
+      openPromptModal({
+        title: 'New project',
+        desc: 'Group chats and give Omni context for one goal.',
+        okText: 'Create project',
+        fields: [
+          { key: 'name', label: 'Project name', placeholder: 'e.g. Roblox Game, Website, School' },
+          { key: 'instructions', label: 'Instructions (optional)', placeholder: 'Context Omni should keep in mind here' }
+        ],
+        onSubmit: function (vals) {
+          if (!vals.name) { showToast('Give your project a name', 'fa-triangle-exclamation'); return; }
+          state.projects.push({ id: 'proj-' + Date.now(), name: vals.name.slice(0, 28), instructions: (vals.instructions || '').slice(0, 200), createdAt: Date.now() });
+          saveProjects(); renderProjects(); closePromptModal(); showToast('Project created', 'fa-folder');
+        }
+      });
+    }
+    function deleteProject(id) {
+      const p = state.projects.find(x => x.id === id); if (!p) return;
+      openConfirmModal({
+        title: 'Delete "' + p.name + '"?',
+        desc: 'The chats inside it are kept — they just stop being grouped.',
+        okText: 'Delete project', danger: true,
+        onOk: function () {
+          state.projects = state.projects.filter(x => x.id !== id);
+          if (state.activeProjectId === id) state.activeProjectId = null;
+          saveProjects(); renderProjects(); renderChatHistory();
+          showToast('Project deleted — chats kept', 'fa-folder-minus');
+        }
+      });
     }
 
     // --- TEMPORARY CHAT ---
     function toggleTempChat() {
       state.tempMode = !state.tempMode;
       document.getElementById('tempChatBtn').classList.toggle('temp-on', state.tempMode);
-      if (state.tempMode) createNewChat();
-      else showToast('Temporary chat off — new chats will be saved', 'fa-floppy-disk');
+      if (state.tempMode) {
+        createNewChat();
+      } else {
+        // Leaving temp mode: discard temp chats and jump back to a normal one
+        state.chats = state.chats.filter(c => !c.temp);
+        if (state.chats.length) state.currentChatId = state.chats[0].id;
+        else createNewChat();
+        renderChatHistory(); renderCurrentChat();
+        showToast('Temporary chats discarded — history is back', 'fa-floppy-disk');
+      }
     }
     function updateTempBanner() {
       const chat = getCurrentChat(), b = document.getElementById('tempBanner');
@@ -1577,7 +1742,13 @@
       chatHistoryList.innerHTML = '';
       let filtered = state.chats.filter(c => (c.title || '').toLowerCase().includes(state.searchQuery));
       if (state.activeProjectId) filtered = filtered.filter(c => c.projectId === state.activeProjectId);
-      const pinned = filtered.filter(c => c.pinned), recent = filtered.filter(c => !c.pinned);
+      const chatTime = function (c) {
+        let t = 0;
+        (c.messages || []).forEach(m => { if ((m.time || 0) > t) t = m.time; });
+        if (!t && c.id && c.id.indexOf('chat-') === 0) t = parseInt(c.id.slice(5), 10) || 0;
+        return t;
+      };
+      const pinned = filtered.filter(c => c.pinned), rest = filtered.filter(c => !c.pinned);
       if (pinned.length) {
         const lbl = document.createElement('div');
         lbl.className = 'px-2 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5';
@@ -1585,11 +1756,24 @@
         chatHistoryList.appendChild(lbl);
         pinned.forEach(c => chatHistoryList.appendChild(buildChatItem(c)));
       }
-      const lbl2 = document.createElement('div');
-      lbl2.className = 'px-2 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5';
-      lbl2.innerHTML = '<i class="fa-regular fa-clock text-[9px]"></i> Recent Chats';
-      chatHistoryList.appendChild(lbl2);
-      recent.forEach(c => chatHistoryList.appendChild(buildChatItem(c)));
+      const nowD = new Date();
+      const startOfToday = new Date(nowD.getFullYear(), nowD.getMonth(), nowD.getDate()).getTime();
+      const groupDefs = [['Today', startOfToday], ['Yesterday', startOfToday - 86400000], ['Previous 7 days', startOfToday - 7 * 86400000], ['Older', 0]];
+      const buckets = groupDefs.map(() => []);
+      rest.forEach(c => {
+        const t = chatTime(c);
+        let idx = groupDefs.findIndex(([, from]) => t >= from);
+        if (idx === -1) idx = groupDefs.length - 1;
+        buckets[idx].push(c);
+      });
+      buckets.forEach((bucket, bi) => {
+        if (!bucket.length) return;
+        const lbl = document.createElement('div');
+        lbl.className = 'px-2 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5';
+        lbl.innerHTML = '<i class="fa-regular fa-clock text-[9px]"></i> ' + groupDefs[bi][0];
+        chatHistoryList.appendChild(lbl);
+        bucket.forEach(c => chatHistoryList.appendChild(buildChatItem(c)));
+      });
       if (!filtered.length) {
         const e = document.createElement('div');
         e.className = 'px-3 py-2 text-xs text-zinc-400';
@@ -1909,13 +2093,21 @@
     }
     function editUserMessage(msg) {
       const chat = getCurrentChat(); if (!chat || state.isGenerating) return;
-      const newText = prompt('Edit your message:', msg.text);
-      if (newText === null || !newText.trim()) return;
-      const idx = chat.messages.indexOf(msg);
-      msg.text = newText.trim();
-      if (chat.messages[idx + 1] && chat.messages[idx + 1].sender === 'ai') chat.messages.splice(idx + 1, 1);
-      saveState(); renderCurrentChat();
-      generateAiReply(chat, msg.text, msg.attachments || [], msg.replyTo || null);
+      openPromptModal({
+        title: 'Edit & resend',
+        desc: 'The reply to this message will be regenerated.',
+        okText: 'Send',
+        fields: [{ key: 'text', label: 'Your message', placeholder: '', value: msg.text || '' }],
+        onSubmit: function (vals) {
+          if (!vals.text) return;
+          closePromptModal();
+          const idx = chat.messages.indexOf(msg);
+          msg.text = vals.text;
+          if (chat.messages[idx + 1] && chat.messages[idx + 1].sender === 'ai') chat.messages.splice(idx + 1, 1);
+          saveState(); renderCurrentChat();
+          generateAiReply(chat, msg.text, msg.attachments || [], msg.replyTo || null);
+        }
+      });
     }
     function deleteMessage(msg) {
       const chat = getCurrentChat(); if (!chat) return;
@@ -1924,11 +2116,19 @@
       saveState(); renderCurrentChat(); showToast('Message deleted', 'fa-trash-can');
     }
     function reportMessage(msg) {
-      const reason = prompt('What\u2019s wrong with this response? (brief reason)');
-      if (!reason) return;
-      if (Cloud.enabled) { try { Cloud.chatsRef.parent.child('reports').push({ text: (msg.text || '').slice(0, 300), reason: reason.slice(0, 200), time: Date.now() }); } catch (e) {} }
-      try { const r = JSON.parse(localStorage.getItem('omni_reports') || '[]'); r.push({ reason: reason, time: Date.now() }); localStorage.setItem('omni_reports', JSON.stringify(r)); } catch (e) {}
-      showToast('Report sent — thank you', 'fa-flag');
+      openPromptModal({
+        title: 'Report response',
+        desc: 'Tell us briefly what went wrong with this answer.',
+        okText: 'Send report',
+        fields: [{ key: 'reason', label: 'Reason', placeholder: 'e.g. Incorrect information' }],
+        onSubmit: function (vals) {
+          if (!vals.reason) { showToast('Add a short reason first', 'fa-triangle-exclamation'); return; }
+          closePromptModal();
+          if (Cloud.enabled) { try { Cloud.chatsRef.parent.child('reports').push({ text: (msg.text || '').slice(0, 300), reason: vals.reason.slice(0, 200), time: Date.now() }); } catch (e) {} }
+          try { const r = JSON.parse(localStorage.getItem('omni_reports') || '[]'); r.push({ reason: vals.reason, time: Date.now() }); localStorage.setItem('omni_reports', JSON.stringify(r)); } catch (e) {}
+          showToast('Report sent — thank you', 'fa-flag');
+        }
+      });
     }
     function enhanceCodeBlocks(container) {
       container.querySelectorAll('pre').forEach(pre => {
@@ -2229,6 +2429,7 @@
             requestAnimationFrame(() => requestAnimationFrame(() => renderedImg.classList.remove('opacity-0')));
           }
         }
+        if (window.__omniVoice && window.__omniVoice.isOn()) window.__omniVoice.autoSpeak(msg.text);
         saveState();
         return;
       }
@@ -2254,6 +2455,7 @@
       state.isGenerating = false; state.stopRequested = false;
       updateSendIcon();
       finalizeAiMessage(el, msg, true);
+      if (window.__omniVoice && window.__omniVoice.isOn()) window.__omniVoice.autoSpeak(finalText);
       saveState();
     }
     function regenerateLast() {
@@ -3145,83 +3347,76 @@ No one owns the internet. The **Web** (websites, invented by Tim Berners-Lee in 
       return null;
     }
 
-        // --- THINK MODE: WEB SOURCE FINDER (Wikipedia API — free, no key) ---
-    const SEARCH_STOPWORDS = new Set(['how','many','much','can','could','should','would','do','does','did','is','are','was','were','a','an','the','what','whats','why','who','when','where','of','in','on','to','for','with','and','or','i','you','me','my','it','its','tell','about','have','has','had','be','been','get','got','there','their','they','them','from','that','this','these','those','at','by','as','if','so','not','no','yes','give','want','need','like','just','really']);
-    function extractSearchKeywords(q) {
-      const words = q.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean).filter(w => !SEARCH_STOPWORDS.has(w));
-      return words.slice(0, 8).join(' ');
+     // --- THINK MODE: WEB SOURCE FINDER (Wikipedia API — free, no key) ---
+    const SEARCH_STOPWORDS = new Set(['how','many','much','can','could','should','would','do','does','did','is','are','was','were','a','an','the','what','whats','why','who','when','where','of','in','on','to','for','with','and','or','i','you','me','my','it','its','tell','about','have','has','had','be','been','get','got','there','their','they','them','from','that','this','these','those','at','by','as','if','so','not','no','yes','give','want','need','like','just','really','am','will','ok']);
+    function contentWords(q) {
+      return q.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !SEARCH_STOPWORDS.has(w));
+    }
+    function extractSearchKeywords(q) { return contentWords(q).slice(0, 8).join(' '); }
+    function wordMatches(hay, w) {
+      if (hay.indexOf(w) !== -1) return true;
+      if (w.length > 3 && w.slice(-1) === 's' && hay.indexOf(w.slice(0, -1)) !== -1) return true;
+      return false;
     }
     async function tryWebSearch(q) {
-      const topic = extractSearchKeywords(q);
+      const qWords = contentWords(q);
+      const topic = qWords.slice(0, 8).join(' ');
       if (!topic) return null;
       try {
-        const sr = await fetch('https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(topic) + '&srlimit=3&format=json&origin=*');
+        const sr = await fetch('https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(topic) + '&srlimit=5&format=json&origin=*');
         if (!sr.ok) return null;
         const sd = await sr.json();
         const hits = (sd.query && sd.query.search) || [];
         if (!hits.length) return null;
-        const titles = hits.map(h => h.title);
+        // Score every article: how many of the question's real words does it match?
+        hits.forEach(h => {
+          const hay = (h.title + ' ' + (h.snippet || '').replace(/<[^>]+>/g, '')).toLowerCase();
+          let score = 0;
+          qWords.forEach(w => {
+            if (wordMatches(h.title.toLowerCase(), w)) score += 3;
+            else if (wordMatches(hay, w)) score += 1;
+          });
+          h._score = score;
+        });
+        hits.sort((a, b) => b._score - a._score);
+        const titles = hits.slice(0, 3).map(h => h.title);
         const ex = await fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&redirects=1&titles=' + encodeURIComponent(titles.join('|')) + '&format=json&origin=*');
         const ed = ex.ok ? await ex.json() : null;
-        const extracts = {};
-        if (ed && ed.query && ed.query.pages) Object.keys(ed.query.pages).forEach(k => { const p = ed.query.pages[k]; extracts[p.title] = (p.extract || '').replace(/\s+/g, ' ').trim(); });
-        let answer = '', sources = [];
-        titles.forEach(t => {
-          const snippet = extracts[t] || '';
-          if (!snippet) return;
-          if (!answer) answer = snippet;
-          sources.push({ t: t, d: 'en.wikipedia.org', u: 'https://en.wikipedia.org/wiki/' + encodeURIComponent(t.replace(/\s/g, '_')) });
+        const pages = (ed && ed.query && ed.query.pages) ? Object.values(ed.query.pages) : [];
+        let best = null;
+        pages.forEach(p => {
+          const text = (p.extract || '').replace(/\s+/g, ' ').trim();
+          if (!text) return;
+          const hit = hits.find(h => h.title === p.title);
+          const score = hit ? hit._score : 0;
+          if (!best || score > best.score) best = { title: p.title, text: text, score: score, url: 'https://en.wikipedia.org/wiki/' + encodeURIComponent(p.title.replace(/\s/g, '_')) };
+        });
+        // Not confident the article matches the question? Don't guess — say nothing.
+        if (!best || best.score < 2) return null;
+        // Pull only the sentences that actually address the question
+        const sentences = best.text.match(/[^.!?]+[.!?]+/g) || [best.text];
+        const scored = sentences.map((s, i) => {
+          const low = s.toLowerCase();
+          let sc = 0;
+          qWords.forEach(w => { if (wordMatches(low, w)) sc++; });
+          return { s: s.trim(), sc: sc, i: i };
+        }).filter(x => x.sc > 0 && x.s.length > 40);
+        if (!scored.length) return null;
+        scored.sort((a, b) => b.sc - a.sc || a.i - b.i);
+        let answer = '';
+        scored.slice(0, 3).sort((a, b) => a.i - b.i).forEach(p => {
+          if ((answer + ' ' + p.s).length < 700) answer += (answer ? ' ' : '') + p.s;
         });
         if (!answer) return null;
-        if (answer.length > 750) answer = answer.slice(0, 750).replace(/[^ ]*$/, '') + '…';
-        return { text: '**Web search: "' + q + '"**\n\n' + answer + '\n\n*Found via live web search — open a source below for the full article, or ask me to go deeper.*', sources: sources.slice(0, 3) };
+        const others = titles.filter(t => t !== best.title).slice(0, 2)
+          .map(t => ({ t: t, d: 'en.wikipedia.org', u: 'https://en.wikipedia.org/wiki/' + encodeURIComponent(t.replace(/\s/g, '_')) }));
+        const sources = [{ t: best.title, d: 'en.wikipedia.org', u: best.url }].concat(others);
+        return {
+          text: '**Web search: "' + q + '"**\n\nClosest source found: *"' + best.title + '"*\n\n' + answer + '\n\n*Summarized from live web sources — if this isn\u2019t quite what you meant, rephrase the question and I\u2019ll search again.*',
+          sources: sources
+        };
       } catch (e) { return null; }
     }
-
-    // --- CONVERSATION CONTEXT: topic follow-ups ---
-    function isFollowUpQuestion(q) {
-      if (q.length > 90) return false;
-      if (/\b(it|that|this|they|them|its)\b/.test(q)) return true;
-      if (/^(why|how|who|when|what)[^.?]*\?$/.test(q) && q.split(/\s+/).length <= 6) return true;
-      if (/^(tell me more|go deeper|go on|continue|elaborate|examples?|what else|and)[.! ?]*$/.test(q)) return true;
-      return false;
-    }
-    function fileAnalyzeResponse(files, imgCount) {
-      const f = files[0];
-      const isCode = /\.(js|py|html|css|json|ts|jsx|java|cpp|c|cs|rb|go|php)$/i.test(f.name);
-      const size = f.size ? ' (' + formatSize(f.size) + ')' : '';
-      const prefix = files.length > 1 ? '📄 **Analyzing ' + files.length + ' files** — starting with ' + f.name + size : '📄 **Analyzing ' + f.name + '**' + size;
-      if (isCode) return { text: prefix + '\n\nI\u2019ve gone through the code — checked the structure, logic flow, and looked for potential issues.\n\n' + PRO_UPSELL };
-      return { text: prefix + '\n\nI\u2019ve finished reading the file. I can **summarize** it, **answer questions** about the content, or **pull out the key points** — just tell me what you need.' };
-    }
-    const TOPIC_FOLLOWUPS = {
-      javascript: [
-        { k: [/used for|what.*for|purpose|use it|used to/], text: `JavaScript is used to make websites **do things**. Every button that reacts, form that validates, animation that plays, or feed that updates without reloading — that's JavaScript.\n\nIts main habitats:\n\n- **Websites** — interactivity and single-page apps (React, Vue)\n- **Servers** — via Node.js, powering APIs and backends\n- **Mobile & desktop apps** — via React Native and Electron\n- **Games & bots** — browser games, Discord bots, automation\n\nIt's the only language browsers run natively, which is why it's everywhere on the web.` },
-        { k: [/example|show me|sample/], text: `Here's a taste of JavaScript — this makes a button count clicks:\n\n\`\`\`javascript\nlet count = 0;\nconst btn = document.querySelector('button');\nbtn.addEventListener('click', () => {\n  count++;\n  btn.textContent = 'Clicked ' + count + ' times';\n});\n\`\`\`\n\nPaste it into your browser's console (F12) on any page with a button. For full code generation, **Omni Code Pro** is available with Pro.` },
-        { k: [/who (made|created|invented)|history|origin/], text: `JavaScript was created by **Brendan Eich** at Netscape in **1995** — famously in about 10 days. It was called "Mocha," then "LiveScript," then renamed JavaScript to ride Java's popularity (the two languages are barely related). Despite the rushed start, it became the most-used programming language in the world.` },
-        { k: [/hard|difficult|learn|start|beginner/], text: `JavaScript is one of the **friendliest first languages** — you need nothing but a browser to start.\n\nA solid path: learn variables, loops, and functions (freeCodeCamp is great) → practice changing web pages → build small things immediately, like a counter or quiz. Day one to first working program can genuinely happen in an afternoon.` }
-      ],
-      python: [
-        { k: [/used for|what.*for|purpose|use it/], text: `Python is the go-to language for **data science, AI, automation, and backends**.\n\nCommon uses:\n- **AI & machine learning** — nearly all modern AI research uses it\n- **Data analysis** — pandas, NumPy\n- **Automation** — renaming files, scraping, bulk tasks\n- **Web backends** — Instagram and Spotify rely on it\n\nIts readable syntax is why it's the most-taught first language in universities.` },
-        { k: [/example|show me|sample/], text: `Python is famous for reading almost like English:\n\n\`\`\`python\nfruits = ["apple", "banana", "cherry"]\nfor fruit in fruits:\n    print("I like", fruit)\n\`\`\`\n\nThree lines, no setup ceremony. For full code generation on request, **Omni Code Pro** has you covered.` },
-        { k: [/who (made|created)|history|origin/], text: `Python was created by **Guido van Rossum** and released in **1991**, named after Monty Python's Flying Circus — not the snake. Guido held the title "BDFL" (Benevolent Dictator For Life) for decades, which tells you a lot about the community's humor.` },
-        { k: [/hard|difficult|learn|start|beginner/], text: `Python is widely considered the **easiest serious language** to learn — the syntax is close to plain English.\n\nPath: install Python → do freeCodeCamp or CS50P → automate something real in week one (rename files, track expenses). Many people write useful scripts within days.` }
-      ],
-      htmlcss: [
-        { k: [/difference|vs|versus/], text: `Quick version: **HTML is the skeleton, CSS is the skin**.\n\n- **HTML** defines *what things are* — headings, paragraphs, buttons, images\n- **CSS** defines *how things look* — colors, spacing, fonts, layout, animation\n\nA page with only HTML works but looks like a 1995 document. CSS turns it into a modern design. JavaScript, when you add it, is the muscles that make it move.` },
-        { k: [/used for|what.*for|purpose/], text: `**HTML & CSS are the foundation of every website on earth.** HTML structures the content; CSS styles it. If a career path involves the web at all — front-end, full-stack, even design — these two come first, before JavaScript.` },
-        { k: [/hard|difficult|learn|start|beginner/], text: `They're the **gentlest entry into coding** — you can build your first styled page in one afternoon.\n\nPath: learn ~20 HTML tags → style a clone of a simple page (Google's homepage is the classic exercise) → then pick up JavaScript. freeCodeCamp's Responsive Web Design course covers both free.` }
-      ],
-      ram: [
-        { k: [/used for|why|need|purpose|what.*for/], text: `RAM is your computer's **short-term working memory** — it holds the data programs are actively using right now.\n\nWhy it matters: reading from RAM is *hundreds of times faster* than reading from your drive, so every open app, tab, and file sits there to keep the CPU fed.\n\n**Too little RAM = slowness**: the system borrows drive space as backup ("swapping") and everything stutters. That's the real reason a browser with 40 tabs feels like wading through mud.` },
-        { k: [/how.*(works|work)|what does it do|mechanism/], text: `RAM stores each bit in a tiny capacitor that's either charged (1) or not (0) — millions per chip, addressable instantly. It's **volatile**: cut power and everything vanishes, which is why unsaved work dies with a crash.\n\nThe flow is drive → RAM → CPU. Each step is faster but smaller and pricier, which is why computers use all three layers.` },
-        { k: [/how much|enough|upgrade|gb/], text: `Rule of thumb:\n\n- **8 GB** — basic browsing, office work\n- **16 GB** — comfortable multitasking, most games (the sweet spot)\n- **32 GB+** — video editing, VMs, heavy development\n\nCheck Task Manager (Windows) or Activity Monitor (Mac) during your normal work — if memory sits above ~85%, more RAM will genuinely help.` }
-      ],
-      internet: [
-        { k: [/how.*(works|work)|mechanism|physically/], text: `The internet moves **packets** — small chunks of data — between billions of devices.\n\nWhen you load a page: your request is split into numbered packets → routed hop-by-hop across routers and **fiber-optic cables** (including under oceans) → reassembled at the destination → the reply makes the trip back. All in ~100 milliseconds.\n\n**DNS** is the phone book (names → IP addresses), and **TCP/IP** is the shared rulebook that makes it all fit together.` },
-        { k: [/who (owns|controls|runs|made)/], text: `No one owns the internet — it's a **network of networks** agreeing on common protocols. Companies own big pieces (backbone cables, data centers, undersea lines), governments own country-level infrastructure, and groups like ICANN and the IETF coordinate standards.\n\nThe Web (websites) is a layer *on top* of the internet, invented by **Tim Berners-Lee** in 1989.` }
-      ]
-    };
 
     // --- MAIN RESPONSE COMPUTATION ---
     async function computeResponse(rawText, atts, ctx) {
@@ -3400,9 +3595,12 @@ No one owns the internet. The **Web** (websites, invented by Tim Berners-Lee in 
       if (/^(hi|hey|hello|yo|sup|good (morning|afternoon|evening)|hola)\b/.test(q) && q.length < 25) {
         const p = getProfile();
         const name = p.name ? ' ' + p.name.split(' ')[0] : '';
-        return { text: pick(RESP.greeting).replace('{NAME}', name) };
+        let greet = pick(RESP.greeting).replace('{NAME}', name);
+        const cur = getCurrentChat();
+        const proj = cur && cur.projectId ? state.projects.find(x => x.id === cur.projectId) : null;
+        if (proj) greet += '\n\n*Working in **' + proj.name + '**.*' + (proj.instructions ? ' Keeping in mind: ' + proj.instructions : '');
+        return { text: greet };
       }
-
             // 15.5. THINK MODE — live web source finder (answer + sources)
       if (thinkModeActive && !ctx.replyTo) {
         const web = await tryWebSearch(q);
